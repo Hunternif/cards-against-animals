@@ -1,13 +1,11 @@
 import { useState } from 'react'
-import { useCollection } from 'react-firebase-hooks/firestore'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { lobbiesRef } from './firebase'
+import { LobbyData } from './components/LobbyData'
 
 function App() {
   const [count, setCount] = useState(0)
-  const [lobbies] = useCollection(lobbiesRef);
 
   return (
     <>
@@ -21,12 +19,7 @@ function App() {
       </div>
       <h1>Vite + React</h1>
 
-      <h2>Lobbies</h2>
-      <ul>
-      {lobbies && lobbies.docs.map((doc) => (
-        <li>{doc.id}: {doc.data()['lobby_key']}</li>
-      ))}
-      </ul>
+      <LobbyData/>
 
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>

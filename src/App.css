@@ -37,6 +37,10 @@
   padding: 2em;
 }
 
+.data-section {
+  text-align: start;
+}
+
 .read-the-docs {
   color: #888;
 }
