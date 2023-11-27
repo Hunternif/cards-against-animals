@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, CollectionReference } from 'firebase/firestore'
 import { Deck, GameLobby } from './model/types';
-import { lobbyConverter } from './model/firebase-converters';
+import { deckConverter, lobbyConverter } from './model/firebase-converters';
 
 const firebaseConfig = {
     apiKey: "abcd",
@@ -20,6 +20,7 @@ export const firebaseApp = initializeApp(firebaseConfig)
 const db = getFirestore(firebaseApp)
 
 // here we can export reusable database references
-export const decksRef = collection(db, 'decks') as CollectionReference<Deck>
+export const decksRef = (collection(db, 'decks') as CollectionReference<Deck>)
+    .withConverter(deckConverter)
 export const lobbiesRef = (collection(db, 'lobbies') as CollectionReference<GameLobby>)
     .withConverter(lobbyConverter)
