@@ -1,6 +1,7 @@
 import { useCollection } from "react-firebase-hooks/firestore";
 import { lobbiesRef } from "../firebase";
 import { GameLobby } from "../model/types";
+import { useState } from "react";
 
 interface LobbyProps {
   id: string;
@@ -8,6 +9,7 @@ interface LobbyProps {
 }
 
 function LobbyData({ id, lobby }: LobbyProps) {
+  const [shouldFetchTurns, setShouldFetchTurns] = useState(false);
   return <div>
     <h3>{id}</h3>
     <ul>
@@ -22,7 +24,14 @@ function LobbyData({ id, lobby }: LobbyProps) {
         </ul>
       </div>
     </ul>
-  </div>
+    {shouldFetchTurns ? (<div></div>) :
+      (
+        <button onClick={() => setShouldFetchTurns(true)}>
+          Fetch turns
+        </button>
+      )
+    }
+  </div >
 }
 
 export function LobbiesData() {
