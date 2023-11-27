@@ -2,7 +2,7 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { LobbyData } from './components/LobbyData'
+import { LobbiesData } from './components/LobbiesData'
 import { DecksData } from './components/DecksData'
 
 function App() {
@@ -20,7 +20,7 @@ function App() {
       </div>
       <h1>Vite + React</h1>
 
-      <LobbyData/>
+      <LobbiesData/>
       <DecksData/>
 
       <div className="card">
