@@ -1,7 +1,7 @@
-import { useCollection } from "react-firebase-hooks/firestore";
-import { lobbiesRef } from "../firebase";
-import { GameLobby } from "../model/types";
 import { useState } from "react";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { lobbiesRef, useGameTurns } from "../firebase";
+import { GameLobby } from "../model/types";
 
 interface LobbyProps {
   id: string;
@@ -23,15 +23,29 @@ function LobbyData({ id, lobby }: LobbyProps) {
           )}
         </ul>
       </div>
+      {shouldFetchTurns ? (
+        <TurnsData id={id} lobby={lobby} />
+      ) : (
+        <p>
+          <button onClick={() => setShouldFetchTurns(true)}>
+            Fetch turns
+          </button>
+        </p>
+      )}
     </ul>
-    {shouldFetchTurns ? (<div></div>) :
-      (
-        <button onClick={() => setShouldFetchTurns(true)}>
-          Fetch turns
-        </button>
-      )
-    }
-  </div >
+  </div >;
+}
+
+function TurnsData({ id }: LobbyProps) {
+  const [turns] = useGameTurns(id);
+  return <div className="data-subsection">
+    <h4>Turns:</h4>
+    {turns && turns.docs.map((doc) => 
+      <div key={doc.id}>
+        <span>{doc.id}. Judge: {doc.data().judge_name}</span>
+      </div>
+    )}
+  </div>;
 }
 
 export function LobbiesData() {

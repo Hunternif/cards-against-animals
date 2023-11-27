@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, CollectionReference } from 'firebase/firestore'
 import { Deck, GameLobby } from './model/types';
 import { deckConverter, lobbyConverter } from './model/firebase-converters';
+import { useCollection } from 'react-firebase-hooks/firestore';
 
 const firebaseConfig = {
     apiKey: "abcd",
@@ -24,3 +25,9 @@ export const decksRef = (collection(db, 'decks') as CollectionReference<Deck>)
     .withConverter(deckConverter)
 export const lobbiesRef = (collection(db, 'lobbies') as CollectionReference<GameLobby>)
     .withConverter(lobbyConverter)
+
+export function useGameTurns(lobby_id: string) {
+    //TODO: should probably cache this collection instance
+    const turnsRef = collection(lobbiesRef, lobby_id, 'turns');
+    return useCollection(turnsRef);
+}
