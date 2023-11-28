@@ -40,17 +40,24 @@ export class GameTurn {
     winning_answer?: PlayerAnswer;
 
     //================== Technical stuff ==================
+    id: string;
     /** Counts down to 0 in ms, to limit time for the next action. */
     timer_ms: number = 0;
     time_created: Date;
-    phase: TurnPhase = "answering";
+    phase: TurnPhase = "new";
 
     /** Cards remaining in the deck. */
     deck_questions: Array<string> = [];
     /** Cards remaining in the deck. */
     deck_answers: Array<string> = [];
 
-    constructor(judge_name: string, question: string, time_created: Date = new Date()) {
+    constructor(
+        id: string,
+        judge_name: string,
+        question: string,
+        time_created: Date = new Date(),
+    ) {
+        this.id = id;
         this.judge_name = judge_name;
         this.question = question;
         this.time_created = time_created;
@@ -70,8 +77,19 @@ export class PlayerAnswer {
 
 /** State of the player in a turn. */
 export class PlayerHand {
-    hand_answers: Array<string> = [];
-    won_questions: Array<string> = [];
+    player_name: string;
+    hand_answers: Array<string>;
+    won_questions: Array<string>;
+
+    constructor(
+        player_name: string,
+        hand_answers:  Array<string> = [],
+        won_questions: Array<string> = []
+    ) {
+        this.player_name = player_name;
+        this.hand_answers = hand_answers;
+        this.won_questions = won_questions;
+    }
 }
 
 /** Deck as an immutable collection that can be loaded into a game lobby. */
@@ -80,11 +98,11 @@ export class Deck {
     questions: Array<string> = [];
     answers: Array<string> = [];
 
-    constructor (name: string) {
+    constructor(name: string) {
         this.name = name;
     }
 }
 
 export type SpectatorStatus = "player" | "spectator";
 
-export type TurnPhase = "answering" | "reading" | "judging";
+export type TurnPhase = "new" | "answering" | "reading" | "judging" | "complete";

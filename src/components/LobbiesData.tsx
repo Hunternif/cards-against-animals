@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { lobbiesRef, useGameTurns } from "../firebase";
-import { GameLobby } from "../model/types";
+import { GameLobby, GameTurn } from "../model/types";
 
 interface LobbyProps {
   lobby: GameLobby;
+}
+
+interface TurnProps {
+  turn: GameTurn;
 }
 
 function LobbyData({ lobby }: LobbyProps) {
@@ -39,11 +43,28 @@ function TurnsData({ lobby }: LobbyProps) {
   const [turns] = useGameTurns(lobby);
   return <div className="data-subsection">
     <h4>Turns:</h4>
-    {turns && turns.docs.map((doc) => 
-      <div key={doc.id}>
-        <span>{doc.id}. Judge: {doc.data().judge_name}</span>
-      </div>
+    {turns && turns.docs.map((doc) =>
+      <TurnData turn={doc.data()} key={doc.id} />
     )}
+  </div>;
+}
+
+function TurnData({ turn }: TurnProps) {
+  return <div>
+    <div>{turn.id}: {turn.question}</div>
+    <ul>
+      <li> Judge: {turn.judge_name}
+        {turn.winning_answer && <span>
+          , winner: {turn.winning_answer.player_name}</span>}
+      </li>
+      {Array.from(turn.player_hands.values(), (hand) => {
+        const played = turn.player_answers.get(hand.player_name);
+        return <li key={hand.player_name}>
+          {hand.player_name}: [{hand.hand_answers.join(', ')}]
+          {played && <span>, played: "{played.answer.join(', ')}"</span>}
+        </li>
+      })}
+    </ul>
   </div>;
 }
 
