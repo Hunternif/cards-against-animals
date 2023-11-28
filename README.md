@@ -1,3 +1,41 @@
+## Project Setup
+
+```sh
+npm install
+```
+
+To connect with your Firebase project, create a configuration file and populate it with the data from your Firebase project:
+```sh
+cp firebase-config.json.example firebase-config.json
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Type-Check, Compile and Minify for Production
+
+```sh
+npm run build
+firebase deploy
+```
+
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+```sh
+npm run test:unit
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```
+
+-----
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

@@ -1,19 +1,9 @@
+import firebaseConfig from '../firebase-config.json';
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, CollectionReference } from 'firebase/firestore'
 import { Deck, GameLobby } from './model/types';
 import { deckConverter, lobbyConverter, turnConverter } from './model/firebase-converters';
 import { useCollection } from 'react-firebase-hooks/firestore';
-
-const firebaseConfig = {
-    apiKey: "abcd",
-    authDomain: "my-app.firebaseapp.com",
-    databaseURL: "https://my-app-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "my-app",
-    storageBucket: "my-app.appspot.com",
-    messagingSenderId: "123456",
-    appId: "1:2345:web:6789",
-    measurementId: "A_BCDE123",
-};
 
 export const firebaseApp = initializeApp(firebaseConfig)
 
