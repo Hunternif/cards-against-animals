@@ -4,6 +4,7 @@ import { Deck, GameLobby, PlayerInLobby } from "./types";
 export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
     toFirestore: (lobby: GameLobby) => {
         return {
+            id: lobby.id,
             lobby_key: lobby.lobby_key,
             time_created: Timestamp.fromDate(lobby.time_created),
             players: lobby.players,
@@ -12,7 +13,7 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
     fromFirestore: (snapshot: QueryDocumentSnapshot) => {
         const data = snapshot.data();
         const time_created = data.time_created as Timestamp;
-        const ret = new GameLobby(data.lobby_key, time_created.toDate());
+        const ret = new GameLobby(snapshot.id, data.lobby_key, time_created.toDate());
         const players = (data.players as Array<any>).map(
             (p) => new PlayerInLobby(p.name, p.spectator_status)
         );

@@ -4,14 +4,13 @@ import { lobbiesRef, useGameTurns } from "../firebase";
 import { GameLobby } from "../model/types";
 
 interface LobbyProps {
-  id: string;
   lobby: GameLobby;
 }
 
-function LobbyData({ id, lobby }: LobbyProps) {
+function LobbyData({ lobby }: LobbyProps) {
   const [shouldFetchTurns, setShouldFetchTurns] = useState(false);
   return <div>
-    <h3>{id}</h3>
+    <h3>{lobby.id}</h3>
     <ul>
       <li>Key: {lobby.lobby_key}</li>
       <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
@@ -24,7 +23,7 @@ function LobbyData({ id, lobby }: LobbyProps) {
         </ul>
       </div>
       {shouldFetchTurns ? (
-        <TurnsData id={id} lobby={lobby} />
+        <TurnsData lobby={lobby} />
       ) : (
         <p>
           <button onClick={() => setShouldFetchTurns(true)}>
@@ -36,8 +35,8 @@ function LobbyData({ id, lobby }: LobbyProps) {
   </div >;
 }
 
-function TurnsData({ id }: LobbyProps) {
-  const [turns] = useGameTurns(id);
+function TurnsData({ lobby }: LobbyProps) {
+  const [turns] = useGameTurns(lobby);
   return <div className="data-subsection">
     <h4>Turns:</h4>
     {turns && turns.docs.map((doc) => 
@@ -54,7 +53,7 @@ export function LobbiesData() {
   return <div className="data-section">
     <h2>Lobbies</h2>
     {lobbies && lobbies.docs.map((doc) =>
-      <LobbyData id={doc.id} lobby={doc.data()} key={doc.id} />
+      <LobbyData lobby={doc.data()} key={doc.id} />
     )}
   </div>;
 }

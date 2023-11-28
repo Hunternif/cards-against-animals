@@ -1,4 +1,5 @@
 export class GameLobby {
+    id: string;
     /** Identifies the lobby, included in the link that's shared on Discord. */
     lobby_key: string;
     time_created: Date;
@@ -6,7 +7,8 @@ export class GameLobby {
     /** The last "turn" is the current state of the game board. */
     turns: Array<GameTurn> = [];
 
-    constructor(lobby_key: string, time_created: Date = new Date()) {
+    constructor(id: string, lobby_key: string, time_created: Date = new Date()) {
+        this.id = id;
         this.lobby_key = lobby_key;
         this.time_created = time_created;
     }

@@ -26,8 +26,8 @@ export const decksRef = (collection(db, 'decks') as CollectionReference<Deck>)
 export const lobbiesRef = (collection(db, 'lobbies') as CollectionReference<GameLobby>)
     .withConverter(lobbyConverter)
 
-export function useGameTurns(lobby_id: string) {
+export function useGameTurns(lobby: GameLobby) {
     //TODO: should probably cache this collection instance
-    const turnsRef = collection(lobbiesRef, lobby_id, 'turns');
+    const turnsRef = collection(lobbiesRef, lobby.id, 'turns');
     return useCollection(turnsRef);
 }
