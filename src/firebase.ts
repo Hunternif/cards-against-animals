@@ -4,11 +4,13 @@ import { getFirestore, collection, CollectionReference } from 'firebase/firestor
 import { Deck, GameLobby } from './model/types';
 import { deckConverter, lobbyConverter, turnConverter } from './model/firebase-converters';
 import { useCollection } from 'react-firebase-hooks/firestore';
+import { getAuth } from 'firebase/auth';
 
 export const firebaseApp = initializeApp(firebaseConfig)
 
 // used for the firestore refs
 const db = getFirestore(firebaseApp)
+export const firebaseAuth = getAuth();
 
 // here we can export reusable database references
 export const decksRef = (collection(db, 'decks') as CollectionReference<Deck>)
