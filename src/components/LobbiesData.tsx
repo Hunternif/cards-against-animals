@@ -16,16 +16,18 @@ function LobbyData({ lobby }: LobbyProps) {
   return <div>
     <h3>{lobby.id}</h3>
     <ul>
-      <li>Key: {lobby.lobby_key}</li>
-      <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
-      <div className="data-subsection">
-        <h4>Players:</h4>
+      <p className="data-subsection">
+        <li>Key: {lobby.lobby_key}</li>
+        <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
+      </p>
+      <p className="data-subsection">
+        <h5>Players:</h5>
         <ul>
           {lobby.players.map((player) =>
             <li key={player.name}>{player.name}</li>
           )}
         </ul>
-      </div>
+      </p>
       {shouldFetchTurns ? (
         <TurnsData lobby={lobby} />
       ) : (
@@ -41,12 +43,12 @@ function LobbyData({ lobby }: LobbyProps) {
 
 function TurnsData({ lobby }: LobbyProps) {
   const [turns] = useGameTurns(lobby);
-  return <div className="data-subsection">
-    <h4>Turns:</h4>
+  return <p className="data-subsection">
+    <h5>Turns:</h5>
     {turns && turns.docs.map((doc) =>
       <TurnData turn={doc.data()} key={doc.id} />
     )}
-  </div>;
+  </p>;
 }
 
 function TurnData({ turn }: TurnProps) {

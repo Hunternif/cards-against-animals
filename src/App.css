@@ -33,8 +33,16 @@
   }
 }
 
-.card {
+.padding2 {
   padding: 2em;
+}
+
+.flex {
+  display: flex;
+}
+
+.centered {
+  margin: auto;
 }
 
 .data-section {
@@ -43,11 +51,6 @@
 
 .read-the-docs {
   color: #888;
-}
-
-#root {
-  max-width: 1280px;
-  padding: 2rem;
 }
 
 .admin-header {

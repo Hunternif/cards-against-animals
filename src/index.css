@@ -24,10 +24,19 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  /* display: flex; */
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+
+form {
+  text-align: start;
+}
+
+p {
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 h1 {
