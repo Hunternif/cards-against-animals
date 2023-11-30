@@ -41,13 +41,6 @@
   text-align: start;
 }
 
-.data-section h2,
-.data-section h3,
-.data-section h4 {
-  margin-top: 0.5em;
-  margin-bottom: 0.1em;
-}
-
 .read-the-docs {
   color: #888;
 }
