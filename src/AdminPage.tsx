@@ -15,14 +15,14 @@ interface UserProps {
 }
 
 function LoggedInView({ user }: UserProps) {
-  const caaUser = useFetchCAAUser(user.email ?? "invalid");
+  const [caaUser, loading] = useFetchCAAUser(user.email ?? "invalid");
   const isAdmin = caaUser?.is_admin ?? false;
   return <div className='admin-container'>
     <div className='admin-header'>
       <span>Hello, {user.displayName}!</span>
       <button onClick={() => firebaseAuth.signOut()}>Sign out</button>
     </div>
-    { isAdmin ? <AdminContent/> : <div>Access denied</div>}
+    { !loading && (isAdmin ? <AdminContent/> : <div>Access denied</div>)}
   </div>;
 }
 

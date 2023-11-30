@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, CollectionReference, doc } from 'firebase/firestore'
 import { CAAUser, Deck, GameLobby } from './model/types';
 import { deckConverter, lobbyConverter, turnConverter, userConverter } from './model/firebase-converters';
-import { useCollection, useDocumentOnce } from 'react-firebase-hooks/firestore';
+import { useCollection, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 import { getAuth } from 'firebase/auth';
 
 export const firebaseApp = initializeApp(firebaseConfig)
@@ -27,9 +27,8 @@ export function useGameTurns(lobby: GameLobby) {
     return useCollection(turnsRef);
 }
 
-export function useFetchCAAUser(email: string): CAAUser | undefined {
+export function useFetchCAAUser(email: string) {
     // document IDs are email addresses
     const userDocRef = doc(usersRef, email);
-    const [user] = useDocumentOnce(userDocRef);
-    return user?.data();
+    return useDocumentDataOnce(userDocRef);
 }
