@@ -1,5 +1,5 @@
 import { FirestoreDataConverter, QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
-import { Deck, GameLobby, GameTurn, PlayerAnswer, PlayerHand, PlayerInLobby } from "./types";
+import { CAAUser, Deck, GameLobby, GameTurn, PlayerAnswer, PlayerHand, PlayerInLobby } from "./types";
 
 export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
     toFirestore: (lobby: GameLobby) => {
@@ -85,5 +85,13 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
                 .map(([k, v]) => [k, new PlayerAnswer(k, v as Array<string>)])
         );
         return ret;
+    }
+}
+
+export const userConverter: FirestoreDataConverter<CAAUser> = {
+    toFirestore: (user: CAAUser) => user,
+    fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+        const data = snapshot.data();
+        return new CAAUser(data.name, data.email, data.is_admin ?? false);
     }
 }

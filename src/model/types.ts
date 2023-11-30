@@ -106,3 +106,20 @@ export class Deck {
 export type SpectatorStatus = "player" | "spectator";
 
 export type TurnPhase = "new" | "answering" | "reading" | "judging" | "complete";
+
+/** User data stored in the database */
+export class CAAUser {
+    email: string;
+    name?: string;
+    is_admin: boolean;
+
+    constructor(
+        email: string,
+        name: string | null | undefined = null,
+        is_admin: boolean = false,
+    ) {
+        this.email = email;
+        if (name) this.name = name;
+        this.is_admin = is_admin;
+    }
+}
