@@ -8,6 +8,11 @@ service cloud.firestore {
   	match /lobbies/{document=**} {
     	allow read;
     }
+    match /users/{document} {
+      // allow reading only your own info when you are logged in:
+      allow read: if request.auth != null
+                  && request.auth.token.email == document;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

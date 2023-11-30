@@ -57,6 +57,10 @@
   padding: 2rem;
 }
 
-button, .admin-header {
+.admin-header {
+  margin-bottom: 1em;
+}
+
+.admin-header button {
   margin-left: 1em;
 }
