@@ -38,7 +38,7 @@ export function useFetchCAAUser(email: string) {
 
 
 // Functions
-const functions = getFunctions(firebaseApp);
+const functions = getFunctions(firebaseApp, firebaseConfig.region);
 // connectFunctionsEmulator(functions, '127.0.0.1', 5001);
 
 export const helloWorld = httpsCallable(functions, 'helloWorld');

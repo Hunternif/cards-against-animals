@@ -14,10 +14,13 @@ import cors from "cors";
 // Thanks to https://stackoverflow.com/a/42756623/1093712
 const withCors = cors();
 
+import firebaseConfig from "../../firebase-config.json";
+
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
 export const helloWorld = onRequest(
+  { region: firebaseConfig.region },
   (request, response) => {
     withCors(request, response, () => {
       logger.info("Hello logs!", { structuredData: true });
