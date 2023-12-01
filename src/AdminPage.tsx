@@ -1,6 +1,6 @@
 import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { firebaseAuth, useFetchCAAUser } from "./firebase";
+import { firebaseAuth, helloWorld, useFetchCAAUser } from "./firebase";
 import Form from "react-bootstrap/Form";
 import { Button, Container } from "react-bootstrap";
 
@@ -31,6 +31,11 @@ function LoggedInView({ user }: UserProps) {
 }
 
 function AdminContent() {
+  const callHelloWorld = () => {
+    helloWorld().then((result) => {
+      console.log(result.data);
+    })
+  }
   return <>
     <h2>Upload new deck</h2>
     <Form>
@@ -46,7 +51,7 @@ function AdminContent() {
         <Form.Label>Answers</Form.Label>
         <Form.Control as="textarea" name="answers" rows={10} />
       </Form.Group>
-      <Button type="button">Submit</Button>
+      <Button type="button" onClick={callHelloWorld}>Submit</Button>
     </Form>
   </>;
 }

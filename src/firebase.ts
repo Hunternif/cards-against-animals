@@ -1,15 +1,18 @@
 import firebaseConfig from '../firebase-config.json';
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, CollectionReference, doc } from 'firebase/firestore'
+import { getFirestore, collection, CollectionReference, doc, connectFirestoreEmulator } from 'firebase/firestore'
 import { CAAUser, Deck, GameLobby } from './model/types';
 import { deckConverter, lobbyConverter, turnConverter, userConverter } from './model/firebase-converters';
 import { useCollection, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 import { getAuth } from 'firebase/auth';
+import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 
 export const firebaseApp = initializeApp(firebaseConfig)
 
 // used for the firestore refs
 const db = getFirestore(firebaseApp)
+// connectFirestoreEmulator(db, '127.0.0.1', 8080);
+
 export const firebaseAuth = getAuth();
 
 // here we can export reusable database references
@@ -32,3 +35,10 @@ export function useFetchCAAUser(email: string) {
     const userDocRef = doc(usersRef, email);
     return useDocumentDataOnce(userDocRef);
 }
+
+
+// Functions
+const functions = getFunctions(firebaseApp);
+// connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+
+export const helloWorld = httpsCallable(functions, 'helloWorld');
