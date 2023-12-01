@@ -9,11 +9,18 @@
 
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
+import cors from "cors";
+
+// Thanks to https://stackoverflow.com/a/42756623/1093712
+const withCors = cors();
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
-export const helloWorld = onRequest((request, response) => {
-  logger.info("Hello logs!", { structuredData: true });
-  response.status(200).send({ data: { msg: "Hello from Firebase!" } });
-});
+export const helloWorld = onRequest(
+  (request, response) => {
+    withCors(request, response, () => {
+      logger.info("Hello logs!", { structuredData: true });
+      response.status(200).send({ data: { msg: "Hello from Firebase!" } });
+    });
+  });
