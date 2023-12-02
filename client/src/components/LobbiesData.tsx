@@ -1,14 +1,17 @@
+import { DocumentReference, QueryDocumentSnapshot, collection } from "firebase/firestore";
 import { useState } from "react";
-import { useCollection } from "react-firebase-hooks/firestore";
+import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
 import { lobbiesRef, useGameTurns } from "../firebase";
 import { GameLobby, GameTurn } from "../model/types";
+import { playerDataConverter } from "../model/firebase-converters";
 
 interface LobbyProps {
   lobby: GameLobby;
 }
 
 interface TurnProps {
-  turn: GameTurn;
+  turn: GameTurn,
+  turnRef: DocumentReference<GameTurn>;
 }
 
 function LobbyData({ lobby }: LobbyProps) {
@@ -20,14 +23,8 @@ function LobbyData({ lobby }: LobbyProps) {
         <li>Key: {lobby.lobby_key}</li>
         <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
       </p>
-      <p className="data-subsection">
-        <h5>Players:</h5>
-        <ul>
-          {lobby.players.map((player) =>
-            <li key={player.name}>{player.name}</li>
-          )}
-        </ul>
-      </p>
+      <b>Players: </b>
+      {lobby.players.map((p) => p.name).join(', ')}
       {shouldFetchTurns ? (
         <TurnsData lobby={lobby} />
       ) : (
@@ -46,26 +43,33 @@ function TurnsData({ lobby }: LobbyProps) {
   return <p className="data-subsection">
     <h5>Turns:</h5>
     {turns && turns.docs.map((doc) =>
-      <TurnData turn={doc.data()} key={doc.id} />
+      <TurnData turn={doc.data()} turnRef={doc.ref} key={doc.id} />
     )}
   </p>;
 }
 
-function TurnData({ turn }: TurnProps) {
+function TurnData({ turn, turnRef }: TurnProps) {
+  const [playerData] = useCollectionData(
+    collection(turnRef, 'player_data')
+      .withConverter(playerDataConverter)
+  );
   return <div>
-    <div>{turn.id}: {turn.question}</div>
+    <div>{turn.id}: {turn.prompt.content}</div>
     <ul>
-      <li> Judge: {turn.judge_name}
-        {turn.winning_answer && <span>
-          , winner: {turn.winning_answer.player_name}</span>}
-      </li>
-      {Array.from(turn.player_hands.values(), (hand) => {
-        const played = turn.player_answers.get(hand.player_name);
-        return <li key={hand.player_name}>
-          {hand.player_name}: [{hand.hand_answers.join(', ')}]
-          {played && <span>, played: "{played.answer.join(', ')}"</span>}
-        </li>
-      })}
+      {playerData && playerData.map((pdata, i) => {
+        const isJudge = turn.judge_name == pdata.player_name;
+        const isWinner = turn.winner_name == pdata.player_name;
+        const hand = pdata.hand.map((c) => c.content).join(', ');
+        const played = pdata.current_play?.map((c) => c.content).join(', ');
+        return <li key={i}>
+          {pdata.player_name}:
+          {isJudge && " 💬 "}
+          {isWinner && " 🏆 "}
+          [{hand}]
+          {played && `, played "${played}"`}
+        </li>;
+      }
+      )}
     </ul>
   </div>;
 }

@@ -11,7 +11,7 @@ export const firebaseApp = initializeApp(firebaseConfig)
 
 // used for the firestore refs
 const db = getFirestore(firebaseApp)
-connectFirestoreEmulator(db, '127.0.0.1', 8080);
+// connectFirestoreEmulator(db, '127.0.0.1', 8080);
 
 export const firebaseAuth = getAuth();
 

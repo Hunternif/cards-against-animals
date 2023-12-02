@@ -1,6 +1,9 @@
 
-import { useCollection } from "react-firebase-hooks/firestore";
-import { decksRef, lobbiesRef } from "../firebase";
+import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
+import { decksRef } from "../firebase";
+import { Deck } from "../model/types";
+import { collection } from "firebase/firestore";
+import { promptDeckCardConverter, responseDeckCardConverter } from "../model/firebase-converters";
 
 export function DecksData() {
   const [decks] = useCollection(decksRef);
@@ -12,20 +15,44 @@ export function DecksData() {
       return <div key={doc.id}>
         <h4>Deck "{deck.title}"</h4>
         <ul>
-          <p className="data-subsection">
-            <h5>Questions:</h5>
-            <ul>
-              {deck.questions.map((q, i) => <li key={i}>{q}</li>)}
-            </ul>
-          </p>
-          <p className="data-subsection">
-            <h5>Answers:</h5>
-            <ul>
-              {deck.answers.map((a, i) => <li key={i}>{a}</li>)}
-            </ul>
-          </p>
+          <PromptsData deck={deck} />
+          <ResponseData deck={deck} />
         </ul>
       </div>
     })}
   </p>;
+}
+
+interface DeckProps {
+  deck: Deck;
+}
+
+function PromptsData({ deck }: DeckProps) {
+  const [prompts] = useCollectionData(
+    collection(decksRef, deck.id, 'prompts')
+      .withConverter(promptDeckCardConverter)
+  );
+  return <p className="data-subsection">
+    <h5>Prompts:</h5>
+    <ul>
+      {prompts && prompts.map((card, i) =>
+        <li key={i}>{card.content} ({card.rating})</li>
+      )}
+    </ul>
+  </p>
+}
+
+function ResponseData({ deck }: DeckProps) {
+  const [responses] = useCollectionData(
+    collection(decksRef, deck.id, 'responses')
+      .withConverter(responseDeckCardConverter)
+  );
+  return <p className="data-subsection">
+    <h5>Responses:</h5>
+    <ul>
+      {responses && responses.map((card, i) =>
+        <li key={i}>{card.content} ({card.rating})</li>
+      )}
+    </ul>
+  </p>
 }

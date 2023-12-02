@@ -1,19 +1,27 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { decksRef } from "../firebase";
-import { Deck } from "./types";
+import { Deck, PromptDeckCard, ResponseDeckCard } from "./types";
 
+/**
+ * Parses collection data. `promptList` and `responseList` are strings where
+ * each line is a new entry.
+ */
 export function parseDeck(
   title: string,
-  questionsList: string,
-  answerList: string,
+  promptList: string,
+  responseList: string,
 ): Deck {
-  const deck = new Deck(title);
-  deck.questions = questionsList.split("\n")
+  const deck = new Deck(title, title);
+  deck.prompts = promptList.split("\n")
     .map((val) => val.trim())
-    .filter((val) => val != "");
-    deck.answers = answerList.split("\n")
+    .filter((val) => val != "")
+    // the new ID is the same as 'content':
+    .map((val) => new PromptDeckCard(val, val, 0));
+  deck.responses = responseList.split("\n")
     .map((val) => val.trim())
-    .filter((val) => val != "");
+    .filter((val) => val != "")
+    // the new ID is the same as 'content':
+    .map((val) => new ResponseDeckCard(val, val, 0));
   return deck;
 }
 
