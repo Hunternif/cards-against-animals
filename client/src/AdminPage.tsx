@@ -2,8 +2,9 @@ import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { firebaseAuth, useFetchCAAUser } from "./firebase";
 import Form from "react-bootstrap/Form";
-import { Button, Container } from "react-bootstrap";
+import { Alert, Button, Container } from "react-bootstrap";
 import { parseDeck, uploadDeck } from "./model/deck-api";
+import { useState } from "react";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -32,18 +33,25 @@ function LoggedInView({ user }: UserProps) {
 }
 
 function AdminContent() {
+  const [error, setError] = useState<Error | null>(null);
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget as HTMLFormElement);
-    const deck = parseDeck(
-      data.get('title') as string,
-      data.get('questions') as string,
-      data.get('answers') as string,
-    );
-    await uploadDeck(deck);
+    setError(null);
+    try {
+      const data = new FormData(event.currentTarget as HTMLFormElement);
+      const deck = parseDeck(
+        data.get('title') as string,
+        data.get('questions') as string,
+        data.get('answers') as string,
+      );
+      await uploadDeck(deck);
+    } catch (error: any) {
+      setError(error);
+    }
   }
   return <>
     <h2>Upload new deck</h2>
+    {error && <Alert variant="danger">{error.message}</Alert>}
     <Form onSubmit={handleSubmit}>
       <Form.Group className="mb-3">
         <Form.Label>Title</Form.Label>

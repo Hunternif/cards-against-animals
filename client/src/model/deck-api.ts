@@ -21,7 +21,7 @@ export async function uploadDeck(deck: Deck) {
   const docRef = doc(decksRef, deck.title);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    throw new Error(`Deck ${deck.title} already exists`);
+    throw new Error(`Deck "${deck.title}" already exists`);
   }
   await setDoc(docRef, deck);
 }
