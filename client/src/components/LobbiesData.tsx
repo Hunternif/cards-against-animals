@@ -19,20 +19,20 @@ function LobbyData({ lobby }: LobbyProps) {
   return <div>
     <h3>{lobby.id}</h3>
     <ul>
-      <p className="data-subsection">
+      <div className="data-subsection">
         <li>Key: {lobby.lobby_key}</li>
         <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
-      </p>
+      </div>
       <b>Players: </b>
       {lobby.players.map((p) => p.name).join(', ')}
       {shouldFetchTurns ? (
         <TurnsData lobby={lobby} />
       ) : (
-        <p>
+        <div className="data-subsection">
           <button onClick={() => setShouldFetchTurns(true)}>
             Fetch turns
           </button>
-        </p>
+        </div>
       )}
     </ul>
   </div >;
@@ -40,12 +40,12 @@ function LobbyData({ lobby }: LobbyProps) {
 
 function TurnsData({ lobby }: LobbyProps) {
   const [turns] = useGameTurns(lobby);
-  return <p className="data-subsection">
+  return <div className="data-subsection">
     <h5>Turns:</h5>
     {turns && turns.docs.map((doc) =>
       <TurnData turn={doc.data()} turnRef={doc.ref} key={doc.id} />
     )}
-  </p>;
+  </div>;
 }
 
 function TurnData({ turn, turnRef }: TurnProps) {

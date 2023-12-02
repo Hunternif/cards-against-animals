@@ -8,7 +8,7 @@ import { promptDeckCardConverter, responseDeckCardConverter } from "../model/fir
 export function DecksData() {
   const [decks] = useCollection(decksRef);
 
-  return <p className="data-section">
+  return <div className="data-section">
     <h2>Decks</h2>
     {decks && decks.docs.map((doc) => {
       const deck = doc.data();
@@ -20,7 +20,7 @@ export function DecksData() {
         </ul>
       </div>
     })}
-  </p>;
+  </div>;
 }
 
 interface DeckProps {
@@ -32,14 +32,14 @@ function PromptsData({ deck }: DeckProps) {
     collection(decksRef, deck.id, 'prompts')
       .withConverter(promptDeckCardConverter)
   );
-  return <p className="data-subsection">
+  return <div className="data-subsection">
     <h5>Prompts:</h5>
     <ul>
       {prompts && prompts.map((card, i) =>
         <li key={i}>{card.content} ({card.rating})</li>
       )}
     </ul>
-  </p>
+  </div>
 }
 
 function ResponseData({ deck }: DeckProps) {
@@ -47,12 +47,12 @@ function ResponseData({ deck }: DeckProps) {
     collection(decksRef, deck.id, 'responses')
       .withConverter(responseDeckCardConverter)
   );
-  return <p className="data-subsection">
+  return <div className="data-subsection">
     <h5>Responses:</h5>
     <ul>
       {responses && responses.map((card, i) =>
         <li key={i}>{card.content} ({card.rating})</li>
       )}
     </ul>
-  </p>
+  </div>
 }

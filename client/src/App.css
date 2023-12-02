@@ -48,6 +48,10 @@
 .data-section {
   text-align: start;
 }
+.data-subsection {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
 
 .read-the-docs {
   color: #888;
