@@ -4,6 +4,7 @@ import { useCollection, useCollectionData } from "react-firebase-hooks/firestore
 import { lobbiesRef, useGameTurns } from "../firebase";
 import { GameLobby, GameTurn } from "../model/types";
 import { playerDataConverter } from "../model/firebase-converters";
+import { Accordion } from "react-bootstrap";
 
 interface LobbyProps {
   lobby: GameLobby;
@@ -15,37 +16,32 @@ interface TurnProps {
 }
 
 function LobbyData({ lobby }: LobbyProps) {
-  const [shouldFetchTurns, setShouldFetchTurns] = useState(false);
-  return <div>
-    <h3>{lobby.id}</h3>
-    <ul>
-      <div className="data-subsection">
-        <li>Key: {lobby.lobby_key}</li>
-        <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
-      </div>
-      <b>Players: </b>
-      {lobby.players.map((p) => p.name).join(', ')}
-      {shouldFetchTurns ? (
-        <TurnsData lobby={lobby} />
-      ) : (
+  return <Accordion.Item eventKey={lobby.id}>
+    <Accordion.Header>{lobby.id}</Accordion.Header>
+    <Accordion.Body>
+      <ul>
         <div className="data-subsection">
-          <button onClick={() => setShouldFetchTurns(true)}>
-            Fetch turns
-          </button>
+          <li>Key: {lobby.lobby_key}</li>
+          <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
         </div>
-      )}
-    </ul>
-  </div >;
+        <b>Players: </b>
+        {lobby.players.map((p) => p.name).join(', ')}
+      </ul>
+      <Accordion>
+        <Accordion.Header>Turns</Accordion.Header>
+        <Accordion.Body> <TurnsData lobby={lobby} /></Accordion.Body>
+      </Accordion>
+    </Accordion.Body>
+  </Accordion.Item>;
 }
 
 function TurnsData({ lobby }: LobbyProps) {
   const [turns] = useGameTurns(lobby);
-  return <div className="data-subsection">
-    <h5>Turns:</h5>
+  return <>
     {turns && turns.docs.map((doc) =>
       <TurnData turn={doc.data()} turnRef={doc.ref} key={doc.id} />
     )}
-  </div>;
+  </>;
 }
 
 function TurnData({ turn, turnRef }: TurnProps) {
@@ -79,8 +75,10 @@ export function LobbiesData() {
 
   return <div className="data-section">
     <h2>Lobbies</h2>
-    {lobbies && lobbies.docs.map((doc) =>
-      <LobbyData lobby={doc.data()} key={doc.id} />
-    )}
+    <Accordion>
+      {lobbies && lobbies.docs.map((doc) =>
+        <LobbyData lobby={doc.data()} key={doc.id} />
+      )}
+    </Accordion>
   </div>;
 }
