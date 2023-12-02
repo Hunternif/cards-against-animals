@@ -38,13 +38,15 @@ function AdminContent() {
     event.preventDefault();
     setError(null);
     try {
-      const data = new FormData(event.currentTarget as HTMLFormElement);
+      const form = event.currentTarget as HTMLFormElement;
+      const data = new FormData(form);
       const deck = parseDeck(
         data.get('title') as string,
         data.get('questions') as string,
         data.get('answers') as string,
       );
       await uploadDeck(deck);
+      form.reset();
     } catch (error: any) {
       setError(error);
     }
