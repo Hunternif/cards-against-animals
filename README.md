@@ -4,10 +4,7 @@
 npm install
 ```
 
-To connect with your Firebase project, create a configuration file and populate it with the data from your Firebase project:
-```sh
-cp firebase-config.json.example firebase-config.json
-```
+This will create the file `firebase-config.json`. Populate it with the data from your Firebase project.
 
 ### Compile and Hot-Reload for Development
 
