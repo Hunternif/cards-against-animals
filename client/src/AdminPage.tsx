@@ -33,12 +33,14 @@ function LoggedInView({ user }: UserProps) {
 }
 
 function AdminContent() {
+  const [isUploading, setUploading] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     setInfo(null);
     setError(null);
+    setUploading(true);
     try {
       const form = event.currentTarget as HTMLFormElement;
       const data = new FormData(form);
@@ -49,9 +51,11 @@ function AdminContent() {
       );
       await uploadDeck(deck);
       setInfo(`Deck "${deck.title}" uploaded`)
+      setUploading(false);
       form.reset();
     } catch (error: any) {
       setError(error);
+      setUploading(false);
     }
   }
   return <>
@@ -71,7 +75,9 @@ function AdminContent() {
         <Form.Label>Answers</Form.Label>
         <Form.Control as="textarea" name="answers" rows={10} />
       </Form.Group>
-      <Button type="submit">Submit</Button>
+      <Button type="submit" disabled={isUploading}>
+        {isUploading ? "Submitting..." : "Submit"}
+      </Button>
     </Form>
   </>;
 }
