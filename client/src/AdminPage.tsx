@@ -33,9 +33,11 @@ function LoggedInView({ user }: UserProps) {
 }
 
 function AdminContent() {
+  const [info, setInfo] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
+    setInfo(null);
     setError(null);
     try {
       const form = event.currentTarget as HTMLFormElement;
@@ -46,6 +48,7 @@ function AdminContent() {
         data.get('answers') as string,
       );
       await uploadDeck(deck);
+      setInfo(`Deck "${deck.title}" uploaded`)
       form.reset();
     } catch (error: any) {
       setError(error);
@@ -53,6 +56,7 @@ function AdminContent() {
   }
   return <>
     <h2>Upload new deck</h2>
+    {info && <Alert variant="light">{info}</Alert>}
     {error && <Alert variant="danger">{error.message}</Alert>}
     <Form onSubmit={handleSubmit}>
       <Form.Group className="mb-3">
