@@ -1,6 +1,7 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { decksRef } from "../firebase";
+import { collection, doc, getDoc, setDoc, writeBatch } from "firebase/firestore";
+import { db, decksRef } from "../firebase";
 import { Deck, PromptDeckCard, ResponseDeckCard } from "./types";
+import { promptDeckCardConverter, responseDeckCardConverter } from "./firebase-converters";
 
 /**
  * Parses collection data. `promptList` and `responseList` are strings where
@@ -31,5 +32,18 @@ export async function uploadDeck(deck: Deck) {
   if (docSnap.exists()) {
     throw new Error(`Deck "${deck.title}" already exists`);
   }
-  await setDoc(docRef, deck);
+  const batch = writeBatch(db);
+  batch.set(docRef, deck);
+  // Now upload all the cards, in sequence:
+  const promptsRef = collection(docRef, 'prompts')
+    .withConverter(promptDeckCardConverter);
+  deck.prompts.forEach(prompt => {
+    batch.set(doc(promptsRef, prompt.id), prompt)
+  });
+  const responsesRef = collection(docRef, 'responses')
+    .withConverter(responseDeckCardConverter);
+  deck.responses.forEach(response => {
+    batch.set(doc(responsesRef, response.id), response)
+  });
+  batch.commit();
 }

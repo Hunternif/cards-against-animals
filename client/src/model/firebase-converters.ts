@@ -17,10 +17,12 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
 }
 
 export const deckConverter: FirestoreDataConverter<Deck> = {
-    toFirestore: (deck: Deck) => Object.assign({}, deck, {
-        prompts: deck.prompts.map((c) => Object.assign({}, c)),
-        responses: deck.responses.map((c) => Object.assign({}, c)),
-    }),
+    toFirestore: (deck: Deck) => {
+        return {
+            id: deck.id,
+            title: deck.title,
+        }
+    },
     fromFirestore: (snapshot: QueryDocumentSnapshot) => {
         const data = snapshot.data();
         const ret = new Deck(snapshot.id, data.title);
@@ -67,7 +69,7 @@ export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
         ret.hand = (data.hand as Array<any>)
             ?.map(mapResponseCardInHand) || [];
         ret.current_play = (data.current_play as Array<any>)
-        ?.map(mapResponseCardInHand) || [];
+            ?.map(mapResponseCardInHand) || [];
         return ret;
     }
 }
