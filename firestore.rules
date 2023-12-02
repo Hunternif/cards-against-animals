@@ -2,8 +2,14 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function userIsAdmin() {
+      let email = request.auth.token.email;
+      let user = get(/databases/$(database)/documents/users/$(email));
+      return user != null && user.data.is_admin == true;
+    }
   	match /decks/{document=**} {
     	allow read;
+      allow write: if userIsAdmin();
     }
   	match /lobbies/{document=**} {
     	allow read;
