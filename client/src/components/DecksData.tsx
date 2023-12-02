@@ -10,16 +10,16 @@ export function DecksData() {
     {decks && decks.docs.map((doc) => {
       const deck = doc.data();
       return <div key={doc.id}>
-        <h3>{deck.name}</h3>
+        <h4>Deck "{deck.title}"</h4>
         <ul>
           <p className="data-subsection">
-            <h4>Questions:</h4>
+            <h5>Questions:</h5>
             <ul>
               {deck.questions.map((q, i) => <li key={i}>{q}</li>)}
             </ul>
           </p>
           <p className="data-subsection">
-            <h4>Answers:</h4>
+            <h5>Answers:</h5>
             <ul>
               {deck.answers.map((a, i) => <li key={i}>{a}</li>)}
             </ul>

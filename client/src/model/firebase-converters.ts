@@ -22,10 +22,10 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
 }
 
 export const deckConverter: FirestoreDataConverter<Deck> = {
-    toFirestore: (deck: Deck) => deck,
+    toFirestore: (deck: Deck) => Object.assign({}, deck),
     fromFirestore: (snapshot: QueryDocumentSnapshot) => {
         const data = snapshot.data();
-        const ret = new Deck(data.name);
+        const ret = new Deck(data.title);
         ret.answers = data.answers || [];
         ret.questions = data.questions || [];
         return ret;

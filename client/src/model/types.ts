@@ -94,12 +94,12 @@ export class PlayerHand {
 
 /** Deck as an immutable collection that can be loaded into a game lobby. */
 export class Deck {
-    name: string;
+    title: string;
     questions: Array<string> = [];
     answers: Array<string> = [];
 
-    constructor(name: string) {
-        this.name = name;
+    constructor(title: string) {
+        this.title = title;
     }
 }
 
