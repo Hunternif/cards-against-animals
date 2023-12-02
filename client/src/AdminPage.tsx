@@ -1,8 +1,9 @@
 import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { firebaseAuth, helloWorld, useFetchCAAUser } from "./firebase";
+import { firebaseAuth, useFetchCAAUser } from "./firebase";
 import Form from "react-bootstrap/Form";
 import { Button, Container } from "react-bootstrap";
+import { parseDeck, uploadDeck } from "./model/deck-api";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -31,14 +32,19 @@ function LoggedInView({ user }: UserProps) {
 }
 
 function AdminContent() {
-  const callHelloWorld = () => {
-    helloWorld().then((result) => {
-      console.log(result.data);
-    })
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget as HTMLFormElement);
+    const deck = parseDeck(
+      data.get('title') as string,
+      data.get('questions') as string,
+      data.get('answers') as string,
+    );
+    await uploadDeck(deck);
   }
   return <>
     <h2>Upload new deck</h2>
-    <Form>
+    <Form onSubmit={handleSubmit}>
       <Form.Group className="mb-3">
         <Form.Label>Title</Form.Label>
         <Form.Control type="text" name="title" />
@@ -51,7 +57,7 @@ function AdminContent() {
         <Form.Label>Answers</Form.Label>
         <Form.Control as="textarea" name="answers" rows={10} />
       </Form.Group>
-      <Button type="button" onClick={callHelloWorld}>Submit</Button>
+      <Button type="submit">Submit</Button>
     </Form>
   </>;
 }
