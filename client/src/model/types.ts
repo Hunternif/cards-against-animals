@@ -97,8 +97,7 @@ export class Deck {
 
 /** Card in deck */
 export abstract class DeckCard {
-    /** ID is usually the same as content (for simplicity), but content
-     * can be edited, and only content should be used for display. */
+    /** ID is usually a number. */
     id: string;
     content: string;
     rating: number;

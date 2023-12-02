@@ -65,15 +65,15 @@ function AdminContent() {
     <Form onSubmit={handleSubmit}>
       <Form.Group className="mb-3">
         <Form.Label>Title</Form.Label>
-        <Form.Control type="text" name="title" />
+        <Form.Control type="text" name="title" disabled={isUploading} />
       </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label>Questions</Form.Label>
-        <Form.Control as="textarea" name="questions" rows={10} />
+        <Form.Control as="textarea" name="questions" rows={10} disabled={isUploading} />
       </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label>Answers</Form.Label>
-        <Form.Control as="textarea" name="answers" rows={10} />
+        <Form.Control as="textarea" name="answers" rows={10} disabled={isUploading} />
       </Form.Group>
       <Button type="submit" disabled={isUploading}>
         {isUploading ? "Submitting..." : "Submit"}
