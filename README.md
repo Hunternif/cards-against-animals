@@ -18,7 +18,7 @@ npm --prefix client run dev
 
 To run firebase emulators:
 ```sh
-cd firebase emulators:start
+firebase emulators:start --import=exported-dev-data --export-on-exit=exported-dev-data
 ```
 
 When changing functions, rebuild them to see the changes in the emulator:

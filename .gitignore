@@ -27,3 +27,4 @@ dist-ssr
 .firebaserc
 .firebase
 firebase-config.json
+exported-dev-data
