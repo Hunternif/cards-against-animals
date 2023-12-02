@@ -4,22 +4,27 @@ import { decksRef } from "../firebase";
 import { Deck } from "../model/types";
 import { collection } from "firebase/firestore";
 import { promptDeckCardConverter, responseDeckCardConverter } from "../model/firebase-converters";
+import { Accordion } from "react-bootstrap";
 
 export function DecksData() {
   const [decks] = useCollection(decksRef);
 
   return <div className="data-section">
     <h2>Decks</h2>
-    {decks && decks.docs.map((doc) => {
-      const deck = doc.data();
-      return <div key={doc.id}>
-        <h4>Deck "{deck.title}"</h4>
-        <ul>
-          <PromptsData deck={deck} />
-          <ResponseData deck={deck} />
-        </ul>
-      </div>
-    })}
+    <Accordion>
+      {decks && decks.docs.map((doc) => {
+        const deck = doc.data();
+        return <Accordion.Item key={doc.id} eventKey={doc.id}>
+          <Accordion.Header>{deck.title}</Accordion.Header>
+          <Accordion.Body>
+            <ul>
+              <PromptsData deck={deck} />
+              <ResponseData deck={deck} />
+            </ul>
+          </Accordion.Body>
+        </Accordion.Item>
+      })}
+    </Accordion>
   </div>;
 }
 
