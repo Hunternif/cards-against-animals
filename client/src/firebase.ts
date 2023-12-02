@@ -1,4 +1,4 @@
-import firebaseConfig from '../firebase-config.json';
+import firebaseConfig from '../../firebase-config.json';
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, CollectionReference, doc, connectFirestoreEmulator } from 'firebase/firestore'
 import { CAAUser, Deck, GameLobby } from './model/types';

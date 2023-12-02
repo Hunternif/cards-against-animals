@@ -1,21 +1,34 @@
 ## Project Setup
 
 ```sh
-npm install
+npm --prefix client install client
 ```
 
-This will create the file `firebase-config.json`. Populate it with the data from your Firebase project.
+This will create the file `firebase-config.json`. Populate it with the data from your Firebase project. Then do:
+
+```sh
+firebase init
+```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
-npm run dev
+npm --prefix client run dev
+```
+
+To run firebase emulators:
+```sh
+cd firebase emulators:start
+```
+
+When changing functions, rebuild them to see the changes in the emulator:
+```sh
+npm --prefix functions run build
 ```
 
 ### Type-Check, Compile and Minify for Production
 
 ```sh
-npm run build
 firebase deploy
 ```
 

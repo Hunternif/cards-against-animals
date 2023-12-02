@@ -1,5 +1,5 @@
 {
-  "name": "cards-against-animals-react",
+  "name": "client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "postinstall": "cp -n firebase-config.json.example firebase-config.json"
+    "postinstall": "cp -n ../firebase-config.json.example ../firebase-config.json"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
