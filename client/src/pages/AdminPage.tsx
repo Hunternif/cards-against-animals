@@ -1,10 +1,11 @@
 import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
-import { Container, Spinner } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { CenteredLayout } from "../components/layout/CenteredLayout";
 import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth, useFetchCAAUser } from "../firebase";
 import { AdminUserPill } from "../components/AdminUserPill";
+import { LoadingSpinner } from "../components/utils";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -39,7 +40,7 @@ function AnonymousLoggedInView({ user }: UserProps) {
 function LoggedInView({ user }: UserProps) {
   const [caaUser, loading] = useFetchCAAUser(user.email ?? "invalid");
   const isAdmin = caaUser?.is_admin ?? false;
-  if (loading) return <Loading />
+  if (loading) return <LoadingSpinner />
   if (user.isAnonymous) return <AnonymousLoggedInView user={user} />
   if (isAdmin) return <AdminContent user={user} />;
   return <AccessDeniedView user={user} />
@@ -73,13 +74,9 @@ function AdminContent({ user }: UserProps) {
 
 }
 
-function Loading() {
-  return <CenteredLayout><Spinner /></CenteredLayout>;
-}
-
 export function AdminPage() {
   const [user, loading] = useAuthState(firebaseAuth);
-  if (loading) return <Loading />
+  if (loading) return <LoadingSpinner />
   if (user) return <LoggedInView user={user} />;
   return <LogInBox />;
 }

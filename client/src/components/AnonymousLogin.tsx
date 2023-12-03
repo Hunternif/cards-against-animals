@@ -1,20 +1,13 @@
 import { User, onAuthStateChanged, signInAnonymously, updateProfile } from "firebase/auth";
-import { EffectCallback, useEffect, useState } from "react";
-import { Card, Form, Spinner } from "react-bootstrap";
+import { useState } from "react";
+import { Card, Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
 import { CenteredLayout } from "./layout/CenteredLayout";
-
-function Loading() {
-  return <CenteredLayout><Spinner /></CenteredLayout>;
-}
+import { LoadingSpinner, useEffectOnce } from "./utils";
 
 interface Props {
   onLogin?: () => void,
-}
-
-function useEffectOnce(effect: EffectCallback) {
-  useEffect(effect, []);
 }
 
 export function AnonymousLogin({ onLogin }: Props) {
@@ -68,7 +61,7 @@ export function AnonymousLogin({ onLogin }: Props) {
       <Form onSubmit={(e) => { e.preventDefault(); login(); }}>
         <Form.Group style={{ marginBottom: "1em" }}>
           <Form.Label><h4>Choose a nickname</h4></Form.Label>
-          {loading ? <Loading /> : (
+          {loading ? <LoadingSpinner /> : (
             <Form.Control type="text" value={name}
               placeholder={suggestedName}
               onChange={(e) => setName(e.target.value)}
