@@ -3,6 +3,7 @@ export class GameLobby {
     /** Identifies the lobby, included in the link that's shared on Discord. */
     lobby_key: string;
     time_created: Date;
+    /* Must be fetched separately from a Firebase subcollection. */
     players: Array<PlayerInLobby> = [];
     /** The last "turn" is the current state of the game board.
      * Must be fetched separately from a Firebase subcollection. */

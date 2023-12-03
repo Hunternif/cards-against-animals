@@ -1,10 +1,9 @@
-import { DocumentReference, QueryDocumentSnapshot, collection } from "firebase/firestore";
-import { useState } from "react";
-import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
-import { lobbiesRef, useGameTurns } from "../firebase";
-import { GameLobby, GameTurn } from "../model/types";
-import { playerDataConverter } from "../model/firebase-converters";
+import { DocumentReference, collection } from "firebase/firestore";
 import { Accordion } from "react-bootstrap";
+import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
+import { lobbiesRef } from "../firebase";
+import { playerConverter, playerDataConverter, turnConverter } from "../model/firebase-converters";
+import { GameLobby, GameTurn } from "../model/types";
 
 interface LobbyProps {
   lobby: GameLobby;
@@ -24,8 +23,7 @@ function LobbyData({ lobby }: LobbyProps) {
           <li>Key: {lobby.lobby_key}</li>
           <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
         </div>
-        <b>Players: </b>
-        {lobby.players.map((p) => p.name).join(', ')}
+        <PlayersData lobby={lobby} />
       </ul>
       <Accordion>
         <Accordion.Header>Turns</Accordion.Header>
@@ -35,8 +33,22 @@ function LobbyData({ lobby }: LobbyProps) {
   </Accordion.Item>;
 }
 
+function PlayersData({ lobby }: LobbyProps) {
+  const [players] = useCollectionData(
+    collection(lobbiesRef, lobby.id, 'players')
+      .withConverter(playerConverter)
+  );
+  return <>
+    <b>Players: </b>
+    {players && players.map((p) => p.name).join(', ')}
+  </>;
+}
+
 function TurnsData({ lobby }: LobbyProps) {
-  const [turns] = useGameTurns(lobby);
+  const [turns] = useCollection(
+    collection(lobbiesRef, lobby.id, 'turns')
+      .withConverter(turnConverter)
+  );
   return <>
     {turns && turns.docs.map((doc) =>
       <TurnData turn={doc.data()} turnRef={doc.ref} key={doc.id} />

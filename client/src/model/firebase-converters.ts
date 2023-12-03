@@ -16,6 +16,14 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
     }
 }
 
+export const playerConverter: FirestoreDataConverter<PlayerInLobby> = {
+    toFirestore: (player: PlayerInLobby) => Object.assign({}, player),
+    fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+        const data = snapshot.data();
+        return new PlayerInLobby(data.uid, data.name, data.spectator_status);
+    }
+}
+
 export const deckConverter: FirestoreDataConverter<Deck> = {
     toFirestore: (deck: Deck) => {
         return {

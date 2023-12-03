@@ -2,8 +2,8 @@ import firebaseConfig from '../../firebase-config.json';
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, CollectionReference, doc, connectFirestoreEmulator } from 'firebase/firestore'
 import { CAAUser, Deck, GameLobby } from './model/types';
-import { deckConverter, lobbyConverter, turnConverter, userConverter } from './model/firebase-converters';
-import { useCollection, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
+import { deckConverter, lobbyConverter, userConverter } from './model/firebase-converters';
+import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 
@@ -23,13 +23,6 @@ export const lobbiesRef = (collection(db, 'lobbies') as CollectionReference<Game
     .withConverter(lobbyConverter)
 export const usersRef = (collection(db, 'users') as CollectionReference<CAAUser>)
     .withConverter(userConverter)
-
-export function useGameTurns(lobby: GameLobby) {
-    //TODO: should probably cache this collection instance
-    const turnsRef = collection(lobbiesRef, lobby.id, 'turns')
-        .withConverter(turnConverter);
-    return useCollection(turnsRef);
-}
 
 export function useFetchCAAUser(email: string) {
     // document IDs are email addresses
