@@ -1,9 +1,9 @@
-import { Button, Card, Form, Spinner } from "react-bootstrap";
+import { User, signInAnonymously, updateProfile } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { Card, Form, Spinner } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
 import { CenteredLayout } from "./layout/CenteredLayout";
-import { useEffect, useState } from "react";
-import { signInAnonymously } from "firebase/auth";
 
 function Loading() {
   return <CenteredLayout><Spinner /></CenteredLayout>;
@@ -13,9 +13,16 @@ interface Props {
   onLogin?: () => void,
 }
 
+async function updateName(user: User, name: string) {
+  await updateProfile(user, {
+    displayName: name
+  });
+  console.log(`Updated user name to "${name}"`);
+}
+
 export function AnonymousLogin({ onLogin }: Props) {
   const [user, loading] = useAuthState(firebaseAuth);
-  const [name, setName] = useState("");
+  const [name, setName] = useState("CoolNickname123");
   useEffect(() => {
     if (user && name != user.displayName) { setName(user.displayName ?? ""); }
   },
@@ -23,16 +30,21 @@ export function AnonymousLogin({ onLogin }: Props) {
   );
   function login() {
     if (!user) {
-      signInAnonymously(firebaseAuth).then(() => {
+      signInAnonymously(firebaseAuth).then((cred) => {
         console.log("Created new anonymous user");
-      });
-    } else if (user.displayName) {
-      console.log(`Already signed in as ${user.displayName}`);
+        updateName(cred.user, name);
+      })
     } else {
-      console.log("Already signed in as anonymous");
+      updateName(user, name);
+      if (user.displayName) {
+        console.log(`Already signed in as ${user.displayName}`);
+      } else {
+        console.log("Already signed in as anonymous");
+      }
     }
     if (onLogin) onLogin();
   }
+
   return <CenteredLayout>
     <Card style={{
       padding: "1em",
@@ -43,7 +55,6 @@ export function AnonymousLogin({ onLogin }: Props) {
           <Form.Label><h4>Choose a nickname</h4></Form.Label>
           {loading ? <Loading /> : (
             <Form.Control type="text" value={name}
-              placeholder="CoolNickname123"
               onChange={(e) => setName(e.target.value)}
             />
           )}
