@@ -8,11 +8,13 @@ import { LobbiesData } from './components/LobbiesData.tsx'
 import { DecksData } from './components/DecksData.tsx'
 import { UploadDeck } from './components/UploadDeck.tsx'
 import { GamePage } from './pages/GamePage.tsx'
+import { ErrorPage } from './pages/ErrorPage.tsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <GamePage />,
+    errorElement: <ErrorPage/>
   },
   {
     path: "/admin",

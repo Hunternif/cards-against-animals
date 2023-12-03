@@ -12,13 +12,13 @@ export function CenteredLayout({ children, className, style }: LayoutProps) {
       height: "100%",
       justifyContent: "center",
       display: "flex",
-      alignItems: "flex",
-      ...style
+      alignItems: "flex"
     }}
       className={className}
     >
       <div style={{
-        margin: "auto"
+        margin: "auto",
+        ...style
       }}>
         {children}
       </div>
