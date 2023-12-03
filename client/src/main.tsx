@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import AdminPage from './AdminPage.tsx'
+import { AdminPage } from './pages/AdminPage.tsx'
 
 const router = createBrowserRouter([
   {

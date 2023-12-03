@@ -1,38 +1,9 @@
-import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { firebaseAuth, useFetchCAAUser } from "./firebase";
-import Form from "react-bootstrap/Form";
-import { Alert, Button, Container } from "react-bootstrap";
-import { parseDeck, uploadDeck } from "./model/deck-api";
 import { useState } from "react";
+import { Alert, Button } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import { parseDeck, uploadDeck } from "../model/deck-api";
 
-function LogInBox() {
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(firebaseAuth, provider);
-  }
-  return <button onClick={signInWithGoogle}>Sign in with Google</button>;
-}
-
-interface UserProps {
-  user: User;
-}
-
-function LoggedInView({ user }: UserProps) {
-  const [caaUser, loading] = useFetchCAAUser(user.email ?? "invalid");
-  const isAdmin = caaUser?.is_admin ?? false;
-  return (
-    <Container>
-      <div className='admin-header'>
-        <span>Hello, {user.displayName}!</span>
-        <button onClick={() => firebaseAuth.signOut()}>Sign out</button>
-      </div>
-      {!loading && (isAdmin ? <AdminContent /> : <div>Access denied</div>)}
-    </Container>
-  );
-}
-
-function AdminContent() {
+export function UploadDeck() {
   const [isUploading, setUploading] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -81,10 +52,3 @@ function AdminContent() {
     </Form>
   </>;
 }
-
-function AdminPage() {
-  const [user] = useAuthState(firebaseAuth);
-  return user ? <LoggedInView user={user} /> : <LogInBox />;
-}
-
-export default AdminPage
