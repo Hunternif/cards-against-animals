@@ -1,9 +1,9 @@
 import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
 import { Container, Spinner } from "react-bootstrap";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { UploadDeck } from "../components/UploadDeck";
-import { firebaseAuth, useFetchCAAUser } from "../firebase";
 import { CenteredLayout } from "../components/layout/CenteredLayout";
+import { Sidebar } from "../components/layout/SidebarLayout";
+import { firebaseAuth, useFetchCAAUser } from "../firebase";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -30,7 +30,7 @@ function AccessDeniedView({ user }: UserProps) {
 function LoggedInView({ user }: UserProps) {
   const [caaUser, loading] = useFetchCAAUser(user.email ?? "invalid");
   const isAdmin = caaUser?.is_admin ?? false;
-  if (loading) return <Loading/>
+  if (loading) return <Loading />
   if (isAdmin) return <AdminContent user={user} />;
   return <AccessDeniedView user={user} />
 }
@@ -38,16 +38,37 @@ function LoggedInView({ user }: UserProps) {
 function AdminContent({ user }: UserProps) {
   return <Container style={{
     padding: "1em",
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
   }}>
-    <div style={{
-      display: "flex",
-      alignItems: "baseline",
-      marginBottom: "1em",
-    }}>
-      <span style={{ flex: "1 1 auto" }}>Hello, {user.displayName}!</span>
-      <button onClick={() => firebaseAuth.signOut()} style={{}}>Sign out</button>
-    </div>
-    <UploadDeck />
+    <Sidebar
+      links={[
+        {
+          label: "Lobbies",
+          path: "lobbies"
+        },
+        {
+          label: "Decks",
+          path: "decks"
+        },
+        {
+          label: "Upload deck",
+          path: "uploadDeck"
+        }
+      ]}
+      loginNode={
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "baseline",
+          marginBottom: "1em",
+        }}>
+          <p>Hello, {user.displayName}!</p>
+          <button onClick={() => firebaseAuth.signOut()} style={{}}>Sign out</button>
+        </div>
+      }
+    />
   </Container>;
 
 }
@@ -58,6 +79,6 @@ function Loading() {
 
 export function AdminPage() {
   const [user, loading] = useAuthState(firebaseAuth);
-  if (loading) return <Loading/>
+  if (loading) return <Loading />
   return user ? <LoggedInView user={user} /> : <LogInBox />;
 }

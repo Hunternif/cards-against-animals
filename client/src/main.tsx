@@ -5,6 +5,9 @@ import App from './App.tsx'
 import './index.css'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { AdminPage } from './pages/AdminPage.tsx'
+import { LobbiesData } from './components/LobbiesData.tsx'
+import { DecksData } from './components/DecksData.tsx'
+import { UploadDeck } from './components/UploadDeck.tsx'
 
 const router = createBrowserRouter([
   {
@@ -14,6 +17,20 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminPage />,
+    children: [
+      {
+        path: "lobbies",
+        element: <LobbiesData />,
+      },
+      {
+        path: "decks",
+        element: <DecksData />,
+      },
+      {
+        path: "uploadDeck",
+        element: <UploadDeck />
+      }
+    ],
   }
 ]);
 
