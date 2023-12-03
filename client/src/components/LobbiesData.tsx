@@ -53,15 +53,15 @@ function TurnData({ turn, turnRef }: TurnProps) {
     <div>{turn.id}: {turn.prompt.content}</div>
     <ul>
       {playerData && playerData.map((pdata, i) => {
-        const isJudge = turn.judge_name == pdata.player_name;
-        const isWinner = turn.winner_name == pdata.player_name;
+        const isJudge = turn.judge_uid == pdata.player_uid;
+        const isWinner = turn.winner_uid == pdata.player_uid;
         const hand = pdata.hand.map((c) => c.content).join(', ');
         const played = pdata.current_play?.map((c) => c.content).join(', ');
         return <li key={i}>
           {pdata.player_name}:
           {isJudge && " 💬 "}
           {isWinner && " 🏆 "}
-          [{hand}]
+          {` [${hand}]`}
           {played && `, played "${played}"`}
         </li>;
       }

@@ -24,11 +24,17 @@ export class GameLobby {
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {
+    uid: string;
     name: string;
     avatar_url?: URL;
     spectator_status: SpectatorStatus;
 
-    constructor(name: string, spectator_status: SpectatorStatus = "player") {
+    constructor(
+        uid: string,
+        name: string,
+        spectator_status: SpectatorStatus = "player",
+    ) {
+        this.uid = uid;
         this.name = name;
         this.spectator_status = spectator_status;
     }
@@ -37,15 +43,15 @@ export class PlayerInLobby {
 /** One turn, containing the entire state of the game board. */
 export class GameTurn {
     //================= Main game stuff ===================
-    /** Player who will judge the winner. */
-    judge_name: string;
+    /** UID of the player who will judge the winner. */
+    judge_uid: string;
     /** The prompt that everyone is answering. */
     prompt: PromptCardInTurn;
-    /** Maps player name to what cards they have on hand in this turn.
+    /** Maps player UID to what cards they have on hand in this turn.
      * Must be fetched separately from a Firebase subcollection. */
     player_data: Map<string, PlayerDataInTurn> = new Map();
-    /** Who won this round */
-    winner_name?: string;
+    /** UID of the user who won this round */
+    winner_uid?: string;
 
     //================== Technical stuff ==================
     id: string;
@@ -56,12 +62,12 @@ export class GameTurn {
 
     constructor(
         id: string,
-        judge_name: string,
+        judge_uid: string,
         prompt: PromptCardInTurn,
         time_created: Date = new Date(),
     ) {
         this.id = id;
-        this.judge_name = judge_name;
+        this.judge_uid = judge_uid;
         this.prompt = prompt;
         this.time_created = time_created;
     }
@@ -69,13 +75,15 @@ export class GameTurn {
 
 /** State of the player in a turn. */
 export class PlayerDataInTurn {
-    player_name: string;
+    player_uid: string;
+    player_name: string; // Copied from 'Players' for convenience.
     /** Cards in the player's hand, including `current_response`. */
     hand: Array<ResponseCardInHand> = [];
     /** What cards they played in this turn. */
     current_play: Array<ResponseCardInHand> = [];
 
-    constructor(player_name: string) {
+    constructor(player_uid: string, player_name: string) {
+        this.player_uid = player_uid;
         this.player_name = player_name;
     }
 }
@@ -111,12 +119,12 @@ export abstract class DeckCard {
 
 /** Prompt card in deck */
 export class PromptDeckCard extends DeckCard {
-    prompt() {} // hack to prevent duck typing
+    prompt() { } // hack to prevent duck typing
 }
 
 /** Response card in deck */
 export class ResponseDeckCard extends DeckCard {
-    response() {} // hack to prevent duck typing
+    response() { } // hack to prevent duck typing
 }
 
 /**
@@ -136,29 +144,36 @@ export abstract class CardInHand {
 
 /** An instance of a Prompt card played in a turn */
 export class PromptCardInTurn extends CardInHand {
-    prompt() {} // hack to prevent duck typing
+    prompt() { } // hack to prevent duck typing
 }
 
 /** An instance of a Response card in hand */
 export class ResponseCardInHand extends CardInHand {
-    response() {} // hack to prevent duck typing
+    response() { } // hack to prevent duck typing
 }
 
 export type SpectatorStatus = "player" | "spectator";
 
 export type TurnPhase = "new" | "answering" | "reading" | "judging" | "complete";
 
-/** User data stored in the database */
+/**
+ * User data stored in the database.
+ * Users should only be referenced by their UIDs.
+ * Multiple users are allowed to have the same name!
+*/
 export class CAAUser {
+    uid: string;
     email: string;
     name?: string;
     is_admin: boolean;
 
     constructor(
+        uid: string,
         email: string,
         name: string | null | undefined = null,
         is_admin: boolean = false,
     ) {
+        this.uid = uid;
         this.email = email;
         if (name) this.name = name;
         this.is_admin = is_admin;
