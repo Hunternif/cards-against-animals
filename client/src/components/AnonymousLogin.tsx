@@ -13,20 +13,15 @@ interface Props {
   onLogin?: () => void,
 }
 
-async function updateName(user: User, name: string) {
-  await updateProfile(user, {
-    displayName: name
-  });
-  console.log(`Updated user name to "${name}"`);
-}
-
 function useEffectOnce(effect: EffectCallback) {
   useEffect(effect, []);
 }
 
 export function AnonymousLogin({ onLogin }: Props) {
   const [user, loading] = useAuthState(firebaseAuth);
-  const [name, setName] = useState("CoolNickname123");
+  const [suggestedName, setSuggestedName] = useState("CoolNickname123");
+  const [name, setName] = useState("");
+
   useEffectOnce(() => {
     // Load user's name only once
     onAuthStateChanged(firebaseAuth, (newUser) => {
@@ -35,14 +30,27 @@ export function AnonymousLogin({ onLogin }: Props) {
       }
     });
   });
+
+  async function updateProfileName(userToUpdate: User) {
+    let actualName = name.trim();
+    if (actualName == "") {
+      actualName = suggestedName;
+      setName(actualName);
+    }
+    await updateProfile(userToUpdate, {
+      displayName: actualName
+    });
+    console.log(`Updated user name to "${actualName}"`);
+  }
+
   function login() {
     if (!user) {
       signInAnonymously(firebaseAuth).then((cred) => {
         console.log("Created new anonymous user");
-        updateName(cred.user, name);
+        updateProfileName(cred.user);
       })
     } else {
-      updateName(user, name);
+      if (user.displayName != name) updateProfileName(user);
       if (user.displayName) {
         console.log(`Already signed in as ${user.displayName}`);
       } else {
@@ -62,6 +70,7 @@ export function AnonymousLogin({ onLogin }: Props) {
           <Form.Label><h4>Choose a nickname</h4></Form.Label>
           {loading ? <Loading /> : (
             <Form.Control type="text" value={name}
+              placeholder={suggestedName}
               onChange={(e) => setName(e.target.value)}
             />
           )}
