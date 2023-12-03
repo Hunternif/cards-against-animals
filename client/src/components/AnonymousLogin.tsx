@@ -1,5 +1,5 @@
-import { User, signInAnonymously, updateProfile } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { User, onAuthStateChanged, signInAnonymously, updateProfile } from "firebase/auth";
+import { EffectCallback, useEffect, useState } from "react";
 import { Card, Form, Spinner } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
@@ -20,14 +20,21 @@ async function updateName(user: User, name: string) {
   console.log(`Updated user name to "${name}"`);
 }
 
+function useEffectOnce(effect: EffectCallback) {
+  useEffect(effect, []);
+}
+
 export function AnonymousLogin({ onLogin }: Props) {
   const [user, loading] = useAuthState(firebaseAuth);
   const [name, setName] = useState("CoolNickname123");
-  useEffect(() => {
-    if (user && name != user.displayName) { setName(user.displayName ?? ""); }
-  },
-    [user, setName]
-  );
+  useEffectOnce(() => {
+    // Load user's name only once
+    onAuthStateChanged(firebaseAuth, (newUser) => {
+      if (newUser && newUser.displayName) {
+        setName(newUser.displayName);
+      }
+    });
+  });
   function login() {
     if (!user) {
       signInAnonymously(firebaseAuth).then((cred) => {
