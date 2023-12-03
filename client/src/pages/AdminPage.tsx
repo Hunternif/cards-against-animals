@@ -71,5 +71,6 @@ function Loading() {
 export function AdminPage() {
   const [user, loading] = useAuthState(firebaseAuth);
   if (loading) return <Loading />
-  return user ? <LoggedInView user={user} /> : <LogInBox />;
+  if (user && !user.isAnonymous) return <LoggedInView user={user} />;
+  return <LogInBox />;
 }
