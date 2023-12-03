@@ -8,7 +8,8 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
     fromFirestore: (snapshot: QueryDocumentSnapshot) => {
         const data = snapshot.data();
         const time_created = data.time_created as Timestamp;
-        const ret = new GameLobby(snapshot.id, data.lobby_key, time_created.toDate());
+        const ret = new GameLobby(
+            snapshot.id, data.lobby_key, data.status, time_created.toDate());
         ret.players = (data.players as Array<any>)?.map(
             (p) => new PlayerInLobby(p.uid, p.name, p.spectator_status)
         ) || [];

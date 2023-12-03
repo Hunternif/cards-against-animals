@@ -3,6 +3,8 @@ export class GameLobby {
     /** Identifies the lobby, included in the link that's shared on Discord. */
     lobby_key: string;
     time_created: Date;
+    status: LobbyStatus;
+
     /* Must be fetched separately from a Firebase subcollection. */
     players: Array<PlayerInLobby> = [];
     /** The last "turn" is the current state of the game board.
@@ -16,9 +18,15 @@ export class GameLobby {
      * Must be fetched separately from a Firebase subcollection. */
     deck_responses: Array<ResponseDeckCard> = [];
 
-    constructor(id: string, lobby_key: string, time_created: Date = new Date()) {
+    constructor(
+        id: string,
+        lobby_key: string,
+        status: LobbyStatus = "new",
+        time_created: Date = new Date(),
+    ) {
         this.id = id;
         this.lobby_key = lobby_key;
+        this.status = status;
         this.time_created = time_created;
     }
 }
@@ -156,6 +164,8 @@ export class ResponseCardInHand extends CardInHand {
 export type SpectatorStatus = "player" | "spectator";
 
 export type TurnPhase = "new" | "answering" | "reading" | "judging" | "complete";
+
+export type LobbyStatus = "new" | "playing" | "ended";
 
 /**
  * User data stored in the database.
