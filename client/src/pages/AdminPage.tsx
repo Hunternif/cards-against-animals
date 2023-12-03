@@ -4,6 +4,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { CenteredLayout } from "../components/layout/CenteredLayout";
 import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth, useFetchCAAUser } from "../firebase";
+import { AdminUserPill } from "../components/AdminUserPill";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -57,17 +58,7 @@ function AdminContent({ user }: UserProps) {
           path: "uploadDeck"
         }
       ]}
-      loginNode={
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "baseline",
-          marginBottom: "1em",
-        }}>
-          <p>Hello, {user.displayName}!</p>
-          <button onClick={() => firebaseAuth.signOut()} style={{}}>Sign out</button>
-        </div>
-      }
+      loginNode={<AdminUserPill user={user} />}
     />
   </Container>;
 
