@@ -24,9 +24,9 @@ export const lobbiesRef = (collection(db, 'lobbies') as CollectionReference<Game
 export const usersRef = (collection(db, 'users') as CollectionReference<CAAUser>)
     .withConverter(userConverter)
 
-export function useFetchCAAUser(email: string) {
-    // document IDs are email addresses
-    const userDocRef = doc(usersRef, email);
+export function useFetchCAAUser(uid: string) {
+    // document IDs are user UIDs
+    const userDocRef = doc(usersRef, uid);
     return useDocumentDataOnce(userDocRef);
 }
 

@@ -3,8 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function userIsAdmin() {
-      let email = request.auth.token.email;
-      let user = get(/databases/$(database)/documents/users/$(email));
+      let user = get(/databases/$(database)/documents/users/$(request.auth.uid));
       return user != null && user.data.is_admin == true;
     }
   	match /decks/{document=**} {
@@ -17,7 +16,7 @@ service cloud.firestore {
     match /users/{document} {
       // allow reading only your own info when you are logged in:
       allow read: if request.auth != null
-                  && request.auth.token.email == document;
+                  && request.auth.uid == document;
     }
     match /{document=**} {
       allow read, write: if false;
