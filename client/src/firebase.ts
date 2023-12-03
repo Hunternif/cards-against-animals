@@ -4,7 +4,7 @@ import { getFirestore, collection, CollectionReference, doc, connectFirestoreEmu
 import { CAAUser, Deck, GameLobby } from './model/types';
 import { deckConverter, lobbyConverter, turnConverter, userConverter } from './model/firebase-converters';
 import { useCollection, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
-import { getAuth } from 'firebase/auth';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 
 export const firebaseApp = initializeApp(firebaseConfig)
@@ -14,6 +14,7 @@ export const db = getFirestore(firebaseApp)
 // connectFirestoreEmulator(db, '127.0.0.1', 8080);
 
 export const firebaseAuth = getAuth();
+// connectAuthEmulator(firebaseAuth, 'http://127.0.0.1:9099');
 
 // here we can export reusable database references
 export const decksRef = (collection(db, 'decks') as CollectionReference<Deck>)
