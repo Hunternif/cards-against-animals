@@ -28,10 +28,19 @@ function AccessDeniedView({ user }: UserProps) {
   </CenteredLayout>;
 }
 
+function AnonymousLoggedInView({ user }: UserProps) {
+  return <CenteredLayout>
+    <AccessDeniedView user={user} />
+    <br/>
+    <LogInBox />
+  </CenteredLayout>;
+}
+
 function LoggedInView({ user }: UserProps) {
   const [caaUser, loading] = useFetchCAAUser(user.email ?? "invalid");
   const isAdmin = caaUser?.is_admin ?? false;
   if (loading) return <Loading />
+  if (user.isAnonymous) return <AnonymousLoggedInView user={user} />
   if (isAdmin) return <AdminContent user={user} />;
   return <AccessDeniedView user={user} />
 }
@@ -71,6 +80,6 @@ function Loading() {
 export function AdminPage() {
   const [user, loading] = useAuthState(firebaseAuth);
   if (loading) return <Loading />
-  if (user && !user.isAnonymous) return <LoggedInView user={user} />;
+  if (user) return <LoggedInView user={user} />;
   return <LogInBox />;
 }
