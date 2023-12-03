@@ -1,18 +1,18 @@
 import './scss/styles.scss'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { AdminPage } from './pages/AdminPage.tsx'
 import { LobbiesData } from './components/LobbiesData.tsx'
 import { DecksData } from './components/DecksData.tsx'
 import { UploadDeck } from './components/UploadDeck.tsx'
+import { GamePage } from './pages/GamePage.tsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <GamePage />,
   },
   {
     path: "/admin",
