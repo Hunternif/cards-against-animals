@@ -27,23 +27,25 @@ const db = admin.firestore(firebaseApp);
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
-export const createLobby = onRequest(
+export const findOrCreateLobby = onRequest(
   { region: firebaseConfig.region },
   async (request, response) => {
     const creatorUID = request.body['data']['creator_uid'];
 
-    // Confirm there are no active lobbies for this user:
-    const activeCount = (await db.collection('lobbies')
-    .where('status', '==', 'new')
-    .where('player_uids', 'array-contains', creatorUID)
-    .count().get()).data().count;
-    if (activeCount > 0) {
-      logger.warn(`User ${creatorUID} tried to create > 1 lobby`);
-      // Firebase ignores the message :/
-      response.status(409).end("User tried to create > 1 lobby");
+    // Find current active lobby for this user:
+    const foundLobbies = (await db.collection('lobbies')
+      .where('status', '==', 'new')
+      .where('player_uids', 'array-contains', creatorUID)
+      .get()).docs;
+    if (foundLobbies.length > 0) {
+      const lobbyID = foundLobbies[0].id;
+      logger.info(`Found active lobby ${lobbyID} for user ${creatorUID}`);
+      withCors(request, response, () => {
+        response.status(200).send({ data: { lobby_id: lobbyID } });
+      });
       return;
     }
-    
+
     // Create a new lobby:
     // TODO: need to acquire lock. This doesn't prevent double lobby creation!
     const newLobbyRef = db.collection('lobbies').doc();

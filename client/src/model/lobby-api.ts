@@ -1,29 +1,12 @@
 import { User } from "firebase/auth";
-import { addDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
-import { createLobbyFun, lobbiesRef } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { findOrCreateLobbyFun, lobbiesRef } from "../firebase";
 import { GameLobby } from "./types";
 
 export async function findOrCreateLobby(user: User): Promise<GameLobby> {
-  // Find current active lobby
-  const currentQuery = query(lobbiesRef,
-    where("status", "==", "new"),
-    where("player_uids", "array-contains", user.uid)
-  );
-  const foundLobbies = (await getDocs(currentQuery)).docs;
-  if (foundLobbies.length > 0) {
-    const lobby = foundLobbies[0].data();
-    console.log(`Found lobby ${lobby.id}`);
-    return lobby;
-  }
-  // Create new lobby
-  // const newLobbyRef = doc(lobbiesRef);
-  // const newID = newLobbyRef.id;
-  // await setDoc(newLobbyRef, new GameLobby(newID, newID, user.uid, "new"));
-  // const lobby = (await getDoc(newLobbyRef)).data();
-
-  const res = await createLobbyFun({ creator_uid: user.uid});
+  const res = await findOrCreateLobbyFun({ creator_uid: user.uid});
   const lobby = (await getDoc(doc(lobbiesRef, res.data.lobby_id))).data();
   if (!lobby) throw new Error("Couldn't create lobby");
-  console.log(`Created new lobby ${lobby.id}`);
+  console.log(`Fetched lobby ${lobby.id}`);
   return lobby;
 }
