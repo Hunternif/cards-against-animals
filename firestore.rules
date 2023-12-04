@@ -12,7 +12,6 @@ service cloud.firestore {
     }
   	match /lobbies/{document=**} {
     	allow read;
-      allow write: if request.auth != null;
     }
     match /{path=**}/players/{document} {
     	allow read: if request.auth != null;

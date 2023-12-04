@@ -32,4 +32,6 @@ export function useFetchCAAUser(uid: string) {
 const functions = getFunctions(firebaseApp, firebaseConfig.region);
 // connectFunctionsEmulator(functions, '127.0.0.1', 5001);
 
-export const helloWorld = httpsCallable(functions, 'helloWorld');
+export const createLobbyFun = httpsCallable<
+    { creator_uid: string }, { lobby_id: string }
+>(functions, 'createLobby');

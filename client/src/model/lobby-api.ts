@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { addDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
-import { lobbiesRef } from "../firebase";
+import { createLobbyFun, lobbiesRef } from "../firebase";
 import { GameLobby } from "./types";
 
 export async function findOrCreateLobby(user: User): Promise<GameLobby> {
@@ -16,10 +16,13 @@ export async function findOrCreateLobby(user: User): Promise<GameLobby> {
     return lobby;
   }
   // Create new lobby
-  const newLobbyRef = doc(lobbiesRef);
-  const newID = newLobbyRef.id;
-  await setDoc(newLobbyRef, new GameLobby(newID, newID, user.uid, "new"));
-  const lobby = (await getDoc(newLobbyRef)).data();
+  // const newLobbyRef = doc(lobbiesRef);
+  // const newID = newLobbyRef.id;
+  // await setDoc(newLobbyRef, new GameLobby(newID, newID, user.uid, "new"));
+  // const lobby = (await getDoc(newLobbyRef)).data();
+
+  const res = await createLobbyFun({ creator_uid: user.uid});
+  const lobby = (await getDoc(doc(lobbiesRef, res.data.lobby_id))).data();
   if (!lobby) throw new Error("Couldn't create lobby");
   console.log(`Created new lobby ${lobby.id}`);
   return lobby;
