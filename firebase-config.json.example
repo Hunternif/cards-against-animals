@@ -7,5 +7,6 @@
   "messagingSenderId": "123456",
   "appId": "1:2345:web:6789",
   "measurementId": "A_BCDE123",
-  "region": "europe-west1"
+  "region": "europe-west1",
+  "useEmulator": false
 }
