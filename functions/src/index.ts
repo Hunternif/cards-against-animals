@@ -56,7 +56,7 @@ export const findOrCreateLobby = onRequest(
       await newLobbyRef.set({
         id: newID,
         lobby_key: newID,
-        creator_uid: newID,
+        creator_uid: creatorUID,
         status: "new",
         time_created: FieldValue.serverTimestamp(),
         player_uids: [creatorUID],
