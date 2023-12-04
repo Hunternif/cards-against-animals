@@ -1,15 +1,26 @@
-import { FirestoreDataConverter, QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
+import { FirestoreDataConverter, QueryDocumentSnapshot, Timestamp, serverTimestamp } from "firebase/firestore";
 import { CAAUser, Deck, GameLobby, GameTurn, PlayerDataInTurn, PlayerInLobby, PromptCardInTurn, PromptDeckCard, ResponseCardInHand, ResponseDeckCard } from "./types";
 
 export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
-    toFirestore: (lobby: GameLobby) => Object.assign({}, lobby, {
-        time_created: Timestamp.fromDate(lobby.time_created),
-    }),
+    toFirestore: (lobby: GameLobby) => {
+        return {
+            id: lobby.id,
+            lobby_key: lobby.lobby_key,
+            status: lobby.status,
+            player_uids: lobby.player_uids,
+            creator_uid: lobby.creator_uid,
+            time_created: lobby.time_created
+                ? Timestamp.fromDate(lobby.time_created)
+                : serverTimestamp(), // set new time when creating a new lobby
+            // the rest of the fields are subcollections, and they
+            // should not be uploaded during creation.
+        }
+    },
     fromFirestore: (snapshot: QueryDocumentSnapshot) => {
         const data = snapshot.data();
-        const time_created = data.time_created as Timestamp;
         const ret = new GameLobby(
-            snapshot.id, data.lobby_key, data.status, time_created.toDate());
+            snapshot.id, data.lobby_key, data.creator_uid, data.status);
+        ret.time_created = (data.time_created as Timestamp).toDate();
         ret.player_uids = data.player_uids || [];
         return ret;
     }

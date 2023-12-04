@@ -21,7 +21,8 @@ function LobbyData({ lobby }: LobbyProps) {
       <ul>
         <div className="data-subsection">
           <li>Key: {lobby.lobby_key}</li>
-          <li>Created: {new Date(lobby.time_created).toLocaleDateString()}</li>
+          <li>Creator: {lobby.creator_uid}</li>
+          <li>Created: {lobby.time_created ? new Date(lobby.time_created).toLocaleDateString() : '-'}</li>
           <li>Status: {lobby.status}</li>
         </div>
         <PlayersData lobby={lobby} />

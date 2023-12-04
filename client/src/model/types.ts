@@ -2,7 +2,9 @@ export class GameLobby {
     id: string;
     /** Identifies the lobby, included in the link that's shared on Discord. */
     lobby_key: string;
-    time_created: Date;
+    /** Null only during creation */
+    time_created?: Date;
+    creator_uid: string;
     status: LobbyStatus;
 
     /* Must be fetched separately from a Firebase subcollection. */
@@ -23,13 +25,14 @@ export class GameLobby {
     constructor(
         id: string,
         lobby_key: string,
+        creator_uid: string,
         status: LobbyStatus = "new",
-        time_created: Date = new Date(),
     ) {
         this.id = id;
         this.lobby_key = lobby_key;
+        this.creator_uid = creator_uid;
         this.status = status;
-        this.time_created = time_created;
+        this.player_uids = [creator_uid];
     }
 }
 
