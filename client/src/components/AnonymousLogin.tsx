@@ -7,12 +7,12 @@ import { CenteredLayout } from "./layout/CenteredLayout";
 import { LoadingSpinner, useEffectOnce } from "./utils";
 
 interface Props {
-  onLogin?: () => void,
+  onLogin?: (user: User) => void,
 }
 
 export function AnonymousLogin({ onLogin }: Props) {
   const [user, loading] = useAuthState(firebaseAuth);
-  const [suggestedName, setSuggestedName] = useState("CoolNickname123");
+  const suggestedName = "CoolNickname123";
   const [name, setName] = useState("");
 
   useEffectOnce(() => {
@@ -41,6 +41,7 @@ export function AnonymousLogin({ onLogin }: Props) {
       signInAnonymously(firebaseAuth).then((cred) => {
         console.log("Created new anonymous user");
         updateProfileName(cred.user);
+        if (onLogin) onLogin(cred.user);
       })
     } else {
       if (user.displayName != name) updateProfileName(user);
@@ -49,8 +50,8 @@ export function AnonymousLogin({ onLogin }: Props) {
       } else {
         console.log("Already signed in as anonymous");
       }
+      if (onLogin) onLogin(user);
     }
-    if (onLogin) onLogin();
   }
 
   return <CenteredLayout>

@@ -13,6 +13,9 @@ service cloud.firestore {
   	match /lobbies/{document=**} {
     	allow read;
     }
+    match /{path=**}/players/{document} {
+    	allow read: if request.auth != null;
+    }
     match /users/{document} {
       // allow reading only your own info when you are logged in:
       allow read: if request.auth != null

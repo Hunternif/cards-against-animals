@@ -1,8 +1,7 @@
 import firebaseConfig from '../../firebase-config.json';
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, CollectionReference, doc, connectFirestoreEmulator } from 'firebase/firestore'
-import { CAAUser, Deck, GameLobby } from './model/types';
-import { deckConverter, lobbyConverter, userConverter } from './model/firebase-converters';
+import { getFirestore, collection, doc, connectFirestoreEmulator, collectionGroup } from 'firebase/firestore'
+import { deckConverter, lobbyConverter, playerConverter, userConverter } from './model/firebase-converters';
 import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
@@ -17,12 +16,10 @@ export const firebaseAuth = getAuth();
 // connectAuthEmulator(firebaseAuth, 'http://127.0.0.1:9099');
 
 // here we can export reusable database references
-export const decksRef = (collection(db, 'decks') as CollectionReference<Deck>)
-    .withConverter(deckConverter)
-export const lobbiesRef = (collection(db, 'lobbies') as CollectionReference<GameLobby>)
-    .withConverter(lobbyConverter)
-export const usersRef = (collection(db, 'users') as CollectionReference<CAAUser>)
-    .withConverter(userConverter)
+export const decksRef = collection(db, 'decks').withConverter(deckConverter)
+export const lobbiesRef = collection(db, 'lobbies').withConverter(lobbyConverter)
+export const usersRef = collection(db, 'users').withConverter(userConverter)
+export const playersInGameRef = collectionGroup(db, 'players').withConverter(playerConverter);
 
 export function useFetchCAAUser(uid: string) {
     // document IDs are user UIDs

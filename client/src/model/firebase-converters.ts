@@ -10,9 +10,7 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
         const time_created = data.time_created as Timestamp;
         const ret = new GameLobby(
             snapshot.id, data.lobby_key, data.status, time_created.toDate());
-        ret.players = (data.players as Array<any>)?.map(
-            (p) => new PlayerInLobby(p.uid, p.name, p.spectator_status)
-        ) || [];
+        ret.player_uids = data.player_uids || [];
         return ret;
     }
 }

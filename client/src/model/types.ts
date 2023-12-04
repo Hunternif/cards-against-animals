@@ -7,6 +7,8 @@ export class GameLobby {
 
     /* Must be fetched separately from a Firebase subcollection. */
     players: Array<PlayerInLobby> = [];
+    /** Helper array with UIDs, to find current game for a player. */
+    player_uids: Array<string> = [];
     /** The last "turn" is the current state of the game board.
      * Must be fetched separately from a Firebase subcollection. */
     turns: Array<GameTurn> = [];
