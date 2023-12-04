@@ -1,0 +1,15 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	match /decks/{document=**} {
+    	allow read;
+    }
+  	match /lobbies/{document=**} {
+    	allow read;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
