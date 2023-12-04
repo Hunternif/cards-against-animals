@@ -15,7 +15,8 @@ import admin from 'firebase-admin';
 // Thanks to https://stackoverflow.com/a/42756623/1093712
 const withCors = cors();
 
-import firebaseConfig from "../../firebase-config.json";
+// This import is copied during build
+import firebaseConfig from "./firebase-config.json";
 import { FieldValue } from "firebase-admin/firestore";
 
 // Initialize Firebase
