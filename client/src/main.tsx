@@ -9,17 +9,30 @@ import { DecksData } from './components/DecksData.tsx'
 import { UploadDeck } from './components/UploadDeck.tsx'
 import { GamePage } from './pages/GamePage.tsx'
 import { ErrorPage } from './pages/ErrorPage.tsx'
+import { LobbyScreen, lobbyLoader } from './pages/game-screens/LobbyScreen.tsx'
+import { LoginScreen } from './pages/game-screens/LoginScreen.tsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <GamePage />,
-    errorElement: <ErrorPage/>
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "/",
+        element: <LoginScreen />,
+      },
+      {
+        path: "/:lobbyID",
+        element: <LobbyScreen />,
+        loader: lobbyLoader,
+      },
+    ],
   },
   {
     path: "/admin",
     element: <AdminPage />,
-    errorElement: <ErrorPage/>,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "lobbies",
