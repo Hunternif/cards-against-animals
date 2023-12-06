@@ -2,24 +2,40 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
     function userIsAdmin() {
       let user = get(/databases/$(database)/documents/users/$(request.auth.uid));
       return user != null && user.data.is_admin == true;
     }
+
+    function userIsPlayer(lobby) {
+      return exists(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid));
+    }
+    function userIsCreator(lobby) {
+      return get(/databases/$(database)/documents/lobbies/$(lobby)).data.creator_uid == request.auth.uid;
+    }
+    function userIsInLobby(lobby) {
+      return userIsPlayer(lobby) || userIsCreator(lobby);
+    }
+
   	match /decks/{document=**} {
     	allow read;
-      allow write: if userIsAdmin();
+      allow write: if isLoggedIn() && userIsAdmin();
     }
-  	match /lobbies/{document=**} {
-    	allow read;
+  	match /lobbies/{lobby} {
+    	allow read: if isLoggedIn() && (userIsAdmin() || userIsInLobby(lobby));
+
+      match /{path=**} {
+        allow read: if isLoggedIn() && (userIsAdmin() || userIsInLobby(lobby));
+      }
     }
-    match /{path=**}/players/{document} {
-    	allow read: if request.auth != null;
-    }
-    match /users/{document} {
+    match /users/{userID} {
       // allow reading only your own info when you are logged in:
       allow read: if request.auth != null
-                  && request.auth.uid == document;
+                  && request.auth.uid == userID;
     }
     match /{document=**} {
       allow read, write: if false;
