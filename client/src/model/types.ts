@@ -41,16 +41,16 @@ export class PlayerInLobby {
     uid: string;
     name: string;
     avatar_url?: URL;
-    spectator_status: SpectatorStatus;
+    role: PlayerRole;
 
     constructor(
         uid: string,
         name: string,
-        spectator_status: SpectatorStatus = "player",
+        role: PlayerRole = "player",
     ) {
         this.uid = uid;
         this.name = name;
-        this.spectator_status = spectator_status;
+        this.role = role;
     }
 }
 
@@ -166,11 +166,11 @@ export class ResponseCardInHand extends CardInHand {
     response() { } // hack to prevent duck typing
 }
 
-export type SpectatorStatus = "player" | "spectator";
+export type PlayerRole = "player" | "spectator";
 
 export type TurnPhase = "new" | "answering" | "reading" | "judging" | "complete";
 
-export type LobbyStatus = "new" | "playing" | "ended";
+export type LobbyStatus = "new" | "in_progress" | "ended";
 
 /**
  * User data stored in the database.
