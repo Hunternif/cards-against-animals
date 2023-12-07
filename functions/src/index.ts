@@ -1,7 +1,7 @@
 import admin from 'firebase-admin';
 import { FieldValue } from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
-import { onCall } from "firebase-functions/v2/https";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
@@ -46,5 +46,40 @@ export const findOrCreateLobby = onCall<
     });
     logger.info(`Created new lobby from user: ${creatorUID}`);
     return { lobby_id: newID };
+  }
+);
+
+/**
+ * Will attempt to join as player. If the lobby is already in progress,
+ * will join as spectator.
+ */
+export const joinLobby = onCall<
+  { user_id: string, lobby_id: string }, Promise<void>
+>(
+  { region: firebaseConfig.region },
+  async (event) => {
+    const userID = event.data.user_id;
+    const lobbyID = event.data.lobby_id;
+
+    const userName = (await firebaseApp.auth().getUser(userID)).displayName;
+    if (!userName) {
+      throw new HttpsError("not-found", `User name not found: ${userID}`);
+    }
+    const lobby = (await db.doc(`lobbies/${lobbyID}`).get()).data();
+    if (!lobby) {
+      throw new HttpsError("not-found", `Lobby not found: ${lobbyID}`);
+    }
+    const playerRef = db.doc(`lobbies/${lobbyID}/players/${userID}`);
+    const hasAlreadyJoined = (await playerRef.get()).exists;
+    if (hasAlreadyJoined) {
+      logger.warn(`User ${userName} (${userID}) tried to join lobby ${lobbyID} twice`);
+      return;
+    }
+    if (lobby.status == "ended") {
+      throw new HttpsError("unavailable", `Lobby already ended: ${lobbyID}`);
+    }
+    const role = (lobby.status == "new") ? "player" : "spectator";
+    await playerRef.set({ id: userID, uid: userID, name: userName, role: "player" });
+    logger.info(`User ${userName} (${userID}) joined lobby ${lobbyID} as ${role}`);
   }
 );

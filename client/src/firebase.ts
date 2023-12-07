@@ -38,3 +38,7 @@ if (useEmulator) connectFunctionsEmulator(functions, '127.0.0.1', 5001);
 export const findOrCreateLobbyFun = httpsCallable<
     { creator_uid: string }, { lobby_id: string }
 >(functions, 'findOrCreateLobby');
+
+export const joinLobbyFun = httpsCallable<
+    { user_id: string, lobby_id: string }, void
+>(functions, 'joinLobby');
