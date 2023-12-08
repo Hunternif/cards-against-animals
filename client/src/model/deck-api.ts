@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, runTransaction, setDoc, writeBatch } from "firebase/firestore";
 import { db, decksRef } from "../firebase";
-import { Deck, PromptDeckCard, ResponseDeckCard } from "./types";
+import { Deck, PromptDeckCard, ResponseDeckCard } from "../shared/types";
 import { promptDeckCardConverter, responseDeckCardConverter } from "./firebase-converters";
 
 /**

@@ -1,7 +1,7 @@
 
 import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
 import { decksRef } from "../firebase";
-import { Deck } from "../model/types";
+import { Deck } from "../shared/types";
 import { collection } from "firebase/firestore";
 import { promptDeckCardConverter, responseDeckCardConverter } from "../model/firebase-converters";
 import { Accordion } from "react-bootstrap";

@@ -3,7 +3,7 @@ import { Accordion } from "react-bootstrap";
 import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
 import { lobbiesRef } from "../firebase";
 import { playerConverter, playerDataConverter, turnConverter } from "../model/firebase-converters";
-import { GameLobby, GameTurn } from "../model/types";
+import { GameLobby, GameTurn } from "../shared/types";
 
 interface LobbyProps {
   lobby: GameLobby;

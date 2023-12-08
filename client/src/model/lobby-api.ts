@@ -1,7 +1,7 @@
 import { User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { findOrCreateLobbyFun, joinLobbyFun, lobbiesRef } from "../firebase";
-import { GameLobby } from "./types";
+import { GameLobby } from "../shared/types";
 
 export async function findOrCreateLobbyID(user: User): Promise<string> {
   const res = await findOrCreateLobbyFun({ creator_uid: user.uid });

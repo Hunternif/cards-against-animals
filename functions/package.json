@@ -2,7 +2,7 @@
   "name": "functions",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
-    "build": "cp ../firebase-config.json ./src && tsc",
+    "build": "rm -rf ./src/shared && cp -R ../shared/src/. ./src/shared && cp ../firebase-config.json ./src && tsc",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",

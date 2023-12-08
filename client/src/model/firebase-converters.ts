@@ -1,5 +1,21 @@
-import { FirestoreDataConverter, QueryDocumentSnapshot, Timestamp, serverTimestamp } from "firebase/firestore";
-import { CAAUser, Deck, GameLobby, GameTurn, PlayerDataInTurn, PlayerInLobby, PromptCardInTurn, PromptDeckCard, ResponseCardInHand, ResponseDeckCard } from "./types";
+import {
+    FirestoreDataConverter,
+    QueryDocumentSnapshot,
+    Timestamp,
+    serverTimestamp
+} from "firebase/firestore";
+import {
+    CAAUser,
+    Deck,
+    GameLobby,
+    GameTurn,
+    PlayerDataInTurn,
+    PlayerInLobby,
+    PromptCardInTurn,
+    PromptDeckCard,
+    ResponseCardInHand,
+    ResponseDeckCard
+} from "../shared/types";
 
 export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
     toFirestore: (lobby: GameLobby) => {

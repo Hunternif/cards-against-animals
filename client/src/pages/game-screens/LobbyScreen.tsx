@@ -2,7 +2,7 @@ import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useLoaderData } from "react-router-dom";
 import { lobbiesRef } from "../../firebase";
 import { DocumentReference, doc } from "firebase/firestore";
-import { GameLobby } from "../../model/types";
+import { GameLobby } from "../../shared/types";
 import { LoadingSpinner } from "../../components/utils";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 

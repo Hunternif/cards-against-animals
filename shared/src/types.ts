@@ -1,3 +1,11 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  This file contains Firestore type definitions shared between client and
+//  server functions. When building client & functions, this file will be
+//  copied to their source folders.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 export class GameLobby {
     id: string;
     /** Identifies the lobby, included in the link that's shared on Discord. */
