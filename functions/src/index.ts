@@ -1,4 +1,4 @@
-import admin from 'firebase-admin';
+import admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
@@ -22,9 +22,9 @@ export const findOrCreateLobby = onCall<
     const creatorUID = event.data.creator_uid;
 
     // Find current active lobby for this user:
-    const foundLobbies = (await db.collection('lobbies')
-      .where('status', '==', 'new')
-      .where('player_uids', 'array-contains', creatorUID)
+    const foundLobbies = (await db.collection("lobbies")
+      .where("status", "==", "new")
+      .where("player_uids", "array-contains", creatorUID)
       .get()).docs;
     if (foundLobbies.length > 0) {
       const lobbyID = foundLobbies[0].id;
@@ -33,8 +33,8 @@ export const findOrCreateLobby = onCall<
     }
 
     // Create a new lobby:
-    // TODO: need to acquire lock. This doesn't prevent double lobby creation!
-    const newLobbyRef = db.collection('lobbies').doc();
+    // TODO: need to acquire lock. This doesn"t prevent double lobby creation!
+    const newLobbyRef = db.collection("lobbies").doc();
     const newID = newLobbyRef.id;
     await newLobbyRef.set({
       id: newID,

@@ -32,5 +32,12 @@ module.exports = {
     "max-len": ["warn"],
     "require-jsdoc": ["warn"],
     "valid-jsdoc": ["warn"],
+    "linebreak-style": 0,
+    "eol-last": 0,
+    "@typescript-eslint/no-empty-function": ["warn"],
+    "@typescript-eslint/no-inferrable-types": 0,
+    "camelcase": 0,
+    "spaced-comment": 0,
+    "comma-dangle": 0,
   },
 };
