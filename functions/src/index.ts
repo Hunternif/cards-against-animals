@@ -1,16 +1,18 @@
 import admin from "firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
+import { lobbyConverter, playerConverter } from "./model/firebase-converters";
+import { GameLobby, PlayerInLobby } from "./shared/types";
 
 // Initialize Firebase
 const firebaseApp = admin.initializeApp(firebaseConfig);
 
 // Initialize Cloud Firestore and get a reference to the service
 const db = admin.firestore(firebaseApp);
+const lobbiesRef = db.collection("lobbies").withConverter(lobbyConverter);
 
 
 /** Finds an existing active lobby for the user, or creates a new one. */
@@ -22,7 +24,7 @@ export const findOrCreateLobby = onCall<
     const creatorUID = event.data.creator_uid;
 
     // Find current active lobby for this user:
-    const foundLobbies = (await db.collection("lobbies")
+    const foundLobbies = (await lobbiesRef
       .where("status", "==", "new")
       .where("player_uids", "array-contains", creatorUID)
       .get()).docs;
@@ -34,16 +36,11 @@ export const findOrCreateLobby = onCall<
 
     // Create a new lobby:
     // TODO: need to acquire lock. This doesn"t prevent double lobby creation!
-    const newLobbyRef = db.collection("lobbies").doc();
+    const newLobbyRef = lobbiesRef.doc();
     const newID = newLobbyRef.id;
-    await newLobbyRef.set({
-      id: newID,
-      lobby_key: newID,
-      creator_uid: creatorUID,
-      status: "new",
-      time_created: FieldValue.serverTimestamp(),
-      player_uids: [creatorUID],
-    });
+    const newLobby = new GameLobby(newID, newID, creatorUID, "new");
+    newLobby.player_uids.push(creatorUID);
+    await newLobbyRef.set(newLobby);
     logger.info(`Created new lobby from user: ${creatorUID}`);
     return { lobby_id: newID };
   }
@@ -65,11 +62,13 @@ export const joinLobby = onCall<
     if (!userName) {
       throw new HttpsError("not-found", `User name not found: ${userID}`);
     }
-    const lobby = (await db.doc(`lobbies/${lobbyID}`).get()).data();
+    const lobby = (await lobbiesRef.doc(lobbyID).get()).data();
     if (!lobby) {
       throw new HttpsError("not-found", `Lobby not found: ${lobbyID}`);
     }
-    const playerRef = db.doc(`lobbies/${lobbyID}/players/${userID}`);
+    const playersRef = db.collection(`lobbies/${lobbyID}/players`)
+      .withConverter(playerConverter);
+    const playerRef = playersRef.doc(userID);
     const hasAlreadyJoined = (await playerRef.get()).exists;
     if (hasAlreadyJoined) {
       logger.warn(`User ${userName} (${userID}) tried to join lobby ${lobbyID} twice`);
@@ -79,7 +78,7 @@ export const joinLobby = onCall<
       throw new HttpsError("unavailable", `Lobby already ended: ${lobbyID}`);
     }
     const role = (lobby.status == "new") ? "player" : "spectator";
-    await playerRef.set({ id: userID, uid: userID, name: userName, role: "player" });
+    await playerRef.set(new PlayerInLobby(userID, userName, role));
     logger.info(`User ${userName} (${userID}) joined lobby ${lobbyID} as ${role}`);
   }
 );
