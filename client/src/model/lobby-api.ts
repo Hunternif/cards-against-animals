@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { findOrCreateLobbyFun, joinLobbyFun, lobbiesRef } from "../firebase";
+import { findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef } from "../firebase";
 import { GameLobby } from "../shared/types";
 
 export async function findOrCreateLobbyID(user: User): Promise<string> {
@@ -22,4 +22,13 @@ export async function findOrCreateLobby(user: User): Promise<GameLobby> {
  */
 export async function joinLobby(user: User, lobbyID: string): Promise<void> {
   await joinLobbyFun({ user_id: user.uid, lobby_id: lobbyID });
+}
+
+/**
+ * Will find an active game or create a new one, and attempt to join.
+ * Returns lobby ID.
+ */
+export async function findOrCreateLobbyAndJoin(user: User): Promise<string> {
+  const res = await findOrCreateLobbyAndJoinFun({ user_id: user.uid });
+  return res.data.lobby_id;
 }

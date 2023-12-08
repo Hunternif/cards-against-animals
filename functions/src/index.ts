@@ -35,3 +35,17 @@ export const joinLobby = onCall<
     await addPlayer(event.data.lobby_id, event.data.user_id);
   }
 );
+
+/** Combines `findOrCreateLobby` and `joinLobby` */
+export const findOrCreateLobbyAndJoin = onCall<
+  { user_id: string }, Promise<{ lobby_id: string }>
+>(
+  { region: firebaseConfig.region },
+  async (event) => {
+    const userID = event.data.user_id;
+    const lobbyID = await findActiveLobbyIDWithPlayer(userID) ??
+      (await createLobby(userID)).id;
+    await addPlayer(lobbyID, userID);
+    return { lobby_id: lobbyID };
+  }
+);

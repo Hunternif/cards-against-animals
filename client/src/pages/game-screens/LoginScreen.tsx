@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnonymousLogin } from "../../components/AnonymousLogin";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { findOrCreateLobbyID, joinLobby } from "../../model/lobby-api";
+import { findOrCreateLobbyAndJoin } from "../../model/lobby-api";
 
 export function LoginScreen() {
   const [error, setError] = useState<any>(null);
@@ -12,8 +12,7 @@ export function LoginScreen() {
 
   async function handleLogin(user: User) {
     try {
-      const lobbyID = await findOrCreateLobbyID(user);
-      await joinLobby(user, lobbyID);
+      const lobbyID = await findOrCreateLobbyAndJoin(user);
       navigate(lobbyID);
     } catch (e: any) {
       setError(e);

@@ -42,3 +42,7 @@ export const findOrCreateLobbyFun = httpsCallable<
 export const joinLobbyFun = httpsCallable<
     { user_id: string, lobby_id: string }, void
 >(functions, 'joinLobby');
+
+export const findOrCreateLobbyAndJoinFun = httpsCallable<
+    { user_id: string }, { lobby_id: string }
+>(functions, 'findOrCreateLobbyAndJoin');
