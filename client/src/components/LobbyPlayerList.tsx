@@ -4,16 +4,12 @@ import { usePlayers } from "../model/lobby-api";
 import { FillLayout } from "./layout/FillLayout";
 import { LoadingSpinner } from "./utils";
 import { GameLobby, PlayerInLobby } from "../shared/types";
+import { ReactNode, useEffect, useState } from "react";
 
 interface ListProps {
   lobby: GameLobby,
   user: User,
 }
-
-// TODO: set maximum players in lobby settings.
-const maxPlayers = 20;
-const slots = Array<PlayerSlot>(maxPlayers).fill("empty", 0, maxPlayers);
-type PlayerSlot = PlayerInLobby | "empty";
 
 function EmptyCard() {
   return (
@@ -54,22 +50,38 @@ function PlayerCard({ player, isMe, isCreator }: PlayerProps) {
   );
 }
 
+const initialSlotCount = 6;
+
 /** List of players in the lobby */
 export function LobbyPlayerList({ lobby, user }: ListProps) {
   const [players, loadingPlayers] = usePlayers(lobby.id);
+  const [slotCount, setSlotCount] = useState(initialSlotCount);
+  const [slots, setSlots] = useState<Array<ReactNode>>([]);
+
+  useEffect(() => {
+    if (players) {
+      const newSlotCount = Math.max(slotCount, players.length + 2);
+      const newSlots = new Array<ReactNode>();
+      for (let i = 0; i < newSlotCount; i++) {
+        if (players && players[i]) {
+          newSlots.push(<PlayerCard player={players[i]}
+            isMe={user.uid === players[i].uid}
+          />);
+        } else {
+          newSlots.push(<EmptyCard />);
+        }
+      }
+      setSlots(newSlots);
+      setSlotCount(newSlotCount);
+    }
+  }, [players?.length]);
+
   if (loadingPlayers) return <FillLayout><LoadingSpinner /></FillLayout>;
+
   return (
     <ul style={{ padding: 0, margin: 0 }}>
-      {slots.map((_, i) => <li key={i} style={{
-        listStyleType: "none",
-      }}>
-        {players && players[i] ?
-          <PlayerCard player={players[i]}
-            isMe={user.uid === players[i].uid}
-          /> :
-          <EmptyCard />
-        }
-      </li>
+      {slots.map((slot, i) =>
+        <li key={i} style={{ listStyleType: "none" }}>{slot}</li>
       )}
     </ul >
   );
