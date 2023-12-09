@@ -2,6 +2,7 @@ import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
 import { firebaseAuth, getPlayersRef, lobbiesRef } from "../firebase-server";
 import { GameLobby, PlayerInLobby } from "../shared/types";
+import { getUserName } from "./auth-api";
 
 /**
  * Find current active lobby for this user.
@@ -43,10 +44,7 @@ export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
  * or as "specator if it's in progress.
  */
 export async function addPlayer(lobbyID: string, userID: string): Promise<void> {
-  const userName = (await firebaseAuth.getUser(userID)).displayName;
-  if (!userName) {
-    throw new HttpsError("not-found", `User name not found: ${userID}`);
-  }
+  const userName = await getUserName(userID);
   const lobby = await getLobby(lobbyID);
   if (!lobby) {
     throw new HttpsError("not-found", `Lobby not found: ${lobbyID}`);
