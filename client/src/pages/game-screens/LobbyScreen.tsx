@@ -1,12 +1,14 @@
 import { User } from "firebase/auth";
-import { doc } from "firebase/firestore";
+import { Col } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useLoaderData } from "react-router-dom";
+import { LobbyPlayerList } from "../../components/LobbyPlayerList";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { FillLayout } from "../../components/layout/FillLayout";
+import { RowLayout } from "../../components/layout/RowLayout";
 import { LoadingSpinner } from "../../components/utils";
-import { firebaseAuth, lobbiesRef } from "../../firebase";
-import { useJoinLobby } from "../../model/lobby-api";
+import { firebaseAuth } from "../../firebase";
+import { useJoinLobby, useLobby } from "../../model/lobby-api";
 import { LoginScreen } from "./LoginScreen";
 
 interface LoaderParams {
@@ -41,10 +43,30 @@ function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
 }
 
 /** User logged in AND joined the lobby. */
-function JoinedLobbyScreen({ lobbyID }: LoggedInProps) {
-  const [lobby, loading] = useDocumentData(doc(lobbiesRef, lobbyID));
-  if (loading) return <LoadingSpinner text="Loading lobby..." />;
-  return <CenteredLayout>
-    {lobby && <h2>Your lobby: {lobby.id}</h2>}
-  </CenteredLayout>;
+function JoinedLobbyScreen({ lobbyID, user }: LoggedInProps) {
+  const [lobby, loadingLobby] = useLobby(lobbyID);
+  if (loadingLobby) return <LoadingSpinner text="Loading lobby..." />;
+  if (!lobby) throw new Error(`Failed to load lobby ${lobbyID}`);
+  return (
+    <FillLayout>
+      <RowLayout>
+        <Col xs="4" md="3" style={{
+          backgroundColor: "#66666633",
+          padding: "1em",
+          display: "flex",
+          flexDirection: "column",
+        }}>
+          <FillLayout>
+            <h3 style={{ textAlign: "center", marginBottom: "0.5em" }}>Players</h3>
+            <LobbyPlayerList lobby={lobby} user={user} />
+          </FillLayout>
+          <hr />
+          <button disabled={true}>Leave</button>
+        </Col>
+        <Col>
+          <CenteredLayout>Content goes here</CenteredLayout>
+        </Col>
+      </RowLayout>
+    </FillLayout>
+  );
 }

@@ -1,9 +1,10 @@
 import { User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef } from "../firebase";
 import { GameLobby } from "../shared/types";
 import { useEffect, useState } from "react";
-import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
+import { useCollectionData, useDocumentData, useDocumentDataOnce } from "react-firebase-hooks/firestore";
+import { playerConverter } from "./firebase-converters";
 
 export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
   return (await getDoc(doc(lobbiesRef, lobbyID))).data() ?? null;
@@ -60,3 +61,15 @@ export function useJoinLobby(lobbyID: string, user: User): [joined: boolean] {
   return [joined];
 }
 
+/** React hook to fetch lobby data and subscribes to it. */
+export function useLobby(lobbyID: string) {
+  return useDocumentData(doc(lobbiesRef, lobbyID));
+}
+
+/** React hook to fetch list of players and subscribes to it. */
+export function usePlayers(lobbyID: string) {
+  return useCollectionData(
+    collection(lobbiesRef, lobbyID, 'players')
+      .withConverter(playerConverter)
+  );
+}

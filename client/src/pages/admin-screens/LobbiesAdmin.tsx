@@ -4,6 +4,7 @@ import { useCollection, useCollectionData } from "react-firebase-hooks/firestore
 import { lobbiesRef } from "../../firebase";
 import { playerConverter, playerDataConverter, turnConverter } from "../../model/firebase-converters";
 import { GameLobby, GameTurn } from "../../shared/types";
+import { usePlayers } from "../../model/lobby-api";
 
 interface LobbyProps {
   lobby: GameLobby;
@@ -36,10 +37,7 @@ function LobbyData({ lobby }: LobbyProps) {
 }
 
 function PlayersData({ lobby }: LobbyProps) {
-  const [players] = useCollectionData(
-    collection(lobbiesRef, lobby.id, 'players')
-      .withConverter(playerConverter)
-  );
+  const [players] = usePlayers(lobby.id);
   return <>
     <b>Players: </b>
     {players && players.map((p) => p.name).join(', ')}
