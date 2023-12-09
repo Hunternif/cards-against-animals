@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Col, Row } from "react-bootstrap";
 import { Link, NavLink, Outlet } from "react-router-dom";
+import { FillLayout } from "./FillLayout";
 
 interface LayoutProps {
   links: Array<Link>,
@@ -14,7 +15,7 @@ interface Link {
 
 /** Made to work with React Router */
 export function Sidebar({ links, loginNode }: LayoutProps) {
-  return <div style={{ flex: "1 1 auto", width: "100%", height: "100%" }}>
+  return <FillLayout>
     <Row style={{ flexWrap: "nowrap", height: "100%" }}>
       <Col className="col-auto col-md-3 col-xl-2 px-sm-2 px-0">
         <div
@@ -53,5 +54,5 @@ export function Sidebar({ links, loginNode }: LayoutProps) {
         <Outlet />
       </Col>
     </Row>
-  </div>;
+  </FillLayout>;
 }
