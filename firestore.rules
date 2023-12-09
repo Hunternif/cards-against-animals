@@ -26,9 +26,11 @@ service cloud.firestore {
       allow write: if isLoggedIn() && userIsAdmin();
     }
   	match /lobbies/{lobby} {
-    	allow read: if isLoggedIn() && (userIsAdmin() || userIsInLobby(lobby));
+      // Anyone can read basic lobby data:
+    	allow read: if isLoggedIn();
 
       match /{path=**} {
+        // But only players can read internal data: turns, players, etc.
         allow read: if isLoggedIn() && (userIsAdmin() || userIsInLobby(lobby));
       }
     }
