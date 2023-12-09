@@ -18,7 +18,7 @@ export function AnonymousLogin({ onLogin, disabled }: Props) {
 
   useEffectOnce(() => {
     // Load user's name only once
-    onAuthStateChanged(firebaseAuth, (newUser) => {
+    return onAuthStateChanged(firebaseAuth, (newUser) => {
       if (newUser && newUser.displayName) {
         setName(newUser.displayName);
       }
