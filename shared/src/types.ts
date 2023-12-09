@@ -18,7 +18,7 @@ export class GameLobby {
   /* Must be fetched separately from a Firebase subcollection. */
   players: Array<PlayerInLobby> = [];
   /** Helper array with UIDs, to find current game for a player. */
-  player_uids: Array<string> = [];
+  player_uids: Set<string> = new Set();
   /** The last "turn" is the current state of the game board.
    * Must be fetched separately from a Firebase subcollection. */
   turns: Array<GameTurn> = [];
@@ -40,7 +40,7 @@ export class GameLobby {
     this.lobby_key = lobby_key;
     this.creator_uid = creator_uid;
     this.status = status;
-    this.player_uids = [creator_uid];
+    this.player_uids.add(creator_uid);
   }
 }
 

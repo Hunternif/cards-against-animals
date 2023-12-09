@@ -28,7 +28,7 @@ export async function createLobby(userID: string): Promise<GameLobby> {
   const newLobbyRef = lobbiesRef.doc();
   const newID = newLobbyRef.id;
   const newLobby = new GameLobby(newID, newID, userID, "new");
-  newLobby.player_uids.push(userID);
+  newLobby.player_uids.add(userID);
   await newLobbyRef.set(newLobby);
   logger.info(`Created new lobby from user: ${userID}`);
   return newLobby;
@@ -62,5 +62,7 @@ export async function addPlayer(lobbyID: string, userID: string): Promise<void> 
   const role = (lobby.status == "new") ? "player" : "spectator";
   const player = new PlayerInLobby(userID, userName, role);
   await playerRef.set(player);
+  lobby.player_uids.add(userID);
+  await lobbiesRef.doc(lobbyID).set(lobby);
   logger.info(`User ${userName} (${userID}) joined lobby ${lobbyID} as ${role}`);
 }
