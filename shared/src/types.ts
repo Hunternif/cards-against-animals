@@ -42,6 +42,10 @@ export class GameLobby {
     this.status = status;
     this.player_uids.add(creator_uid);
   }
+
+  hasPlayerID(userID: string) {
+    return this.player_uids.has(userID);
+  }
 }
 
 /** Instance of a player specific to a single game lobby. */

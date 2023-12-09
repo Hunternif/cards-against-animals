@@ -5,7 +5,11 @@ import { AnonymousLogin } from "../../components/AnonymousLogin";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { findOrCreateLobbyAndJoin } from "../../model/lobby-api";
 
-export function LoginScreen() {
+interface Props {
+  existingLobbyID?: string,
+}
+
+export function LoginScreen({ existingLobbyID }: Props) {
   const [error, setError] = useState<any>(null);
   const [joining, setJoining] = useState(false);
   const navigate = useNavigate();
@@ -14,8 +18,12 @@ export function LoginScreen() {
   async function handleLogin(user: User) {
     try {
       setJoining(true);
-      const lobbyID = await findOrCreateLobbyAndJoin(user);
-      navigate(lobbyID);
+      if (existingLobbyID) {
+        navigate(`/${existingLobbyID}`);
+      } else {
+        const lobbyID = await findOrCreateLobbyAndJoin(user);
+        navigate(`/${lobbyID}`);
+      }
       setJoining(false);
     } catch (e: any) {
       setError(e);
@@ -23,6 +31,6 @@ export function LoginScreen() {
   }
   return <CenteredLayout>
     <h1 style={{ marginBottom: "1em" }}>Cards Against Animals</h1>
-    <AnonymousLogin onLogin={handleLogin} disabled={joining}/>
+    <AnonymousLogin onLogin={handleLogin} disabled={joining} />
   </CenteredLayout>;
 }
