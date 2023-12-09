@@ -56,8 +56,8 @@ function JoinedLobbyScreen({ lobbyID, user }: LoggedInProps) {
           display: "flex",
           flexDirection: "column",
         }}>
-          <FillLayout>
-            <h3 style={{ textAlign: "center", marginBottom: "0.5em" }}>Players</h3>
+          <h3 style={{ textAlign: "center", marginBottom: "0.5em" }}>Players</h3>
+          <FillLayout style={{overflowY: "auto"}}>
             <LobbyPlayerList lobby={lobby} user={user} />
           </FillLayout>
           <hr />
