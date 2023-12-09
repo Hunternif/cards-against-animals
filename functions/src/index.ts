@@ -5,6 +5,7 @@ import firebaseConfig from "./firebase-config.json";
 import { addPlayer, createLobby, findActiveLobbyIDWithPlayer } from "./model/lobby-server-api";
 import { assertLoggedIn } from "./model/auth-api";
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Finds an existing active lobby for the user, or creates a new one. */
 export const findOrCreateLobby = onCall<
@@ -12,6 +13,7 @@ export const findOrCreateLobby = onCall<
 >(
   { region: firebaseConfig.region, maxInstances: 2 },
   async (event) => {
+    // await sleep(2000);
     assertLoggedIn(event);
     const creatorUID = event.data.creator_uid;
     // Find current active lobby for this user:
@@ -34,6 +36,7 @@ export const joinLobby = onCall<
 >(
   { region: firebaseConfig.region, maxInstances: 2 },
   async (event) => {
+    // await sleep(2000);
     assertLoggedIn(event);
     await addPlayer(event.data.lobby_id, event.data.user_id);
   }
@@ -45,6 +48,7 @@ export const findOrCreateLobbyAndJoin = onCall<
 >(
   { region: firebaseConfig.region, maxInstances: 2 },
   async (event) => {
+    // await sleep(2000);
     assertLoggedIn(event);
     const userID = event.data.user_id;
     const lobbyID = await findActiveLobbyIDWithPlayer(userID) ??

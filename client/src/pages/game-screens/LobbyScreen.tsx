@@ -23,7 +23,7 @@ export function LobbyScreen() {
   // Users who are sent the link will need to log in first.
   const [user, loadingUser] = useAuthState(firebaseAuth);
   const lobbyID = useLoaderData() as string;
-  if (loadingUser) return <LoadingSpinner />;
+  if (loadingUser) return <LoadingSpinner text="Loading..." />;
   if (!user) return <LoginScreen existingLobbyID={lobbyID} />;
   return <LoggedInLobbyScreen user={user} lobbyID={lobbyID} />;
 }
@@ -36,14 +36,14 @@ interface LoggedInProps {
 /** User logged in, but not necessarily joined the lobby. */
 function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
   const [joined] = useJoinLobby(lobbyID, user);
-  if (!joined) return <LoadingSpinner />;
-  return <JoinedLobbyScreen user={user} lobbyID={lobbyID}/>
+  if (!joined) return <LoadingSpinner text="Joining..." />;
+  return <JoinedLobbyScreen user={user} lobbyID={lobbyID} />
 }
 
 /** User logged in AND joined the lobby. */
 function JoinedLobbyScreen({ lobbyID }: LoggedInProps) {
   const [lobby, loading] = useDocumentData(doc(lobbiesRef, lobbyID));
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner text="Loading lobby..." />;
   return <CenteredLayout>
     {lobby && <h2>Your lobby: {lobby.id}</h2>}
   </CenteredLayout>;

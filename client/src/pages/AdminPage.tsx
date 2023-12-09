@@ -40,7 +40,7 @@ function AnonymousLoggedInView({ user }: UserProps) {
 function LoggedInView({ user }: UserProps) {
   const [caaUser, loading] = useFetchCAAUser(user.uid ?? "invalid");
   const isAdmin = caaUser?.is_admin ?? false;
-  if (loading) return <LoadingSpinner />
+  if (loading) return <LoadingSpinner text="Loading..."/>
   if (user.isAnonymous) return <AnonymousLoggedInView user={user} />
   if (isAdmin) return <AdminContent user={user} />;
   return <AccessDeniedView user={user} />
