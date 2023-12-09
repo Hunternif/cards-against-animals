@@ -52,16 +52,21 @@ function JoinedLobbyScreen({ lobbyID, user }: LoggedInProps) {
       <RowLayout>
         <Col xs="4" md="3" style={{
           backgroundColor: "#66666633",
-          padding: "1em",
+          paddingTop: "1em",
+          paddingBottom: "1em",
           display: "flex",
           flexDirection: "column",
         }}>
-          <h3 style={{ textAlign: "center", marginBottom: "0.5em" }}>Players</h3>
-          <FillLayout style={{overflowY: "auto"}}>
+          <h3 style={{ textAlign: "center" }}>Players</h3>
+          <FillLayout style={{
+            overflowY: "auto",
+            paddingLeft: "1em",
+            paddingRight: "calc(1em - 8px)",
+          }} className="miniscrollbar">
             <LobbyPlayerList lobby={lobby} user={user} />
           </FillLayout>
           <hr />
-          <button disabled={true}>Leave</button>
+          <button style={{ margin: "0 1em" }} disabled={true}>Leave</button>
         </Col>
         <Col>
           <CenteredLayout>Content goes here</CenteredLayout>

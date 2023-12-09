@@ -78,3 +78,19 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.miniscrollbar {
+  scrollbar-gutter: stable;
+  padding-right: 8px;
+}
+
+.miniscrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.miniscrollbar::-webkit-scrollbar-track {
+  background: 0 0;
+}
+.miniscrollbar::-webkit-scrollbar-thumb {
+  background: #666666;
+  border-radius: 4px;
+}
