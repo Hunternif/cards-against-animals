@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { AdminPage } from './pages/AdminPage.tsx'
-import { LobbiesData } from './components/LobbiesData.tsx'
-import { DecksData } from './components/DecksData.tsx'
-import { UploadDeck } from './components/UploadDeck.tsx'
+import { LobbiesAdmin } from './pages/admin-screens/LobbiesAdmin.tsx'
+import { DecksAdmin } from './pages/admin-screens/DecksAdmin.tsx'
+import { UploadDeck } from './pages/admin-screens/UploadDeck.tsx'
 import { GamePage } from './pages/GamePage.tsx'
 import { ErrorPage } from './pages/ErrorPage.tsx'
 import { LobbyScreen, lobbyLoader } from './pages/game-screens/LobbyScreen.tsx'
@@ -36,11 +36,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "lobbies",
-        element: <LobbiesData />,
+        element: <LobbiesAdmin />,
       },
       {
         path: "decks",
-        element: <DecksData />,
+        element: <DecksAdmin />,
       },
       {
         path: "uploadDeck",

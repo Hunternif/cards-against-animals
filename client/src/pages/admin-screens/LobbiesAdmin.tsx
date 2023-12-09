@@ -1,9 +1,9 @@
 import { DocumentReference, collection } from "firebase/firestore";
 import { Accordion } from "react-bootstrap";
 import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
-import { lobbiesRef } from "../firebase";
-import { playerConverter, playerDataConverter, turnConverter } from "../model/firebase-converters";
-import { GameLobby, GameTurn } from "../shared/types";
+import { lobbiesRef } from "../../firebase";
+import { playerConverter, playerDataConverter, turnConverter } from "../../model/firebase-converters";
+import { GameLobby, GameTurn } from "../../shared/types";
 
 interface LobbyProps {
   lobby: GameLobby;
@@ -84,7 +84,7 @@ function TurnData({ turn, turnRef }: TurnProps) {
   </div>;
 }
 
-export function LobbiesData() {
+export function LobbiesAdmin() {
   const [lobbies] = useCollection(lobbiesRef);
 
   return <div className="data-section">

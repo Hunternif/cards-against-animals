@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert, Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { parseDeck, uploadDeck } from "../model/deck-api";
+import { parseDeck, uploadDeck } from "../../model/deck-api";
 
 export function UploadDeck() {
   const [isUploading, setUploading] = useState(false);

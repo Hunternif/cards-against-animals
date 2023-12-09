@@ -1,12 +1,12 @@
 
 import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
-import { decksRef } from "../firebase";
-import { Deck } from "../shared/types";
+import { decksRef } from "../../firebase";
+import { Deck } from "../../shared/types";
 import { collection } from "firebase/firestore";
-import { promptDeckCardConverter, responseDeckCardConverter } from "../model/firebase-converters";
+import { promptDeckCardConverter, responseDeckCardConverter } from "../../model/firebase-converters";
 import { Accordion } from "react-bootstrap";
 
-export function DecksData() {
+export function DecksAdmin() {
   const [decks] = useCollection(decksRef);
 
   return <div className="data-section">
