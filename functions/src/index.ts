@@ -3,14 +3,16 @@ import { onCall } from "firebase-functions/v2/https";
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
 import { addPlayer, createLobby, findActiveLobbyIDWithPlayer } from "./model/lobby-server-api";
+import { assertLoggedIn } from "./model/auth-api";
 
 
 /** Finds an existing active lobby for the user, or creates a new one. */
 export const findOrCreateLobby = onCall<
   { creator_uid: string }, Promise<{ lobby_id: string }>
 >(
-  { region: firebaseConfig.region },
+  { region: firebaseConfig.region, maxInstances: 2 },
   async (event) => {
+    assertLoggedIn(event);
     const creatorUID = event.data.creator_uid;
     // Find current active lobby for this user:
     const foundLobbyID = await findActiveLobbyIDWithPlayer(creatorUID);
@@ -30,8 +32,9 @@ export const findOrCreateLobby = onCall<
 export const joinLobby = onCall<
   { user_id: string, lobby_id: string }, Promise<void>
 >(
-  { region: firebaseConfig.region },
+  { region: firebaseConfig.region, maxInstances: 2 },
   async (event) => {
+    assertLoggedIn(event);
     await addPlayer(event.data.lobby_id, event.data.user_id);
   }
 );
@@ -40,8 +43,9 @@ export const joinLobby = onCall<
 export const findOrCreateLobbyAndJoin = onCall<
   { user_id: string }, Promise<{ lobby_id: string }>
 >(
-  { region: firebaseConfig.region },
+  { region: firebaseConfig.region, maxInstances: 2 },
   async (event) => {
+    assertLoggedIn(event);
     const userID = event.data.user_id;
     const lobbyID = await findActiveLobbyIDWithPlayer(userID) ??
       (await createLobby(userID)).id;
