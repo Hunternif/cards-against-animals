@@ -50,11 +50,13 @@ async function getLobbyAndjoin(lobbyID: string, user: User) {
 /** React hook to join lobby */
 export function useJoinLobby(lobbyID: string, user: User): [joined: boolean] {
   const [joined, setJoined] = useState(false);
+  const [error, setError] = useState(null);
   useEffect(() => {
     getLobbyAndjoin(lobbyID, user).then(() => {
       setJoined(true);
-    });
+    }).catch((e) => setError(e));
   }, [lobbyID, user.uid]);
+  if (error) throw error;
   return [joined];
 }
 
