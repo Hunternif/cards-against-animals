@@ -8,9 +8,10 @@ import { LoadingSpinner, useEffectOnce } from "./utils";
 
 interface Props {
   onLogin?: (user: User) => void,
+  disabled: boolean,
 }
 
-export function AnonymousLogin({ onLogin }: Props) {
+export function AnonymousLogin({ onLogin, disabled }: Props) {
   const [user, loading] = useAuthState(firebaseAuth);
   const suggestedName = "CoolNickname123";
   const [name, setName] = useState("");
@@ -66,11 +67,12 @@ export function AnonymousLogin({ onLogin }: Props) {
             <Form.Control type="text" value={name}
               placeholder={suggestedName}
               onChange={(e) => setName(e.target.value)}
+              disabled={disabled}
             />
           )}
         </Form.Group>
         <CenteredLayout>
-          <button disabled={loading}>Start</button>
+          <button disabled={loading || disabled}>Start</button>
         </CenteredLayout>
       </Form>
     </Card>
