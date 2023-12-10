@@ -42,7 +42,7 @@ export function NewLobbyScreen({ lobby, user }: Props) {
   return (
     <FillLayout className="new-lobby-screen">
       <RowLayout>
-        <Col xs="4" md="3" style={sidebarStyle} className="new-lobby-sidebar">
+        <Col xs="4" md="3" xl="2" style={sidebarStyle} className="new-lobby-sidebar">
           <h3 style={{ textAlign: "center" }}>Players</h3>
           <FillLayout style={scrollableColumnStyle}
             className="miniscrollbar miniscrollbar-light">
