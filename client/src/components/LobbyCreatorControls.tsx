@@ -9,7 +9,6 @@ interface Props {
 
 const headerStyle: CSSProperties = {
   textAlign: "center",
-  marginBottom: "1em",
 }
 
 const footerStyle: CSSProperties = {

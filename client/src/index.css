@@ -136,6 +136,13 @@ button:focus-visible {
   padding: 0.5em 0.8em;
   width: 10em;
   height: 14em;
+  cursor: pointer;
+}
+.deck-box.selected {
+  /* border-color: #fff;
+  border-radius: 2px; */
+  outline: 3px solid;
+  outline-color: #fff;
 }
 
 .new-lobby-screen {

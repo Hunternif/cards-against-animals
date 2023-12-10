@@ -1,20 +1,29 @@
-import { CSSProperties } from "react";
+import { CSSProperties, useState } from "react";
 import { Deck } from "../shared/types";
 import { FillLayout } from "./layout/FillLayout";
 import { LoadingSpinner } from "./utils";
 
 interface DeckProps {
   deck: Deck,
+  onToggle?: (selected: boolean) => {},
 }
 
-function DeckBox({ deck }: DeckProps) {
-  return <div className="deck-box">
+function DeckBox({ deck, onToggle }: DeckProps) {
+  const [selected, setSelected] = useState(false);
+  const className = `deck-box ${selected ? "selected" : ""}`;
+  function handleClick() {
+    setSelected(!selected);
+    if (onToggle) onToggle(selected);
+  }
+  return <div className={className} onClick={handleClick}>
     <h4>{deck.title}</h4>
   </div>;
 }
 
 const scrollableColumnStyle: CSSProperties = {
   overflowY: "auto",
+  paddingTop: "1em",
+  paddingBottom: "1em",
   paddingLeft: "2em",
   paddingRight: "calc(2em - 8px)",
   display: "flex",
