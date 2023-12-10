@@ -27,7 +27,7 @@ export async function findActiveLobbyWithPlayer(userID: string)
   if (caaUser.current_lobby_id) {
     // Verify that lobby exists:
     const lobby = (await lobbiesRef.doc(caaUser.current_lobby_id).get()).data();
-    if (lobby) return lobby;
+    if (lobby && lobby.status != "ended") return lobby;
     // Lobby doesn't exist, delete the record:
     delete caaUser.current_lobby_id;
     await updateCAAUser(caaUser);
