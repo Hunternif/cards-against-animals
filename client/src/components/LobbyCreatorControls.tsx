@@ -1,6 +1,7 @@
 import { CSSProperties } from "react";
 import { GameLobby } from "../shared/types";
 import { DeckSelector } from "./DeckSelector";
+import play_button from '../assets/play_button.svg'
 
 interface Props {
   lobby: GameLobby,
@@ -24,8 +25,8 @@ export function LobbyCreatorControls({ lobby }: Props) {
       display: "flex",
       justifyContent: "center",
     }}>
-      <button style={startButtonStyle}>
-        <span>▶</span>
+      <button style={startButtonStyle} className="primary-button">
+        <img src={play_button}/>
         <span style={{ flexGrow: 1 }}>Start</span>
       </button>
     </div>
