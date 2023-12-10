@@ -4,6 +4,7 @@ import { db, getPlayersRef, lobbiesRef } from "../firebase-server";
 import {
   GameLobby,
   PlayerInLobby,
+  PlayerRole,
   PromptCardInGame,
   ResponseCardInGame,
 } from "../shared/types";
@@ -69,10 +70,17 @@ export async function updateLobby(lobby: GameLobby): Promise<void> {
   await lobbiesRef.doc(lobby.id).set(lobby);
 }
 
-/** Returns all players in this lobby. */
-export async function getPlayers(lobbyID: string):
+/** Returns all players in this lobby, by role. */
+export async function getPlayers(lobbyID: string, role?: PlayerRole):
   Promise<Array<PlayerInLobby>> {
-  return (await getPlayersRef(lobbyID).get()).docs.map((p) => p.data());
+  if (!role) {
+    // Fetch all players
+    return (await getPlayersRef(lobbyID).get()).docs.map((p) => p.data());
+  } else {
+    return (await getPlayersRef(lobbyID)
+      .where("role", "==", role).get()
+    ).docs.map((p) => p.data());
+  }
 }
 
 /**

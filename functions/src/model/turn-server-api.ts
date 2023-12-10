@@ -2,14 +2,20 @@
 
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
-import { GameTurn, PromptCardInGame } from "../shared/types";
+import { GameTurn, PlayerDataInTurn, PromptCardInGame, ResponseCardInGame } from "../shared/types";
 import { getRandomInt } from "../shared/utils";
-import { promptCardInGameConverter, turnConverter } from "./firebase-converters";
+import { playerDataConverter, promptCardInGameConverter, responseCardInGameConverter, turnConverter } from "./firebase-converters";
 import { getPlayers } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
 function getTurnsRef(lobbyID: string) {
   return db.collection(`lobbies/${lobbyID}/turns`).withConverter(turnConverter);
+}
+
+/** Returns Firestore subcollection reference. */
+function getPlayerDataRef(lobbyID: string, turnID: string) {
+  return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data`)
+    .withConverter(playerDataConverter);
 }
 
 /** Returns all turns that occurred in this lobby. */
@@ -32,6 +38,13 @@ export async function countTurns(lobbyID: string): Promise<number> {
   return (await getTurnsRef(lobbyID).count().get()).data().count;
 }
 
+/** Data from specific player, from specific turn. */
+export async function getPlayerData(
+  lobbyID: string, turnID: string, uid: string
+): Promise<PlayerDataInTurn | null> {
+  return (await getPlayerDataRef(lobbyID, turnID).doc(uid).get()).data() ?? null;
+}
+
 /**
  * Starts a new turn and returns it.
  */
@@ -40,17 +53,17 @@ export async function startNewTurn(lobbyID: string): Promise<GameTurn> {
   if (lastTurn && lastTurn.phase != "complete") {
     throw new Error(`Last turn has not completed in lobby ${lobbyID}`);
   }
-  const judge = await selectJudge(lastTurn, lobbyID);
+  const judge = await selectJudge(lobbyID, lastTurn);
   const prompt = await selectPrompt(lobbyID);
   const id = String(await countTurns(lobbyID) + 1);
   const newTurn = new GameTurn(id, judge, prompt);
   await getTurnsRef(lobbyID).doc(id).set(newTurn);
-  await dealCards(newTurn, lobbyID);
+  await dealCards(lobbyID, lastTurn, newTurn);
   return newTurn; // timestamp may not have reloaded but that's ok.
 }
 
 /** Returns UID of the player who will judge the next turn, */
-async function selectJudge(lastTurn: GameTurn | null, lobbyID: string):
+async function selectJudge(lobbyID: string, lastTurn: GameTurn | null):
   Promise<string> {
   const sequence = await getPlayerSequence(lobbyID);
   const lastIndex = lastTurn ? sequence.indexOf(lastTurn.judge_uid) : -1;
@@ -77,9 +90,50 @@ async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
   return selected;
 }
 
+// TODO: move this to lobby settings
+const cardsPerPerson = 10;
+
 /** Deal cards to the players. */
-async function dealCards(turn: GameTurn, lobbyID: string): Promise<void> {
-  // TODO
+async function dealCards(
+  lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn,
+): Promise<void> {
+  const responsesRef = db.collection(`lobbies/${lobbyID}/deck_responses`)
+    .withConverter(responseCardInGameConverter);
+  const players = await getPlayers(lobbyID, "player");
+  const playerData = players.map((p) => new PlayerDataInTurn(p.uid, p.name));
+  // Find how many more cards we need:
+  let totalCardsNeeded = 0;
+  for (const pData of playerData) {
+    if (lastTurn) {
+      // copy old hand:
+      const oldData = await getPlayerData(lobbyID, lastTurn.id, pData.player_uid);
+      pData.hand.push(...oldData?.hand || []);
+    }
+    totalCardsNeeded += Math.max(0, cardsPerPerson - pData.hand.length);
+  }
+  // Fetch new cards:
+  const newCards = (await responsesRef
+    .orderBy("random_index")
+    .limit(totalCardsNeeded).get()
+  ).docs.map((c) => c.data());
+  let i = 0;
+  for (const pData of playerData) {
+    while (pData.hand.length < cardsPerPerson && i < newCards.length) {
+      pData.hand.push(newCards[i]);
+      i++;
+    }
+    // If we ran out of cards, sorry!
+  }
+  // Remove dealt cards from the deck and upload player data:
+  const playerDataRef = getPlayerDataRef(lobbyID, newTurn.id);
+  await db.runTransaction(async (transaction) => {
+    for (const card of newCards) {
+      transaction.delete(responsesRef.doc(card.prefixID()));
+    }
+    for (const pData of playerData) {
+      transaction.set(playerDataRef.doc(pData.player_uid), pData);
+    }
+  });
 }
 
 /**
@@ -88,8 +142,8 @@ async function dealCards(turn: GameTurn, lobbyID: string): Promise<void> {
  * The sequence must be stable!
  */
 async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
-  const players = await getPlayers(lobbyID);
+  const players = await getPlayers(lobbyID, "player");
   // filter out spectators, sort them by UIDs
-  const uids = players.filter((p) => p.role == "player").map((p) => p.uid);
+  const uids = players.map((p) => p.uid);
   return uids.sort();
 }
