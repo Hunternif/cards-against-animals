@@ -67,8 +67,8 @@ export const deckConverter: FirestoreDataConverter<Deck> = {
 export const turnConverter: FirestoreDataConverter<GameTurn> = {
   toFirestore: (turn: GameTurn) => copyFields2(turn, {
     time_created: Timestamp.fromDate(turn.time_created),
-    prompt: Object.assign({}, turn.prompt),
-  }),
+    prompt: copyFields(turn.prompt),
+  }, ['id', 'player_data']),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const time_created = data.time_created as Timestamp;
@@ -93,8 +93,8 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
 
 export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
   toFirestore: (pdata: PlayerDataInTurn) => copyFields2(pdata, {
-    hand: pdata.hand.map((card) => Object.assign({}, card)),
-    current_play: pdata.current_play.map((card) => Object.assign({}, card)),
+    hand: pdata.hand.map((card) => copyFields(card)),
+    current_play: pdata.current_play.map((card) => copyFields(card)),
   }),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();

@@ -8,17 +8,23 @@ export function removeUndefined(obj: any): any {
   return obj;
 }
 
-/**Copies all fields to a new object, except `id`, and underfined fields */
-export function copyFields<U>(data: U): U {
+/**Copies all fields to a new object, except `id`, and undefined fields. */
+export function copyFields<U>(data: U, except: string[] = ['id']): U {
   const obj: any = Object.assign({}, data);
-  delete obj['id'];
+  for (const key of except) {
+    delete obj[key];
+  }
   return removeUndefined(obj);
 }
 
-/**Copies all fields to a new object, except `id` */
-export function copyFields2<U, V>(data: U, data2: V): U & V {
+/**Copies all fields to a new object, except `id`, and undefined fields. */
+export function copyFields2<U, V>(
+  data: U, data2: V, except: string[] = ['id'],
+): U & V {
   const obj: any = Object.assign({}, data, data2);
-  delete obj['id'];
+  for (const key of except) {
+    delete obj[key];
+  }
   return removeUndefined(obj);
 }
 
