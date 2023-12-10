@@ -1,7 +1,12 @@
+// Order matters!
+// First import Bootstrap styles:
+import './scss/styles.scss'
+// Then custom styles:
+import './index.css'
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import './index.css'
 import { AdminPage } from './pages/AdminPage.tsx'
 import { ErrorPage } from './pages/ErrorPage.tsx'
 import { LobbyPage, lobbyLoader } from './pages/LobbyPage.tsx'
@@ -9,7 +14,7 @@ import { WelcomePage } from './pages/WelcomePage.tsx'
 import { DecksAdmin } from './pages/admin-screens/DecksAdmin.tsx'
 import { LobbiesAdmin } from './pages/admin-screens/LobbiesAdmin.tsx'
 import { UploadDeck } from './pages/admin-screens/UploadDeck.tsx'
-import './scss/styles.scss'
+
 
 const router = createBrowserRouter([
   {
