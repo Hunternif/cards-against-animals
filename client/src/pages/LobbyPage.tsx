@@ -4,8 +4,10 @@ import { useLoaderData } from "react-router-dom";
 import { LoadingSpinner } from "../components/utils";
 import { firebaseAuth } from "../firebase";
 import { useJoinLobby, useLobby } from "../model/lobby-api";
-import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
+import { LoginScreen } from "./lobby-screens/LoginScreen";
+import { GameScreen } from "./lobby-screens/GameScreen";
+import { EndedLobbyScreen } from "./lobby-screens/EndedLobbyScreen";
 
 interface LoaderParams {
   params: any
@@ -46,6 +48,10 @@ function JoinedLobbyScreen({ lobbyID, user }: LoggedInProps) {
   switch (lobby.status) {
     case "new":
       return <NewLobbyScreen lobby={lobby} user={user} />;
+    case "in_progress":
+      return <GameScreen lobby={lobby} user={user} />;
+    case "ended":
+      return <EndedLobbyScreen lobby={lobby} user={user} />;
     default:
       throw new Error(`Unknown lobby status "${lobby.status}"`);
   }
