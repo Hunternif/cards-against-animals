@@ -7,6 +7,18 @@ interface Props {
   lobby: GameLobby,
 }
 
+const headerStyle: CSSProperties = {
+  textAlign: "center",
+  marginBottom: "1em",
+}
+
+const footerStyle: CSSProperties = {
+  margin: "2em 0",
+  width: "100%",
+  display: "flex",
+  justifyContent: "center",
+};
+
 const startButtonStyle: CSSProperties = {
   minWidth: "10em",
   display: "flex",
@@ -17,16 +29,11 @@ const startButtonStyle: CSSProperties = {
 
 export function LobbyCreatorControls({ lobby }: Props) {
   return <>
-    <h3 style={{ textAlign: "center" }}>Select decks</h3>
+    <h3 style={headerStyle}>Select decks</h3>
     <DeckSelector />
-    <div style={{
-      margin: "2em 0",
-      width: "100%",
-      display: "flex",
-      justifyContent: "center",
-    }}>
-      <button style={startButtonStyle} className="primary-button">
-        <img src={play_button}/>
+    <div style={footerStyle}>
+      <button style={startButtonStyle} className="accent-button start-button">
+        <img src={play_button} />
         <span style={{ flexGrow: 1 }}>Start</span>
       </button>
     </div>

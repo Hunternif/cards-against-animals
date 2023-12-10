@@ -16,7 +16,6 @@ interface Props {
 }
 
 const sidebarStyle: CSSProperties = {
-  backgroundColor: "#66666633",
   paddingTop: "1em",
   paddingBottom: "1em",
   display: "flex",
@@ -41,11 +40,12 @@ export function NewLobbyScreen({ lobby, user }: Props) {
   const navigate = useNavigate();
   const isCreator = lobby.creator_uid === user.uid;
   return (
-    <FillLayout>
+    <FillLayout className="new-lobby-screen">
       <RowLayout>
-        <Col xs="4" md="3" style={sidebarStyle}>
+        <Col xs="4" md="3" style={sidebarStyle} className="new-lobby-sidebar">
           <h3 style={{ textAlign: "center" }}>Players</h3>
-          <FillLayout style={scrollableColumnStyle} className="miniscrollbar">
+          <FillLayout style={scrollableColumnStyle}
+            className="miniscrollbar miniscrollbar-light">
             <LobbyPlayerList lobby={lobby} user={user} />
           </FillLayout>
           <hr />
