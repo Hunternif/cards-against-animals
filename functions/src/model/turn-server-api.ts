@@ -64,12 +64,14 @@ async function selectJudge(lastTurn: GameTurn | null, lobbyID: string):
 async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
   const promptsRef = db.collection(`lobbies/${lobbyID}/deck_prompts`)
     .withConverter(promptCardInGameConverter);
-  // TODO: set random index on each card during lobby creation, and order by it.
-  const cards = (await promptsRef.get()).docs.map((c) => c.data());
+  const cards = (await promptsRef
+    .orderBy("random_index")
+    .limit(1).get()
+  ).docs.map((c) => c.data());
   if (cards.length === 0) {
     throw new HttpsError("failed-precondition", "No more cards in deck");
   }
-  const selected = cards[getRandomInt(0, cards.length - 1)];
+  const selected = cards[0];
   // Remove selected card from the remaining deck:
   await promptsRef.doc(selected.prefixID()).delete();
   return selected;
