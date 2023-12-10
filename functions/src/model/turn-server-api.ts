@@ -3,6 +3,7 @@
 import { db } from "../firebase-server";
 import { GameTurn, PromptCardInGame } from "../shared/types";
 import { turnConverter } from "./firebase-converters";
+import { getPlayers } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
 function getTurnsRef(lobbyID: string) {
@@ -37,7 +38,7 @@ export async function startNewTurn(lobbyID: string): Promise<GameTurn> {
   if (lastTurn && lastTurn.phase != "complete") {
     throw new Error(`Last turn has not completed in lobby ${lobbyID}`);
   }
-  const judge = await selectJudge(lobbyID);
+  const judge = await selectJudge(lastTurn, lobbyID);
   const prompt = await selectPrompt(lobbyID);
   const id = String(await countTurns(lobbyID) + 1);
   const newTurn = new GameTurn(id, judge, prompt);
@@ -47,9 +48,14 @@ export async function startNewTurn(lobbyID: string): Promise<GameTurn> {
 }
 
 /** Returns UID of the player who will judge the next turn, */
-async function selectJudge(lobbyID: string):
+async function selectJudge(lastTurn: GameTurn | null, lobbyID: string):
   Promise<string> {
-  //TODO
+  const sequence = await getPlayerSequence(lobbyID);
+  const lastIndex = lastTurn ? sequence.indexOf(lastTurn.judge_uid) : -1;
+  if (lastIndex === -1) return sequence[0];
+  let nextIndex = lastIndex + 1;
+  if (nextIndex >= sequence.length) nextIndex = 0;
+  return sequence[nextIndex];
 }
 
 /** Selects a new prompt card from the remaining deck. */
@@ -60,4 +66,16 @@ async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
 /** Deal cards to the players. */
 async function dealCards(turn: GameTurn, lobbyID: string): Promise<void> {
   // TODO
+}
+
+/**
+ * Returns a sequence of player UIDs.
+ * Next judge is selected by rotating it.
+ * The sequence must be stable!
+ */
+async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
+  const players = await getPlayers(lobbyID);
+  // filter out spectators, sort them by UIDs
+  const uids = players.filter((p) => p.role == "player").map((p) => p.uid);
+  return uids.sort();
 }

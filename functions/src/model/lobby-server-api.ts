@@ -61,8 +61,18 @@ export async function getLobby(lobbyID: string): Promise<GameLobby> {
   return lobby;
 }
 
+/**
+ * Updates lobby state in Firestore.
+ * Does not update subcollections! (players, turns, deck etc)
+ */
 export async function updateLobby(lobby: GameLobby): Promise<void> {
   await lobbiesRef.doc(lobby.id).set(lobby);
+}
+
+/** Returns all players in this lobby. */
+export async function getPlayers(lobbyID: string):
+  Promise<Array<PlayerInLobby>> {
+  return (await getPlayersRef(lobbyID).get()).docs.map((p) => p.data());
 }
 
 /**
