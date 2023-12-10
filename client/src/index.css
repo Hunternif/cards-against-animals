@@ -66,6 +66,11 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+button:disabled {
+  cursor: auto;
+  border: 2px solid transparent;
+  opacity: 0.4;
+}
 
 .accent-button {
   background-color: #ffc90f;
@@ -77,6 +82,12 @@ button:focus-visible {
   /** Glow: */
   /* box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.5); */
 }
+.accent-button:disabled {
+  cursor: auto;
+  border: 2px solid transparent;
+  opacity: 0.4;
+}
+
 .start-button > span {
   font-size: x-large;
   font-weight: bold;

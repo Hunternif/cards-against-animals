@@ -1,19 +1,21 @@
-import { CSSProperties, useState } from "react";
-import { Deck } from "../shared/types";
+import { CSSProperties } from "react";
+import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
+import { decksRef } from "../firebase";
+import { addDeck, removeDeck } from "../model/lobby-api";
+import { Deck, GameLobby } from "../shared/types";
 import { FillLayout } from "./layout/FillLayout";
 import { LoadingSpinner } from "./utils";
 
 interface DeckProps {
   deck: Deck,
-  onToggle?: (selected: boolean) => {},
+  selected?: boolean,
+  onToggle?: (selected: boolean) => void,
 }
 
-function DeckBox({ deck, onToggle }: DeckProps) {
-  const [selected, setSelected] = useState(false);
+function DeckBox({ deck, selected, onToggle }: DeckProps) {
   const className = `deck-box ${selected ? "selected" : ""}`;
   function handleClick() {
-    setSelected(!selected);
-    if (onToggle) onToggle(selected);
+    if (onToggle) onToggle(!selected);
   }
   return <div className={className} onClick={handleClick}>
     <h4>{deck.title}</h4>
@@ -31,12 +33,16 @@ const scrollableColumnStyle: CSSProperties = {
   gap: "2em",
 };
 
-const dummyDecks = Array<Deck>(20)
-  .fill(new Deck("dummy", "Dummy Deck"), 0, 20);
+// const dummyDecks = Array<Deck>(20)
+//   .fill(new Deck("dummy", "Dummy Deck"), 0, 20);
 
-export function DeckSelector() {
-  // const [decks, loading] = useCollectionDataOnce(decksRef);
-  const [decks, loading] = [dummyDecks, false];
+interface SelectorProps {
+  lobby: GameLobby,
+}
+
+export function DeckSelector({ lobby }: SelectorProps) {
+  const [decks, loading] = useCollectionDataOnce(decksRef);
+  // const [decks, loading] = [dummyDecks, false]; // for testing UI
   if (loading) return <LoadingSpinner text="Loading decks..." />;
   return (
     <FillLayout style={scrollableColumnStyle}
@@ -46,7 +52,12 @@ export function DeckSelector() {
         display: "flex",
         placeContent: "center"
       }}>
-        <DeckBox deck={deck} />
+        <DeckBox deck={deck}
+          selected={lobby.deck_ids.has(deck.id)}
+          onToggle={(selected) => {
+            if (selected) addDeck(lobby, deck.id);
+            else removeDeck(lobby, deck.id);
+          }} />
       </div>)}
     </FillLayout>
   );

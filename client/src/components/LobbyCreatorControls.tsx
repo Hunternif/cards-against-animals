@@ -29,9 +29,10 @@ const startButtonStyle: CSSProperties = {
 export function LobbyCreatorControls({ lobby }: Props) {
   return <>
     <h3 style={headerStyle}>Select decks</h3>
-    <DeckSelector />
+    <DeckSelector lobby={lobby} />
     <div style={footerStyle}>
-      <button style={startButtonStyle} className="accent-button start-button">
+      <button style={startButtonStyle} className="accent-button start-button"
+      disabled={lobby.deck_ids.size == 0}>
         <img src={play_button} />
         <span style={{ flexGrow: 1 }}>Start</span>
       </button>

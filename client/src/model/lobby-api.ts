@@ -89,6 +89,18 @@ export async function endLobby(lobby: GameLobby): Promise<void> {
   await updateLobby(lobby);
 }
 
+/** Should be used only during lobby setup */
+export async function addDeck(lobby: GameLobby, deckID: string): Promise<void> {
+  lobby.deck_ids.add(deckID);
+  await updateLobby(lobby);
+}
+
+/** Should be used only during lobby setup */
+export async function removeDeck(lobby: GameLobby, deckID: string): Promise<void> {
+  lobby.deck_ids.delete(deckID);
+  await updateLobby(lobby);
+}
+
 /**
  * Will find an active game or create a new one, and attempt to join.
  * Returns lobby ID.
