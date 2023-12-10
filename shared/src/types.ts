@@ -25,10 +25,10 @@ export class GameLobby {
   deck_ids: Set<string> = new Set();
   /** Prompt cards remaining in the deck.
    * Must be fetched separately from a Firebase subcollection. */
-  deck_prompts: Array<PromptDeckCard> = [];
+  deck_prompts: Array<PromptCardInGame> = [];
   /** Response cards remaining in the deck.
    * Must be fetched separately from a Firebase subcollection. */
-  deck_responses: Array<ResponseDeckCard> = [];
+  deck_responses: Array<ResponseCardInGame> = [];
 
   constructor(
     id: string,
@@ -67,7 +67,7 @@ export class GameTurn {
   /** UID of the player who will judge the winner. */
   judge_uid: string;
   /** The prompt that everyone is answering. */
-  prompt: PromptCardInTurn;
+  prompt: PromptCardInGame;
   /** Maps player UID to what cards they have on hand in this turn.
    * Must be fetched separately from a Firebase subcollection. */
   player_data: Map<string, PlayerDataInTurn> = new Map();
@@ -84,7 +84,7 @@ export class GameTurn {
   constructor(
     id: string,
     judge_uid: string,
-    prompt: PromptCardInTurn,
+    prompt: PromptCardInGame,
     time_created: Date = new Date(),
   ) {
     this.id = id;
@@ -99,9 +99,9 @@ export class PlayerDataInTurn {
   player_uid: string;
   player_name: string; // Copied from 'Players' for convenience.
   /** Cards in the player's hand, including `current_response`. */
-  hand: Array<ResponseCardInHand> = [];
+  hand: Array<ResponseCardInGame> = [];
   /** What cards they played in this turn. */
-  current_play: Array<ResponseCardInHand> = [];
+  current_play: Array<ResponseCardInGame> = [];
 
   constructor(player_uid: string, player_name: string) {
     this.player_uid = player_uid;
@@ -151,28 +151,39 @@ export class ResponseDeckCard extends DeckCard {
 }
 
 /**
- * An instance of a card in hand. Contains a reference to the
+ * An instance of a card in game. Contains a reference to the
  * original DeckCard and its cached content.
  */
-export abstract class CardInHand {
+export abstract class CardInGame {
   deck_id: string;
   card_id: string;
   content: string;
-  constructor(deck_id: string, card_id: string, content: string) {
+  rating: number;
+  constructor(
+    deck_id: string,
+    card_id: string,
+    content: string,
+    rating: number = 0,
+  ) {
     this.deck_id = deck_id;
     this.card_id = card_id;
     this.content = content;
+    this.rating = rating;
+  }
+  /** Creates prefixed ID to prevent collisions between decks. */
+  prefixID(): string {
+    return `${this.deck_id}_${this.card_id}`;
   }
 }
 
-/** An instance of a Prompt card played in a turn */
-export class PromptCardInTurn extends CardInHand {
+/** An instance of a Prompt card in a game */
+export class PromptCardInGame extends CardInGame {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
 }
 
-/** An instance of a Response card in hand */
-export class ResponseCardInHand extends CardInHand {
+/** An instance of a Response card in game */
+export class ResponseCardInGame extends CardInGame {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
 }

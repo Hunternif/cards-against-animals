@@ -4,16 +4,23 @@ import { db, getPlayersRef, lobbiesRef } from "../firebase-server";
 import {
   GameLobby,
   PlayerInLobby,
-  PromptDeckCard,
-  ResponseDeckCard
+  PromptCardInGame,
+  ResponseCardInGame,
 } from "../shared/types";
 import { getUserName } from "./auth-api";
-import { getAllPromptsPrefixed, getAllResponsesPrefixed } from "./deck-server-api";
 import {
-  promptDeckCardConverter,
-  responseDeckCardConverter,
+  getAllPromptsInGame,
+  getAllResponsesInGame
+} from "./deck-server-api";
+import {
+  promptCardInGameConverter,
+  responseCardInGameConverter
 } from "./firebase-converters";
-import { getCAAUser, setUsersCurrentLobby, updateCAAUser } from "./user-server-api";
+import {
+  getCAAUser,
+  setUsersCurrentLobby,
+  updateCAAUser
+} from "./user-server-api";
 
 /**
  * Find current active lobby for this user.
@@ -86,30 +93,28 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
  * Copy the content because the deck could be edited or deleted in the future.
  */
 export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
-  const deckIDs = Array.from(lobby.deck_ids);
-  const newPrompts = new Array<PromptDeckCard>();
-  const newResponses = new Array<ResponseDeckCard>();
+  const newPrompts = new Array<PromptCardInGame>();
+  const newResponses = new Array<ResponseCardInGame>();
   // Copy all decks in sequence:
   // (sorry I failed to do parallel...)
   // See https://stackoverflow.com/a/37576787/1093712
   for (const deckID of lobby.deck_ids) {
-    const prompts = await getAllPromptsPrefixed(deckID);
+    const prompts = await getAllPromptsInGame(deckID);
     newPrompts.push(...prompts);
-    const responses = await getAllResponsesPrefixed(deckID);
+    const responses = await getAllResponsesInGame(deckID);
     newResponses.push(...responses);
     logger.info(`Fetched ${prompts.length} prompts and ${responses.length} responses from deck ${deckID}`);
   }
   // Write all cards to the lobby:
   const lobbyPromptsRef = db.collection(`lobbies/${lobby.id}/deck_prompts`)
-    .withConverter(promptDeckCardConverter);
+    .withConverter(promptCardInGameConverter);
   const lobbyResponsesRef = db.collection(`lobbies/${lobby.id}/deck_responses`)
-    .withConverter(responseDeckCardConverter);
+    .withConverter(responseCardInGameConverter);
   await db.runTransaction(async (transaction) => {
     newPrompts.forEach((card) =>
-      transaction.set(lobbyPromptsRef.doc(card.id), card));
+      transaction.set(lobbyPromptsRef.doc(card.prefixID()), card));
     newResponses.forEach((card) =>
-      transaction.set(lobbyResponsesRef.doc(card.id), card));
+      transaction.set(lobbyResponsesRef.doc(card.prefixID()), card));
   });
   logger.info(`Copied ${newPrompts.length} prompts and ${newResponses.length} responses to lobby ${lobby.id}`);
 }
-

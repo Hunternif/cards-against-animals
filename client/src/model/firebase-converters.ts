@@ -11,9 +11,9 @@ import {
   GameTurn,
   PlayerDataInTurn,
   PlayerInLobby,
-  PromptCardInTurn,
+  PromptCardInGame,
   PromptDeckCard,
-  ResponseCardInHand,
+  ResponseCardInGame,
   ResponseDeckCard
 } from "../shared/types";
 
@@ -71,10 +71,11 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const time_created = data.time_created as Timestamp;
-    const prompt = new PromptCardInTurn(
+    const prompt = new PromptCardInGame(
       data.prompt.deck_id,
       data.prompt.card_id,
       data.prompt.content,
+      data.prompt.rating,
     );
     const ret = new GameTurn(
       snapshot.id,
@@ -99,15 +100,15 @@ export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
     const player_uid = snapshot.id;
     const ret = new PlayerDataInTurn(player_uid, data.player_name);
     ret.hand = (data.hand as Array<any>)
-      ?.map(mapResponseCardInHand) || [];
+      ?.map(mapResponseCardInGame) || [];
     ret.current_play = (data.current_play as Array<any>)
-      ?.map(mapResponseCardInHand) || [];
+      ?.map(mapResponseCardInGame) || [];
     return ret;
   },
 };
 
-function mapResponseCardInHand(data: any): ResponseCardInHand {
-  return new ResponseCardInHand(data.deck_id, data.card_id, data.content);
+function mapResponseCardInGame(data: any): ResponseCardInGame {
+  return new ResponseCardInGame(data.deck_id, data.card_id, data.content);
 }
 
 export const userConverter: FirestoreDataConverter<CAAUser> = {
@@ -132,6 +133,22 @@ export const responseDeckCardConverter: FirestoreDataConverter<ResponseDeckCard>
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     return new ResponseDeckCard(data.id, data.content, data.rating);
+  },
+};
+
+export const promptCardInGameConverter: FirestoreDataConverter<PromptCardInGame> = {
+  toFirestore: (card: PromptCardInGame) => copyFields(card),
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+    const data = snapshot.data();
+    return new PromptCardInGame(data.deck_id, data.card_id, data.content, data.rating);
+  },
+};
+
+export const responseCardInGameConverter: FirestoreDataConverter<ResponseCardInGame> = {
+  toFirestore: (card: ResponseCardInGame) => copyFields(card),
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+    const data = snapshot.data();
+    return new ResponseCardInGame(data.deck_id, data.card_id, data.content, data.rating);
   },
 };
 
