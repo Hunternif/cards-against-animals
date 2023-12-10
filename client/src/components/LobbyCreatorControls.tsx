@@ -30,9 +30,15 @@ const startButtonStyle: CSSProperties = {
 
 export function LobbyCreatorControls({ lobby }: Props) {
   const [starting, setStarting] = useState(false);
+  const [error, setError] = useState(null);
+  if (error) throw error;
   async function handleStart() {
     setStarting(true);
+    try {
     await startLobby(lobby);
+    } catch (e: any) {
+      setError(e);
+    }
   }
   if (starting) return <LoadingSpinner text="Starting..."/>;
   return <>

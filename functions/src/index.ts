@@ -12,6 +12,7 @@ import {
   getLobby,
   updateLobby
 } from "./model/lobby-server-api";
+import { startNewTurn } from "./model/turn-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -78,6 +79,7 @@ export const startLobby = onCall<
     assertLobbyCreator(event, lobby);
     // Copy cards from all added decks into the lobby:
     await copyDecksToLobby(lobby);
+    await startNewTurn(lobby.id);
     // Start the game:
     lobby.status = "in_progress";
     await updateLobby(lobby);
