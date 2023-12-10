@@ -1,8 +1,8 @@
 import { User } from "firebase/auth";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
-import { findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef } from "../firebase";
+import { findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, usersRef } from "../firebase";
 import { GameLobby, PlayerInLobby } from "../shared/types";
 import { playerConverter } from "./firebase-converters";
 import { getCAAUser } from "./users-api";
@@ -37,6 +37,16 @@ export async function findOrCreateLobby(user: User): Promise<GameLobby> {
  */
 export async function joinLobby(lobbyID: string, user: User): Promise<void> {
   await joinLobbyFun({ lobby_id: lobbyID, user_id: user.uid });
+}
+
+/** Remove yourself from this lobby */
+export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
+  const playersRef = collection(lobbiesRef, lobby.id, 'players')
+    .withConverter(playerConverter);
+  // Delete your 'player' document in lobby:
+  await deleteDoc(doc(playersRef, user.uid));
+  // Delete your user info which contains 'current lobby':
+  await deleteDoc(doc(usersRef, user.uid));
 }
 
 /**

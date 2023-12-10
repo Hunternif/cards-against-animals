@@ -1,14 +1,14 @@
 import { User } from "firebase/auth";
 import { Col } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { LobbyPlayerList } from "../../components/LobbyPlayerList";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { RowLayout } from "../../components/layout/RowLayout";
 import { LoadingSpinner } from "../../components/utils";
 import { firebaseAuth } from "../../firebase";
-import { useJoinLobby, useLobby } from "../../model/lobby-api";
+import { leaveLobby, useJoinLobby, useLobby } from "../../model/lobby-api";
 import { LoginScreen } from "./LoginScreen";
 
 interface LoaderParams {
@@ -45,6 +45,7 @@ function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
 /** User logged in AND joined the lobby. */
 function JoinedLobbyScreen({ lobbyID, user }: LoggedInProps) {
   const [lobby, loadingLobby] = useLobby(lobbyID);
+  const navigate = useNavigate();
   if (loadingLobby) return <LoadingSpinner text="Loading lobby..." />;
   if (!lobby) throw new Error(`Failed to load lobby ${lobbyID}`);
   return (
@@ -66,7 +67,12 @@ function JoinedLobbyScreen({ lobbyID, user }: LoggedInProps) {
             <LobbyPlayerList lobby={lobby} user={user} />
           </FillLayout>
           <hr />
-          <button style={{ margin: "0 1em" }} disabled={true}>Leave</button>
+          <button style={{ margin: "0 1em" }}
+            onClick={() => {
+              leaveLobby(lobby, user).then(() => navigate("/"));
+            }}>
+            Leave
+          </button>
         </Col>
         <Col>
           <CenteredLayout>Content goes here</CenteredLayout>

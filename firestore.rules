@@ -33,11 +33,16 @@ service cloud.firestore {
         // But only players can read internal data: turns, players, etc.
         allow read: if isLoggedIn() && (userIsAdmin() || userIsInLobby(lobby));
       }
+      
+      match /players/{userID} {
+        // allow deleting your own info.
+        allow delete: if isLoggedIn() && request.auth.uid == userID;
+      }
     }
     match /users/{userID} {
-      // allow reading only your own info when you are logged in:
-      allow read: if request.auth != null
-                  && request.auth.uid == userID;
+      // allow reading only your own info when you are logged in.
+      // also allow deleting your own info:
+      allow read, delete: if isLoggedIn() && request.auth.uid == userID;
     }
     match /{document=**} {
       allow read, write: if false;
