@@ -13,18 +13,27 @@ import {
   promptDeckCardConverter,
   responseDeckCardConverter,
 } from "./firebase-converters";
-import { getCAAUser, setUsersCurrentLobby } from "./user-server-api";
+import { getCAAUser, setUsersCurrentLobby, updateCAAUser } from "./user-server-api";
 
 /**
  * Find current active lobby for this user.
  * Return lobby ID.
  */
-export async function findActiveLobbyIDWithPlayer(userID: string)
-  : Promise<string | null> {
+export async function findActiveLobbyWithPlayer(userID: string)
+  : Promise<GameLobby | null> {
   // Current lobby is written in the 'users' collection:
   const caaUser = await getCAAUser(userID);
   if (!caaUser) return null;
-  return caaUser.current_lobby_id ?? null;
+  if (caaUser.current_lobby_id) {
+    // Verify that lobby exists:
+    const lobby = (await lobbiesRef.doc(caaUser.current_lobby_id).get()).data();
+    if (lobby) return lobby;
+    // Lobby doesn't exist, delete the record:
+    delete caaUser.current_lobby_id;
+    await updateCAAUser(caaUser);
+    return null;
+  }
+  return null;
 }
 
 /** Creates new lobby from his player, returns it. */
@@ -53,24 +62,23 @@ export async function updateLobby(lobby: GameLobby): Promise<void> {
  * Attempts to add player to lobby as "player",
  * or as "specator if it's in progress.
  */
-export async function addPlayer(lobbyID: string, userID: string): Promise<void> {
+export async function addPlayer(lobby: GameLobby, userID: string): Promise<void> {
   const userName = await getUserName(userID);
-  const playersRef = getPlayersRef(lobbyID);
+  const playersRef = getPlayersRef(lobby.id);
   const playerRef = playersRef.doc(userID);
   const hasAlreadyJoined = (await playerRef.get()).exists;
   if (hasAlreadyJoined) {
-    logger.warn(`User ${userName} (${userID}) re-joined lobby ${lobbyID}`);
+    logger.warn(`User ${userName} (${userID}) re-joined lobby ${lobby.id}`);
     return;
   }
-  const lobby = await getLobby(lobbyID);
   if (lobby.status == "ended") {
-    throw new HttpsError("unavailable", `Lobby already ended: ${lobbyID}`);
+    throw new HttpsError("unavailable", `Lobby already ended: ${lobby.id}`);
   }
   const role = (lobby.status == "new") ? "player" : "spectator";
   const player = new PlayerInLobby(userID, userName, role);
   await playerRef.set(player);
-  await setUsersCurrentLobby(userID, lobbyID);
-  logger.info(`User ${userName} (${userID}) joined lobby ${lobbyID} as ${role}`);
+  await setUsersCurrentLobby(userID, lobby.id);
+  logger.info(`User ${userName} (${userID}) joined lobby ${lobby.id} as ${role}`);
 }
 
 /**

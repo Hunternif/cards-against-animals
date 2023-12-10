@@ -7,6 +7,10 @@ export async function getCAAUser(userID: string): Promise<CAAUser | null> {
   return (await usersRef.doc(userID).get()).data() ?? null;
 }
 
+export async function updateCAAUser(caaUser: CAAUser): Promise<void> {
+  await usersRef.doc(caaUser.uid).set(caaUser);
+}
+
 /**
  * Sets this lobby as the user's current lobby, so they can log back into it.
  * If user data doesn't exist, it will be created.

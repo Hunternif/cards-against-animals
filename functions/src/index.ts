@@ -8,7 +8,7 @@ import {
   addPlayer,
   copyDecksToLobby,
   createLobby,
-  findActiveLobbyIDWithPlayer,
+  findActiveLobbyWithPlayer,
   getLobby,
   updateLobby
 } from "./model/lobby-server-api";
@@ -25,9 +25,9 @@ export const findOrCreateLobby = onCall<
     assertLoggedIn(event);
     const creatorUID = event.data.creator_uid;
     // Find current active lobby for this user:
-    const foundLobbyID = await findActiveLobbyIDWithPlayer(creatorUID);
-    if (foundLobbyID) {
-      return { lobby_id: foundLobbyID };
+    const foundLobby = await findActiveLobbyWithPlayer(creatorUID);
+    if (foundLobby) {
+      return { lobby_id: foundLobby.id };
     }
     // Create a new lobby:
     const newLobby = await createLobby(creatorUID);
@@ -46,7 +46,8 @@ export const joinLobby = onCall<
   async (event) => {
     // await sleep(2000);
     assertLoggedIn(event);
-    await addPlayer(event.data.lobby_id, event.data.user_id);
+    const lobby = await getLobby(event.data.lobby_id);
+    await addPlayer(lobby, event.data.user_id);
   }
 );
 
@@ -59,10 +60,10 @@ export const findOrCreateLobbyAndJoin = onCall<
     // await sleep(2000);
     assertLoggedIn(event);
     const userID = event.data.user_id;
-    const lobbyID = await findActiveLobbyIDWithPlayer(userID) ??
-      (await createLobby(userID)).id;
-    await addPlayer(lobbyID, userID);
-    return { lobby_id: lobbyID };
+    const lobby = await findActiveLobbyWithPlayer(userID) ??
+      (await createLobby(userID));
+    await addPlayer(lobby, userID);
+    return { lobby_id: lobby.id };
   }
 );
 
