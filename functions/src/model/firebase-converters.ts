@@ -108,7 +108,7 @@ export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
 };
 
 function mapResponseCardInGame(data: any): ResponseCardInGame {
-  return new ResponseCardInGame(data.deck_id, data.card_id, data.content);
+  return responseCardInGameConverter.fromFirestore(data);
 }
 
 export const userConverter: FirestoreDataConverter<CAAUser> = {
@@ -140,7 +140,8 @@ export const promptCardInGameConverter: FirestoreDataConverter<PromptCardInGame>
   toFirestore: (card: PromptCardInGame) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new PromptCardInGame(data.deck_id, data.card_id, data.content, data.rating);
+    return new PromptCardInGame(
+      data.deck_id, data.card_id, data.random_index, data.content, data.rating);
   },
 };
 
@@ -148,6 +149,7 @@ export const responseCardInGameConverter: FirestoreDataConverter<ResponseCardInG
   toFirestore: (card: ResponseCardInGame) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new ResponseCardInGame(data.deck_id, data.card_id, data.content, data.rating);
+    return new ResponseCardInGame(
+      data.deck_id, data.card_id, data.random_index, data.content, data.rating);
   },
 };

@@ -157,16 +157,20 @@ export class ResponseDeckCard extends DeckCard {
 export abstract class CardInGame {
   deck_id: string;
   card_id: string;
+  /** Used for selecting a random card */
+  random_index: number;
   content: string;
   rating: number;
   constructor(
     deck_id: string,
     card_id: string,
+    random_index: number,
     content: string,
     rating: number = 0,
   ) {
     this.deck_id = deck_id;
     this.card_id = card_id;
+    this.random_index = random_index;
     this.content = content;
     this.rating = rating;
   }
