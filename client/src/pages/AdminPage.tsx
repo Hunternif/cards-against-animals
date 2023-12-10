@@ -6,6 +6,7 @@ import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth, useFetchCAAUser } from "../firebase";
 import { AdminUserPill } from "../components/AdminUserPill";
 import { LoadingSpinner } from "../components/utils";
+import { signOut } from "../model/users-api";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -25,7 +26,7 @@ function AccessDeniedView({ user }: UserProps) {
   return <CenteredLayout style={{ textAlign: "center" }}>
     <p>Hello, {user.displayName}!</p>
     <p>Access denied</p>
-    <button onClick={() => firebaseAuth.signOut()}>Sign out</button>
+    <button onClick={() => signOut(user)}>Sign out</button>
   </CenteredLayout>;
 }
 

@@ -1,7 +1,7 @@
 import { User } from "firebase/auth";
 import React, { MouseEventHandler, ReactNode } from "react";
 import { Dropdown } from "react-bootstrap";
-import { firebaseAuth } from "../firebase";
+import { signOut } from "../model/users-api";
 
 interface UserProps {
   user: User;
@@ -43,7 +43,7 @@ export function AdminUserPill({ user }: UserProps) {
         </span>
       </Dropdown.Toggle>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={() => firebaseAuth.signOut()}>Sign Out</Dropdown.Item>
+        <Dropdown.Item onClick={() => signOut(user)}>Sign Out</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );
