@@ -1,10 +1,10 @@
 import { User } from "firebase/auth";
+import { ReactNode, useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
 import { usePlayers } from "../model/lobby-api";
+import { GameLobby, PlayerInLobby } from "../shared/types";
 import { FillLayout } from "./layout/FillLayout";
 import { LoadingSpinner } from "./utils";
-import { GameLobby, PlayerInLobby } from "../shared/types";
-import { ReactNode, useEffect, useState } from "react";
 
 interface ListProps {
   lobby: GameLobby,
@@ -19,7 +19,7 @@ function EmptyCard() {
       backgroundColor: "#00000000",
     }}>
       <Card.Body style={{
-        padding: "0.5em 1em",
+        padding: "0.5em 0.8em",
         opacity: "50%",
         overflow: "hidden",
         whiteSpace: "nowrap",
@@ -41,14 +41,21 @@ function PlayerCard({ player, isMe, isCreator }: PlayerProps) {
       bg={isMe ? "secondary" : "none"}
     >
       <Card.Body style={{
-        padding: "0.5em 1em",
+        padding: "0.5em 0.8em",
         overflow: "hidden",
         whiteSpace: "nowrap",
-        textOverflow: "ellipsis",
         display: "flex",
       }}>
-        <span>{player.name}</span>
-        {isCreator && <span style={{ marginLeft: "auto" }}>👑</span>}
+        <span style={{
+          flexGrow: 1,
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+        }}>{player.name}</span>
+        {isCreator && <span style={{
+          marginLeft: "auto",
+          marginRight: "-0.2em",
+          }}>👑</span>}
       </Card.Body>
     </Card>
   );
