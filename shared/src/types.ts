@@ -21,6 +21,8 @@ export class GameLobby {
    * Must be fetched separately from a Firebase subcollection. */
   turns: Array<GameTurn> = [];
 
+  /** List of deck IDs selected for this lobby */
+  deck_ids: Set<string> = new Set();
   /** Prompt cards remaining in the deck.
    * Must be fetched separately from a Firebase subcollection. */
   deck_prompts: Array<PromptDeckCard> = [];

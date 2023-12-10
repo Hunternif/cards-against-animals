@@ -27,6 +27,7 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
       time_created: lobby.time_created ?
         Timestamp.fromDate(lobby.time_created) :
         serverTimestamp(), // set new time when creating a new lobby
+      deck_ids: Array.from(lobby.deck_ids),
       // the rest of the fields are subcollections, and they
       // should not be uploaded during creation.
     }
@@ -36,6 +37,7 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
     const ret = new GameLobby(
       snapshot.id, data.lobby_key, data.creator_uid, data.status);
     ret.time_created = (data.time_created as Timestamp).toDate();
+    ret.deck_ids = new Set<string>(data.deck_ids || []);
     return ret;
   },
 };
