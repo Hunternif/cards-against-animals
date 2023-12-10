@@ -1,8 +1,9 @@
 // APIs for when the game as started.
 
+import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
 import { GameTurn, PromptCardInGame } from "../shared/types";
-import { turnConverter } from "./firebase-converters";
+import { promptCardInGameConverter, turnConverter } from "./firebase-converters";
 import { getPlayers } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
@@ -60,7 +61,17 @@ async function selectJudge(lastTurn: GameTurn | null, lobbyID: string):
 
 /** Selects a new prompt card from the remaining deck. */
 async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
-  // TODO
+  const promptsRef = db.collection(`lobbies/${lobbyID}/deck_prompts`)
+    .withConverter(promptCardInGameConverter);
+  // TODO: set random index on each card during lobby creation, and order by it.
+  const cards = (await promptsRef.get()).docs.map((c) => c.data());
+  if (cards.length === 0) {
+    throw new HttpsError("failed-precondition", "No more cards in deck");
+  }
+  const selected = cards[getRandomInt(0, cards.length - 1)];
+  // Remove selected card from the remaining deck:
+  await promptsRef.doc(selected.prefixID()).delete();
+  return selected;
 }
 
 /** Deal cards to the players. */
@@ -78,4 +89,18 @@ async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
   // filter out spectators, sort them by UIDs
   const uids = players.filter((p) => p.role == "player").map((p) => p.uid);
   return uids.sort();
+}
+
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive).
+ * The value is no lower than min (or the next integer greater than min
+ * if min isn't an integer) and no greater than max (or the next integer
+ * lower than max if max isn't an integer).
+ * Using Math.round() will give you a non-uniform distribution!
+ * From https://stackoverflow.com/a/1527820/1093712
+ */
+function getRandomInt(min: number, max: number): number {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
