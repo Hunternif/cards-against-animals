@@ -15,6 +15,7 @@ import {
   ResponseCardInGame,
   ResponseDeckCard
 } from "../shared/types";
+import { copyFields, copyFields2 } from "../shared/utils";
 
 export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
   toFirestore: (lobby: GameLobby) => {
@@ -150,27 +151,3 @@ export const responseCardInGameConverter: FirestoreDataConverter<ResponseCardInG
     return new ResponseCardInGame(data.deck_id, data.card_id, data.content, data.rating);
   },
 };
-
-// Thanks to https://stackoverflow.com/a/38340374/1093712
-function removeUndefined(obj: any): any {
-  Object.keys(obj).forEach((key) => {
-    if (obj[key] === undefined) {
-      delete obj[key];
-    }
-  });
-  return obj;
-}
-
-/**Copies all fields to a new object, except `id`, and underfined fields */
-function copyFields<U>(data: U): U {
-  const obj: any = Object.assign({}, data);
-  delete obj['id'];
-  return removeUndefined(obj);
-}
-
-/**Copies all fields to a new object, except `id` */
-function copyFields2<U, V>(data: U, data2: V): U & V {
-  const obj: any = Object.assign({}, data, data2);
-  delete obj['id'];
-  return removeUndefined(obj);
-}

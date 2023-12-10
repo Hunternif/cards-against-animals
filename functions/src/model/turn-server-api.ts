@@ -3,6 +3,7 @@
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
 import { GameTurn, PromptCardInGame } from "../shared/types";
+import { getRandomInt } from "../shared/utils";
 import { promptCardInGameConverter, turnConverter } from "./firebase-converters";
 import { getPlayers } from "./lobby-server-api";
 
@@ -89,18 +90,4 @@ async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
   // filter out spectators, sort them by UIDs
   const uids = players.filter((p) => p.role == "player").map((p) => p.uid);
   return uids.sort();
-}
-
-/**
- * Returns a random integer between min (inclusive) and max (inclusive).
- * The value is no lower than min (or the next integer greater than min
- * if min isn't an integer) and no greater than max (or the next integer
- * lower than max if max isn't an integer).
- * Using Math.round() will give you a non-uniform distribution!
- * From https://stackoverflow.com/a/1527820/1093712
- */
-function getRandomInt(min: number, max: number): number {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
