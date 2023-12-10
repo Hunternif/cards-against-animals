@@ -45,7 +45,11 @@ function PlayerCard({ player, isMe, isCreator }: PlayerProps) {
         overflow: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
-      }}>{player.name}</Card.Body>
+        display: "flex",
+      }}>
+        <span>{player.name}</span>
+        {isCreator && <span style={{ marginLeft: "auto" }}>👑</span>}
+      </Card.Body>
     </Card>
   );
 }
@@ -66,6 +70,7 @@ export function LobbyPlayerList({ lobby, user }: ListProps) {
         if (players && players[i]) {
           newSlots.push(<PlayerCard player={players[i]}
             isMe={user.uid === players[i].uid}
+            isCreator={lobby.creator_uid === players[i].uid}
           />);
         } else {
           newSlots.push(<EmptyCard />);
