@@ -31,6 +31,6 @@ export function LoginScreen({ existingLobbyID }: Props) {
   }
   return <CenteredLayout>
     <h1 style={{ marginBottom: "1em" }}>Cards Against Animals</h1>
-    <AnonymousLogin onLogin={handleLogin} disabled={joining} />
+    <AnonymousLogin onLogin={handleLogin} joining={joining} />
   </CenteredLayout>;
 }

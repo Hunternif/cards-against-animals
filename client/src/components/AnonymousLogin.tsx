@@ -8,13 +8,14 @@ import { LoadingSpinner, useEffectOnce } from "./utils";
 
 interface Props {
   onLogin?: (user: User) => void,
-  disabled: boolean,
+  joining: boolean,
 }
 
-export function AnonymousLogin({ onLogin, disabled }: Props) {
-  const [user, loading] = useAuthState(firebaseAuth);
+export function AnonymousLogin({ onLogin, joining }: Props) {
+  const [user, loadingUser] = useAuthState(firebaseAuth);
   const suggestedName = "CoolNickname123";
   const [name, setName] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
 
   useEffectOnce(() => {
     // Load user's name only once
@@ -39,8 +40,10 @@ export function AnonymousLogin({ onLogin, disabled }: Props) {
 
   function login() {
     if (!user) {
+      setLoggingIn(true);
       signInAnonymously(firebaseAuth).then((cred) => {
         console.log("Created new anonymous user");
+        setLoggingIn(false);
         updateProfileName(cred.user);
         if (onLogin) onLogin(cred.user);
       })
@@ -60,21 +63,24 @@ export function AnonymousLogin({ onLogin, disabled }: Props) {
       padding: "1em",
       maxWidth: "300px",
     }}>
-      <Form onSubmit={(e) => { e.preventDefault(); login(); }}>
-        <Form.Group style={{ marginBottom: "1em" }}>
-          <Form.Label><h4>Choose a nickname</h4></Form.Label>
-          {loading ? <LoadingSpinner /> : (
-            <Form.Control type="text" value={name}
-              placeholder={suggestedName}
-              onChange={(e) => setName(e.target.value)}
-              disabled={disabled}
-            />
-          )}
-        </Form.Group>
-        <CenteredLayout>
-          <button disabled={loading || disabled}>Start</button>
-        </CenteredLayout>
-      </Form>
+      {loggingIn ? <LoadingSpinner text="Logging in..." /> :
+        joining ? <LoadingSpinner text="Joining..." /> : (
+          <Form onSubmit={(e) => { e.preventDefault(); login(); }}>
+            <Form.Group style={{ marginBottom: "1em" }}>
+              <Form.Label><h4>Choose a nickname</h4></Form.Label>
+              {loadingUser ? <LoadingSpinner /> : (
+                <Form.Control type="text" value={name}
+                  placeholder={suggestedName}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={joining}
+                />
+              )}
+            </Form.Group>
+            <CenteredLayout>
+              <button disabled={loadingUser || joining}>Start</button>
+            </CenteredLayout>
+          </Form>
+        )}
     </Card>
   </CenteredLayout>;
 }
