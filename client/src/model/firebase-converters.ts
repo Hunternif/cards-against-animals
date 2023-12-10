@@ -23,7 +23,6 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
       id: lobby.id,
       lobby_key: lobby.lobby_key,
       status: lobby.status,
-      player_uids: Array.from(lobby.player_uids),
       creator_uid: lobby.creator_uid,
       time_created: lobby.time_created ?
         Timestamp.fromDate(lobby.time_created) :
@@ -37,7 +36,6 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
     const ret = new GameLobby(
       snapshot.id, data.lobby_key, data.creator_uid, data.status);
     ret.time_created = (data.time_created as Timestamp).toDate();
-    ret.player_uids = new Set<string>(data.player_uids || []);
     return ret;
   },
 };

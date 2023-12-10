@@ -23,7 +23,6 @@ export async function createLobby(userID: string): Promise<GameLobby> {
   const newLobbyRef = lobbiesRef.doc();
   const newID = newLobbyRef.id;
   const newLobby = new GameLobby(newID, newID, userID, "new");
-  newLobby.player_uids.add(userID);
   await newLobbyRef.set(newLobby);
   logger.info(`Created new lobby from user: ${userID}`);
   return newLobby;
@@ -40,10 +39,6 @@ export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
  */
 export async function addPlayer(lobbyID: string, userID: string): Promise<void> {
   const userName = await getUserName(userID);
-  const lobby = await getLobby(lobbyID);
-  if (!lobby) {
-    throw new HttpsError("not-found", `Lobby not found: ${lobbyID}`);
-  }
   const playersRef = getPlayersRef(lobbyID);
   const playerRef = playersRef.doc(userID);
   const hasAlreadyJoined = (await playerRef.get()).exists;
@@ -51,14 +46,16 @@ export async function addPlayer(lobbyID: string, userID: string): Promise<void> 
     logger.warn(`User ${userName} (${userID}) re-joined lobby ${lobbyID}`);
     return;
   }
+  const lobby = await getLobby(lobbyID);
+  if (!lobby) {
+    throw new HttpsError("not-found", `Lobby not found: ${lobbyID}`);
+  }
   if (lobby.status == "ended") {
     throw new HttpsError("unavailable", `Lobby already ended: ${lobbyID}`);
   }
   const role = (lobby.status == "new") ? "player" : "spectator";
   const player = new PlayerInLobby(userID, userName, role);
   await playerRef.set(player);
-  lobby.player_uids.add(userID);
-  await lobbiesRef.doc(lobbyID).set(lobby);
   await setUsersCurrentLobby(userID, lobbyID);
   logger.info(`User ${userName} (${userID}) joined lobby ${lobbyID} as ${role}`);
 }

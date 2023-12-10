@@ -1,13 +1,21 @@
 import { User } from "firebase/auth";
 import { collection, doc, getDoc } from "firebase/firestore";
-import { findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef } from "../firebase";
-import { GameLobby } from "../shared/types";
 import { useEffect, useState } from "react";
-import { useCollectionData, useDocumentData, useDocumentDataOnce } from "react-firebase-hooks/firestore";
+import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
+import { findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef } from "../firebase";
+import { GameLobby, PlayerInLobby } from "../shared/types";
 import { playerConverter } from "./firebase-converters";
+import { getCAAUser } from "./users-api";
 
 export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
   return (await getDoc(doc(lobbiesRef, lobbyID))).data() ?? null;
+}
+
+export async function getPlayerInLobby(lobbyID: string, userID: string):
+  Promise<PlayerInLobby | null> {
+  const playersRef = collection(lobbiesRef, lobbyID, 'players')
+    .withConverter(playerConverter);
+  return (await getDoc(doc(playersRef, userID))).data() ?? null;
 }
 
 export async function findOrCreateLobbyID(user: User): Promise<string> {
@@ -40,10 +48,9 @@ export async function findOrCreateLobbyAndJoin(user: User): Promise<string> {
   return res.data.lobby_id;
 }
 
-async function getLobbyAndjoin(lobbyID: string, user: User) {
-  const lobby = await getLobby(lobbyID);
-  if (!lobby) throw new Error(`Couldn't find lobby ${lobbyID}`);
-  if (!lobby.hasPlayerID(user.uid)) {
+async function joinLobbyIfNeeded(lobbyID: string, user: User) {
+  const caaUser = await getCAAUser(user.uid);
+  if (caaUser?.current_lobby_id !== lobbyID) {
     await joinLobby(lobbyID, user);
   }
 }
@@ -53,7 +60,7 @@ export function useJoinLobby(lobbyID: string, user: User): [joined: boolean] {
   const [joined, setJoined] = useState(false);
   const [error, setError] = useState(null);
   useEffect(() => {
-    getLobbyAndjoin(lobbyID, user).then(() => {
+    joinLobbyIfNeeded(lobbyID, user).then(() => {
       setJoined(true);
     }).catch((e) => setError(e));
   }, [lobbyID, user.uid]);
