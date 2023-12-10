@@ -40,6 +40,12 @@ service cloud.firestore {
         // allow deleting your own info.
         allow delete: if isLoggedIn() && request.auth.uid == userID;
       }
+      match /deck_prompts/{document=**} {
+        allow write: if isLoggedIn() && userIsCreator(lobby);
+      }
+      match /deck_responses/{document=**} {
+        allow write: if isLoggedIn() && userIsCreator(lobby);
+      }
     }
     match /users/{userID} {
       // allow reading only your own info when you are logged in.

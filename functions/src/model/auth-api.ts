@@ -1,9 +1,20 @@
 import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
 import { firebaseAuth } from "../firebase-server";
+import { GameLobby } from "../shared/types";
 
-export async function assertLoggedIn(event: CallableRequest) {
+/** Asserts that current user is logged in. */
+export function assertLoggedIn(event: CallableRequest) {
   if (!event.auth) {
     throw new HttpsError("unauthenticated", "Must log in before calling functions");
+  }
+}
+
+/** Asserts that current user is the creator of the lobby */
+export function assertLobbyCreator(
+  event: CallableRequest, lobby: GameLobby) {
+  assertLoggedIn(event);
+  if (!event.auth || event.auth.uid !== lobby.creator_uid) {
+    throw new HttpsError("unauthenticated", "Must be lobby creator");
   }
 }
 

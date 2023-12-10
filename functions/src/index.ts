@@ -1,9 +1,17 @@
+import * as logger from "firebase-functions/logger";
 import { onCall } from "firebase-functions/v2/https";
 
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
-import { addPlayer, createLobby, findActiveLobbyIDWithPlayer } from "./model/lobby-server-api";
-import { assertLoggedIn } from "./model/auth-api";
+import { assertLobbyCreator, assertLoggedIn } from "./model/auth-api";
+import {
+  addPlayer,
+  copyDecksToLobby,
+  createLobby,
+  findActiveLobbyIDWithPlayer,
+  getLobby,
+  updateLobby
+} from "./model/lobby-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -55,5 +63,23 @@ export const findOrCreateLobbyAndJoin = onCall<
       (await createLobby(userID)).id;
     await addPlayer(lobbyID, userID);
     return { lobby_id: lobbyID };
+  }
+);
+
+/** Completes lobby setup and starts the game. */
+export const startLobby = onCall<
+  { lobby_id: string }, Promise<void>
+>(
+  { region: firebaseConfig.region, maxInstances: 2 },
+  async (event) => {
+    assertLoggedIn(event);
+    const lobby = await getLobby(event.data.lobby_id);
+    assertLobbyCreator(event, lobby);
+    // Copy cards from all added decks into the lobby:
+    await copyDecksToLobby(lobby);
+    // Start the game:
+    lobby.status = "in_progress";
+    await updateLobby(lobby);
+    logger.info(`Started lobby ${lobby.id}`);
   }
 );

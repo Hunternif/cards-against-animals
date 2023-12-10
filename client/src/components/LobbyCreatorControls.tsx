@@ -1,8 +1,9 @@
-import { CSSProperties } from "react";
+import { CSSProperties, useState } from "react";
 import { GameLobby } from "../shared/types";
 import { DeckSelector } from "./DeckSelector";
 import play_button from '../assets/play_button.svg'
 import { startLobby } from "../model/lobby-api";
+import { LoadingSpinner } from "./utils";
 
 interface Props {
   lobby: GameLobby,
@@ -28,12 +29,18 @@ const startButtonStyle: CSSProperties = {
 };
 
 export function LobbyCreatorControls({ lobby }: Props) {
+  const [starting, setStarting] = useState(false);
+  async function handleStart() {
+    setStarting(true);
+    await startLobby(lobby);
+  }
+  if (starting) return <LoadingSpinner text="Starting..."/>;
   return <>
     <h3 style={headerStyle}>Select decks</h3>
     <DeckSelector lobby={lobby} />
     <div style={footerStyle}>
       <button style={startButtonStyle} className="accent-button start-button"
-        onClick={() => startLobby(lobby)}
+        onClick={handleStart}
         disabled={lobby.deck_ids.size == 0}>
         <img src={play_button} />
         <span style={{ flexGrow: 1 }}>Start</span>

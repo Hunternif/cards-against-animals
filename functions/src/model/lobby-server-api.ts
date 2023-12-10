@@ -1,8 +1,18 @@
 import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
-import { getPlayersRef, lobbiesRef } from "../firebase-server";
-import { GameLobby, PlayerInLobby } from "../shared/types";
+import { db, getPlayersRef, lobbiesRef } from "../firebase-server";
+import {
+  GameLobby,
+  PlayerInLobby,
+  PromptDeckCard,
+  ResponseDeckCard
+} from "../shared/types";
 import { getUserName } from "./auth-api";
+import { getAllPromptsPrefixed, getAllResponsesPrefixed } from "./deck-server-api";
+import {
+  promptDeckCardConverter,
+  responseDeckCardConverter,
+} from "./firebase-converters";
 import { getCAAUser, setUsersCurrentLobby } from "./user-server-api";
 
 /**
@@ -28,9 +38,15 @@ export async function createLobby(userID: string): Promise<GameLobby> {
   return newLobby;
 }
 
-/** Finds lobby by ID */
-export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
-  return (await lobbiesRef.doc(lobbyID).get()).data() ?? null;
+/** Finds lobby by ID, or throws HttpsError */
+export async function getLobby(lobbyID: string): Promise<GameLobby> {
+  const lobby = (await lobbiesRef.doc(lobbyID).get()).data();
+  if (!lobby) throw new HttpsError("not-found", `Lobby not found: ${lobbyID}`);
+  return lobby;
+}
+
+export async function updateLobby(lobby: GameLobby): Promise<void> {
+  await lobbiesRef.doc(lobby.id).set(lobby);
 }
 
 /**
@@ -47,9 +63,6 @@ export async function addPlayer(lobbyID: string, userID: string): Promise<void> 
     return;
   }
   const lobby = await getLobby(lobbyID);
-  if (!lobby) {
-    throw new HttpsError("not-found", `Lobby not found: ${lobbyID}`);
-  }
   if (lobby.status == "ended") {
     throw new HttpsError("unavailable", `Lobby already ended: ${lobbyID}`);
   }
@@ -59,3 +72,36 @@ export async function addPlayer(lobbyID: string, userID: string): Promise<void> 
   await setUsersCurrentLobby(userID, lobbyID);
   logger.info(`User ${userName} (${userID}) joined lobby ${lobbyID} as ${role}`);
 }
+
+/**
+ * Copy cards from all the decks into the lobby.
+ * Copy the content because the deck could be edited or deleted in the future.
+ */
+export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
+  const deckIDs = Array.from(lobby.deck_ids);
+  const newPrompts = new Array<PromptDeckCard>();
+  const newResponses = new Array<ResponseDeckCard>();
+  // Copy all decks in sequence:
+  // (sorry I failed to do parallel...)
+  // See https://stackoverflow.com/a/37576787/1093712
+  for (const deckID of lobby.deck_ids) {
+    const prompts = await getAllPromptsPrefixed(deckID);
+    newPrompts.push(...prompts);
+    const responses = await getAllResponsesPrefixed(deckID);
+    newResponses.push(...responses);
+    logger.info(`Fetched ${prompts.length} prompts and ${responses.length} responses from deck ${deckID}`);
+  }
+  // Write all cards to the lobby:
+  const lobbyPromptsRef = db.collection(`lobbies/${lobby.id}/deck_prompts`)
+    .withConverter(promptDeckCardConverter);
+  const lobbyResponsesRef = db.collection(`lobbies/${lobby.id}/deck_responses`)
+    .withConverter(responseDeckCardConverter);
+  await db.runTransaction(async (transaction) => {
+    newPrompts.forEach((card) =>
+      transaction.set(lobbyPromptsRef.doc(card.id), card));
+    newResponses.forEach((card) =>
+      transaction.set(lobbyResponsesRef.doc(card.id), card));
+  });
+  logger.info(`Copied ${newPrompts.length} prompts and ${newResponses.length} responses to lobby ${lobby.id}`);
+}
+

@@ -1,5 +1,5 @@
 import { collection, doc, getDoc, getDocs, runTransaction, setDoc, writeBatch } from "firebase/firestore";
-import { db, decksRef } from "../firebase";
+import { db, decksRef, lobbiesRef } from "../firebase";
 import { Deck, PromptDeckCard, ResponseDeckCard } from "../shared/types";
 import { promptDeckCardConverter, responseDeckCardConverter } from "./firebase-converters";
 
@@ -48,4 +48,16 @@ export async function uploadDeck(deck: Deck) {
 
 export async function getDecks(): Promise<Array<Deck>> {
   return (await getDocs(decksRef)).docs.map((p) => p.data());
+}
+
+export async function getPrompts(deckID: string): Promise<Array<PromptDeckCard>> {
+  const cardsRef = collection(decksRef, deckID, 'prompts')
+    .withConverter(promptDeckCardConverter);
+  return (await getDocs(cardsRef)).docs.map((p) => p.data());
+}
+
+export async function getResponses(deckID: string): Promise<Array<ResponseDeckCard>> {
+  const cardsRef = collection(decksRef, deckID, 'responses')
+    .withConverter(responseDeckCardConverter);
+  return (await getDocs(cardsRef)).docs.map((p) => p.data());
 }
