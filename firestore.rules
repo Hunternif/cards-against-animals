@@ -28,6 +28,7 @@ service cloud.firestore {
   	match /lobbies/{lobby} {
       // Anyone can read basic lobby data:
     	allow read: if isLoggedIn();
+      allow update: if isLoggedIn() && userIsCreator(lobby);
 
       match /{path=**} {
         // But only players can read internal data: turns, players, etc.

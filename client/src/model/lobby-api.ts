@@ -11,6 +11,17 @@ export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
   return (await getDoc(doc(lobbiesRef, lobbyID))).data() ?? null;
 }
 
+async function updateLobby(lobby: GameLobby): Promise<void> {
+  await setDoc(doc(lobbiesRef, lobby.id), lobby);
+}
+
+export async function getAllPlayersInLobby(lobbyID: string):
+  Promise<Array<PlayerInLobby>> {
+  const playersRef = collection(lobbiesRef, lobbyID, 'players')
+    .withConverter(playerConverter);
+  return (await getDocs(playersRef)).docs.map((p) => p.data());
+}
+
 export async function getPlayerInLobby(lobbyID: string, userID: string):
   Promise<PlayerInLobby | null> {
   const playersRef = collection(lobbiesRef, lobbyID, 'players')
@@ -41,6 +52,17 @@ export async function joinLobby(lobbyID: string, user: User): Promise<void> {
 
 /** Remove yourself from this lobby */
 export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
+  // If you're creator, reassign this role to the next user:
+  if (lobby.creator_uid === user.uid) {
+    const players = await getAllPlayersInLobby(lobby.id);
+    const nextPlayer = players.find((p) => p.uid !== user.uid);
+    if (nextPlayer) {
+      await setLobbyCreator(lobby, nextPlayer.uid);
+    } else {
+      // You're the last player! Close the lobby:
+      await endLobby(lobby);
+    }
+  }
   const playersRef = collection(lobbiesRef, lobby.id, 'players')
     .withConverter(playerConverter);
   // Delete your 'player' document in lobby:
@@ -54,6 +76,17 @@ export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
   } else {
     await deleteDoc(doc(usersRef, user.uid));
   }
+}
+
+export async function setLobbyCreator(lobby: GameLobby, userID: string):
+  Promise<void> {
+  lobby.creator_uid = userID;
+  await updateLobby(lobby);
+}
+
+export async function endLobby(lobby: GameLobby): Promise<void> {
+  lobby.status = "ended";
+  await updateLobby(lobby);
 }
 
 /**
