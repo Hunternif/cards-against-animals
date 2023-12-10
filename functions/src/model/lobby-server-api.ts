@@ -1,8 +1,9 @@
 import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
-import { firebaseAuth, getPlayersRef, lobbiesRef } from "../firebase-server";
+import { getPlayersRef, lobbiesRef } from "../firebase-server";
 import { GameLobby, PlayerInLobby } from "../shared/types";
 import { getUserName } from "./auth-api";
+import { getCAAUser, setUsersCurrentLobby } from "./user-server-api";
 
 /**
  * Find current active lobby for this user.
@@ -10,16 +11,10 @@ import { getUserName } from "./auth-api";
  */
 export async function findActiveLobbyIDWithPlayer(userID: string)
   : Promise<string | null> {
-  const foundLobbies = (await lobbiesRef
-    .where("status", "==", "new")
-    .where("player_uids", "array-contains", userID)
-    .get()).docs;
-  if (foundLobbies.length > 0) {
-    logger.info(`Found active lobby ${foundLobbies[0].id} for user ${userID}`);
-    return foundLobbies[0].id;
-  } else {
-    return null;
-  }
+  // Current lobby is written in the 'users' collection:
+  const caaUser = await getCAAUser(userID);
+  if (!caaUser) return null;
+  return caaUser.current_lobby_id ?? null;
 }
 
 /** Creates new lobby from his player, returns it. */
@@ -53,7 +48,7 @@ export async function addPlayer(lobbyID: string, userID: string): Promise<void> 
   const playerRef = playersRef.doc(userID);
   const hasAlreadyJoined = (await playerRef.get()).exists;
   if (hasAlreadyJoined) {
-    logger.warn(`User ${userName} (${userID}) tried to join lobby ${lobbyID} twice`);
+    logger.warn(`User ${userName} (${userID}) re-joined lobby ${lobbyID}`);
     return;
   }
   if (lobby.status == "ended") {
@@ -64,5 +59,6 @@ export async function addPlayer(lobbyID: string, userID: string): Promise<void> 
   await playerRef.set(player);
   lobby.player_uids.add(userID);
   await lobbiesRef.doc(lobbyID).set(lobby);
+  await setUsersCurrentLobby(userID, lobbyID);
   logger.info(`User ${userName} (${userID}) joined lobby ${lobbyID} as ${role}`);
 }

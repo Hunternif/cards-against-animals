@@ -195,19 +195,22 @@ export type LobbyStatus = "new" | "in_progress" | "ended";
 */
 export class CAAUser {
   uid: string;
-  email: string;
+  email?: string;
   name?: string;
   is_admin: boolean;
+  current_lobby_id?: string;
 
   constructor(
     uid: string,
-    email: string,
+    email: string | null | undefined = null,
     name: string | null | undefined = null,
     is_admin: boolean = false,
+    current_lobby_id: string | null | undefined = null,
   ) {
     this.uid = uid;
-    this.email = email;
+    if (email) this.email = email;
     if (name) this.name = name;
     this.is_admin = is_admin;
+    if (current_lobby_id) this.current_lobby_id = current_lobby_id;
   }
 }

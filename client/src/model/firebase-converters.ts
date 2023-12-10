@@ -116,7 +116,8 @@ export const userConverter: FirestoreDataConverter<CAAUser> = {
   toFirestore: (user: CAAUser) => Object.assign({}, user),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new CAAUser(data.uid, data.name, data.email, data.is_admin ?? false);
+    return new CAAUser(data.uid, data.name, data.email, data.is_admin ?? false,
+      data.current_lobby_id);
   },
 };
 
