@@ -1,33 +1,27 @@
-import './scss/styles.scss'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import './index.css'
 import { AdminPage } from './pages/AdminPage.tsx'
-import { LobbiesAdmin } from './pages/admin-screens/LobbiesAdmin.tsx'
-import { DecksAdmin } from './pages/admin-screens/DecksAdmin.tsx'
-import { UploadDeck } from './pages/admin-screens/UploadDeck.tsx'
-import { GamePage } from './pages/GamePage.tsx'
 import { ErrorPage } from './pages/ErrorPage.tsx'
-import { LobbyScreen, lobbyLoader } from './pages/game-screens/LobbyScreen.tsx'
-import { LoginScreen } from './pages/game-screens/LoginScreen.tsx'
+import { LobbyPage, lobbyLoader } from './pages/LobbyPage.tsx'
+import { WelcomePage } from './pages/WelcomePage.tsx'
+import { DecksAdmin } from './pages/admin-screens/DecksAdmin.tsx'
+import { LobbiesAdmin } from './pages/admin-screens/LobbiesAdmin.tsx'
+import { UploadDeck } from './pages/admin-screens/UploadDeck.tsx'
+import './scss/styles.scss'
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <GamePage />,
+    element: <WelcomePage />,
     errorElement: <ErrorPage />,
-    children: [
-      {
-        path: "/",
-        element: <LoginScreen />,
-      },
-      {
-        path: "/:lobbyID",
-        element: <LobbyScreen />,
-        loader: lobbyLoader,
-      },
-    ],
+  },
+  {
+    path: "/:lobbyID",
+    element: <LobbyPage />,
+    errorElement: <ErrorPage />,
+    loader: lobbyLoader,
   },
   {
     path: "/admin",

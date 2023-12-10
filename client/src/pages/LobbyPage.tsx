@@ -2,14 +2,14 @@ import { User } from "firebase/auth";
 import { Col } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { LobbyPlayerList } from "../../components/LobbyPlayerList";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { FillLayout } from "../../components/layout/FillLayout";
-import { RowLayout } from "../../components/layout/RowLayout";
-import { LoadingSpinner } from "../../components/utils";
-import { firebaseAuth } from "../../firebase";
-import { leaveLobby, useJoinLobby, useLobby } from "../../model/lobby-api";
-import { LoginScreen } from "./LoginScreen";
+import { LobbyPlayerList } from "../components/LobbyPlayerList";
+import { CenteredLayout } from "../components/layout/CenteredLayout";
+import { FillLayout } from "../components/layout/FillLayout";
+import { RowLayout } from "../components/layout/RowLayout";
+import { LoadingSpinner } from "../components/utils";
+import { firebaseAuth } from "../firebase";
+import { leaveLobby, useJoinLobby, useLobby } from "../model/lobby-api";
+import { LoginScreen } from "./game-screens/LoginScreen";
 
 interface LoaderParams {
   params: any
@@ -20,7 +20,7 @@ export function lobbyLoader({ params }: LoaderParams): string {
 }
 
 /** User opened the lobby screen, but not necessarily logged in or in this lobby. */
-export function LobbyScreen() {
+export function LobbyPage() {
   // Double-check that we are logged in.
   // Users who are sent the link will need to log in first.
   const [user, loadingUser] = useAuthState(firebaseAuth);
