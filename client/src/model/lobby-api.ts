@@ -84,6 +84,11 @@ export async function setLobbyCreator(lobby: GameLobby, userID: string):
   await updateLobby(lobby);
 }
 
+export async function startLobby(lobby: GameLobby): Promise<void> {
+  lobby.status = "in_progress";
+  await updateLobby(lobby);
+}
+
 export async function endLobby(lobby: GameLobby): Promise<void> {
   lobby.status = "ended";
   await updateLobby(lobby);

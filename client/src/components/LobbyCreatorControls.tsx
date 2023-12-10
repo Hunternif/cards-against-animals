@@ -2,6 +2,7 @@ import { CSSProperties } from "react";
 import { GameLobby } from "../shared/types";
 import { DeckSelector } from "./DeckSelector";
 import play_button from '../assets/play_button.svg'
+import { startLobby } from "../model/lobby-api";
 
 interface Props {
   lobby: GameLobby,
@@ -32,7 +33,8 @@ export function LobbyCreatorControls({ lobby }: Props) {
     <DeckSelector lobby={lobby} />
     <div style={footerStyle}>
       <button style={startButtonStyle} className="accent-button start-button"
-      disabled={lobby.deck_ids.size == 0}>
+        onClick={() => startLobby(lobby)}
+        disabled={lobby.deck_ids.size == 0}>
         <img src={play_button} />
         <span style={{ flexGrow: 1 }}>Start</span>
       </button>
