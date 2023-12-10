@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, runTransaction, setDoc, writeBatch } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, runTransaction, setDoc, writeBatch } from "firebase/firestore";
 import { db, decksRef } from "../firebase";
 import { Deck, PromptDeckCard, ResponseDeckCard } from "../shared/types";
 import { promptDeckCardConverter, responseDeckCardConverter } from "./firebase-converters";
@@ -44,4 +44,8 @@ export async function uploadDeck(deck: Deck) {
       transaction.set(doc(responsesRef, response.id), response)
     });
   });
+}
+
+export async function getDecks(): Promise<Array<Deck>> {
+  return (await getDocs(decksRef)).docs.map((p) => p.data());
 }
