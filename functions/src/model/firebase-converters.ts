@@ -19,7 +19,6 @@ import {
 export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
   toFirestore: (lobby: GameLobby) => {
     return {
-      id: lobby.id,
       lobby_key: lobby.lobby_key,
       status: lobby.status,
       creator_uid: lobby.creator_uid,
@@ -42,7 +41,7 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
 };
 
 export const playerConverter: FirestoreDataConverter<PlayerInLobby> = {
-  toFirestore: (player: PlayerInLobby) => Object.assign({}, player),
+  toFirestore: (player: PlayerInLobby) => copyFields(player),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     return new PlayerInLobby(data.uid, data.name, data.role);
@@ -52,7 +51,6 @@ export const playerConverter: FirestoreDataConverter<PlayerInLobby> = {
 export const deckConverter: FirestoreDataConverter<Deck> = {
   toFirestore: (deck: Deck) => {
     return {
-      id: deck.id,
       title: deck.title,
     };
   },
@@ -65,7 +63,7 @@ export const deckConverter: FirestoreDataConverter<Deck> = {
 };
 
 export const turnConverter: FirestoreDataConverter<GameTurn> = {
-  toFirestore: (turn: GameTurn) => Object.assign({}, turn, {
+  toFirestore: (turn: GameTurn) => copyFields2(turn, {
     time_created: Timestamp.fromDate(turn.time_created),
     prompt: Object.assign({}, turn.prompt),
   }),
@@ -91,7 +89,7 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
 };
 
 export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
-  toFirestore: (pdata: PlayerDataInTurn) => Object.assign({}, pdata, {
+  toFirestore: (pdata: PlayerDataInTurn) => copyFields2(pdata, {
     hand: pdata.hand.map((card) => Object.assign({}, card)),
     current_play: pdata.current_play.map((card) => Object.assign({}, card)),
   }),
@@ -112,7 +110,7 @@ function mapResponseCardInHand(data: any): ResponseCardInHand {
 }
 
 export const userConverter: FirestoreDataConverter<CAAUser> = {
-  toFirestore: (user: CAAUser) => removeUndefined(Object.assign({}, user)),
+  toFirestore: (user: CAAUser) => copyFields(user),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     return new CAAUser(data.uid, data.name, data.email, data.is_admin ?? false,
@@ -121,7 +119,7 @@ export const userConverter: FirestoreDataConverter<CAAUser> = {
 };
 
 export const promptDeckCardConverter: FirestoreDataConverter<PromptDeckCard> = {
-  toFirestore: (card: PromptDeckCard) => Object.assign({}, card),
+  toFirestore: (card: PromptDeckCard) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     return new PromptDeckCard(data.id, data.content, data.rating);
@@ -129,7 +127,7 @@ export const promptDeckCardConverter: FirestoreDataConverter<PromptDeckCard> = {
 };
 
 export const responseDeckCardConverter: FirestoreDataConverter<ResponseDeckCard> = {
-  toFirestore: (card: ResponseDeckCard) => Object.assign({}, card),
+  toFirestore: (card: ResponseDeckCard) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     return new ResponseDeckCard(data.id, data.content, data.rating);
@@ -144,4 +142,18 @@ function removeUndefined(obj: any): any {
     }
   });
   return obj;
+}
+
+/**Copies all fields to a new object, except `id`, and underfined fields */
+function copyFields<U>(data: U): U {
+  const obj: any = Object.assign({}, data);
+  delete obj['id'];
+  return removeUndefined(obj);
+}
+
+/**Copies all fields to a new object, except `id` */
+function copyFields2<U, V>(data: U, data2: V): U & V {
+  const obj: any = Object.assign({}, data, data2);
+  delete obj['id'];
+  return removeUndefined(obj);
 }
