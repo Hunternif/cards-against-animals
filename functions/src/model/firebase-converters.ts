@@ -110,7 +110,7 @@ function mapResponseCardInHand(data: any): ResponseCardInHand {
 }
 
 export const userConverter: FirestoreDataConverter<CAAUser> = {
-  toFirestore: (user: CAAUser) => Object.assign({}, user),
+  toFirestore: (user: CAAUser) => removeUndefined(Object.assign({}, user)),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     return new CAAUser(data.uid, data.name, data.email, data.is_admin ?? false,
@@ -133,3 +133,13 @@ export const responseDeckCardConverter: FirestoreDataConverter<ResponseDeckCard>
     return new ResponseDeckCard(data.id, data.content, data.rating);
   },
 };
+
+// Thanks to https://stackoverflow.com/a/38340374/1093712
+function removeUndefined(obj: any): any {
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] === undefined) {
+      delete obj[key];
+    }
+  });
+  return obj;
+}

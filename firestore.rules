@@ -43,6 +43,7 @@ service cloud.firestore {
       // allow reading only your own info when you are logged in.
       // also allow deleting your own info:
       allow read, delete: if isLoggedIn() && request.auth.uid == userID;
+      allow write: if userIsAdmin();
     }
     match /{document=**} {
       allow read, write: if false;

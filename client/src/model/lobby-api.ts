@@ -46,7 +46,14 @@ export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
   // Delete your 'player' document in lobby:
   await deleteDoc(doc(playersRef, user.uid));
   // Delete your user info which contains 'current lobby':
-  await deleteDoc(doc(usersRef, user.uid));
+  // - unless you're admin. In that case, remove the field.
+  const caaUser = await getCAAUser(user.uid);
+  if (caaUser?.is_admin) {
+    delete caaUser.current_lobby_id;
+    await setDoc(doc(usersRef, user.uid), caaUser);
+  } else {
+    await deleteDoc(doc(usersRef, user.uid));
+  }
 }
 
 /**

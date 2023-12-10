@@ -4,7 +4,7 @@ import { getUserName } from "./auth-api";
 
 /** Finds user data by ID */
 export async function getCAAUser(userID: string): Promise<CAAUser | null> {
-  return  (await usersRef.doc(userID).get()).data() ?? null;
+  return (await usersRef.doc(userID).get()).data() ?? null;
 }
 
 /**
