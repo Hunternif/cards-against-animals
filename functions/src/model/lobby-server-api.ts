@@ -48,7 +48,7 @@ export async function createLobby(userID: string): Promise<GameLobby> {
   // TODO: need to acquire lock. This doesn't prevent double lobby creation!
   const newLobbyRef = lobbiesRef.doc();
   const newID = newLobbyRef.id;
-  const newLobby = new GameLobby(newID, newID, userID, "new");
+  const newLobby = new GameLobby(newID, userID, "new");
   await newLobbyRef.set(newLobby);
   logger.info(`Created new lobby from user: ${userID}`);
   return newLobby;

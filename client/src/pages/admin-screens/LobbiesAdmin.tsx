@@ -21,7 +21,6 @@ function LobbyData({ lobby }: LobbyProps) {
     <Accordion.Body>
       <ul>
         <div className="data-subsection">
-          <li>Key: {lobby.lobby_key}</li>
           <li>Creator: {lobby.creator_uid}</li>
           <li>Created: {lobby.time_created ? new Date(lobby.time_created).toLocaleDateString() : '-'}</li>
           <li>Status: {lobby.status}</li>
