@@ -30,6 +30,8 @@ const scrollableColumnStyle: CSSProperties = {
   paddingRight: "calc(2em - 8px)",
   display: "flex",
   flexWrap: "wrap",
+  justifyContent: "center",
+  alignContent: "flex-start",
   gap: "2em",
 };
 
@@ -48,7 +50,6 @@ export function DeckSelector({ lobby }: SelectorProps) {
     <FillLayout style={scrollableColumnStyle}
       className="miniscrollbar miniscrollbar-dark deck-selector">
       {decks?.map((deck, i) => <div key={i} style={{
-        flexGrow: 1,
         display: "flex",
         placeContent: "center"
       }}>
