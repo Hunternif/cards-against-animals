@@ -10,8 +10,8 @@ import {
 } from "../shared/types";
 import { getUserName } from "./auth-api";
 import {
-  getAllPromptsInGame,
-  getAllResponsesInGame
+  getAllPromptsForGame,
+  getAllResponsesForGame
 } from "./deck-server-api";
 import {
   promptCardInGameConverter,
@@ -23,10 +23,7 @@ import {
   updateCAAUser
 } from "./user-server-api";
 
-/**
- * Find current active lobby for this user.
- * Return lobby ID.
- */
+/** Finds current active lobby for this user, returns lobby ID. */
 export async function findActiveLobbyWithPlayer(userID: string)
   : Promise<GameLobby | null> {
   // Current lobby is written in the 'users' collection:
@@ -44,7 +41,9 @@ export async function findActiveLobbyWithPlayer(userID: string)
   return null;
 }
 
-/** Creates new lobby from his player, returns it. */
+/**
+ * Creates a new lobby from this player, returns it.
+ */
 export async function createLobby(userID: string): Promise<GameLobby> {
   // TODO: need to acquire lock. This doesn't prevent double lobby creation!
   const newLobbyRef = lobbiesRef.doc();
@@ -55,7 +54,7 @@ export async function createLobby(userID: string): Promise<GameLobby> {
   return newLobby;
 }
 
-/** Finds lobby by ID, or throws HttpsError */
+/** Finds lobby by ID, or throws HttpsError. */
 export async function getLobby(lobbyID: string): Promise<GameLobby> {
   const lobby = (await lobbiesRef.doc(lobbyID).get()).data();
   if (!lobby) throw new HttpsError("not-found", `Lobby not found: ${lobbyID}`);
@@ -85,7 +84,7 @@ export async function getPlayers(lobbyID: string, role?: PlayerRole):
 
 /**
  * Attempts to add player to lobby as "player",
- * or as "specator if it's in progress.
+ * or as "spectator" if the game is already in progress.
  */
 export async function addPlayer(lobby: GameLobby, userID: string): Promise<void> {
   const userName = await getUserName(userID);
@@ -107,7 +106,7 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
 }
 
 /**
- * Copy cards from all the decks into the lobby.
+ * Copy cards from all added decks into the lobby.
  * Copy the content because the deck could be edited or deleted in the future.
  */
 export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
@@ -117,9 +116,9 @@ export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
   // (sorry I failed to do parallel...)
   // See https://stackoverflow.com/a/37576787/1093712
   for (const deckID of lobby.deck_ids) {
-    const prompts = await getAllPromptsInGame(deckID);
+    const prompts = await getAllPromptsForGame(deckID);
     newPrompts.push(...prompts);
-    const responses = await getAllResponsesInGame(deckID);
+    const responses = await getAllResponsesForGame(deckID);
     newResponses.push(...responses);
     logger.info(`Fetched ${prompts.length} prompts and ${responses.length} responses from deck ${deckID}`);
   }

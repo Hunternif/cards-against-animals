@@ -10,7 +10,7 @@ This will create the file `firebase-config.json`. Populate it with the data from
 firebase init
 ```
 
-Note that types from project `shared` will be copied to `client` and `functions` during build, and the copies will be ignored by Git.
+Note that files from the folder `shared` will be copied to `client` and `functions` during build, and the copies will be ignored by Git.
 
 ### Compile and Hot-Reload for Development
 

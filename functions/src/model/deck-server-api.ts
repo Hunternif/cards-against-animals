@@ -10,8 +10,8 @@ import {
   responseDeckCardConverter,
 } from "./firebase-converters";
 
-/** Returns all Prompt card, prefixed with deck ID */
-export async function getAllPromptsInGame(deckID: string):
+/** Converts Prompt cards from a deck to a in-game Prompt cards. */
+export async function getAllPromptsForGame(deckID: string):
   Promise<Array<PromptCardInGame>> {
   const cardsRef = db.collection(`decks/${deckID}/prompts`)
     .withConverter(promptDeckCardConverter);
@@ -25,8 +25,8 @@ export async function getAllPromptsInGame(deckID: string):
   });
 }
 
-/** Returns all Response card, prefixed with deck ID */
-export async function getAllResponsesInGame(deckID: string):
+/** Converts Response cards from a deck to a in-game Response cards. */
+export async function getAllResponsesForGame(deckID: string):
   Promise<Array<ResponseCardInGame>> {
   const cardsRef = db.collection(`decks/${deckID}/responses`)
     .withConverter(responseDeckCardConverter);

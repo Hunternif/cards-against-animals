@@ -1,4 +1,4 @@
-// APIs for when the game as started.
+// Server APIs for game turns, when the game is in progress.
 
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
@@ -38,7 +38,7 @@ export async function countTurns(lobbyID: string): Promise<number> {
   return (await getTurnsRef(lobbyID).count().get()).data().count;
 }
 
-/** Data from specific player, from specific turn. */
+/** Data from a specific player, from a specific turn. */
 export async function getPlayerData(
   lobbyID: string, turnID: string, uid: string
 ): Promise<PlayerDataInTurn | null> {
@@ -51,7 +51,8 @@ export async function getPlayerData(
 export async function startNewTurn(lobbyID: string): Promise<GameTurn> {
   const lastTurn = await getLastTurn(lobbyID);
   if (lastTurn && lastTurn.phase != "complete") {
-    throw new Error(`Last turn has not completed in lobby ${lobbyID}`);
+    throw new HttpsError("failed-precondition",
+      `Last turn has not completed in lobby ${lobbyID}`);
   }
   const judge = await selectJudge(lobbyID, lastTurn);
   const prompt = await selectPrompt(lobbyID);
@@ -62,7 +63,7 @@ export async function startNewTurn(lobbyID: string): Promise<GameTurn> {
   return newTurn; // timestamp may not have reloaded but that's ok.
 }
 
-/** Returns UID of the player who will judge the next turn, */
+/** Returns UID of the player who will judge the next turn. */
 async function selectJudge(lobbyID: string, lastTurn: GameTurn | null):
   Promise<string> {
   const sequence = await getPlayerSequence(lobbyID);
@@ -93,7 +94,7 @@ async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
 // TODO: move this to lobby settings
 const cardsPerPerson = 10;
 
-/** Deal cards to the players. */
+/** Deal cards to active players. */
 async function dealCards(
   lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn,
 ): Promise<void> {
@@ -143,7 +144,7 @@ async function dealCards(
  */
 async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
   const players = await getPlayers(lobbyID, "player");
-  // filter out spectators, sort them by UIDs
+  // Simply sort players by UIDs:
   const uids = players.map((p) => p.uid);
   return uids.sort();
 }

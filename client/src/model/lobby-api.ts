@@ -121,7 +121,7 @@ async function joinLobbyIfNeeded(lobbyID: string, user: User) {
   }
 }
 
-/** React hook to join lobby */
+/** React hook to join lobby, if the user is not in it. */
 export function useJoinLobby(lobbyID: string, user: User): [joined: boolean] {
   const [joined, setJoined] = useState(false);
   const [error, setError] = useState(null);
@@ -134,12 +134,12 @@ export function useJoinLobby(lobbyID: string, user: User): [joined: boolean] {
   return [joined];
 }
 
-/** React hook to fetch lobby data and subscribes to it. */
+/** React hook to fetch lobby data and subscribe to it. */
 export function useLobby(lobbyID: string) {
   return useDocumentData(doc(lobbiesRef, lobbyID));
 }
 
-/** React hook to fetch list of players and subscribes to it. */
+/** React hook to fetch list of players and subscribe to it. */
 export function usePlayers(lobbyID: string) {
   return useCollectionData(
     collection(lobbiesRef, lobbyID, 'players')
