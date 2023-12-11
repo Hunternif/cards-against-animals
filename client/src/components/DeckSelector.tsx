@@ -13,7 +13,7 @@ interface DeckProps {
 }
 
 function DeckBox({ deck, selected, onToggle }: DeckProps) {
-  const className = `deck-box ${selected ? "selected" : ""}`;
+  const className = `deck-box hoverable-card ${selected ? "selected" : ""}`;
   function handleClick() {
     if (onToggle) onToggle(!selected);
   }

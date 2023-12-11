@@ -12,6 +12,7 @@ interface ScreenProps {
 
 interface CardProps {
   card: CardInGame,
+  selectable?: boolean,
 }
 
 const screenStyle: CSSProperties = {
@@ -41,10 +42,13 @@ const botRowStyle: CSSProperties = {
   justifyContent: "center",
 }
 
-function Card({ card }: CardProps) {
+function Card({ card, selectable }: CardProps) {
   const isPrompt = card instanceof PromptCardInGame;
   const isResponse = card instanceof ResponseCardInGame;
-  const className = `game-card ${isPrompt ? "card-prompt" : ""} ${isResponse ? "card-response" : ""}`;
+  const promptStyle = isPrompt ? "card-prompt" : "";
+  const responseStyle = isResponse ? "card-response" : "";
+  const selectableStyle = selectable ? "hoverable-card" : "";
+  const className = `game-card ${promptStyle} ${responseStyle} ${selectableStyle}`;
   return <div className={className}>
     <span>{card.content}</span>
   </div>;
@@ -64,7 +68,9 @@ export function GameScreen({ lobby, user }: ScreenProps) {
           <Card card={dummyPrompt} />
         </div>
         <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
-          {handCards.map((card, i) => <Card key={i} card={card} />)}
+          {handCards.map((card, i) =>
+            <Card key={i} card={card} selectable={true} />
+          )}
         </div>
       </div>
     </CenteredLayout>
