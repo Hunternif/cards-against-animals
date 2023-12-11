@@ -18,7 +18,8 @@ export async function getAllPromptsInGame(deckID: string):
   return (await cardsRef.get()).docs.map((p) => {
     const card = p.data();
     const cardInLobby = new PromptCardInGame(
-      deckID, card.id, randomIndex(), card.content, card.rating);
+      prefixID(deckID, card.id), deckID, card.id,
+      randomIndex(), card.content, card.rating);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
@@ -32,7 +33,8 @@ export async function getAllResponsesInGame(deckID: string):
   return (await cardsRef.get()).docs.map((p) => {
     const card = p.data();
     const cardInLobby = new ResponseCardInGame(
-      deckID, card.id, randomIndex(), card.content, card.rating);
+      prefixID(deckID, card.id), deckID, card.id,
+      randomIndex(), card.content, card.rating);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
@@ -41,4 +43,9 @@ export async function getAllResponsesInGame(deckID: string):
 function randomIndex(): number {
   const time = Timestamp.now().nanoseconds;
   return getRandomInt(0, 2147483648) ^ time;
+}
+
+/** Creates prefixed ID to prevent collisions between decks. */
+function prefixID(deckID: string, cardID: string): string {
+  return `${deckID}_${cardID}`;
 }

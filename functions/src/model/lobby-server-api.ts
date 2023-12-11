@@ -130,9 +130,9 @@ export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
     .withConverter(responseCardInGameConverter);
   await db.runTransaction(async (transaction) => {
     newPrompts.forEach((card) =>
-      transaction.set(lobbyPromptsRef.doc(card.prefixID()), card));
+      transaction.set(lobbyPromptsRef.doc(card.id), card));
     newResponses.forEach((card) =>
-      transaction.set(lobbyResponsesRef.doc(card.prefixID()), card));
+      transaction.set(lobbyResponsesRef.doc(card.id), card));
   });
   logger.info(`Copied ${newPrompts.length} prompts and ${newResponses.length} responses to lobby ${lobby.id}`);
 }

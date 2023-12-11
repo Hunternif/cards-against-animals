@@ -155,6 +155,7 @@ export class ResponseDeckCard extends DeckCard {
  * original DeckCard and its cached content.
  */
 export abstract class CardInGame {
+  id: string;
   deck_id: string;
   card_id: string;
   /** Used for selecting a random card */
@@ -162,21 +163,19 @@ export abstract class CardInGame {
   content: string;
   rating: number;
   constructor(
+    id: string,
     deck_id: string,
     card_id: string,
     random_index: number,
     content: string,
     rating: number,
   ) {
+    this.id = id;
     this.deck_id = deck_id;
     this.card_id = card_id;
     this.random_index = random_index;
     this.content = content;
     this.rating = rating;
-  }
-  /** Creates prefixed ID to prevent collisions between decks. */
-  prefixID(): string {
-    return `${this.deck_id}_${this.card_id}`;
   }
 }
 

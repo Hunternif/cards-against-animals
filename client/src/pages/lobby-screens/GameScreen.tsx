@@ -54,9 +54,9 @@ function Card({ card, selectable }: CardProps) {
   </div>;
 }
 
-const dummyPrompt = new PromptCardInGame("0", "0", 0,
+const dummyPrompt = new PromptCardInGame("0", "0", "0", 0,
   "Coming to Broadway this season, ___, the musical.", 0);
-const dummyResponse = new ResponseCardInGame("0", "1", 1, "The milkman", 0);
+const dummyResponse = new ResponseCardInGame("1", "0", "1", 1, "The milkman", 0);
 const hand = new Array<ResponseCardInGame>(10).fill(dummyResponse, 0, 10);
 
 export function GameScreen({ lobby, user }: ScreenProps) {

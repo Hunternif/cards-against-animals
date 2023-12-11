@@ -86,7 +86,7 @@ async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
   }
   const selected = cards[0];
   // Remove selected card from the remaining deck:
-  await promptsRef.doc(selected.prefixID()).delete();
+  await promptsRef.doc(selected.id).delete();
   return selected;
 }
 
@@ -128,7 +128,7 @@ async function dealCards(
   const playerDataRef = getPlayerDataRef(lobbyID, newTurn.id);
   await db.runTransaction(async (transaction) => {
     for (const card of newCards) {
-      transaction.delete(responsesRef.doc(card.prefixID()));
+      transaction.delete(responsesRef.doc(card.id));
     }
     for (const pData of playerData) {
       transaction.set(playerDataRef.doc(pData.player_uid), pData);

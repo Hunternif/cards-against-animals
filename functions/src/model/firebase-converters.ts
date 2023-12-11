@@ -66,12 +66,13 @@ export const deckConverter: FirestoreDataConverter<Deck> = {
 export const turnConverter: FirestoreDataConverter<GameTurn> = {
   toFirestore: (turn: GameTurn) => copyFields2(turn, {
     time_created: Timestamp.fromDate(turn.time_created),
-    prompt: copyFields(turn.prompt),
+    prompt: copyFields(turn.prompt, []),
   }, ['id', 'player_data']),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const time_created = data.time_created as Timestamp;
     const prompt = new PromptCardInGame(
+      data.prompt.id,
       data.prompt.deck_id,
       data.prompt.card_id,
       data.prompt.random_index,
@@ -109,8 +110,8 @@ export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
 };
 
 function mapResponseCardInGame(data: any): ResponseCardInGame {
-  return new ResponseCardInGame(
-    data.deck_id, data.card_id, data.random_index, data.content, data.rating);
+  return new ResponseCardInGame(data.id, data.deck_id, data.card_id,
+    data.random_index, data.content, data.rating);
 }
 
 export const userConverter: FirestoreDataConverter<CAAUser> = {
@@ -142,8 +143,8 @@ export const promptCardInGameConverter: FirestoreDataConverter<PromptCardInGame>
   toFirestore: (card: PromptCardInGame) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new PromptCardInGame(
-      data.deck_id, data.card_id, data.random_index, data.content, data.rating);
+    return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id,
+      data.random_index, data.content, data.rating);
   },
 };
 
@@ -151,7 +152,7 @@ export const responseCardInGameConverter: FirestoreDataConverter<ResponseCardInG
   toFirestore: (card: ResponseCardInGame) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new ResponseCardInGame(
-      data.deck_id, data.card_id, data.random_index, data.content, data.rating);
+    return new ResponseCardInGame(snapshot.id, data.deck_id, data.card_id,
+      data.random_index, data.content, data.rating);
   },
 };
