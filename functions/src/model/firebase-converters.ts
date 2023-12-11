@@ -94,8 +94,8 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
 
 export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
   toFirestore: (pdata: PlayerDataInTurn) => copyFields2(pdata, {
-    hand: pdata.hand.map((card) => copyFields(card)),
-    current_play: pdata.current_play.map((card) => copyFields(card)),
+    hand: pdata.hand.map((card) => copyFields(card, [])),
+    current_play: pdata.current_play.map((card) => copyFields(card, [])),
   }),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
