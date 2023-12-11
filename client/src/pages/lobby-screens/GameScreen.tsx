@@ -1,9 +1,9 @@
 import { User } from "firebase/auth";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { CardInGame, DeckCard, GameLobby, PromptCardInGame, ResponseCardInGame } from "../../shared/types";
-import { FillLayout } from "../../components/layout/FillLayout";
-import { RowLayout } from "../../components/layout/RowLayout";
 import { CSSProperties, useState } from "react";
+import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { LoadingSpinner } from "../../components/utils";
+import { useLastTurn, usePlayerData } from "../../model/turn-api";
+import { CardInGame, GameLobby, GameTurn, PromptCardInGame, ResponseCardInGame } from "../../shared/types";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -56,13 +56,21 @@ function Card({ card, selectable, selected, onToggle }: CardProps) {
   </div>;
 }
 
-const dummyPrompt = new PromptCardInGame("0", "0", "0", 0,
-  "Coming to Broadway this season, ___, the musical.", 0);
-const dummyResponse = new ResponseCardInGame("1", "0", "1", 1, "The milkman", 0);
-const hand = new Array<ResponseCardInGame>(10).fill(dummyResponse, 0, 10);
-
 export function GameScreen({ lobby, user }: ScreenProps) {
-  const [handCards] = [hand];
+  const [turn, loading] = useLastTurn(lobby.id);
+  if (!turn || loading) return <LoadingSpinner text="Waiting for next turn..."/>;
+  // if (!turn) throw new Error("No turn");
+  return <TurnScreen turn={turn} lobby={lobby} user={user}/>;
+}
+
+interface TurnProps {
+  lobby: GameLobby,
+  turn: GameTurn,
+  user: User,
+}
+
+function TurnScreen({lobby, turn, user}: TurnProps) {
+  const [data] = usePlayerData(lobby, turn, user.uid);
   // Set of card ids:
   const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
   function selectCard(cardID: string) {
@@ -77,11 +85,11 @@ export function GameScreen({ lobby, user }: ScreenProps) {
     <CenteredLayout className="game-screen">
       <div style={containerStyle}>
         <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
-          <Card card={dummyPrompt} />
+          <Card card={turn.prompt} />
         </div>
         <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
-          {handCards.map((card, i) =>
-            <Card key={i} card={card}
+          {data && data.hand.map((card) =>
+            <Card key={card.id} card={card}
               selectable={true}
               selected={selectedCards.has(card.id)}
               onToggle={(selected) => {
