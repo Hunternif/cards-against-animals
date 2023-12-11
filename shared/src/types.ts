@@ -121,27 +121,41 @@ export class Deck {
 }
 
 /** Card in deck */
-export abstract class DeckCard {
+export interface DeckCard {
   /** ID is usually a number. */
   id: string;
   content: string;
   rating: number;
-  constructor(id: string, content: string, rating: number = 0) {
-    this.id = id;
-    this.content = content;
-    this.rating = rating;
-  }
 }
 
 
 /** Prompt card in deck */
-export class PromptDeckCard extends DeckCard {
+export class PromptDeckCard implements DeckCard {
+  id: string;
+  content: string;
+  rating: number;
+  /** How many cards to pick in response */
+  pick: number;
+  constructor(id: string, content: string, pick: number, rating: number) {
+    this.id = id;
+    this.content = content;
+    this.pick = pick;
+    this.rating = rating;
+  }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
 }
 
 /** Response card in deck */
-export class ResponseDeckCard extends DeckCard {
+export class ResponseDeckCard implements DeckCard {
+  id: string;
+  content: string;
+  rating: number;
+  constructor(id: string, content: string, rating: number) {
+    this.id = id;
+    this.content = content;
+    this.rating = rating;
+  }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
 }
@@ -150,11 +164,51 @@ export class ResponseDeckCard extends DeckCard {
  * An instance of a card in game. Contains a reference to the
  * original DeckCard and its cached content.
  */
-export abstract class CardInGame {
+export interface CardInGame {
   id: string;
   deck_id: string;
   card_id: string;
   /** Used for selecting a random card */
+  random_index: number;
+  content: string;
+  rating: number;
+}
+
+/** An instance of a Prompt card in a game */
+export class PromptCardInGame implements CardInGame {
+  id: string;
+  deck_id: string;
+  card_id: string;
+  random_index: number;
+  content: string;
+  pick: number;
+  rating: number;
+  constructor(
+    id: string,
+    deck_id: string,
+    card_id: string,
+    random_index: number,
+    content: string,
+    pick: number,
+    rating: number,
+  ) {
+    this.id = id;
+    this.deck_id = deck_id;
+    this.card_id = card_id;
+    this.random_index = random_index;
+    this.content = content;
+    this.pick = pick;
+    this.rating = rating;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  prompt() { } // hack to prevent duck typing
+}
+
+/** An instance of a Response card in game */
+export class ResponseCardInGame implements CardInGame {
+  id: string;
+  deck_id: string;
+  card_id: string;
   random_index: number;
   content: string;
   rating: number;
@@ -173,16 +227,6 @@ export abstract class CardInGame {
     this.content = content;
     this.rating = rating;
   }
-}
-
-/** An instance of a Prompt card in a game */
-export class PromptCardInGame extends CardInGame {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  prompt() { } // hack to prevent duck typing
-}
-
-/** An instance of a Response card in game */
-export class ResponseCardInGame extends CardInGame {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
 }

@@ -14,14 +14,28 @@ export function parseDeck(
 ): Deck {
   const deck = new Deck(title, title);
   deck.prompts = promptList.split("\n")
-    .map((val) => val.trim())
-    .filter((val) => val != "")
-    .map((val, i) => new PromptDeckCard(String(i + 1).padStart(4, '0'), val, 0));
+    .map((line) => line.trim())
+    .filter((line) => line != "")
+    .map((line, i) => {
+      const id = String(i + 1).padStart(4, '0');
+      const pick = parsePick(line);
+      return new PromptDeckCard(id, line, pick, 0);
+    });
   deck.responses = responseList.split("\n")
-    .map((val) => val.trim())
-    .filter((val) => val != "")
-    .map((val, i) => new ResponseDeckCard(String(i + 1).padStart(4, '0'), val, 0));
+    .map((line) => line.trim())
+    .filter((line) => line != "")
+    .map((line, i) => {
+      const id = String(i + 1).padStart(4, '0');
+      return new ResponseDeckCard(id, line, 0);
+    });
   return deck;
+}
+
+/** Extracts the number of gaps to fill, e.g.:
+ * "I like __ and _" => 2. */
+function parsePick(text: string): number {
+  // Minimum number is 1, in case the __ is omitted.
+  return text.match("(_+)")?.length ?? 1;
 }
 
 export async function uploadDeck(deck: Deck) {

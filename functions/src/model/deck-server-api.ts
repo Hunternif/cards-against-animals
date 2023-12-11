@@ -19,7 +19,7 @@ export async function getAllPromptsForGame(deckID: string):
     const card = p.data();
     const cardInLobby = new PromptCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
-      randomIndex(), card.content, card.rating);
+      randomIndex(), card.content, card.pick, card.rating);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });

@@ -76,6 +76,7 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
       data.prompt.card_id,
       data.prompt.random_index,
       data.prompt.content,
+      data.prompt.pick,
       data.prompt.rating,
     );
     const ret = new GameTurn(
@@ -126,7 +127,7 @@ export const promptDeckCardConverter: FirestoreDataConverter<PromptDeckCard> = {
   toFirestore: (card: PromptDeckCard) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new PromptDeckCard(data.id, data.content, data.rating);
+    return new PromptDeckCard(data.id, data.content, data.pick, data.rating);
   },
 };
 
@@ -143,7 +144,7 @@ export const promptCardInGameConverter: FirestoreDataConverter<PromptCardInGame>
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id,
-      data.random_index, data.content, data.rating);
+      data.random_index, data.content, data.pick, data.rating);
   },
 };
 
