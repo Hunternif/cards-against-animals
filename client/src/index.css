@@ -181,6 +181,7 @@ button:disabled {
 }
 .game-card.hoverable-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 .game-card.card-prompt {
   background-image: linear-gradient(to bottom,#141820,#2d3441);
@@ -189,6 +190,12 @@ button:disabled {
 .game-card.card-response {
   background-color: #fff;
   color: #000;
+}
+.game-card.card-response.selected {
+  color: #d45f00;
+  background-image: linear-gradient(to bottom,#ffc90f66,#fff);
+  box-shadow: 0px 0px 20px 4px #d45f00cc;
+  transform: scaleX(1.05) scaleY(1.05);
 }
 
 .hoverable-card {
