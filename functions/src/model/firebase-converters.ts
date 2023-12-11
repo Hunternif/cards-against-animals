@@ -74,6 +74,7 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
     const prompt = new PromptCardInGame(
       data.prompt.deck_id,
       data.prompt.card_id,
+      data.prompt.random_index,
       data.prompt.content,
       data.prompt.rating,
     );
@@ -108,7 +109,8 @@ export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
 };
 
 function mapResponseCardInGame(data: any): ResponseCardInGame {
-  return responseCardInGameConverter.fromFirestore(data);
+  return new ResponseCardInGame(
+    data.deck_id, data.card_id, data.random_index, data.content, data.rating);
 }
 
 export const userConverter: FirestoreDataConverter<CAAUser> = {

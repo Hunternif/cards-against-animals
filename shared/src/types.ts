@@ -166,7 +166,7 @@ export abstract class CardInGame {
     card_id: string,
     random_index: number,
     content: string,
-    rating: number = 0,
+    rating: number,
   ) {
     this.deck_id = deck_id;
     this.card_id = card_id;
