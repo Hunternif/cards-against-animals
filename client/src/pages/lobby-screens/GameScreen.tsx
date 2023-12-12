@@ -5,6 +5,7 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { LoadingSpinner } from "../../components/utils";
 import { useLastTurn, usePlayerData } from "../../model/turn-api";
 import { GameLobby, GameTurn } from "../../shared/types";
+import { FillLayout } from "../../components/layout/FillLayout";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -60,8 +61,9 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
     setSelectedCards(newSelection);
   }
   return (
-    <CenteredLayout className="game-screen">
-      <div style={containerStyle}>
+    <FillLayout className="game-screen miniscrollbar miniscrollbar-light"
+      style={{ overflowY: "auto", }}>
+      <CenteredLayout style={containerStyle}>
         <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
           <PromptCard card={turn.prompt} />
         </div>
@@ -76,7 +78,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
               }} />
           )}
         </div>
-      </div>
-    </CenteredLayout>
+      </CenteredLayout>
+    </FillLayout>
   );
 }
