@@ -37,7 +37,7 @@ export function parseDeck(
  * "I like __ and _" => 2. */
 export function parsePromptPick(text: string): number {
   // Remove markup like "_words words_":
-  text = text.replace(/(_[^_\s]|[^_\s]_)/g, "");
+  text = text.replace(/(_[^_\s.,:;!?\-~]|[^_\s.,:;!?\-~]_)/g, "");
   const match = text.match(/(_+)/g);
   // Minimum number is 1, in case the __ is omitted.
   if (!match) return 1;
@@ -53,7 +53,7 @@ export function processCardText(text: string): string {
 /** Re-formats specifically the gaps in prompt cards */
 export function processPromptText(text: string): string {
   text = text.replace(/_+/g, "_");
-  text = text.replace(/(^|\s)_([\s\.,:;!?]|$)/g, "$1___$2");
+  text = text.replace(/(^|\s)_([\s\.,:;!?\-~]|$)/g, "$1___$2");
   return text;
 }
 
