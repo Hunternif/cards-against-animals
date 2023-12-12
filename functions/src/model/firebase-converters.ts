@@ -126,7 +126,7 @@ export const promptDeckCardConverter: FirestoreDataConverter<PromptDeckCard> = {
   toFirestore: (card: PromptDeckCard) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new PromptDeckCard(data.id, data.content, data.pick, data.rating);
+    return new PromptDeckCard(snapshot.id, data.content, data.pick, data.rating);
   },
 };
 
@@ -134,7 +134,7 @@ export const responseDeckCardConverter: FirestoreDataConverter<ResponseDeckCard>
   toFirestore: (card: ResponseDeckCard) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new ResponseDeckCard(data.id, data.content, data.rating);
+    return new ResponseDeckCard(snapshot.id, data.content, data.rating);
   },
 };
 
