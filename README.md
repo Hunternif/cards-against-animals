@@ -34,10 +34,10 @@ npm --prefix functions run build
 firebase deploy
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+### Run Unit Tests
 
 ```sh
-npm run test:unit
+npm --prefix client run test
 ```
 
 ### Lint with [ESLint](https://eslint.org/)

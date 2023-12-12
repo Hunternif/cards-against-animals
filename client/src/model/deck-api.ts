@@ -18,7 +18,7 @@ export function parseDeck(
     .filter((line) => line != "")
     .map((line, i) => {
       const id = String(i + 1).padStart(4, '0');
-      const pick = parsePick(line);
+      const pick = parsePromptPick(line);
       return new PromptDeckCard(id, line, pick, 0);
     });
   deck.responses = responseList.split("\n")
@@ -33,9 +33,14 @@ export function parseDeck(
 
 /** Extracts the number of gaps to fill, e.g.:
  * "I like __ and _" => 2. */
-function parsePick(text: string): number {
+export function parsePromptPick(text: string): number {
+  // Remove markup like "_words words_":
+  text = text.replace(/(_[^_\s]|[^_\s]_)/g, "");
+  const match = text.match(/(_+)/g);
   // Minimum number is 1, in case the __ is omitted.
-  return text.match("(_+)")?.length ?? 1;
+  if (!match) return 1;
+  // The first matched element is included twice:
+  else return match.length;
 }
 
 export async function uploadDeck(deck: Deck) {
