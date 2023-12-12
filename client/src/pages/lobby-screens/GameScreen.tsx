@@ -52,7 +52,7 @@ function Card({ card, selectable, selected, onToggle }: CardProps) {
     if (onToggle) onToggle(!selected);
   }
   return <div className={className} onClick={handleClick}>
-    <span>{card.content}</span>
+    <span style={{whiteSpace: "pre-line"}}>{card.content}</span>
   </div>;
 }
 
