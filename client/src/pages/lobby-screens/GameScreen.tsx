@@ -51,14 +51,23 @@ interface TurnProps {
 function TurnScreen({ lobby, turn, user }: TurnProps) {
   const [data] = usePlayerData(lobby, turn, user.uid);
   // Set of card ids:
-  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
+  const [selectedCards, setSelectedCards] = useState<string[]>([]);
   function selectCard(cardID: string) {
-    setSelectedCards(new Set(selectedCards).add(cardID));
+    const newSelection = selectedCards.slice();
+    // Don't select more than required:
+    while (newSelection.length >= turn.prompt.pick) {
+      newSelection.pop();
+    }
+    newSelection.push(cardID);
+    setSelectedCards(newSelection);
   }
   function deselectCard(cardID: string) {
-    const newSelection = new Set(selectedCards);
-    newSelection.delete(cardID);
-    setSelectedCards(newSelection);
+    const newSelection = selectedCards.slice();
+    const index = newSelection.indexOf(cardID);
+    if (index > -1) {
+      newSelection.splice(index, 1);
+      setSelectedCards(newSelection);
+    }
   }
   return (
     <FillLayout className="game-screen miniscrollbar miniscrollbar-light"
@@ -71,7 +80,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
           {data && data.hand.map((card) =>
             <ResponseCard key={card.id} card={card}
               selectable={true}
-              selected={selectedCards.has(card.id)}
+              selected={selectedCards.includes(card.id)}
               onToggle={(selected) => {
                 if (selected) selectCard(card.id);
                 else deselectCard(card.id);
