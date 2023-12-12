@@ -19,14 +19,16 @@ export function parseDeck(
     .map((line, i) => {
       const id = String(i + 1).padStart(4, '0');
       const pick = parsePromptPick(line);
-      return new PromptDeckCard(id, line, pick, 0);
+      const text = processPromptText(processCardText(line));
+      return new PromptDeckCard(id, text, pick, 0);
     });
   deck.responses = responseList.split("\n")
     .map((line) => line.trim())
     .filter((line) => line != "")
     .map((line, i) => {
       const id = String(i + 1).padStart(4, '0');
-      return new ResponseDeckCard(id, line, 0);
+      const text = processCardText(line);
+      return new ResponseDeckCard(id, text, 0);
     });
   return deck;
 }
@@ -41,6 +43,18 @@ export function parsePromptPick(text: string): number {
   if (!match) return 1;
   // The first matched element is included twice:
   else return match.length;
+}
+
+/** Re-formats text if necessary */
+export function processCardText(text: string): string {
+  return text.replace("\\n", "\n");
+}
+
+/** Re-formats specifically the gaps in prompt cards */
+export function processPromptText(text: string): string {
+  text = text.replace(/_+/g, "_");
+  text = text.replace(/(^|\s)_([\s\.,:;!?]|$)/g, "$1___$2");
+  return text;
 }
 
 export async function uploadDeck(deck: Deck) {
