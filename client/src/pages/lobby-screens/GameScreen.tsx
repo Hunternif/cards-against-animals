@@ -1,25 +1,14 @@
 import { User } from "firebase/auth";
 import { CSSProperties, useState } from "react";
-import { PromptCardPick } from "../../components/PromptCardPick";
+import { PromptCard, ResponseCard } from "../../components/Cards";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { LoadingSpinner } from "../../components/utils";
 import { useLastTurn, usePlayerData } from "../../model/turn-api";
-import { CardInGame, GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
+import { GameLobby, GameTurn } from "../../shared/types";
 
 interface ScreenProps {
   lobby: GameLobby,
   user: User,
-}
-
-interface PromptCardProps {
-  card: PromptCardInGame,
-}
-
-interface ResponseCardProps {
-  card: CardInGame,
-  selectable?: boolean,
-  selected?: boolean,
-  onToggle?: (selected: boolean) => void,
 }
 
 const containerStyle: CSSProperties = {
@@ -43,28 +32,6 @@ const topRowStyle: CSSProperties = {
 }
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
-}
-
-function PromptCard({ card }: PromptCardProps) {
-  return <div className="game-card card-prompt" style={{
-    display: "flex",
-    flexDirection: "column",
-  }}>
-    <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
-    {card.pick > 1 && <PromptCardPick pick={card.pick} />}
-  </div>;
-}
-
-function ResponseCard({ card, selectable, selected, onToggle }: ResponseCardProps) {
-  const selectableStyle = selectable ? "hoverable-card" : "";
-  const selectedStyle = selected ? "selected" : "";
-  const className = `game-card card-response ${selectableStyle} ${selectedStyle}`;
-  function handleClick() {
-    if (onToggle) onToggle(!selected);
-  }
-  return <div className={className} onClick={handleClick}>
-    <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
-  </div>;
 }
 
 export function GameScreen({ lobby, user }: ScreenProps) {
