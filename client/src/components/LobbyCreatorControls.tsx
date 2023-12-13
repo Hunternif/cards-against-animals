@@ -1,10 +1,9 @@
 import { CSSProperties, useState } from "react";
 import { GameLobby } from "../shared/types";
 import { DeckSelector } from "./DeckSelector";
-import play_button from '../assets/play_button.svg'
 import { startLobby } from "../model/lobby-api";
 import { LoadingSpinner } from "./utils";
-import { GameButton } from "./Buttons";
+import { GameButton, IconPlay } from "./Buttons";
 
 interface Props {
   lobby: GameLobby,
@@ -45,7 +44,7 @@ export function LobbyCreatorControls({ lobby }: Props) {
       <GameButton accent style={startButtonStyle} className="start-button"
         onClick={handleStart}
         disabled={lobby.deck_ids.size == 0}
-        icon={play_button}>
+        icon={<IconPlay/>}>
         Start
       </GameButton>
     </div>
