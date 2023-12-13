@@ -80,7 +80,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
           {data && data.hand.map((card) =>
             <ResponseCard key={card.id} card={card}
               selectable={true}
-              selected={selectedCards.includes(card.id)}
+              selectedIndex={selectedCards.indexOf(card.id)}
               onToggle={(selected) => {
                 if (selected) selectCard(card.id);
                 else deselectCard(card.id);

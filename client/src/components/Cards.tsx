@@ -1,4 +1,7 @@
+import { CSSProperties } from "react";
 import { CardInGame, PromptCardInGame } from "../shared/types";
+import { CenteredLayout } from "./layout/CenteredLayout";
+import { FillLayout } from "./layout/FillLayout";
 
 interface PromptCardProps {
   card: PromptCardInGame,
@@ -7,7 +10,8 @@ interface PromptCardProps {
 interface ResponseCardProps {
   card: CardInGame,
   selectable?: boolean,
-  selected?: boolean,
+  /** Which card it is in your submission: #1, #2 etc. Starts from 1. */
+  selectedIndex?: number,
   onToggle?: (selected: boolean) => void,
 }
 
@@ -25,7 +29,8 @@ export function PromptCard({ card }: PromptCardProps) {
   </div>;
 }
 
-export function ResponseCard({ card, selectable, selected, onToggle }: ResponseCardProps) {
+export function ResponseCard({ card, selectable, selectedIndex, onToggle }: ResponseCardProps) {
+  const selected = selectedIndex != undefined && selectedIndex > -1;
   const selectableStyle = selectable ? "hoverable-card" : "";
   const selectedStyle = selected ? "selected" : "";
   const className = `game-card card-response ${selectableStyle} ${selectedStyle}`;
@@ -34,6 +39,17 @@ export function ResponseCard({ card, selectable, selected, onToggle }: ResponseC
   }
   return <div className={className} onClick={handleClick}>
     <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
+    {selected && <FillLayout
+      className="selected-response-index"
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        position: "absolute",
+        top: 0,
+        left: 0,
+      }}>
+      {selectedIndex + 1}
+    </FillLayout>}
   </div>;
 }
 

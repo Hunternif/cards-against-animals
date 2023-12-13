@@ -198,6 +198,13 @@ button:disabled {
   box-shadow: 0px 0px 20px 4px #d45f00cc;
   transform: scaleX(1.05) scaleY(1.05);
 }
+.selected-response-index {
+  color: #ffc90fcc;
+  font-size: 5rem;
+  font-weight: bold;
+  align-content: center;
+  justify-content: center;
+}
 
 .hoverable-card {
   transition-property: transform, box-shadow;
