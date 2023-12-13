@@ -1,14 +1,25 @@
-import { collection, doc, getDoc, getDocs, limit, orderBy, query } from "firebase/firestore";
-import { lobbiesRef } from "../firebase";
-import { playerDataConverter, turnConverter } from "./firebase-converters";
-import { GameLobby, GameTurn } from "../shared/types";
-import { useCollection, useDocumentData } from "react-firebase-hooks/firestore";
+import { collection, doc, getDocs, limit, orderBy, query, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { useCollection, useDocumentData } from "react-firebase-hooks/firestore";
+import { lobbiesRef } from "../firebase";
+import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../shared/types";
+import {
+  playerDataConverter,
+  playerResponseConverter,
+  turnConverter
+} from "./firebase-converters";
+import { User } from "firebase/auth";
 
 /** Returns Firestore subcollection reference. */
 function getTurnsRef(lobbyID: string) {
   return collection(lobbiesRef, lobbyID, "turns")
     .withConverter(turnConverter);
+}
+
+/** Returns Firestore subcollection reference. */
+function getPlayerResponsesRef(lobbyID: string, turnID: string) {
+  return collection(lobbiesRef, lobbyID, "turns", turnID, "player_responses")
+    .withConverter(playerResponseConverter);
 }
 
 /**
@@ -23,6 +34,18 @@ export async function getLastTurn(lobbyID: string): Promise<GameTurn> {
   ).docs.map((d) => d.data());
   if (turns.length === 0) throw new Error("No turns found");
   return turns[0];
+}
+
+/** Submit player's response */
+export async function submitPlayerResponse(
+  lobby: GameLobby,
+  turn: GameTurn,
+  userID: string,
+  userName: string,
+  cards: ResponseCardInGame[],
+) {
+  const response = new PlayerResponse(userID, userName, cards)
+  await setDoc(doc(getPlayerResponsesRef(lobby.id, turn.id), userID), response);
 }
 
 type LastTurnHook = [

@@ -14,11 +14,22 @@ service cloud.firestore {
     function userIsPlayer(lobby) {
       return exists(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid));
     }
+    // Allows only "players", not "spectators".
+    function userIsActivePlayer(lobby) {
+      return userIsPlayer(lobby) && get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid)).data.role == "player";
+    }
     function userIsCreator(lobby) {
       return get(/databases/$(database)/documents/lobbies/$(lobby)).data.creator_uid == request.auth.uid;
     }
     function userIsInLobby(lobby) {
       return userIsPlayer(lobby) || userIsCreator(lobby);
+    }
+    // Checks that the user actually has the cards they want to submit.
+    function userHasCards(lobby, turn) {
+      // Can't iterate arrays, so will only check the first card:
+      let card = request.resource.data.cards[0];
+      // TODO: users could potentially hack their 2nd & 3rd card, lol.
+      return card in get(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)/player_data/$(request.auth.uid)).data.hand;
     }
 
   	match /decks/{document=**} {
@@ -45,6 +56,11 @@ service cloud.firestore {
       }
       match /deck_responses/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);
+      }
+      match /turns/{turn}/player_responses/{userID} {
+        // Allow players to submit once:
+        allow create: if isLoggedIn() && request.auth.uid == userID
+                      && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
       }
     }
     match /users/{userID} {
