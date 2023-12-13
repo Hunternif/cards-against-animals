@@ -11,6 +11,7 @@ import {
   GameTurn,
   PlayerDataInTurn,
   PlayerInLobby,
+  PlayerResponse,
   PromptCardInGame,
   PromptDeckCard,
   ResponseCardInGame,
@@ -66,7 +67,7 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
   toFirestore: (turn: GameTurn) => copyFields2(turn, {
     time_created: Timestamp.fromDate(turn.time_created),
     prompt: copyFields(turn.prompt, []),
-  }, ['id', 'player_data']),
+  }, ['id', 'player_data', 'player_responses']),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const time_created = data.time_created as Timestamp;
@@ -95,7 +96,6 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
 export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
   toFirestore: (pdata: PlayerDataInTurn) => copyFields2(pdata, {
     hand: pdata.hand.map((card) => copyFields(card, [])),
-    current_play: pdata.current_play.map((card) => copyFields(card, [])),
   }),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
@@ -103,9 +103,19 @@ export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
     const ret = new PlayerDataInTurn(player_uid, data.player_name);
     ret.hand = (data.hand as Array<any>)
       ?.map(mapResponseCardInGame) || [];
-    ret.current_play = (data.current_play as Array<any>)
-      ?.map(mapResponseCardInGame) || [];
     return ret;
+  },
+};
+
+export const playerResponseConverter: FirestoreDataConverter<PlayerResponse> = {
+  toFirestore: (pdata: PlayerResponse) => copyFields2(pdata, {
+    cards: pdata.cards.map((card) => copyFields(card, [])),
+  }),
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+    const data = snapshot.data();
+    const player_uid = snapshot.id;
+    const cards = (data.cards as Array<any>)?.map(mapResponseCardInGame) || [];
+    return new PlayerResponse(player_uid, data.player_name, cards);
   },
 };
 

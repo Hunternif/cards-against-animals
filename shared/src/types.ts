@@ -67,6 +67,11 @@ export class GameTurn {
   /** Maps player UID to what cards they have on hand in this turn.
    * Must be fetched separately from a Firebase subcollection. */
   player_data: Map<string, PlayerDataInTurn> = new Map();
+  /** Maps player UID to what cards they played in this turn.
+   * Must be fetched separately from a Firebase subcollection.
+   * Making this a separate collection makes it secure for players to submit
+   * directly to Firestore, without a function.*/
+  player_responses: Map<string, PlayerResponse> = new Map();
   /** UID of the user who won this round */
   winner_uid?: string;
 
@@ -96,12 +101,25 @@ export class PlayerDataInTurn {
   player_name: string; // Copied from 'Players' for convenience.
   /** Cards in the player's hand, including `current_response`. */
   hand: Array<ResponseCardInGame> = [];
-  /** What cards they played in this turn. */
-  current_play: Array<ResponseCardInGame> = [];
 
   constructor(player_uid: string, player_name: string) {
     this.player_uid = player_uid;
     this.player_name = player_name;
+  }
+}
+
+/** Player's submitted cards in a turn. */
+export class PlayerResponse {
+  player_uid: string;
+  player_name: string; // Copied from 'Players' for convenience.
+  cards: Array<ResponseCardInGame>;
+
+  constructor(
+    player_uid: string, player_name: string, cards: Array<ResponseCardInGame>,
+  ) {
+    this.player_uid = player_uid;
+    this.player_name = player_name;
+    this.cards = cards;
   }
 }
 

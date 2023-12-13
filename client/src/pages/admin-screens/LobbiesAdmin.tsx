@@ -2,7 +2,11 @@ import { DocumentReference, collection } from "firebase/firestore";
 import { Accordion } from "react-bootstrap";
 import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
 import { lobbiesRef } from "../../firebase";
-import { playerConverter, playerDataConverter, turnConverter } from "../../model/firebase-converters";
+import {
+  playerDataConverter,
+  playerResponseConverter,
+  turnConverter
+} from "../../model/firebase-converters";
 import { GameLobby, GameTurn } from "../../shared/types";
 import { usePlayers } from "../../model/lobby-api";
 
@@ -60,6 +64,15 @@ function TurnData({ turn, turnRef }: TurnProps) {
     collection(turnRef, 'player_data')
       .withConverter(playerDataConverter)
   );
+  const [playerResponses] = useCollectionData(
+    collection(turnRef, 'player_responses')
+      .withConverter(playerResponseConverter)
+  );
+  function findResponse(playerUID: string): string | null {
+    if (!playerResponses) return null;
+    return playerResponses.find((r) => r.player_uid === playerUID)
+      ?.cards.join(', ') ?? null;
+  }
   return <div>
     <div>{turn.id}: {turn.prompt.content}</div>
     <ul>
@@ -67,7 +80,7 @@ function TurnData({ turn, turnRef }: TurnProps) {
         const isJudge = turn.judge_uid == pdata.player_uid;
         const isWinner = turn.winner_uid == pdata.player_uid;
         const hand = pdata.hand.map((c) => c.content).join(', ');
-        const played = pdata.current_play?.map((c) => c.content).join(', ');
+        const played = findResponse(pdata.player_uid);
         return <li key={i}>
           {pdata.player_name}:
           {isJudge && " 💬 "}
