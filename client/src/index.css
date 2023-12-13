@@ -214,3 +214,9 @@ button:disabled {
 .hoverable-card:hover {
   transform: scaleX(1.05) scaleY(1.05);
 }
+
+.pre-submit-text {
+  opacity: 50%;
+  font-size: 0.9rem;
+  font-weight: 200;
+}

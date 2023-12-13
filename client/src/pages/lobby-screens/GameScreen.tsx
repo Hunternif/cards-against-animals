@@ -6,6 +6,7 @@ import { LoadingSpinner } from "../../components/utils";
 import { useLastTurn, usePlayerData } from "../../model/turn-api";
 import { GameLobby, GameTurn } from "../../shared/types";
 import { FillLayout } from "../../components/layout/FillLayout";
+import { GameButton } from "../../components/Buttons";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -17,7 +18,7 @@ const containerStyle: CSSProperties = {
   flexDirection: "column",
   alignItems: "flex-start",
   justifyContent: "space-between",
-  gap: "6em",
+  gap: "1em",
   padding: "1.5em",
 };
 const rowStyle: CSSProperties = {
@@ -31,6 +32,7 @@ const rowStyle: CSSProperties = {
 const topRowStyle: CSSProperties = {
   justifyContent: "flex-start",
 }
+const midRowStyle: CSSProperties = {}
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
 }
@@ -76,6 +78,9 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
         <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
           <PromptCard card={turn.prompt} />
         </div>
+        <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
+          <ControlRow turn={turn} selection={selectedCards}/>
+        </div>
         <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
           {data && data.hand.map((card) =>
             <ResponseCard key={card.id} card={card}
@@ -89,5 +94,38 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
         </div>
       </CenteredLayout>
     </FillLayout>
+  );
+}
+
+interface ControlProps {
+  turn: GameTurn,
+  selection: string[], // card IDs
+}
+
+const buttonAlignedStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  height: "3rem",
+}
+
+function ControlRow({ turn, selection }: ControlProps) {
+  const picked = selection.length;
+  const total = turn.prompt.pick;
+  const ready = picked >= total;
+  return (
+    <div style={{
+      display: "flex",
+      justifyContent: "center",
+      height: "4em",
+      width: "100%",
+    }}>
+      {ready ? (<GameButton accent>Submit</GameButton>) : (
+        // Text displayed in place of button:
+        <div style={buttonAlignedStyle} className="pre-submit-text">
+          Picked {picked} out of {total}
+          </div>
+      )}
+    </div>
   );
 }
