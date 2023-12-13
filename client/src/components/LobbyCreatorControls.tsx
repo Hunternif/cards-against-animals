@@ -4,6 +4,7 @@ import { DeckSelector } from "./DeckSelector";
 import play_button from '../assets/play_button.svg'
 import { startLobby } from "../model/lobby-api";
 import { LoadingSpinner } from "./utils";
+import { GameButton } from "./Buttons";
 
 interface Props {
   lobby: GameLobby,
@@ -21,11 +22,7 @@ const footerStyle: CSSProperties = {
 };
 
 const startButtonStyle: CSSProperties = {
-  minWidth: "10em",
-  display: "flex",
-  textAlign: "center",
-  paddingLeft: "0.9em",
-  alignItems: "center",
+  minWidth: "10rem",
 };
 
 export function LobbyCreatorControls({ lobby }: Props) {
@@ -45,12 +42,12 @@ export function LobbyCreatorControls({ lobby }: Props) {
     <h3 style={headerStyle}>Select decks</h3>
     <DeckSelector lobby={lobby} />
     <div style={footerStyle}>
-      <button style={startButtonStyle} className="accent-button start-button"
+      <GameButton accent style={startButtonStyle} className="start-button"
         onClick={handleStart}
-        disabled={lobby.deck_ids.size == 0}>
-        <img src={play_button} />
-        <span style={{ flexGrow: 1 }}>Start</span>
-      </button>
+        disabled={lobby.deck_ids.size == 0}
+        icon={play_button}>
+        Start
+      </GameButton>
     </div>
   </>;
 }

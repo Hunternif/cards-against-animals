@@ -87,7 +87,7 @@ button:disabled {
   opacity: 0.4;
 }
 
-.start-button > span {
+.start-button {
   font-size: x-large;
   font-weight: bold;
 }
