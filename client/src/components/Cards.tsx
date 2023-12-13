@@ -12,6 +12,8 @@ interface ResponseCardProps {
   selectable?: boolean,
   /** Which card it is in your submission: #1, #2 etc. Starts from 1. */
   selectedIndex?: number,
+  /** Whether to show the above index. Doesn't make sense for 1 card. */
+  showIndex?: boolean,
   onToggle?: (selected: boolean) => void,
 }
 
@@ -29,7 +31,9 @@ export function PromptCard({ card }: PromptCardProps) {
   </div>;
 }
 
-export function ResponseCard({ card, selectable, selectedIndex, onToggle }: ResponseCardProps) {
+export function ResponseCard(
+  { card, selectable, selectedIndex, showIndex, onToggle }: ResponseCardProps
+) {
   const selected = selectedIndex != undefined && selectedIndex > -1;
   const selectableStyle = selectable ? "hoverable-card" : "";
   const selectedStyle = selected ? "selected" : "";
@@ -39,7 +43,7 @@ export function ResponseCard({ card, selectable, selectedIndex, onToggle }: Resp
   }
   return <div className={className} onClick={handleClick}>
     <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
-    {selected && <FillLayout
+    {showIndex && selected && <FillLayout
       className="selected-response-index"
       style={{
         display: "flex",

@@ -86,6 +86,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
             <ResponseCard key={card.id} card={card}
               selectable={true}
               selectedIndex={selectedCards.indexOf(card.id)}
+              showIndex={turn.prompt.pick > 1}
               onToggle={(selected) => {
                 if (selected) selectCard(card.id);
                 else deselectCard(card.id);
