@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { copyFields } from "../shared/utils";
 
 interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -8,7 +8,9 @@ interface ButtonProps
 
 export function GameButton(props: ButtonProps) {
   const className = `${props.accent ? "accent-button " : ""}${props.className}`;
-  return <button {...props}
+  // Remove new fields when passing props to DOM:
+  const propsCopy = copyFields(props, ['accent', 'icon']);
+  return <button {...propsCopy}
     className={className}
     style={{
       display: "flex",
