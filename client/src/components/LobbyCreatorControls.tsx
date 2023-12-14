@@ -1,9 +1,10 @@
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useContext, useState } from "react";
 import { GameLobby } from "../shared/types";
 import { DeckSelector } from "./DeckSelector";
 import { startLobby } from "../model/lobby-api";
 import { LoadingSpinner } from "./utils";
 import { GameButton, IconPlay } from "./Buttons";
+import { ErrorContext } from "./ErrorContext";
 
 interface Props {
   lobby: GameLobby,
@@ -26,14 +27,14 @@ const startButtonStyle: CSSProperties = {
 
 export function LobbyCreatorControls({ lobby }: Props) {
   const [starting, setStarting] = useState(false);
-  const [error, setError] = useState(null);
-  if (error) throw error;
+  const { setError } = useContext(ErrorContext);
   async function handleStart() {
     setStarting(true);
     try {
     await startLobby(lobby);
     } catch (e: any) {
       setError(e);
+      setStarting(false);
     }
   }
   if (starting) return <LoadingSpinner text="Starting..."/>;

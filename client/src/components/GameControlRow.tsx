@@ -1,8 +1,9 @@
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useContext, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { submitPlayerResponse } from "../model/turn-api";
 import { GameLobby, GameTurn, ResponseCardInGame } from "../shared/types";
 import { GameButton } from "./Buttons";
+import { ErrorContext } from "./ErrorContext";
 
 interface ControlProps {
   lobby: GameLobby,
@@ -27,12 +28,14 @@ export function GameControlRow(
   const total = turn.prompt.pick;
   const ready = picked >= total;
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  if (error) throw error;
+  const { setError } = useContext(ErrorContext);
   function handleClick() {
     setSubmitting(true);
     submitPlayerResponse(lobby, turn, userID, userName, selection)
-      .catch((e) => setError(e));
+      .catch((e) => {
+        setError(e);
+        setSubmitting(false);
+      });
   }
   return (
     <div style={{

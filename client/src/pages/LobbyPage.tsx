@@ -2,7 +2,7 @@ import { User } from "firebase/auth";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useLoaderData } from "react-router-dom";
-import { ErrorBoundary } from "../components/ErrorBoundary";
+import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/utils";
 import { firebaseAuth } from "../firebase";
@@ -25,9 +25,9 @@ export function LobbyPage() {
   const [error, setError] = useState<any | null>(null);
   return <>
     <ErrorModal error={error} setError={setError} />
-    <ErrorBoundary onError={(e) => setError(e)}>
+    <ErrorContext.Provider value={{error, setError}}>
       <LobbyPageThrows />
-    </ErrorBoundary>
+    </ErrorContext.Provider>
   </>;
 }
 
