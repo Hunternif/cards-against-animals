@@ -3,10 +3,11 @@ import { CSSProperties, useState } from "react";
 import { PromptCard, ResponseCard } from "../../components/Cards";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { LoadingSpinner } from "../../components/utils";
-import { submitPlayerResponse, useLastTurn, usePlayerData } from "../../model/turn-api";
+import { submitPlayerResponse, useLastTurn, usePlayerData, usePlayerResponse } from "../../model/turn-api";
 import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { GameButton } from "../../components/Buttons";
+import { Spinner } from "react-bootstrap";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -52,7 +53,8 @@ interface TurnProps {
 
 function TurnScreen({ lobby, turn, user }: TurnProps) {
   const [data] = usePlayerData(lobby, turn, user.uid);
-  //TODO check if already submitted.
+  const [response] = usePlayerResponse(lobby, turn, user.uid);
+  const submitted = response != undefined;
   // Set of card ids:
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
   function selectCard(card: ResponseCardInGame) {
@@ -81,17 +83,20 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
         </div>
         <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
           {data && <ControlRow lobby={lobby} turn={turn} userID={user.uid}
-            userName={data.player_name} selection={selectedCards} />}
+            userName={data.player_name} selection={selectedCards}
+            submitted={submitted} />}
         </div>
         <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
           {data && data.hand.map((card) =>
             <ResponseCard key={card.id} card={card}
-              selectable={true}
+              selectable={!submitted}
               selectedIndex={selectedCards.indexOf(card)}
               showIndex={turn.prompt.pick > 1}
               onToggle={(selected) => {
-                if (selected) selectCard(card);
-                else deselectCard(card);
+                if (!submitted) {
+                  if (selected) selectCard(card);
+                  else deselectCard(card);
+                }
               }} />
           )}
         </div>
@@ -106,6 +111,7 @@ interface ControlProps {
   userID: string,
   userName: string,
   selection: ResponseCardInGame[], // card IDs
+  submitted?: boolean,
 }
 
 const buttonAlignedStyle: CSSProperties = {
@@ -115,15 +121,15 @@ const buttonAlignedStyle: CSSProperties = {
   height: "3rem",
 }
 
-function ControlRow({ lobby, turn, userID, userName, selection }: ControlProps) {
+function ControlRow({ lobby, turn, userID, userName, selection, submitted }: ControlProps) {
   const picked = selection.length;
   const total = turn.prompt.pick;
   const ready = picked >= total;
-  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   if (error) throw error;
   function handleClick() {
-    setSubmitted(true);
+    setSubmitting(true);
     submitPlayerResponse(lobby, turn, userID, userName, selection)
       .catch((e) => setError(e));
   }
@@ -140,7 +146,10 @@ function ControlRow({ lobby, turn, userID, userName, selection }: ControlProps) 
           Submitted!
         </div>
       ) :
-        ready ? (<GameButton accent onClick={handleClick}>Submit</GameButton>) : (
+        ready ? (<GameButton accent onClick={handleClick} disabled={submitting}
+          icon={submitting && <Spinner size="sm" />}>
+          Submit
+        </GameButton>) : (
           // Text displayed in place of button:
           <div style={buttonAlignedStyle} className="pre-submit-text">
             Picked {picked} out of {total}

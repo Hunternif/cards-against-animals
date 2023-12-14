@@ -8,7 +8,6 @@ import {
   playerResponseConverter,
   turnConverter
 } from "./firebase-converters";
-import { User } from "firebase/auth";
 
 /** Returns Firestore subcollection reference. */
 function getTurnsRef(lobbyID: string) {
@@ -77,4 +76,12 @@ export function usePlayerData(lobby: GameLobby, turn: GameTurn, userID: string) 
   return useDocumentData(
     doc(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID)
       .withConverter(playerDataConverter));
+}
+
+/** Returns and subscribes to current user's player response that they played
+ * in the current turn in the lobby. */
+export function usePlayerResponse(lobby: GameLobby, turn: GameTurn, userID: string) {
+  return useDocumentData(
+    doc(lobbiesRef, lobby.id, "turns", turn.id, "player_responses", userID)
+      .withConverter(playerResponseConverter));
 }
