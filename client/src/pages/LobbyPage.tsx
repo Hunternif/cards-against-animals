@@ -1,13 +1,16 @@
 import { User } from "firebase/auth";
+import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useLoaderData } from "react-router-dom";
+import { ErrorBoundary } from "../components/ErrorBoundary";
+import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/utils";
 import { firebaseAuth } from "../firebase";
 import { useJoinLobby, useLobby } from "../model/lobby-api";
-import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
-import { LoginScreen } from "./lobby-screens/LoginScreen";
-import { GameScreen } from "./lobby-screens/GameScreen";
 import { EndedLobbyScreen } from "./lobby-screens/EndedLobbyScreen";
+import { GameScreen } from "./lobby-screens/GameScreen";
+import { LoginScreen } from "./lobby-screens/LoginScreen";
+import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
 
 interface LoaderParams {
   params: any
@@ -17,8 +20,19 @@ export function lobbyLoader({ params }: LoaderParams): string {
   return params['lobbyID'] as string;
 }
 
-/** User opened the lobby screen, but not necessarily logged in or in this lobby. */
+/** Root component */
 export function LobbyPage() {
+  const [error, setError] = useState<any | null>(null);
+  return <>
+    <ErrorModal error={error} setError={setError} />
+    <ErrorBoundary onError={(e) => setError(e)}>
+      <LobbyPageThrows />
+    </ErrorBoundary>
+  </>;
+}
+
+/** User opened the lobby screen, but not necessarily logged in or in this lobby. */
+function LobbyPageThrows() {
   // Double-check that we are logged in.
   // Users who are sent the link will need to log in first.
   const [user, loadingUser] = useAuthState(firebaseAuth);
