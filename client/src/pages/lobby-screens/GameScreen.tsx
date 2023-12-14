@@ -57,6 +57,16 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
   const submitted = response != undefined;
   // Set of card ids:
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
+
+  function getSelectedIndex(card: ResponseCardInGame): number {
+    // check card by ID, because the response instance could be unequal:
+    if (response) {
+      return response.cards.findIndex((c) => c.card_id === card.card_id);
+    } else {
+      return selectedCards.indexOf(card);
+    }
+  }
+
   function selectCard(card: ResponseCardInGame) {
     const newSelection = selectedCards.slice();
     // Don't select more than required:
@@ -66,6 +76,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
     newSelection.push(card);
     setSelectedCards(newSelection);
   }
+
   function deselectCard(cardID: ResponseCardInGame) {
     const newSelection = selectedCards.slice();
     const index = newSelection.indexOf(cardID);
@@ -74,6 +85,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
       setSelectedCards(newSelection);
     }
   }
+
   return (
     <FillLayout className="game-screen miniscrollbar miniscrollbar-light"
       style={{ overflowY: "auto", }}>
@@ -90,7 +102,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
           {data && data.hand.map((card) =>
             <ResponseCard key={card.id} card={card}
               selectable={!submitted}
-              selectedIndex={selectedCards.indexOf(card)}
+              selectedIndex={getSelectedIndex(card)}
               showIndex={turn.prompt.pick > 1}
               onToggle={(selected) => {
                 if (!submitted) {
