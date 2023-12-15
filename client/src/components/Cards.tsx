@@ -1,6 +1,4 @@
-import { CSSProperties } from "react";
 import { CardInGame, PromptCardInGame } from "../shared/types";
-import { CenteredLayout } from "./layout/CenteredLayout";
 import { FillLayout } from "./layout/FillLayout";
 
 interface PromptCardProps {
@@ -10,7 +8,7 @@ interface PromptCardProps {
 interface ResponseCardProps {
   card: CardInGame,
   selectable?: boolean,
-  /** Which card it is in your submission: #1, #2 etc. Starts from 1. */
+  /** Which card it is in your submission: #1, #2 etc. Starts from 0. */
   selectedIndex?: number,
   /** Whether to show the above index. Doesn't make sense for 1 card. */
   showIndex?: boolean,

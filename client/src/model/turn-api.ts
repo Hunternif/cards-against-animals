@@ -1,6 +1,6 @@
 import { collection, doc, getDocs, limit, orderBy, query, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useCollection, useDocumentData } from "react-firebase-hooks/firestore";
+import { useCollection, useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { lobbiesRef } from "../firebase";
 import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../shared/types";
 import {
@@ -83,5 +83,13 @@ export function usePlayerData(lobby: GameLobby, turn: GameTurn, userID: string) 
 export function usePlayerResponse(lobby: GameLobby, turn: GameTurn, userID: string) {
   return useDocumentData(
     doc(lobbiesRef, lobby.id, "turns", turn.id, "player_responses", userID)
+      .withConverter(playerResponseConverter));
+}
+
+/** Returns and subscribes to all players responses that they played
+ * in the current turn in the lobby. */
+export function useAllPlayerResponses(lobby: GameLobby, turn: GameTurn) {
+  return useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses")
       .withConverter(playerResponseConverter));
 }

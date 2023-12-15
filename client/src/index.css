@@ -220,3 +220,35 @@ button:disabled {
   font-size: 0.9rem;
   font-weight: 200;
 }
+
+.game-minicard {
+  width: 5rem;
+  height: 7rem;
+  border-radius: 0.5rem;
+}
+.game-minicard.ready {
+  color: #181d29;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  opacity: 0.7;
+}
+.game-minicard.ready.multiple {
+  box-shadow: inset -5px -1px 0 #aaaaaa;
+}
+.game-minicard.notready {
+  border: 5px dashed;
+  border-color: rgba(229 231 235);
+  color: rgba(229 231 235);
+  opacity: 0.2;
+}
+.minicard-player-name {
+  width: 5rem;
+  padding: 0.75rem 0.3rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 9pt;
+  color: #fff;
+}
+.game-minicard > .ready-icon {
+  font-size: 3rem;
+}

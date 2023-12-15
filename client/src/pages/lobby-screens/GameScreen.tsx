@@ -3,6 +3,7 @@ import { CSSProperties, useState } from "react";
 import { PromptCard } from "../../components/Cards";
 import { GameControlRow } from "../../components/GameControlRow";
 import { GameHand } from "../../components/GameHand";
+import { GameMiniResponses } from "../../components/GameMiniResponses";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { LoadingSpinner } from "../../components/utils";
@@ -32,6 +33,7 @@ const rowStyle: CSSProperties = {
 };
 const topRowStyle: CSSProperties = {
   justifyContent: "flex-start",
+  flexWrap: "wrap",
 }
 const midRowStyle: CSSProperties = {}
 const botRowStyle: CSSProperties = {
@@ -64,6 +66,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
       <CenteredLayout style={containerStyle}>
         <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
           <PromptCard card={turn.prompt} />
+          <GameMiniResponses lobby={lobby} turn={turn} />
         </div>
         <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
           {data && <GameControlRow lobby={lobby} turn={turn} userID={user.uid}

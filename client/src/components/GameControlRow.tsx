@@ -32,6 +32,7 @@ export function GameControlRow(
   function handleClick() {
     setSubmitting(true);
     submitPlayerResponse(lobby, turn, userID, userName, selection)
+      .then(() => setSubmitting(false))
       .catch((e) => {
         setError(e);
         setSubmitting(false);
