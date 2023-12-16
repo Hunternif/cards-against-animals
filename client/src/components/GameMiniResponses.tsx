@@ -13,6 +13,7 @@ interface Props {
 
 /** Indicates which players responded */
 export function GameMiniResponses({ lobby, turn }: Props) {
+  // const players = dummyPlayers;
   const [players] = usePlayers(lobby.id);
   const [responses] = useAllPlayerResponses(lobby, turn);
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
@@ -30,6 +31,7 @@ export function GameMiniResponses({ lobby, turn }: Props) {
     {players?.filter((p) => p.role === "player")?.map((player) => {
       const response = findResponse(player);
       return <MiniResponseCard
+        key={player.uid}
         playerName={player.name}
         ready={response != null}
         pick={turn.prompt.pick} />
