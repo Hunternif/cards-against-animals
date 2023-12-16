@@ -11,6 +11,7 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { useLastTurn, usePlayerData, usePlayerResponse } from "../../model/turn-api";
 import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
+import { JudgePickPromptScreen } from "./JudgePickPromptScreen";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -107,10 +108,6 @@ function PlayerScreen({ lobby, turn, user }: TurnProps) {
     </CenteredLayout> :
       <LoadingSpinner delay text="Loading..." />}
   </>;
-}
-
-function JudgePickPromptScreen({ lobby, turn, user }: TurnProps) {
-  return <CenteredLayout>Pick a prompt</CenteredLayout>;
 }
 
 function JudgeAwaitResponsesScreen({ lobby, turn, user }: TurnProps) {

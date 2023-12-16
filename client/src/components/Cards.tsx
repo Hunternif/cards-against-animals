@@ -4,7 +4,7 @@ import { FillLayout } from "./layout/FillLayout";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
-  card?: PromptCardInGame,
+  card: PromptCardInGame | undefined | null,
 }
 
 interface ResponseCardProps {

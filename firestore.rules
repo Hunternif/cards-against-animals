@@ -24,6 +24,9 @@ service cloud.firestore {
     function userIsInLobby(lobby) {
       return userIsPlayer(lobby) || userIsCreator(lobby);
     }
+    function userIsJudge(lobby, turn) {
+      return get(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)).data.judge_uid == request.auth.uid;
+    }
     // Checks that the user actually has the cards they want to submit.
     function userHasCards(lobby, turn) {
       // Can't iterate arrays, so will only check the first card:
@@ -53,9 +56,15 @@ service cloud.firestore {
       }
       match /deck_prompts/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);
+        // Players can remove prompt cards from deck:
+        allow delete: if isLoggedIn() && userIsActivePlayer(lobby);
       }
       match /deck_responses/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);
+      }
+      match /turns/{turn} {
+        // Judge can update turn data, e.g. prompt:
+        allow update: if isLoggedIn() && userIsJudge(lobby, turn);
       }
       match /turns/{turn}/player_responses/{userID} {
         // Allow players to submit once:
