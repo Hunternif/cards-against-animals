@@ -70,7 +70,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
   return (
     <FillLayout className="game-screen miniscrollbar miniscrollbar-light"
       style={{ overflowY: "auto", }}>
-      <GameMenu style={menuStyle} />
+      <GameMenu style={menuStyle} lobby={lobby} user={user} />
       <CenteredLayout style={containerStyle}>
         <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
           <PromptCard card={turn.prompt} />
