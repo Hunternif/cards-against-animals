@@ -184,6 +184,9 @@ button:disabled {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
 }
+.game-card.locked-card.unselected {
+  opacity: 0.6;
+}
 .game-card.card-prompt {
   background-image: linear-gradient(to bottom,#141820,#2d3441);
   color: #fff;

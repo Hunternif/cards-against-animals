@@ -33,8 +33,8 @@ export function ResponseCard(
   { card, selectable, selectedIndex, showIndex, onToggle }: ResponseCardProps
 ) {
   const selected = selectedIndex != undefined && selectedIndex > -1;
-  const selectableStyle = selectable ? "hoverable-card" : "";
-  const selectedStyle = selected ? "selected" : "";
+  const selectableStyle = selectable ? "hoverable-card" : "locked-card";
+  const selectedStyle = selected ? "selected" : "unselected";
   const className = `game-card card-response ${selectableStyle} ${selectedStyle}`;
   function handleClick() {
     if (onToggle) onToggle(!selected);
