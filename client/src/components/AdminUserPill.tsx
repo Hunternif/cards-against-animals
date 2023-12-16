@@ -1,39 +1,17 @@
 import { User } from "firebase/auth";
-import React, { MouseEventHandler, ReactNode } from "react";
 import { Dropdown } from "react-bootstrap";
 import { signOut } from "../model/users-api";
+import { CustomDropdown } from "./CustomDropdown";
 
 interface UserProps {
   user: User;
 }
 
-interface ToggleProps {
-  onClick: MouseEventHandler,
-  children: ReactNode,
-}
-
-// The forwardRef is important!
-// Dropdown needs access to the DOM node in order to position the Menu
-const CustomToggle = React.forwardRef<HTMLAnchorElement, ToggleProps>(
-  ({ children, onClick }, ref) => (
-    <a
-      href=""
-      ref={ref}
-      onClick={(e) => {
-        e.preventDefault();
-        onClick(e);
-      }}
-      className="text-white dropdown-toggle"
-    >
-      {children}
-    </a>
-  ));
-
 export function AdminUserPill({ user }: UserProps) {
   return (
-    <Dropdown>
-      <Dropdown.Toggle as={CustomToggle}
-      >
+    <CustomDropdown showArrow={true}
+      style={{ fontWeight: 500 }}
+      toggle={<>
         <img src={user.photoURL ?? ""}
           width="30" height="30"
           style={{ borderRadius: "50%" }}
@@ -41,10 +19,11 @@ export function AdminUserPill({ user }: UserProps) {
         <span style={{ marginLeft: "0.5em", marginRight: "0.2em" }}>
           {user.displayName}
         </span>
-      </Dropdown.Toggle>
+      </>
+      }>
       <Dropdown.Menu>
         <Dropdown.Item onClick={() => signOut(user)}>Sign Out</Dropdown.Item>
       </Dropdown.Menu>
-    </Dropdown>
+    </CustomDropdown>
   );
 }
