@@ -5,7 +5,7 @@ import { db } from "../firebase-server";
 import { GameTurn, PlayerDataInTurn, PromptCardInGame, ResponseCardInGame } from "../shared/types";
 import { getRandomInt } from "../shared/utils";
 import { playerDataConverter, promptCardInGameConverter, responseCardInGameConverter, turnConverter } from "./firebase-converters";
-import { getPlayers } from "./lobby-server-api";
+import { getPlayers, updateLobby } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
 function getTurnsRef(lobbyID: string) {
@@ -23,6 +23,14 @@ export async function getAllTurns(lobbyID: string): Promise<Array<GameTurn>> {
   return (await getTurnsRef(lobbyID).get()).docs.map((t) => t.data());
 }
 
+/** Finds turn by ID, or throws HttpsError. */
+export async function getTurn(lobbyID: string, turnID: string):
+  Promise<GameTurn> {
+  const turn = (await getTurnsRef(lobbyID).doc(turnID).get()).data();
+  if (!turn) throw new HttpsError("not-found", `Turn ${turnID} not found in lobby ${lobbyID}`);
+  return turn;
+}
+
 /** Finds the last turn in the lobby. */
 export async function getLastTurn(lobbyID: string): Promise<GameTurn | null> {
   const docs = (await getTurnsRef(lobbyID)
@@ -31,6 +39,14 @@ export async function getLastTurn(lobbyID: string): Promise<GameTurn | null> {
   ).docs;
   if (docs.length === 0) return null;
   return docs[0].data();
+}
+
+/**
+ * Updates turn state in Firestore.
+ * Does not update subcollections! (player_data, player_resposnes etc)
+ */
+export async function updateTurn(lobbyID: string, turn: GameTurn): Promise<void> {
+  await getTurnsRef(lobbyID).doc(turn.id).set(turn);
 }
 
 /** Counts how many turns have occurred in this lobby. */
@@ -46,21 +62,30 @@ export async function getPlayerData(
 }
 
 /**
- * Starts a new turn and returns it.
+ * Creates a new turn without a prompt, and returns it.
  */
-export async function startNewTurn(lobbyID: string): Promise<GameTurn> {
+export async function createNewTurn(lobbyID: string): Promise<GameTurn> {
   const lastTurn = await getLastTurn(lobbyID);
   if (lastTurn && lastTurn.phase != "complete") {
     throw new HttpsError("failed-precondition",
       `Last turn has not completed in lobby ${lobbyID}`);
   }
   const judge = await selectJudge(lobbyID, lastTurn);
-  const prompt = await selectPrompt(lobbyID);
   const id = String(await countTurns(lobbyID) + 1);
-  const newTurn = new GameTurn(id, judge, prompt);
+  const newTurn = new GameTurn(id, judge);
   await getTurnsRef(lobbyID).doc(id).set(newTurn);
   await dealCards(lobbyID, lastTurn, newTurn);
   return newTurn; // timestamp may not have reloaded but that's ok.
+}
+
+/**
+ * Starts the turn and returns it.
+ */
+export async function startTurn(lobbyID: string, turnID: string): Promise<GameTurn> {
+  const turn = await getTurn(lobbyID, turnID);
+  turn.phase = "answering";
+  await updateTurn(lobbyID, turn);
+  return turn;
 }
 
 /** Returns UID of the player who will judge the next turn. */
