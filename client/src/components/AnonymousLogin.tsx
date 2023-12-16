@@ -4,7 +4,8 @@ import { Card, Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
 import { CenteredLayout } from "./layout/CenteredLayout";
-import { LoadingSpinner, useEffectOnce } from "./utils";
+import { useDelay, useEffectOnce } from "./utils";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface Props {
   onLogin?: (user: User) => void,
@@ -16,6 +17,9 @@ export function AnonymousLogin({ onLogin, joining }: Props) {
   const suggestedName = "CoolNickname123";
   const [name, setName] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
+  const delayedLoadingUser = useDelay(loadingUser);
+  const delayedLoggingIn = useDelay(loggingIn);
+  const delayedJoining = useDelay(joining);
 
   useEffectOnce(() => {
     // Load user's name only once
@@ -63,16 +67,16 @@ export function AnonymousLogin({ onLogin, joining }: Props) {
       padding: "1em",
       maxWidth: "300px",
     }}>
-      {loggingIn ? <LoadingSpinner text="Logging in..." /> :
-        joining ? <LoadingSpinner text="Joining..." /> : (
+      {delayedLoggingIn ? <LoadingSpinner text="Logging in..." /> :
+        delayedJoining ? <LoadingSpinner text="Joining..." /> : (
           <Form onSubmit={(e) => { e.preventDefault(); login(); }}>
             <Form.Group style={{ marginBottom: "1em" }}>
               <Form.Label><h4>Choose a nickname</h4></Form.Label>
-              {loadingUser ? <LoadingSpinner /> : (
+              {delayedLoadingUser ? <LoadingSpinner /> : (
                 <Form.Control type="text" value={name}
-                  placeholder={suggestedName}
+                  placeholder={loadingUser ? "" : suggestedName}
                   onChange={(e) => setName(e.target.value)}
-                  disabled={joining}
+                  disabled={loadingUser || joining}
                 />
               )}
             </Form.Group>

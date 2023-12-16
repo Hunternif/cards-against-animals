@@ -4,7 +4,7 @@ import { Card } from "react-bootstrap";
 import { usePlayers } from "../model/lobby-api";
 import { GameLobby, PlayerInLobby } from "../shared/types";
 import { FillLayout } from "./layout/FillLayout";
-import { LoadingSpinner } from "./utils";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface ListProps {
   lobby: GameLobby,
@@ -55,7 +55,7 @@ function PlayerCard({ player, isMe, isCreator }: PlayerProps) {
         {isCreator && <span style={{
           marginLeft: "auto",
           marginRight: "-0.2em",
-          }}>👑</span>}
+        }}>👑</span>}
       </Card.Body>
     </Card>
   );
@@ -88,7 +88,7 @@ export function LobbyPlayerList({ lobby, user }: ListProps) {
     }
   }, [players?.length]);
 
-  if (loadingPlayers) return <FillLayout><LoadingSpinner /></FillLayout>;
+  if (loadingPlayers) return <FillLayout><LoadingSpinner delay /></FillLayout>;
 
   return (
     <ul style={{ padding: 0, margin: 0 }}>

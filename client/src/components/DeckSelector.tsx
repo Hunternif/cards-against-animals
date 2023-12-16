@@ -4,7 +4,8 @@ import { decksRef } from "../firebase";
 import { addDeck, removeDeck } from "../model/lobby-api";
 import { Deck, GameLobby } from "../shared/types";
 import { FillLayout } from "./layout/FillLayout";
-import { LoadingSpinner } from "./utils";
+import { LoadingSpinner } from "./LoadingSpinner";
+import { useDelay } from "./utils";
 
 interface DeckProps {
   deck: Deck,
@@ -44,8 +45,9 @@ interface SelectorProps {
 
 export function DeckSelector({ lobby }: SelectorProps) {
   const [decks, loading] = useCollectionDataOnce(decksRef);
+  const delayedLoading = useDelay(loading);
   // const [decks, loading] = [dummyDecks, false]; // for testing UI
-  if (loading) return <LoadingSpinner text="Loading decks..." />;
+  if (delayedLoading) return <LoadingSpinner text="Loading decks..." />;
   return (
     <FillLayout style={scrollableColumnStyle}
       className="miniscrollbar miniscrollbar-dark deck-selector">

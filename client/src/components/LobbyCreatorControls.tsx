@@ -2,10 +2,10 @@ import { CSSProperties, useContext, useState } from "react";
 import { GameLobby } from "../shared/types";
 import { DeckSelector } from "./DeckSelector";
 import { startLobby } from "../model/lobby-api";
-import { LoadingSpinner } from "./utils";
 import { GameButton } from "./Buttons";
 import { ErrorContext } from "./ErrorContext";
 import { IconPlay } from "./Icons";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface Props {
   lobby: GameLobby,
@@ -38,7 +38,7 @@ export function LobbyCreatorControls({ lobby }: Props) {
       setStarting(false);
     }
   }
-  if (starting) return <LoadingSpinner text="Starting..." />;
+  if (starting) return <LoadingSpinner text="Starting..." delay />;
   return <>
     <h3 style={headerStyle}>Select decks</h3>
     <DeckSelector lobby={lobby} />

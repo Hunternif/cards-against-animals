@@ -4,13 +4,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useLoaderData } from "react-router-dom";
 import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
-import { LoadingSpinner } from "../components/utils";
 import { firebaseAuth } from "../firebase";
 import { useJoinLobby, useLobby } from "../model/lobby-api";
 import { EndedLobbyScreen } from "./lobby-screens/EndedLobbyScreen";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 interface LoaderParams {
   params: any
@@ -37,7 +37,7 @@ function LobbyPageThrows() {
   // Users who are sent the link will need to log in first.
   const [user, loadingUser] = useAuthState(firebaseAuth);
   const lobbyID = useLoaderData() as string;
-  if (loadingUser) return <LoadingSpinner text="Loading..." />;
+  if (loadingUser) return <LoadingSpinner delay text="Loading..." />;
   if (!user) return <LoginScreen existingLobbyID={lobbyID} />;
   return <LoggedInLobbyScreen user={user} lobbyID={lobbyID} />;
 }
@@ -50,14 +50,14 @@ interface LoggedInProps {
 /** User logged in, but not necessarily joined the lobby. */
 function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
   const [joined] = useJoinLobby(lobbyID, user);
-  if (!joined) return <LoadingSpinner text="Joining..." />;
+  if (!joined) return <LoadingSpinner delay text="Joining..." />;
   return <JoinedLobbyScreen user={user} lobbyID={lobbyID} />
 }
 
 /** User logged in AND joined the lobby. */
 function JoinedLobbyScreen({ lobbyID, user }: LoggedInProps) {
   const [lobby, loadingLobby] = useLobby(lobbyID);
-  if (loadingLobby) return <LoadingSpinner text="Loading lobby..." />;
+  if (loadingLobby) return <LoadingSpinner delay text="Loading lobby..." />;
   if (!lobby) throw new Error(`Failed to load lobby ${lobbyID}`);
   switch (lobby.status) {
     case "new":

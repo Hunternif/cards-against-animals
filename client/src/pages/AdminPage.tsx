@@ -5,8 +5,8 @@ import { CenteredLayout } from "../components/layout/CenteredLayout";
 import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth, useFetchCAAUser } from "../firebase";
 import { AdminUserPill } from "../components/AdminUserPill";
-import { LoadingSpinner } from "../components/utils";
 import { signOut } from "../model/users-api";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -33,7 +33,7 @@ function AccessDeniedView({ user }: UserProps) {
 function AnonymousLoggedInView({ user }: UserProps) {
   return <CenteredLayout>
     <AccessDeniedView user={user} />
-    <br/>
+    <br />
     <LogInBox />
   </CenteredLayout>;
 }
@@ -41,7 +41,7 @@ function AnonymousLoggedInView({ user }: UserProps) {
 function LoggedInView({ user }: UserProps) {
   const [caaUser, loading] = useFetchCAAUser(user.uid ?? "invalid");
   const isAdmin = caaUser?.is_admin ?? false;
-  if (loading) return <LoadingSpinner text="Loading..."/>
+  if (loading) return <LoadingSpinner delay text="Loading..." />
   if (user.isAnonymous) return <AnonymousLoggedInView user={user} />
   if (isAdmin) return <AdminContent user={user} />;
   return <AccessDeniedView user={user} />

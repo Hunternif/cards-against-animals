@@ -6,10 +6,10 @@ import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { FillLayout } from "../../components/layout/FillLayout";
-import { LoadingSpinner } from "../../components/utils";
 import { useLastTurn, usePlayerData, usePlayerResponse } from "../../model/turn-api";
 import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
 import { GameMenu } from "../../components/GameMenu";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -49,7 +49,7 @@ const menuStyle: CSSProperties = {
 
 export function GameScreen({ lobby, user }: ScreenProps) {
   const [turn, loading] = useLastTurn(lobby.id);
-  if (!turn || loading) return <LoadingSpinner text="Waiting for next turn..." />;
+  if (!turn || loading) return <LoadingSpinner delay text="Waiting for next turn..." />;
   // if (!turn) throw new Error("No turn");
   return <TurnScreen turn={turn} lobby={lobby} user={user} />;
 }
@@ -71,21 +71,23 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
     <FillLayout className="game-screen miniscrollbar miniscrollbar-light"
       style={{ overflowY: "auto", }}>
       <GameMenu style={menuStyle} lobby={lobby} user={user} />
-      <CenteredLayout style={containerStyle}>
-        <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
-          <PromptCard card={turn.prompt} />
-          <GameMiniResponses lobby={lobby} turn={turn} />
-        </div>
-        <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
-          {data && <GameControlRow lobby={lobby} turn={turn} userID={user.uid}
-            userName={data.player_name} selection={selectedCards}
-            submitted={submitted} />}
-        </div>
-        <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
-          {data && <GameHand pick={turn.prompt.pick} playerData={data} response={response}
-            selectedCards={selectedCards} setSelectedCards={setSelectedCards} />}
-        </div>
-      </CenteredLayout>
+      {data ?
+        <CenteredLayout style={containerStyle}>
+          <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
+            <PromptCard card={turn.prompt} />
+            <GameMiniResponses lobby={lobby} turn={turn} />
+          </div>
+          <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
+            <GameControlRow lobby={lobby} turn={turn} userID={user.uid}
+              userName={data.player_name} selection={selectedCards}
+              submitted={submitted} />
+          </div>
+          <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
+            <GameHand pick={turn.prompt.pick} playerData={data} response={response}
+              selectedCards={selectedCards} setSelectedCards={setSelectedCards} />
+          </div>
+        </CenteredLayout> :
+        <LoadingSpinner delay text="Loading..." />}
     </FillLayout>
   );
 }
