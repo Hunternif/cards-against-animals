@@ -9,6 +9,7 @@ import { FillLayout } from "../../components/layout/FillLayout";
 import { LoadingSpinner } from "../../components/utils";
 import { useLastTurn, usePlayerData, usePlayerResponse } from "../../model/turn-api";
 import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
+import { GameMenu } from "../../components/GameMenu";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -39,6 +40,12 @@ const midRowStyle: CSSProperties = {}
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
 }
+const menuStyle: CSSProperties = {
+  position: "absolute",
+  marginLeft: "auto",
+  right: "1rem",
+  top: "1rem",
+}
 
 export function GameScreen({ lobby, user }: ScreenProps) {
   const [turn, loading] = useLastTurn(lobby.id);
@@ -63,6 +70,7 @@ function TurnScreen({ lobby, turn, user }: TurnProps) {
   return (
     <FillLayout className="game-screen miniscrollbar miniscrollbar-light"
       style={{ overflowY: "auto", }}>
+      <GameMenu style={menuStyle} />
       <CenteredLayout style={containerStyle}>
         <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
           <PromptCard card={turn.prompt} />

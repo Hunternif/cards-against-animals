@@ -255,3 +255,10 @@ button:disabled {
 .game-minicard > .ready-icon {
   font-size: 3rem;
 }
+
+.game-menu-icon {
+  opacity: 0.5;
+}
+.game-menu-icon:hover {
+  opacity: 1;
+}
