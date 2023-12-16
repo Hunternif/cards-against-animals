@@ -62,8 +62,9 @@ export class GameTurn {
   //================= Main game stuff ===================
   /** UID of the player who will judge the winner. */
   judge_uid: string;
-  /** The prompt that everyone is answering. */
-  prompt: PromptCardInGame;
+  /** The prompt that everyone is answering. Will be null during phase "new",
+   * when the judge picks a new prompt. */
+  prompt?: PromptCardInGame;
   /** Maps player UID to what cards they have on hand in this turn.
    * Must be fetched separately from a Firebase subcollection. */
   player_data: Map<string, PlayerDataInTurn> = new Map();
@@ -85,7 +86,7 @@ export class GameTurn {
   constructor(
     id: string,
     judge_uid: string,
-    prompt: PromptCardInGame,
+    prompt?: PromptCardInGame,
     time_created: Date = new Date(),
   ) {
     this.id = id;

@@ -1,8 +1,10 @@
+import { CSSProperties } from "react";
 import { CardInGame, PromptCardInGame } from "../shared/types";
 import { FillLayout } from "./layout/FillLayout";
 
 interface PromptCardProps {
-  card: PromptCardInGame,
+  /** Undefined while the judge hasn't picked a prompt yet */
+  card?: PromptCardInGame,
 }
 
 interface ResponseCardProps {
@@ -19,13 +21,29 @@ interface PickProps {
   pick: number,
 }
 
+const containerStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  position: "relative",
+}
+
+const fillCardStyle: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  position: "absolute",
+  top: 0,
+  left: 0,
+}
+
 export function PromptCard({ card }: PromptCardProps) {
-  return <div className="game-card card-prompt" style={{
-    display: "flex",
-    flexDirection: "column",
-  }}>
-    <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
-    {card.pick > 1 && <PromptCardPick pick={card.pick} />}
+  return <div className="game-card card-prompt" style={containerStyle}>
+    {card ? (<>
+      <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
+      {card.pick > 1 && <PromptCardPick pick={card.pick} />}
+    </>) :
+      <FillLayout className="prompt-unknown-icon" style={fillCardStyle} >
+        ?
+      </FillLayout>}
   </div>;
 }
 
@@ -39,17 +57,11 @@ export function ResponseCard(
   function handleClick() {
     if (onToggle) onToggle(!selected);
   }
-  return <div className={className} onClick={handleClick}>
+  return <div className={className} onClick={handleClick} style={containerStyle}>
     <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
     {showIndex && selected && <FillLayout
       className="selected-response-index"
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        position: "absolute",
-        top: 0,
-        left: 0,
-      }}>
+      style={fillCardStyle}>
       {selectedIndex + 1}
     </FillLayout>}
   </div>;

@@ -208,6 +208,12 @@ button:disabled {
   align-content: center;
   justify-content: center;
 }
+.prompt-unknown-icon {
+  color: rgba(229, 231, 235, 0.4);
+  font-size: 5rem;
+  align-content: center;
+  justify-content: center;
+}
 
 .hoverable-card {
   transition-property: transform, box-shadow;
@@ -240,8 +246,8 @@ button:disabled {
 }
 .game-minicard.notready {
   border: 5px dashed;
-  border-color: rgba(229 231 235);
-  color: rgba(229 231 235);
+  border-color: rgba(229, 231, 235);
+  color: rgba(229, 231, 235);
   opacity: 0.2;
 }
 .minicard-player-name {

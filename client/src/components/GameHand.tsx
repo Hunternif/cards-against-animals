@@ -13,7 +13,7 @@ interface HandProps {
 export function GameHand(
   { pick, playerData, response, selectedCards, setSelectedCards }: HandProps
 ) {
-  const submitted = response != undefined;
+  const selectable = !response && pick > 0;
 
   function getSelectedIndex(card: ResponseCardInGame): number {
     // check card by ID, because the response instance could be unequal:
@@ -27,7 +27,7 @@ export function GameHand(
   function selectCard(card: ResponseCardInGame) {
     const newSelection = selectedCards.slice();
     // Don't select more than required:
-    while (newSelection.length >= pick) {
+    if (newSelection.length >= pick) {
       newSelection.pop();
     }
     newSelection.push(card);
@@ -44,11 +44,11 @@ export function GameHand(
   }
   return playerData.hand.map((card) =>
     <ResponseCard key={card.id} card={card}
-      selectable={!submitted}
+      selectable={selectable}
       selectedIndex={getSelectedIndex(card)}
       showIndex={pick > 1}
       onToggle={(selected) => {
-        if (!submitted) {
+        if (selectable) {
           if (selected) selectCard(card);
           else deselectCard(card);
         }

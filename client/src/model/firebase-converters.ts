@@ -71,15 +71,7 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const time_created = data.time_created as Timestamp;
-    const prompt = new PromptCardInGame(
-      data.prompt.id,
-      data.prompt.deck_id,
-      data.prompt.card_id,
-      data.prompt.random_index,
-      data.prompt.content,
-      data.prompt.pick,
-      data.prompt.rating,
-    );
+    const prompt = data.prompt && mapPromptCardInGame(data.prompt);
     const ret = new GameTurn(
       snapshot.id,
       data.judge_uid,
@@ -119,6 +111,10 @@ export const playerResponseConverter: FirestoreDataConverter<PlayerResponse> = {
   },
 };
 
+function mapPromptCardInGame(data: any): PromptCardInGame {
+  return new PromptCardInGame(data.id, data.deck_id, data.card_id,
+    data.random_index, data.content, data.pick, data.rating);
+}
 function mapResponseCardInGame(data: any): ResponseCardInGame {
   return new ResponseCardInGame(data.id, data.deck_id, data.card_id,
     data.random_index, data.content, data.rating);

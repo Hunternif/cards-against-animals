@@ -3,13 +3,13 @@ import { CSSProperties, useState } from "react";
 import { PromptCard } from "../../components/Cards";
 import { GameControlRow } from "../../components/GameControlRow";
 import { GameHand } from "../../components/GameHand";
+import { GameMenu } from "../../components/GameMenu";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { useLastTurn, usePlayerData, usePlayerResponse } from "../../model/turn-api";
 import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
-import { GameMenu } from "../../components/GameMenu";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -98,7 +98,7 @@ function PlayerScreen({ lobby, turn, user }: TurnProps) {
           submitted={submitted} />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
-        <GameHand pick={turn.prompt.pick} playerData={data} response={response}
+        <GameHand pick={turn.prompt?.pick ?? 0} playerData={data} response={response}
           selectedCards={selectedCards} setSelectedCards={setSelectedCards} />
       </div>
     </CenteredLayout> :

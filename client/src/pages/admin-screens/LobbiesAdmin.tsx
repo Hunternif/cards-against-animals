@@ -74,7 +74,7 @@ function TurnData({ turn, turnRef }: TurnProps) {
       ?.cards.join(', ') ?? null;
   }
   return <div>
-    <div>{turn.id}: {turn.prompt.content}</div>
+    <div>{turn.id}: {turn.prompt?.content}</div>
     <ul>
       {playerData && playerData.map((pdata, i) => {
         const isJudge = turn.judge_uid == pdata.player_uid;

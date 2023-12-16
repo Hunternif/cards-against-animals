@@ -25,8 +25,8 @@ export function GameControlRow(
   { lobby, turn, userID, userName, selection, submitted }: ControlProps
 ) {
   const picked = selection.length;
-  const total = turn.prompt.pick;
-  const ready = picked >= total;
+  const total = turn.prompt?.pick ?? 1;
+  const ready = turn.prompt && picked >= total;
   const [submitting, setSubmitting] = useState(false);
   const { setError } = useContext(ErrorContext);
   function handleClick() {
@@ -57,7 +57,7 @@ export function GameControlRow(
         </GameButton>) : (
           // Text displayed in place of button:
           <div style={buttonAlignedStyle} className="pre-submit-text">
-            Picked {picked} out of {total}
+            {turn.prompt ? `Picked ${picked} out of ${total}` : "Waiting for prompt..."}
           </div>
         )}
     </div>

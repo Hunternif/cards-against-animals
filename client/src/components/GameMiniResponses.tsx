@@ -34,7 +34,7 @@ export function GameMiniResponses({ lobby, turn }: Props) {
         key={player.uid}
         playerName={player.name}
         ready={response != null}
-        pick={turn.prompt.pick} />
+        pick={turn.prompt?.pick ?? 0} />
     })}
   </div>;
 }
