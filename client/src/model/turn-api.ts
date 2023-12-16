@@ -60,11 +60,16 @@ export async function pickNewPrompt(lobby: GameLobby): Promise<PromptCardInGame 
   return prompts[0];
 }
 
+/** Removes this prompt card from the deck without playing it. */
+export async function discardPrompt(lobby: GameLobby, card: PromptCardInGame) {
+  await deleteDoc(doc(getPromptsRef(lobby.id), card.id));
+}
+
 /** Sets the given card as the prompt of the turn.
  * Also removes the prompt from the deck, so it can't be played again. */
 export async function playPrompt(
   lobby: GameLobby, turn: GameTurn, card: PromptCardInGame) {
-  await deleteDoc(doc(getPromptsRef(lobby.id), card.card_id));
+  await discardPrompt(lobby, card);
   turn.prompt = card;
   turn.phase = "answering";
   await updateTurn(lobby.id, turn);

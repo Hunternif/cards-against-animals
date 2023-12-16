@@ -5,12 +5,15 @@ interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode,
   accent?: boolean,
+  secondary?: boolean,
 }
 
 export function GameButton(props: ButtonProps) {
-  const className = `${props.accent ? "accent-button " : ""}${props.className}`;
+  const accentClass = props.accent ? "accent-button " : "";
+  const secondaryClass = props.secondary ? "secondary-button " : "";
+  const className = `${accentClass}${secondaryClass}${props.className}`;
   // Remove new fields when passing props to DOM:
-  const propsCopy = copyFields(props, ['accent', 'icon']);
+  const propsCopy = copyFields(props, ['accent', 'icon', 'secondary']);
   return <button {...propsCopy}
     className={className}
     style={{
