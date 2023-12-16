@@ -60,34 +60,64 @@ interface TurnProps {
   user: User,
 }
 
-function TurnScreen({ lobby, turn, user }: TurnProps) {
-  const [data] = usePlayerData(lobby, turn, user.uid);
-  const [response] = usePlayerResponse(lobby, turn, user.uid);
-  const submitted = response != undefined;
-  // Set of card ids:
-  const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
-
+function TurnScreen(props: TurnProps) {
+  const isJudge = props.turn.judge_uid === props.user.uid;
   return (
     <FillLayout className="game-screen miniscrollbar miniscrollbar-light"
       style={{ overflowY: "auto", }}>
-      <GameMenu style={menuStyle} lobby={lobby} user={user} />
-      {data ?
-        <CenteredLayout style={containerStyle}>
-          <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
-            <PromptCard card={turn.prompt} />
-            <GameMiniResponses lobby={lobby} turn={turn} />
-          </div>
-          <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
-            <GameControlRow lobby={lobby} turn={turn} userID={user.uid}
-              userName={data.player_name} selection={selectedCards}
-              submitted={submitted} />
-          </div>
-          <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
-            <GameHand pick={turn.prompt.pick} playerData={data} response={response}
-              selectedCards={selectedCards} setSelectedCards={setSelectedCards} />
-          </div>
-        </CenteredLayout> :
-        <LoadingSpinner delay text="Loading..." />}
+      <GameMenu style={menuStyle} {...props} />
+      {isJudge ? <JudgeScreen {...props} /> : <PlayerScreen {...props} />}
     </FillLayout>
   );
+}
+
+function JudgeScreen(props: TurnProps) {
+  switch (props.turn.phase) {
+    case "new": return <JudgePickPromptScreen {...props} />;
+    case "answering": return <JudgeAwaitResponsesScreen {...props} />;
+    case "reading": return <JudgeReadingScreen {...props} />;
+    case "judging": return <JudgeJudgingScreen {...props} />;
+    case "complete": return <CenteredLayout>Turn ended</CenteredLayout>;
+  }
+}
+
+function PlayerScreen({ lobby, turn, user }: TurnProps) {
+  const [data] = usePlayerData(lobby, turn, user.uid);
+  const [response] = usePlayerResponse(lobby, turn, user.uid);
+  const submitted = response != undefined;
+  const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
+  return <>
+    {data ? <CenteredLayout style={containerStyle}>
+      <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
+        <PromptCard card={turn.prompt} />
+        <GameMiniResponses lobby={lobby} turn={turn} />
+      </div>
+      <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
+        <GameControlRow lobby={lobby} turn={turn} userID={user.uid}
+          userName={data.player_name} selection={selectedCards}
+          submitted={submitted} />
+      </div>
+      <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
+        <GameHand pick={turn.prompt.pick} playerData={data} response={response}
+          selectedCards={selectedCards} setSelectedCards={setSelectedCards} />
+      </div>
+    </CenteredLayout> :
+      <LoadingSpinner delay text="Loading..." />}
+  </>;
+}
+
+function JudgePickPromptScreen({ lobby, turn, user }: TurnProps) {
+  return <CenteredLayout>Pick a prompt</CenteredLayout>;
+}
+
+function JudgeAwaitResponsesScreen({ lobby, turn, user }: TurnProps) {
+  return <CenteredLayout>Wait for responses</CenteredLayout>;
+}
+
+function JudgeReadingScreen({ lobby, turn, user }: TurnProps) {
+  return <CenteredLayout>Read out the responses</CenteredLayout>;
+}
+
+function JudgeJudgingScreen({ lobby, turn, user }: TurnProps) {
+  return <CenteredLayout>Pick the best response</CenteredLayout>;
 }
