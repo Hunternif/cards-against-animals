@@ -50,12 +50,14 @@ export async function submitPlayerResponse(
 type LastTurnHook = [
   lastTurn: GameTurn | null,
   loading: boolean,
+  error: any,
 ]
 
 /** Returns and subscribes to the current turn in the lobby. */
 export function useLastTurn(lobbyID: string): LastTurnHook {
   const [lastTurn, setLastTurn] = useState<GameTurn | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [turnsSnap] = useCollection(getTurnsRef(lobbyID));
   useEffect(() => {
     setLoading(true);
@@ -63,11 +65,10 @@ export function useLastTurn(lobbyID: string): LastTurnHook {
       setLastTurn(turn);
       setLoading(false);
     }).catch((e) => {
-      console.log(e);
-      // Ignore the exception while new turns are added.
+      setError(e);
     });
   }, [turnsSnap]);
-  return [lastTurn, loading];
+  return [lastTurn, loading, error];
 }
 
 /** Returns and subscribes to current user's player data in the current turn

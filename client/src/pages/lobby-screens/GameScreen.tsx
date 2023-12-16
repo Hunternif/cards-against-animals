@@ -1,6 +1,7 @@
 import { User } from "firebase/auth";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useContext, useEffect, useState } from "react";
 import { PromptCard } from "../../components/Cards";
+import { ErrorContext } from "../../components/ErrorContext";
 import { GameControlRow } from "../../components/GameControlRow";
 import { GameHand } from "../../components/GameHand";
 import { GameMenu } from "../../components/GameMenu";
@@ -48,7 +49,9 @@ const menuStyle: CSSProperties = {
 }
 
 export function GameScreen({ lobby, user }: ScreenProps) {
-  const [turn, loading] = useLastTurn(lobby.id);
+  const [turn, loading, error] = useLastTurn(lobby.id);
+  const { setError } = useContext(ErrorContext);
+  useEffect(() => { if (error) setError(error); }, [error, setError]);
   if (!turn || loading) return <LoadingSpinner delay text="Waiting for next turn..." />;
   // if (!turn) throw new Error("No turn");
   return <TurnScreen turn={turn} lobby={lobby} user={user} />;
