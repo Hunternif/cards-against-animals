@@ -5,11 +5,11 @@ import { FillLayout } from "./layout/FillLayout";
 interface Props {
   response: PlayerResponse,
   /** Only the judge player can reveal */
-  canReveal: boolean,
+  canReveal?: boolean,
   /** When selecting winner */
-  canSelect: boolean,
-  selected: boolean,
-  onClick: (response: PlayerResponse) => void,
+  canSelect?: boolean,
+  selected?: boolean,
+  onClick?: (response: PlayerResponse) => void,
 }
 
 const containerStyle: CSSProperties = {
@@ -49,7 +49,7 @@ export function ResponseReading(
   const featureClass = `${canRevealClass} ${revealedClass}`;
   const hasManyCards = response.cards.length > 1;
   function handleClick() {
-    if (canReveal) {
+    if (canReveal && onClick) {
       onClick(response);
     }
   }
@@ -94,8 +94,8 @@ export function ResponseReading(
 
 interface CardProps {
   card: ResponseCardInGame,
-  selectable: boolean,
-  selected: boolean,
+  selectable?: boolean,
+  selected?: boolean,
   offset?: number,
 }
 

@@ -193,6 +193,11 @@ button:disabled {
   background-image: linear-gradient(to bottom,
     #000 0%,#37415100 48%, #37415100 52%, #000 100%);
 }
+.game-bg.phase-complete {
+  opacity: 1;
+  background-image: linear-gradient(to bottom,
+    #140202,#6e4612, #140202);
+}
 
 .game-screen {
   position: relative;

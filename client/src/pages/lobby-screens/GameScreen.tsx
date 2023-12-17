@@ -3,7 +3,6 @@ import { CSSProperties, useContext, useEffect } from "react";
 import { ErrorContext } from "../../components/ErrorContext";
 import { GameMenu } from "../../components/GameMenu";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { useLastTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn } from "../../shared/types";
@@ -11,6 +10,7 @@ import { CardReadingScreen } from "./CardReadingScreen";
 import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
 import { JudgePickPromptScreen } from "./JudgePickPromptScreen";
 import { PlayerAnsweringScreen } from "./PlayerAnsweringScreen";
+import { WinnerScreen } from "./WinnerScreen";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -56,7 +56,7 @@ function JudgeScreen(props: TurnProps) {
     case "new": return <JudgePickPromptScreen {...props} />;
     case "answering": return <JudgeAwaitResponsesScreen {...props} />;
     case "reading": return <CardReadingScreen {...props} />;
-    case "complete": return <CenteredLayout>Turn ended</CenteredLayout>;
+    case "complete": return <WinnerScreen {...props} />;
   }
 }
 
@@ -65,6 +65,6 @@ function PlayerScreen(props: TurnProps) {
     case "new":
     case "answering": return <PlayerAnsweringScreen {...props} />;
     case "reading": return <CardReadingScreen {...props} />;
-    case "complete": return <CenteredLayout>Turn ended</CenteredLayout>;
+    case "complete": return <WinnerScreen {...props} />;
   }
 }
