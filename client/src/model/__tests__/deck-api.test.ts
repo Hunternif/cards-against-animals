@@ -16,6 +16,7 @@ test('parse pick from prompt text', () => {
 
 test('process card text', () => {
   expect(processCardText("line one\\nline two")).toBe("line one\nline two");
+  expect(processCardText("line one\\nline two\\nline three")).toBe("line one\nline two\nline three");
 });
 
 test('process prompt text', () => {

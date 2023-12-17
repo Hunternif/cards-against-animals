@@ -59,7 +59,7 @@ export function parsePromptPick(text: string): number {
 
 /** Re-formats text if necessary */
 export function processCardText(text: string): string {
-  return text.replace("\\n", "\n");
+  return text.replace(/\\n/g, "\n");
 }
 
 /** Re-formats specifically the gaps in prompt cards, to be '_' */
