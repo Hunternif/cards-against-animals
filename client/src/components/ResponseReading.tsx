@@ -15,6 +15,7 @@ interface Props {
 const containerStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
+  position: "relative",
 }
 
 const cardPlaceholderStyle: CSSProperties = {
@@ -74,7 +75,7 @@ export function ResponseReading(
         </div>
       </div>
     ) : (
-      <div className={canSelect ? "hoverable-card" : ""}>
+      <div className={canSelect ? "hoverable-card" : ""} onClick={handleClick}>
         <ResponseReadingCard card={response.cards[0]}
           selectable={canSelect} selected={selected} />
       </div>
