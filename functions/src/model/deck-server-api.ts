@@ -1,10 +1,9 @@
-import { Timestamp } from "firebase-admin/firestore";
 import { db } from "../firebase-server";
 import {
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
-import { getRandomInt } from "../shared/utils";
+import { randomIndex } from "../shared/utils";
 import {
   promptDeckCardConverter,
   responseDeckCardConverter,
@@ -38,11 +37,6 @@ export async function getAllResponsesForGame(deckID: string):
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
-}
-
-function randomIndex(): number {
-  const time = Timestamp.now().nanoseconds;
-  return getRandomInt(0, 2147483648) ^ time;
 }
 
 /** Creates prefixed ID to prevent collisions between decks. */

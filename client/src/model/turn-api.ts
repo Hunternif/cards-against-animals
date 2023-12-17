@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useCollection, useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { lobbiesRef } from "../firebase";
 import { GameLobby, GameTurn, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
+import { randomIndex } from "../shared/utils";
 import {
   playerDataConverter,
   playerResponseConverter,
@@ -105,7 +106,7 @@ export async function submitPlayerResponse(
   userName: string,
   cards: ResponseCardInGame[],
 ) {
-  const response = new PlayerResponse(userID, userName, cards)
+  const response = new PlayerResponse(userID, userName, cards, randomIndex(), false)
   await setDoc(doc(getPlayerResponsesRef(lobby.id, turn.id), userID), response);
 }
 

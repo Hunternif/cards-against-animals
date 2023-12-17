@@ -106,7 +106,8 @@ export const playerResponseConverter: FirestoreDataConverter<PlayerResponse> = {
     const data = snapshot.data();
     const player_uid = snapshot.id;
     const cards = (data.cards as Array<any>)?.map(mapResponseCardInGame) || [];
-    return new PlayerResponse(player_uid, data.player_name, cards);
+    return new PlayerResponse(player_uid, data.player_name, cards,
+      data.random_index, data.revealed);
   },
 };
 

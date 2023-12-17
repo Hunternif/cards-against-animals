@@ -41,3 +41,9 @@ export function getRandomInt(min: number, max: number): number {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+/** Gets a random int, salted with current time */
+export function randomIndex(): number {
+  const time = new Date().getMilliseconds();
+  return getRandomInt(0, 2147483648) ^ time;
+}
