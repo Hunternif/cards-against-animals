@@ -19,16 +19,23 @@ export function JudgeAwaitResponsesScreen({ lobby, turn }: TurnProps) {
   // const players = dummyPlayers;
   const [players] = usePlayers(lobby.id);
   const [responses] = useAllPlayerResponses(lobby, turn);
+
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
     return responses?.find((res) => res.player_uid === player.uid) ?? null;
   }
+
+  // Filter out spectators and the judge:
+  const validPlayers = players?.filter((p) =>
+    p.role === "player" && p.uid !== turn.judge_uid
+  );
+
   return <CenteredLayout style={{
     display: "flex",
     flexFlow: "wrap",
     justifyContent: "center",
     gap: "1rem",
   }}>
-    {players?.filter((p) => p.role === "player")?.map((player) => {
+    {validPlayers && validPlayers.map((player) => {
       const response = findResponse(player);
       return <MiniResponseCard
         key={player.uid}
