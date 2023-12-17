@@ -6,21 +6,22 @@ interface ButtonProps
   icon?: ReactNode,
   accent?: boolean,
   secondary?: boolean,
+  small?: boolean,
 }
 
 export function GameButton(props: ButtonProps) {
   const accentClass = props.accent ? "accent-button " : "";
   const secondaryClass = props.secondary ? "secondary-button " : "";
-  const className = `${accentClass}${secondaryClass}${props.className}`;
+  const smallClass = props.small ? "small-button " : "";
+  const className = `${accentClass}${secondaryClass}${smallClass}${props.className}`;
   // Remove new fields when passing props to DOM:
-  const propsCopy = copyFields(props, ['accent', 'icon', 'secondary']);
+  const propsCopy = copyFields(props, ['accent', 'icon', 'secondary', 'small']);
   return <button {...propsCopy}
     className={className}
     style={{
       display: "flex",
       textAlign: "center",
       alignItems: "center",
-      height: "3rem",
       ...props.style,
     }}
   >

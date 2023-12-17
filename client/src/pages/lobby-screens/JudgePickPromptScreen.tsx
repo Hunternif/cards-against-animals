@@ -44,7 +44,7 @@ const sideSectionStyle: CSSProperties = {
 /** Aligned below the "Change" button */
 const countStyle: CSSProperties = {
   position: "absolute",
-  top: "4rem",
+  top: "3.5rem",
 }
 
 export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
@@ -106,7 +106,7 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
         <div style={midRowStyle}>
           <PromptCard card={prompt} />
           <div style={sideSectionStyle}>
-            <GameButton secondary onClick={handleChange}>
+            <GameButton secondary small onClick={handleChange}>
               Change
             </GameButton>
             <span style={countStyle} className="extra-dim">
