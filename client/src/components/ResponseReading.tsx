@@ -1,11 +1,12 @@
 import { CSSProperties } from "react";
-import { PlayerResponse } from "../shared/types";
+import { PlayerResponse, ResponseCardInGame } from "../shared/types";
 import { FillLayout } from "./layout/FillLayout";
 
 interface Props {
   response: PlayerResponse,
   /** Only the judge player can reveal */
   canReveal: boolean,
+  onClick: (response: PlayerResponse) => void,
 }
 
 const containerStyle: CSSProperties = {
@@ -26,22 +27,21 @@ const fillCardStyle: CSSProperties = {
  * From the "reading" phase, when the judge reveals player responses
  * one by one.
 */
-export function ResponseReading({ response, canReveal }: Props) {
+export function ResponseReading({ response, canReveal, onClick }: Props) {
   const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
   const revealedClass = response.revealed ? "revealed" : "unrevealed";
   const className = `game-card card-response response-reading ${canRevealClass} ${revealedClass}`;
   function handleClick() {
     if (canReveal) {
-      // TODO: reveal
+      onClick(response);
     }
   }
   if (response.revealed) {
     return <>
       {// TODO: overlay multiple cards
         response.cards.map((card) =>
-          <div className={className} onClick={handleClick} style={containerStyle}>
-            <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
-          </div>)
+          <ResponseReadingCard key={card.card_id} card={card} />
+        )
       }
     </>
   } else {
@@ -53,4 +53,17 @@ export function ResponseReading({ response, canReveal }: Props) {
       </div>
     );
   }
+}
+
+interface CardProps {
+  card: ResponseCardInGame,
+}
+
+function ResponseReadingCard({ card }: CardProps) {
+  return (
+    <div className="game-card card-response response-reading revealed"
+      style={containerStyle}>
+      <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
+    </div>
+  );
 }

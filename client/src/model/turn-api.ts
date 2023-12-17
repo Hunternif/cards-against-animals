@@ -3,8 +3,9 @@
 import {
   collection, deleteDoc, doc,
   getCountFromServer,
+  getDoc,
   getDocs, limit, orderBy,
-  query, setDoc,
+  query, setDoc, updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollection, useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
@@ -108,6 +109,14 @@ export async function submitPlayerResponse(
 ) {
   const response = new PlayerResponse(userID, userName, cards, randomIndex(), false)
   await setDoc(doc(getPlayerResponsesRef(lobby.id, turn.id), userID), response);
+}
+
+/** Called by the judge when revealing a response. */
+export async function revealPlayerResponse(
+  lobby: GameLobby, turn: GameTurn, playerID: string,
+) {
+  const responseRef = doc(getPlayerResponsesRef(lobby.id, turn.id), playerID);
+  await updateDoc(responseRef, { revealed: true });
 }
 
 type LastTurnHook = [

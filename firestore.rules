@@ -70,6 +70,8 @@ service cloud.firestore {
         // Allow players to submit once:
         allow create: if isLoggedIn() && request.auth.uid == userID
                       && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
+        // Judge can reveal:
+        allow update: if isLoggedIn() && userIsJudge(lobby, turn);
       }
     }
     match /users/{userID} {

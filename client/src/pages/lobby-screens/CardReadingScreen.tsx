@@ -1,10 +1,11 @@
 import { User } from "@firebase/auth";
-import { CSSProperties } from "react";
+import { CSSProperties, useContext } from "react";
 import { PromptCard } from "../../components/Cards";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { useAllPlayerResponses } from "../../model/turn-api";
+import { revealPlayerResponse, useAllPlayerResponses } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../../shared/types";
+import { ErrorContext } from "../../components/ErrorContext";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -34,7 +35,13 @@ const midRowStyle: CSSProperties = {
 export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
   // const responses = dummyResponses;
   const [responses] = useAllPlayerResponses(lobby, turn);
+  const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
+
+  async function handleReveal(response: PlayerResponse) {
+    await revealPlayerResponse(lobby, turn, response.player_uid)
+      .catch((e) => setError(e));
+  }
 
   return <CenteredLayout>
     <div className={`game-bg phase-${turn.phase}`} />
@@ -48,6 +55,7 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
           key={r.player_uid}
           response={r}
           canReveal={isJudge}
+          onClick={(r) => handleReveal(r)}
         />
       )}
     </div>
