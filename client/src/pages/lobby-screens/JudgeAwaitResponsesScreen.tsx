@@ -7,6 +7,7 @@ import { usePlayers } from "../../model/lobby-api";
 import { GameButton } from "../../components/Buttons";
 import { CSSProperties, useContext } from "react";
 import { ErrorContext } from "../../components/ErrorContext";
+import { PromptCard } from "../../components/Cards";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -15,6 +16,13 @@ interface TurnProps {
 }
 
 const topRowStyle: CSSProperties = {
+  display: "flex",
+  flexFlow: "wrap",
+  justifyContent: "center",
+  gap: "1rem",
+}
+
+const midRowStyle: CSSProperties = {
   display: "flex",
   flexFlow: "wrap",
   justifyContent: "center",
@@ -57,7 +65,9 @@ export function JudgeAwaitResponsesScreen({ lobby, turn }: TurnProps) {
   );
 
   return <CenteredLayout>
-    <div style={topRowStyle}>
+    <h2 style={{ textAlign: "center" }} className="dim">Wait for responses:</h2>
+    <div style={midRowStyle}>
+      <PromptCard card={turn.prompt} />
       {validPlayers && validPlayers.map((player) => {
         const response = findResponse(player);
         return <MiniResponseCard
@@ -68,10 +78,10 @@ export function JudgeAwaitResponsesScreen({ lobby, turn }: TurnProps) {
       })}
     </div>
     <div style={botRowStyle}>
-      {allResponded ? (<>
+      {allResponded && (<>
         <span>All players responded!</span>
         <GameButton accent onClick={handleNext}>Next</GameButton>
-      </>) : (<span>Waiting for responses...</span>)}
+      </>)}
     </div>
   </CenteredLayout>;
 }
