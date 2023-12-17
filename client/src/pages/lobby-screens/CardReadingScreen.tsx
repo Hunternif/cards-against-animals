@@ -1,11 +1,12 @@
 import { User } from "@firebase/auth";
-import { CSSProperties, useContext } from "react";
+import { CSSProperties, useContext, useState } from "react";
 import { PromptCard } from "../../components/Cards";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { revealPlayerResponse, useAllPlayerResponses } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../../shared/types";
 import { ErrorContext } from "../../components/ErrorContext";
+import { GameButton } from "../../components/Buttons";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -18,6 +19,7 @@ const topRowStyle: CSSProperties = {
   flexFlow: "wrap",
   justifyContent: "center",
   gap: "1rem",
+  marginBottom: "1rem",
 }
 
 const midRowStyle: CSSProperties = {
@@ -35,21 +37,30 @@ const midRowStyle: CSSProperties = {
 export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
   // const responses = dummyResponses;
   const [responses] = useAllPlayerResponses(lobby, turn);
+  const [winner, setWinner] = useState<PlayerResponse | null>(null);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
   const allRevealed = responses?.every((r) => r.revealed) ?? false;
 
   async function handleClick(response: PlayerResponse) {
-    await revealPlayerResponse(lobby, turn, response.player_uid)
-      .catch((e) => setError(e));
+    if (allRevealed) {
+      // clicking to select winner
+      setWinner(response);
+    } else {
+      // clicking to reveal:
+      await revealPlayerResponse(lobby, turn, response.player_uid)
+        .catch((e) => setError(e));
+    }
   }
 
   return <CenteredLayout>
-    <div className={`game-bg phase-${turn.phase}`} />
     <div style={topRowStyle}>
-      {isJudge && <h2 className="dim">
-        {allRevealed ? "Select winner:" : "Click to reveal answers:"}
-      </h2>}
+      {isJudge && <>
+        <h2 className="dim">
+          {allRevealed ? "Select winner:" : "Click to reveal answers:"}
+        </h2>
+        {winner && <GameButton accent>Confirm</GameButton>}
+      </>}
     </div>
     <div style={midRowStyle}>
       <PromptCard card={turn.prompt} />
@@ -59,7 +70,7 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
           response={r}
           canReveal={isJudge}
           canSelect={isJudge && allRevealed}
-          selected={false}
+          selected={winner?.player_uid === r.player_uid}
           onClick={(r) => handleClick(r)}
         />
       )}

@@ -227,7 +227,8 @@ button:disabled {
   background-color: #fff;
   color: #000;
 }
-.game-card.card-response.selected {
+.game-card.card-response.selected,
+.game-card.response-reading.selected {
   color: #d45f00;
   background-image: linear-gradient(to bottom,#ffc90f66,#fff);
   box-shadow: 0px 0px 20px 4px #d45f00cc;

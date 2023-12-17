@@ -61,7 +61,7 @@ export function ResponseReading(
         // Add extra margin below for the overlaid cards:
         marginBottom: `${response.cards.length}em`,
         ...cardPlaceholderStyle
-      }}>
+      }} onClick={handleClick}>
         {/* Card combiner renders cards on top with absolute positioning,
             without interfering with the flow of the rest of the page.*/}
         <div style={cardCombinerStyle} className={`many-cards ${featureClass}`} >
