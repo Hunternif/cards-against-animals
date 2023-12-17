@@ -74,9 +74,21 @@ export async function discardPrompt(lobby: GameLobby, card: PromptCardInGame) {
  * Also removes the prompt from the deck, so it can't be played again. */
 export async function playPrompt(
   lobby: GameLobby, turn: GameTurn, card: PromptCardInGame) {
+  if (turn.phase !== "new") {
+    throw new Error(`Invalid turn phase to play prompt: ${turn.phase}`);
+  }
   await discardPrompt(lobby, card);
   turn.prompt = card;
   turn.phase = "answering";
+  await updateTurn(lobby.id, turn);
+}
+
+/** Proceeds turn to reading phase. */
+export async function startReadingPhase(lobby: GameLobby, turn: GameTurn) {
+  if (turn.phase !== "answering") {
+    throw new Error(`Invalid turn phase to play prompt: ${turn.phase}`);
+  }
+  turn.phase = "reading";
   await updateTurn(lobby.id, turn);
 }
 
