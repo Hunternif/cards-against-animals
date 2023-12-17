@@ -1,6 +1,6 @@
 import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
-import { db, getPlayersRef, lobbiesRef } from "../firebase-server";
+import { db, lobbiesRef } from "../firebase-server";
 import {
   GameLobby,
   PlayerInLobby,
@@ -14,6 +14,7 @@ import {
   getAllResponsesForGame
 } from "./deck-server-api";
 import {
+  playerConverter,
   promptCardInGameConverter,
   responseCardInGameConverter
 } from "./firebase-converters";
@@ -22,6 +23,11 @@ import {
   setUsersCurrentLobby,
   updateCAAUser
 } from "./user-server-api";
+
+export function getPlayersRef(lobbyID: string) {
+  return db.collection(`lobbies/${lobbyID}/players`)
+    .withConverter(playerConverter);
+}
 
 /** Finds current active lobby for this user, returns lobby ID. */
 export async function findActiveLobbyWithPlayer(userID: string)
@@ -67,6 +73,12 @@ export async function getLobby(lobbyID: string): Promise<GameLobby> {
  */
 export async function updateLobby(lobby: GameLobby): Promise<void> {
   await lobbiesRef.doc(lobby.id).set(lobby);
+}
+
+/** Find player in this lobby. */
+export async function getPlayer(lobbyID: string, userID: string):
+  Promise<PlayerInLobby | null> {
+  return (await getPlayersRef(lobbyID).doc(userID).get()).data() ?? null;
 }
 
 /** Returns all players in this lobby, by role. */

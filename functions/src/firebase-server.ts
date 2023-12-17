@@ -5,8 +5,7 @@ import firebaseConfig from "./firebase-config.json";
 import {
   deckConverter,
   lobbyConverter,
-  playerConverter,
-  userConverter,
+  userConverter
 } from "./model/firebase-converters";
 
 // Initialize Firebase
@@ -23,8 +22,3 @@ export const lobbiesRef = db.collection("lobbies")
   .withConverter(lobbyConverter);
 export const usersRef = db.collection("users")
   .withConverter(userConverter);
-
-export function getPlayersRef(lobbyID: string) {
-  return db.collection(`lobbies/${lobbyID}/players`)
-    .withConverter(playerConverter);
-}

@@ -1,7 +1,7 @@
 import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
 import { firebaseAuth } from "../firebase-server";
 import { GameLobby } from "../shared/types";
-import { getPlayers } from "./lobby-server-api";
+import { getPlayersRef } from "./lobby-server-api";
 
 /** Asserts that current user is logged in. */
 export function assertLoggedIn(event: CallableRequest) {
@@ -10,19 +10,19 @@ export function assertLoggedIn(event: CallableRequest) {
   }
 }
 
-/** Asserts that current user is a "player" in this lobby */
+/** Asserts that current user is a "player" in this lobby. */
 export async function assertPlayerInLobby(
   event: CallableRequest, lobby: GameLobby) {
-  assertLoggedIn(event);
-  const players = await getPlayers(lobby.id);
-  const userIsPlayer = players.find((p) =>
-    p.uid === event.auth?.uid && p.role === "player");
-  if (!userIsPlayer) {
+  if (!event.auth) {
+    throw new HttpsError("unauthenticated", "Must log in before calling functions");
+  }
+  const playerDoc = await getPlayersRef(lobby.id).doc(event.auth.uid).get();
+  if (!playerDoc.exists) {
     throw new HttpsError("unauthenticated", "Must be a player in lobby");
   }
 }
 
-/** Asserts that current user is the creator of the lobby */
+/** Asserts that current user is the creator of the lobby. */
 export function assertLobbyCreator(
   event: CallableRequest, lobby: GameLobby) {
   assertLoggedIn(event);
