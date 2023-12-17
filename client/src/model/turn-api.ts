@@ -119,6 +119,16 @@ export async function revealPlayerResponse(
   await updateDoc(responseRef, { revealed: true });
 }
 
+/** Set winner of the current turn and set it to "complete". */
+export async function chooseWinner(
+  lobby: GameLobby, turn: GameTurn, winnerID: string,
+) {
+  turn.winner_uid = winnerID;
+  turn.phase = "complete";
+  await updateTurn(lobby.id, turn);
+}
+
+
 type LastTurnHook = [
   lastTurn: GameTurn | null,
   loading: boolean,

@@ -3,7 +3,7 @@ import { CSSProperties, useContext, useState } from "react";
 import { PromptCard } from "../../components/Cards";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { revealPlayerResponse, useAllPlayerResponses } from "../../model/turn-api";
+import { chooseWinner, revealPlayerResponse, useAllPlayerResponses } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../../shared/types";
 import { ErrorContext } from "../../components/ErrorContext";
 import { GameButton } from "../../components/Buttons";
@@ -53,13 +53,22 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
     }
   }
 
+  async function handleConfirm() {
+    // confirm winner
+    if (winner) {
+      await chooseWinner(lobby, turn, winner.player_uid)
+        .catch((e) => setError(e));
+    }
+  }
+
   return <CenteredLayout>
     <div style={topRowStyle}>
       {isJudge && <>
         <h2 className="dim">
           {allRevealed ? "Select winner:" : "Click to reveal answers:"}
         </h2>
-        {winner && <GameButton accent>Confirm</GameButton>}
+        {winner &&
+          <GameButton accent onClick={handleConfirm}>Confirm</GameButton>}
       </>}
     </div>
     <div style={midRowStyle}>
