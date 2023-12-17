@@ -179,8 +179,9 @@ button:disabled {
   opacity: 0;
 }
 .game-bg.phase-reading {
-  opacity: 1;
-  background-image: linear-gradient(to bottom,#000,#37415100, #000);
+  opacity: 0.8;
+  background-image: linear-gradient(to bottom,
+    #000 0%,#37415100 48%, #37415100 52%, #000 100%);
 }
 
 .game-screen {
@@ -235,14 +236,27 @@ button:disabled {
   align-content: center;
   justify-content: center;
 }
+.game-card.card-response.response-reading.can-reveal.unrevealed:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+.game-card.card-response.response-reading.unrevealed {
+  opacity: 0.6;
+}
+.reading-unrevealed-icon {
+  color: #111827cc;
+  font-size: 5rem;
+  align-content: center;
+  justify-content: center;
+}
 
 .hoverable-card {
-  transition-property: transform, box-shadow;
+  transition-property: transform, box-shadow, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 100ms;
 }
 .hoverable-card:hover {
-  transform: scaleX(1.05) scaleY(1.05);
+  transform: scaleX(1.03) scaleY(1.03);
 }
 
 .pre-submit-text {

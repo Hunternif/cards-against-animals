@@ -1,11 +1,10 @@
 import { User } from "@firebase/auth";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
-import { useAllPlayerResponses } from "../../model/turn-api";
-import { usePlayers } from "../../model/lobby-api";
 import { CSSProperties } from "react";
-import { MiniResponseCard } from "../../components/MiniResponseCard";
 import { PromptCard } from "../../components/Cards";
+import { ResponseReading } from "../../components/ResponseReading";
+import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { useAllPlayerResponses } from "../../model/turn-api";
+import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../../shared/types";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -28,19 +27,14 @@ const midRowStyle: CSSProperties = {
   gap: "1rem",
 }
 
+// const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);
+// const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard], 123, false);
+// const dummyResponses = new Array<PlayerResponse>(10).fill(dummyResponse, 0, 10);
+
 export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
-  const [players] = usePlayers(lobby.id);
+  // const responses = dummyResponses;
   const [responses] = useAllPlayerResponses(lobby, turn);
   const isJudge = turn.judge_uid === user.uid;
-
-  function findResponse(player: PlayerInLobby): PlayerResponse | null {
-    return responses?.find((res) => res.player_uid === player.uid) ?? null;
-  }
-
-  // Filter out spectators and the judge:
-  const validPlayers = players?.filter((p) =>
-    p.role === "player" && p.uid !== turn.judge_uid
-  );
 
   return <CenteredLayout>
     <div className={`game-bg phase-${turn.phase}`} />
@@ -48,15 +42,14 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
       {isJudge && <h2>Reveal answers</h2>}
     </div>
     <div style={midRowStyle}>
-      <PromptCard card={turn.prompt}/>
-      {validPlayers && validPlayers.map((player) => {
-        const response = findResponse(player);
-        return <MiniResponseCard
-          key={player.uid}
-          playerName={player.name}
-          ready={response != null}
-          pick={turn.prompt?.pick ?? 0} />
-      })}
+      <PromptCard card={turn.prompt} />
+      {responses && responses.sort((r) => r.random_index).map((r) =>
+        <ResponseReading
+          key={r.player_uid}
+          response={r}
+          canReveal={isJudge}
+        />
+      )}
     </div>
   </CenteredLayout>;
 }
