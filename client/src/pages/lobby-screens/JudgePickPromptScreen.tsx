@@ -116,13 +116,14 @@ interface CountProps {
 
 function CheckDeckCount({ lobby }: CountProps) {
   const [count, setCount] = useState(-1);
+  const { setError } = useContext(ErrorContext);
 
   useEffect(() => {
     getPromptCount(lobby).then((c) => setCount(c));
   }, [lobby]);
 
   async function handleEndGame() {
-    await endLobby(lobby);
+    await endLobby(lobby).catch((e) => setError(e));
   }
 
   return <>
