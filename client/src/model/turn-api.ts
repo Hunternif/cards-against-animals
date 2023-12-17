@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollection, useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
-import { lobbiesRef } from "../firebase";
+import { lobbiesRef, newTurnFun } from "../firebase";
 import { GameLobby, GameTurn, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
 import { randomIndex } from "../shared/utils";
 import {
@@ -92,6 +92,11 @@ export async function startReadingPhase(lobby: GameLobby, turn: GameTurn) {
   }
   turn.phase = "reading";
   await updateTurn(lobby.id, turn);
+}
+
+/** Begins a new turn. */
+export async function startNewTurn(lobby: GameLobby) {
+  await newTurnFun({ lobby_id: lobby.id });
 }
 
 /** How many prompts remain in the deck */

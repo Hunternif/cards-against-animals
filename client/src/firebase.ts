@@ -50,3 +50,7 @@ export const findOrCreateLobbyAndJoinFun = httpsCallable<
 export const startLobbyFun = httpsCallable<
     { lobby_id: string }, void
 >(functions, 'startLobby');
+
+export const newTurnFun = httpsCallable<
+    { lobby_id: string }, void
+>(functions, 'newTurn');

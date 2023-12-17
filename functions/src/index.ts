@@ -1,9 +1,9 @@
 import * as logger from "firebase-functions/logger";
-import { onCall } from "firebase-functions/v2/https";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
-import { assertLobbyCreator, assertLoggedIn } from "./model/auth-api";
+import { assertLobbyCreator, assertLoggedIn, assertPlayerInLobby } from "./model/auth-api";
 import {
   addPlayer,
   copyDecksToLobby,
@@ -12,7 +12,7 @@ import {
   getLobby,
   updateLobby
 } from "./model/lobby-server-api";
-import { createNewTurn } from "./model/turn-server-api";
+import { createNewTurn, getLastTurn } from "./model/turn-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -84,5 +84,23 @@ export const startLobby = onCall<
     lobby.status = "in_progress";
     await updateLobby(lobby);
     logger.info(`Started lobby ${lobby.id}`);
+  }
+);
+
+/** Begins new turn. */
+export const newTurn = onCall<
+  { lobby_id: string }, Promise<void>
+>(
+  { region: firebaseConfig.region, maxInstances: 2 },
+  async (event) => {
+    assertLoggedIn(event);
+    const lobby = await getLobby(event.data.lobby_id);
+    await assertPlayerInLobby(event, lobby);
+    const lastTurn = await getLastTurn(lobby.id);
+    if (lastTurn && lastTurn.phase != "complete") {
+      throw new HttpsError("failed-precondition", "Last turn is not complete");
+    }
+    await createNewTurn(lobby.id);
+    logger.info(`Started new turn in lobby ${lobby.id}`);
   }
 );
