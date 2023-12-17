@@ -13,6 +13,7 @@ import { useLastTurn, usePlayerData, usePlayerResponse } from "../../model/turn-
 import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
 import { JudgePickPromptScreen } from "./JudgePickPromptScreen";
 import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
+import { CardReadingScreen } from "./CardReadingScreen";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -70,7 +71,6 @@ function TurnScreen(props: TurnProps) {
   const className = `game-screen phase-${props.turn.phase} miniscrollbar miniscrollbar-light`;
   return (
     <FillLayout className={className} style={{ overflowY: "auto", }}>
-      <div className={`game-bg phase-${props.turn.phase}`} />
       <GameMenu style={menuStyle} {...props} />
       {isJudge ? <JudgeScreen {...props} /> : <PlayerScreen {...props} />}
     </FillLayout>
@@ -81,7 +81,7 @@ function JudgeScreen(props: TurnProps) {
   switch (props.turn.phase) {
     case "new": return <JudgePickPromptScreen {...props} />;
     case "answering": return <JudgeAwaitResponsesScreen {...props} />;
-    case "reading": return <JudgeReadingScreen {...props} />;
+    case "reading": return <CardReadingScreen {...props} />;
     case "judging": return <JudgeJudgingScreen {...props} />;
     case "complete": return <CenteredLayout>Turn ended</CenteredLayout>;
   }
@@ -110,10 +110,6 @@ function PlayerScreen({ lobby, turn, user }: TurnProps) {
     </CenteredLayout> :
       <LoadingSpinner delay text="Loading..." />}
   </>;
-}
-
-function JudgeReadingScreen({ lobby, turn, user }: TurnProps) {
-  return <CenteredLayout>Read out the responses</CenteredLayout>;
 }
 
 function JudgeJudgingScreen({ lobby, turn, user }: TurnProps) {
