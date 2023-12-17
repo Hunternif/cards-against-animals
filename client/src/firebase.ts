@@ -54,3 +54,7 @@ export const startLobbyFun = httpsCallable<
 export const newTurnFun = httpsCallable<
     { lobby_id: string }, void
 >(functions, 'newTurn');
+
+export const endLobbyFun = httpsCallable<
+    { lobby_id: string }, void
+>(functions, 'endLobby');

@@ -3,7 +3,11 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
-import { assertLobbyCreator, assertLoggedIn, assertPlayerInLobby } from "./model/auth-api";
+import {
+  assertLobbyCreator,
+  assertLoggedIn,
+  assertPlayerInLobby
+} from "./model/auth-api";
 import {
   addPlayer,
   copyDecksToLobby,
@@ -12,7 +16,11 @@ import {
   getLobby,
   updateLobby
 } from "./model/lobby-server-api";
-import { createNewTurn, getLastTurn } from "./model/turn-server-api";
+import {
+  createNewTurn,
+  getLastTurn,
+  updateTurn
+} from "./model/turn-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -102,5 +110,31 @@ export const newTurn = onCall<
     }
     await createNewTurn(lobby.id);
     logger.info(`Started new turn in lobby ${lobby.id}`);
+  }
+);
+
+/** Ends current turn and sets lobby status to "ended". */
+export const endLobby = onCall<
+  { lobby_id: string }, Promise<void>
+>(
+  { region: firebaseConfig.region, maxInstances: 2 },
+  async (event) => {
+    assertLoggedIn(event);
+    const lobby = await getLobby(event.data.lobby_id);
+    const lastTurn = await getLastTurn(lobby.id);
+    if (!lastTurn) {
+      assertLobbyCreator(event, lobby);
+    } else {
+      if (lastTurn.judge_uid !== event.auth?.uid) {
+        throw new HttpsError("unauthenticated", "Must be lobby judge");
+      }
+      // End last turn:
+      lastTurn.phase = "complete";
+      await updateTurn(lobby.id, lastTurn);
+    }
+    // End lobby:
+    lobby.status = "ended";
+    await updateLobby(lobby);
+    logger.info(`Ended lobby ${lobby.id}`);
   }
 );

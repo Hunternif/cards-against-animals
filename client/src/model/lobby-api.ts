@@ -2,7 +2,7 @@ import { User } from "firebase/auth";
 import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
-import { findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, startLobbyFun, usersRef } from "../firebase";
+import { endLobbyFun, findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, startLobbyFun, usersRef } from "../firebase";
 import { GameLobby, PlayerInLobby } from "../shared/types";
 import { playerConverter } from "./firebase-converters";
 import { getCAAUser } from "./users-api";
@@ -89,8 +89,7 @@ export async function startLobby(lobby: GameLobby): Promise<void> {
 }
 
 export async function endLobby(lobby: GameLobby): Promise<void> {
-  lobby.status = "ended";
-  await updateLobby(lobby);
+  await endLobbyFun({ lobby_id: lobby.id });
 }
 
 /** Should be used only during lobby setup */

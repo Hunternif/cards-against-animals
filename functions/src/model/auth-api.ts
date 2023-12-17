@@ -2,6 +2,7 @@ import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
 import { firebaseAuth } from "../firebase-server";
 import { GameLobby } from "../shared/types";
 import { getPlayersRef } from "./lobby-server-api";
+import { getLastTurn } from "./turn-server-api";
 
 /** Asserts that current user is logged in. */
 export function assertLoggedIn(event: CallableRequest) {
@@ -19,6 +20,20 @@ export async function assertPlayerInLobby(
   const playerDoc = await getPlayersRef(lobby.id).doc(event.auth.uid).get();
   if (!playerDoc.exists) {
     throw new HttpsError("unauthenticated", "Must be a player in lobby");
+  }
+}
+
+/** Asserts that current user is a judge in the current turn. */
+export async function assertCurrentJudge(
+  event: CallableRequest, lobby: GameLobby) {
+  assertLoggedIn(event);
+  const lastTurn = await getLastTurn(lobby.id);
+  if (!lastTurn) {
+    assertLobbyCreator(event, lobby);
+  } else {
+    if (lastTurn.judge_uid !== event.auth?.uid) {
+      throw new HttpsError("unauthenticated", "Must be lobby judge");
+    }
   }
 }
 
