@@ -257,7 +257,7 @@ export class ResponseCardInGame implements CardInGame {
 
 export type PlayerRole = "player" | "spectator";
 
-export type TurnPhase = "new" | "answering" | "reading" | "judging" | "complete";
+export type TurnPhase = "new" | "answering" | "reading" | "complete";
 
 export type LobbyStatus = "new" | "in_progress" | "ended";
 
