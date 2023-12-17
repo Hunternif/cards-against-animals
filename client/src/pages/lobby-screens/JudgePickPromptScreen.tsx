@@ -1,13 +1,13 @@
 import { User } from "firebase/auth";
-import { useState, useEffect, useContext, CSSProperties } from "react";
+import { CSSProperties, useContext, useEffect, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { PromptCard } from "../../components/Cards";
+import { ErrorContext } from "../../components/ErrorContext";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { endLobby } from "../../model/lobby-api";
 import { discardPrompt, getPromptCount, pickNewPrompt, playPrompt } from "../../model/turn-api";
 import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
-import { ErrorContext } from "../../components/ErrorContext";
-import { Delay, LoadingSpinner } from "../../components/LoadingSpinner";
-import { endLobby } from "../../model/lobby-api";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -35,14 +35,21 @@ const botRowStyle: CSSProperties = {
 }
 
 /** Aligned to the right of the centered card */
-const changeButtonStyle: CSSProperties = {
+const sideSectionStyle: CSSProperties = {
   position: "absolute",
   margin: "2rem",
   left: "100%",
 }
 
+/** Aligned below the "Change" button */
+const countStyle: CSSProperties = {
+  position: "absolute",
+  top: "4rem",
+}
+
 export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
   const [prompt, setPrompt] = useState<PromptCardInGame | null>(null);
+  const [cardCount, setCardCount] = useState(-1);
   const [initialLoaded, setInitialLoaded] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { setError } = useContext(ErrorContext);
@@ -79,6 +86,10 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
     getInitialPrompt().catch((e) => setError(e));
   }, [lobby]);
 
+  useEffect(() => {
+    getPromptCount(lobby).then((c) => setCardCount(c));
+  }, [lobby, prompt]);
+
   return <CenteredLayout style={{
     display: "flex",
     flexDirection: "column",
@@ -94,16 +105,21 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
       ) : prompt ? (<>
         <div style={midRowStyle}>
           <PromptCard card={prompt} />
-          <GameButton secondary style={changeButtonStyle} onClick={handleChange}>
-            Change
-          </GameButton>
+          <div style={sideSectionStyle}>
+            <GameButton secondary onClick={handleChange}>
+              Change
+            </GameButton>
+            <span style={countStyle} className="extra-dim">
+              {cardCount} cards left
+            </span>
+          </div>
         </div>
         <div style={botRowStyle}>
           <GameButton accent onClick={handleSubmit}
             disabled={!prompt || submitted}>Play</GameButton>
         </div>
       </>) : (
-        <CheckDeckCount lobby={lobby} turn={turn} />
+        <CheckDeckCount lobby={lobby} count={cardCount} />
       )}
     </div>
   </CenteredLayout>;
@@ -111,16 +127,11 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
 
 interface CountProps {
   lobby: GameLobby,
-  turn: GameTurn,
+  count: number,
 }
 
-function CheckDeckCount({ lobby }: CountProps) {
-  const [count, setCount] = useState(-1);
+function CheckDeckCount({ lobby, count }: CountProps) {
   const { setError } = useContext(ErrorContext);
-
-  useEffect(() => {
-    getPromptCount(lobby).then((c) => setCount(c));
-  }, [lobby]);
 
   async function handleEndGame() {
     await endLobby(lobby).catch((e) => setError(e));

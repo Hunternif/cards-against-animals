@@ -47,7 +47,7 @@ export function GameControlRow(
     }}>
       {submitted ? (
         // Text displayed in place of button:
-        <div style={buttonAlignedStyle} className="pre-submit-text">
+        <div style={buttonAlignedStyle} className="extra-dim">
           Submitted!
         </div>
       ) :
@@ -56,7 +56,7 @@ export function GameControlRow(
           Submit
         </GameButton>) : (
           // Text displayed in place of button:
-          <div style={buttonAlignedStyle} className="pre-submit-text">
+          <div style={buttonAlignedStyle} className="extra-dim">
             {turn.prompt ? `Picked ${picked} out of ${total}` : "Waiting for prompt..."}
           </div>
         )}

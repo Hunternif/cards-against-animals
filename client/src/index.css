@@ -56,10 +56,6 @@ h1 {
 h2 {
   margin-bottom: 1.5rem;
 }
-.dim {
-  /* Dimmed slightly to not attract too much attention*/
-  opacity: 0.8;
-}
 
 button {
   border-radius: 8px;
@@ -278,7 +274,11 @@ button:disabled {
   transform: scaleX(1.03) scaleY(1.03);
 }
 
-.pre-submit-text {
+.dim {
+  /* Dimmed slightly to not attract too much attention*/
+  opacity: 0.8;
+}
+.extra-dim {
   opacity: 50%;
   font-size: 0.9rem;
   font-weight: 200;
