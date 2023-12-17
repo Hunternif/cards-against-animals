@@ -15,6 +15,10 @@ const containerStyle: CSSProperties = {
   position: "relative",
 }
 
+const cardCombinerStyle: CSSProperties = {
+  position: "relative",
+}
+
 const fillCardStyle: CSSProperties = {
   display: "flex",
   flexWrap: "wrap",
@@ -37,13 +41,11 @@ export function ResponseReading({ response, canReveal, onClick }: Props) {
     }
   }
   if (response.revealed) {
-    return <>
-      {// TODO: overlay multiple cards
-        response.cards.map((card) =>
-          <ResponseReadingCard key={card.card_id} card={card} />
-        )
-      }
-    </>
+    return <div style={cardCombinerStyle}>
+      {response.cards.map((card, i) =>
+        <ResponseReadingCard key={card.card_id} card={card} offset={i} />
+      )}
+    </div>
   } else {
     return (
       <div className={className} onClick={handleClick} style={containerStyle}>
@@ -57,12 +59,21 @@ export function ResponseReading({ response, canReveal, onClick }: Props) {
 
 interface CardProps {
   card: ResponseCardInGame,
+  className?: string,
+  style?: CSSProperties,
+  offset: number,
 }
 
-function ResponseReadingCard({ card }: CardProps) {
+function ResponseReadingCard({ card, className, style, offset }: CardProps) {
+  const offsetStyle: CSSProperties | null = offset > 0 ? {
+    position: "absolute",
+    top: `${20 * offset}%`,
+    left: `${1 * offset}%`,
+    // transform: `rotate(${offset}deg)`,
+  } : null;
   return (
-    <div className="game-card card-response response-reading revealed"
-      style={containerStyle}>
+    <div className={`game-card card-response response-reading revealed ${className}`}
+      style={{ ...containerStyle, ...offsetStyle, ...style }}>
       <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
     </div>
   );
