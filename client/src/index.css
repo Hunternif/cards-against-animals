@@ -169,7 +169,23 @@ button:disabled {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+.game-bg {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+.game-bg.phase-reading {
+  opacity: 1;
+  background-image: linear-gradient(to bottom,#000,#37415100, #000);
+}
+
 .game-screen {
+  position: relative;
+  z-index: 0;
   background-color: #999;
   background-image: linear-gradient(to bottom,#111827cc,#374151cc);
 }

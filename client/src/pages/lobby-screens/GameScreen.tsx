@@ -67,9 +67,10 @@ interface TurnProps {
 
 function TurnScreen(props: TurnProps) {
   const isJudge = props.turn.judge_uid === props.user.uid;
+  const className = `game-screen phase-${props.turn.phase} miniscrollbar miniscrollbar-light`;
   return (
-    <FillLayout className="game-screen miniscrollbar miniscrollbar-light"
-      style={{ overflowY: "auto", }}>
+    <FillLayout className={className} style={{ overflowY: "auto", }}>
+      <div className={`game-bg phase-${props.turn.phase}`} />
       <GameMenu style={menuStyle} {...props} />
       {isJudge ? <JudgeScreen {...props} /> : <PlayerScreen {...props} />}
     </FillLayout>
