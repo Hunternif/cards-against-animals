@@ -197,7 +197,7 @@ button:disabled {
 .game-bg.phase-complete {
   opacity: 1;
   background-image: linear-gradient(to bottom,
-    #140202,#6e4612, #140202);
+  #030711 0%,#324464 48%, #324464 52%, #111827 100%);
 }
 
 .game-screen {
