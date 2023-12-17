@@ -37,8 +37,9 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
   const [responses] = useAllPlayerResponses(lobby, turn);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
+  const allRevealed = responses?.every((r) => r.revealed) ?? false;
 
-  async function handleReveal(response: PlayerResponse) {
+  async function handleClick(response: PlayerResponse) {
     await revealPlayerResponse(lobby, turn, response.player_uid)
       .catch((e) => setError(e));
   }
@@ -46,7 +47,9 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
   return <CenteredLayout>
     <div className={`game-bg phase-${turn.phase}`} />
     <div style={topRowStyle}>
-      {isJudge && <h2 className="dim">Click to reveal answers:</h2>}
+      {isJudge && <h2 className="dim">
+        {allRevealed ? "Select winner:" : "Click to reveal answers:"}
+      </h2>}
     </div>
     <div style={midRowStyle}>
       <PromptCard card={turn.prompt} />
@@ -55,7 +58,9 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
           key={r.player_uid}
           response={r}
           canReveal={isJudge}
-          onClick={(r) => handleReveal(r)}
+          canSelect={isJudge && allRevealed}
+          selected={false}
+          onClick={(r) => handleClick(r)}
         />
       )}
     </div>

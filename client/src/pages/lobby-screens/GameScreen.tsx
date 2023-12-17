@@ -55,8 +55,8 @@ function JudgeScreen(props: TurnProps) {
   switch (props.turn.phase) {
     case "new": return <JudgePickPromptScreen {...props} />;
     case "answering": return <JudgeAwaitResponsesScreen {...props} />;
-    case "reading": return <CardReadingScreen {...props} />;
-    case "judging": return <JudgeJudgingScreen {...props} />;
+    case "reading":
+    case "judging": return <CardReadingScreen {...props} />;
     case "complete": return <CenteredLayout>Turn ended</CenteredLayout>;
   }
 }
@@ -65,8 +65,8 @@ function PlayerScreen(props: TurnProps) {
   switch (props.turn.phase) {
     case "new":
     case "answering": return <PlayerAnsweringScreen {...props} />;
-    case "reading": return <CardReadingScreen {...props} />;
-    case "judging": return <JudgeJudgingScreen {...props} />;
+    case "reading":
+    case "judging": return <CardReadingScreen {...props} />;
     case "complete": return <CenteredLayout>Turn ended</CenteredLayout>;
   }
 }

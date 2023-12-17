@@ -6,6 +6,9 @@ interface Props {
   response: PlayerResponse,
   /** Only the judge player can reveal */
   canReveal: boolean,
+  /** When selecting winner */
+  canSelect: boolean,
+  selected: boolean,
   onClick: (response: PlayerResponse) => void,
 }
 
@@ -38,10 +41,12 @@ const fillCardStyle: CSSProperties = {
  * From the "reading" phase, when the judge reveals player responses
  * one by one.
 */
-export function ResponseReading({ response, canReveal, onClick }: Props) {
+export function ResponseReading(
+  { response, canReveal, canSelect, selected, onClick }: Props
+) {
   const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
   const revealedClass = response.revealed ? "revealed" : "unrevealed";
-  const className = `game-card card-response response-reading ${canRevealClass} ${revealedClass}`;
+  const featureClass = `${canRevealClass} ${revealedClass}`;
   const hasManyCards = response.cards.length > 1;
   function handleClick() {
     if (canReveal) {
@@ -52,28 +57,33 @@ export function ResponseReading({ response, canReveal, onClick }: Props) {
     return <>{hasManyCards ? (
       /* Overlay multiple cards on top of each other */
       /* "Placeholder" component holds place the size of a card */
-      <div className="game-card-placeholder" style={{
+      <div className={`game-card-placeholder`} style={{
         // Add extra margin below for the overlaid cards:
         marginBottom: `${response.cards.length}em`,
         ...cardPlaceholderStyle
       }}>
         {/* Card combiner renders cards on top with absolute positioning,
             without interfering with the flow of the rest of the page.*/}
-        <div style={cardCombinerStyle} className="many-cards" >
+        <div style={cardCombinerStyle} className={`many-cards ${featureClass}`} >
           {
             response.cards.map((card, i) =>
-              <ResponseReadingCard key={card.card_id} card={card} offset={i} />
+              <ResponseReadingCard key={card.card_id} card={card} offset={i}
+                selectable={canSelect} selected={selected} />
             )
           }
         </div>
       </div>
     ) : (
-      <ResponseReadingCard card={response.cards[0]} />
+      <div className={canSelect ? "hoverable-card" : ""}>
+        <ResponseReadingCard card={response.cards[0]}
+          selectable={canSelect} selected={selected} />
+      </div>
     )
     }</>;
   } else {
     return (
-      <div className={className} onClick={handleClick} style={containerStyle}>
+      <div className={`game-card card-response response-reading ${featureClass}`}
+        onClick={handleClick} style={containerStyle}>
         <FillLayout className="reading-unrevealed-icon" style={fillCardStyle} >
           ?
         </FillLayout>
@@ -84,20 +94,16 @@ export function ResponseReading({ response, canReveal, onClick }: Props) {
 
 interface CardProps {
   card: ResponseCardInGame,
+  selectable: boolean,
+  selected: boolean,
   offset?: number,
 }
 
-function ResponseReadingCard({ card, offset }: CardProps) {
-  const offsetStyle: CSSProperties | null = (offset && offset > 0) ? {
-    // position: "absolute",
-    top: `${20 * offset}%`,
-    // left: `${1 * offset}%`,
-    // transform: `rotate(${offset}deg)`,
-    // marginTop: `-${100}%`,
-  } : null;
-  const className = (offset && offset > 0) ? "overlaid" : ""
+function ResponseReadingCard({ card, offset, selectable, selected }: CardProps) {
+  const overlayClass = (offset && offset > 0) ? "overlaid" : ""
+  const selectedClass = `${selectable && "selectable"} ${selected && "selected"}`;
   return (
-    <div className={`game-card card-response response-reading revealed ${className}`}
+    <div className={`game-card card-response response-reading ${selectedClass} ${overlayClass}`}
       style={{ ...containerStyle }}>
       <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
     </div>
