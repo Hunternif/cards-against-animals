@@ -24,12 +24,12 @@ const midRowStyle: CSSProperties = {
   display: "flex",
   flexFlow: "wrap",
   justifyContent: "center",
-  alignItems: "center",
+  // alignItems: "center",
   gap: "1rem",
 }
 
 // const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);
-// const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard], 123, false);
+// const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard, dummyCard], 123, true);
 // const dummyResponses = new Array<PlayerResponse>(10).fill(dummyResponse, 0, 10);
 
 export function CardReadingScreen({ lobby, turn, user }: TurnProps) {

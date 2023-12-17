@@ -321,3 +321,23 @@ button:disabled {
   color: #fff;
   font-weight: 500;
 }
+
+.game-card-placeholder {
+  /* Maintains card size, but doesn't display anything */
+  width: 10rem;
+  height: 14rem;
+}
+.many-cards > .game-card {
+  box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
+}
+.game-card.overlaid {
+  margin-top: -120%;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 100ms;
+}
+.many-cards:hover > .game-card.overlaid {
+  z-index: 10;
+  box-shadow: 0 0px 16px rgba(0, 0, 0, 0.3);
+  margin-top: -80%;
+}
