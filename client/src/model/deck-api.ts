@@ -1,7 +1,19 @@
-import { collection, doc, getDoc, getDocs, runTransaction, setDoc, writeBatch } from "firebase/firestore";
+import { collection, doc, getCountFromServer, getDoc, getDocs, runTransaction, setDoc, writeBatch } from "firebase/firestore";
 import { db, decksRef, lobbiesRef } from "../firebase";
 import { Deck, PromptDeckCard, ResponseDeckCard } from "../shared/types";
 import { promptDeckCardConverter, responseDeckCardConverter } from "./firebase-converters";
+
+/** Returns Firestore subcollection reference of prompt cards in deck. */
+function getPromptsRef(deckID: string) {
+  return collection(decksRef, deckID, 'prompts')
+    .withConverter(promptDeckCardConverter);
+}
+
+/** Returns Firestore subcollection reference of response cards in deck. */
+function getResponsesRef(deckID: string) {
+  return collection(decksRef, deckID, 'responses')
+    .withConverter(responseDeckCardConverter);
+}
 
 /**
  * Parses collection data. `promptList` and `responseList` are strings where
@@ -83,14 +95,29 @@ export async function getDecks(): Promise<Array<Deck>> {
   return (await getDocs(decksRef)).docs.map((p) => p.data());
 }
 
+export interface DeckWithCount {
+  id: string,
+  title: string,
+  promptCount: number,
+  responseCount: number,
+}
+
+/** Fetches all decks' data and counts cards in each. */
+export async function getDecksWithCount(): Promise<Array<DeckWithCount>> {
+  const decks = await getDecks();
+  const result = new Array<DeckWithCount>(decks.length);
+  for (const deck of decks) {
+    const promptCount = (await getCountFromServer(getPromptsRef(deck.id))).data().count;
+    const responseCount = (await getCountFromServer(getResponsesRef(deck.id))).data().count;
+    result.push({ ...deck, promptCount, responseCount });
+  }
+  return result;
+}
+
 export async function getPrompts(deckID: string): Promise<Array<PromptDeckCard>> {
-  const cardsRef = collection(decksRef, deckID, 'prompts')
-    .withConverter(promptDeckCardConverter);
-  return (await getDocs(cardsRef)).docs.map((p) => p.data());
+  return (await getDocs(getPromptsRef(deckID))).docs.map((p) => p.data());
 }
 
 export async function getResponses(deckID: string): Promise<Array<ResponseDeckCard>> {
-  const cardsRef = collection(decksRef, deckID, 'responses')
-    .withConverter(responseDeckCardConverter);
-  return (await getDocs(cardsRef)).docs.map((p) => p.data());
+  return (await getDocs(getResponsesRef(deckID))).docs.map((p) => p.data());
 }

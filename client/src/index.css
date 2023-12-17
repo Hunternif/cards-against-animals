@@ -272,3 +272,11 @@ button:disabled {
 .game-menu-icon:hover {
   opacity: 1;
 }
+
+.stat-label {
+  color: rgba(229, 231, 235, 0.7);
+}
+.stat-value {
+  color: #fff;
+  font-weight: 500;
+}
