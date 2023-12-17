@@ -46,7 +46,7 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
   return <CenteredLayout>
     <div className={`game-bg phase-${turn.phase}`} />
     <div style={topRowStyle}>
-      {isJudge && <h2>Reveal answers</h2>}
+      {isJudge && <h2 className="dim">Click to reveal answers:</h2>}
     </div>
     <div style={midRowStyle}>
       <PromptCard card={turn.prompt} />

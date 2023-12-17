@@ -67,9 +67,11 @@ export function JudgeAwaitResponsesScreen({ lobby, turn }: TurnProps) {
           pick={turn.prompt?.pick ?? 0} />
       })}
     </div>
-    {allResponded && <div style={botRowStyle}>
-      <span>All players responded!</span>
-      <GameButton accent onClick={handleNext}>Next</GameButton>
-    </div>}
+    <div style={botRowStyle}>
+      {allResponded ? (<>
+        <span>All players responded!</span>
+        <GameButton accent onClick={handleNext}>Next</GameButton>
+      </>) : (<span>Waiting for responses...</span>)}
+    </div>
   </CenteredLayout>;
 }

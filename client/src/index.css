@@ -43,12 +43,22 @@ body {
   height: 100%;
 }
 
+i {
+  /* For highlighted words: */
+  color: #ffc90f;
+  font-style: normal;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
 h2 {
   margin-bottom: 1.5rem;
+}
+.dim {
+  /* Dimmed slightly to not attract too much attention*/
+  opacity: 0.8;
 }
 
 button {

@@ -84,7 +84,9 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
     flexDirection: "column",
     alignItems: "center",
   }}>
-    <h2 style={{ textAlign: "center" }}>Pick a card</h2>
+    <h2 style={{ textAlign: "center" }} className="dim">
+      You are <i>Card Czar</i>! Pick a card:
+    </h2>
     {/* Fixed-size container to prevent layout shift during loading */}
     <div style={containerStyle}>
       {!initialLoaded ? (

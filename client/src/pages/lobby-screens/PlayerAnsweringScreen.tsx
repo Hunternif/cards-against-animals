@@ -49,7 +49,7 @@ export function PlayerAnsweringScreen({ lobby, turn, user }: TurnProps) {
     {data ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
         <PromptCard card={turn.prompt} />
-        <GameMiniResponses lobby={lobby} turn={turn} />
+        {turn.prompt && <GameMiniResponses lobby={lobby} turn={turn} />}
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
         <GameControlRow lobby={lobby} turn={turn} userID={user.uid}
