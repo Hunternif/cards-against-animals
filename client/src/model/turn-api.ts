@@ -1,6 +1,11 @@
 // Client APIs for game turns, when the game is in progress.
 
-import { collection, deleteDoc, doc, getDocs, limit, orderBy, query, setDoc } from "firebase/firestore";
+import {
+  collection, deleteDoc, doc,
+  getCountFromServer,
+  getDocs, limit, orderBy,
+  query, setDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollection, useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { lobbiesRef } from "../firebase";
@@ -73,6 +78,11 @@ export async function playPrompt(
   turn.prompt = card;
   turn.phase = "answering";
   await updateTurn(lobby.id, turn);
+}
+
+/** How many prompts remain in the deck */
+export async function getPromptCount(lobby: GameLobby): Promise<number> {
+  return (await getCountFromServer(getPromptsRef(lobby.id))).data().count;
 }
 
 /** Submit player's response */
