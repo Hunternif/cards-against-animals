@@ -62,10 +62,10 @@ export function processCardText(text: string): string {
   return text.replace("\\n", "\n");
 }
 
-/** Re-formats specifically the gaps in prompt cards */
+/** Re-formats specifically the gaps in prompt cards, to be '_' */
 export function processPromptText(text: string): string {
   text = text.replace(/_+/g, "_");
-  text = text.replace(/(^|\s)_([\s\.,:;!?\-~]|$)/g, "$1___$2");
+  text = text.replace(/(^|\s)_([\s\.,:;!?\-~]|$)/g, "$1_$2");
   return text;
 }
 

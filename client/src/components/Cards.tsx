@@ -35,10 +35,17 @@ const fillCardStyle: CSSProperties = {
   left: 0,
 }
 
+/** Formats gaps to be longer. */
+function formatPrompt(text: string): string {
+  return text.replace(/_+/g, "______");
+}
+
 export function PromptCard({ card }: PromptCardProps) {
   return <div className="game-card card-prompt" style={containerStyle}>
     {card ? (<>
-      <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
+      <span style={{ whiteSpace: "pre-line" }}>
+        {formatPrompt(card.content)}
+      </span>
       {card.pick > 1 && <PromptCardPick pick={card.pick} />}
     </>) :
       <FillLayout className="prompt-unknown-icon" style={fillCardStyle} >

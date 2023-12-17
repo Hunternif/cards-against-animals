@@ -20,9 +20,9 @@ test('process card text', () => {
 
 test('process prompt text', () => {
   expect(processPromptText("__ uneven _ gaps ____"))
-    .toBe("___ uneven ___ gaps ___");
+    .toBe("_ uneven _ gaps _");
   expect(processPromptText("respect _markdown_, _!"))
-    .toBe("respect _markdown_, ___!");
+    .toBe("respect _markdown_, _!");
   expect(processPromptText("punctuation, _, is important _. Right _? _: yes _; _"))
-    .toBe("punctuation, ___, is important ___. Right ___? ___: yes ___; ___");
+    .toBe("punctuation, _, is important _. Right _? _: yes _; _");
 });
