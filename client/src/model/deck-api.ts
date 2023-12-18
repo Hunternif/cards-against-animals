@@ -32,7 +32,7 @@ export function parseDeck(
       const id = String(i + 1).padStart(4, '0');
       const pick = parsePromptPick(line);
       const text = processPromptText(processCardText(line));
-      return new PromptDeckCard(id, text, pick, 0);
+      return new PromptDeckCard(id, text, pick, 0, 0, 0);
     });
   deck.responses = responseList.split("\n")
     .map((line) => line.trim())
@@ -40,7 +40,7 @@ export function parseDeck(
     .map((line, i) => {
       const id = String(i + 1).padStart(4, '0');
       const text = processCardText(line);
-      return new ResponseDeckCard(id, text, 0);
+      return new ResponseDeckCard(id, text, 0, 0, 0);
     });
   return deck;
 }

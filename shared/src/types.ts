@@ -150,6 +150,11 @@ export interface DeckCard {
   id: string;
   content: string;
   rating: number;
+  time_created?: Date;
+  /** Analytics: how many times this card was viewed */
+  views: number;
+  /** Analytics: how many times this card was played */
+  plays: number;
 }
 
 
@@ -160,11 +165,19 @@ export class PromptDeckCard implements DeckCard {
   rating: number;
   /** How many cards to pick in response */
   pick: number;
-  constructor(id: string, content: string, pick: number, rating: number) {
+  time_created?: Date;
+  views: number;
+  plays: number;
+  constructor(
+    id: string, content: string, pick: number, rating: number,
+    views: number, plays: number,
+  ) {
     this.id = id;
     this.content = content;
     this.pick = pick;
     this.rating = rating;
+    this.views = views;
+    this.plays = plays;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
@@ -175,10 +188,18 @@ export class ResponseDeckCard implements DeckCard {
   id: string;
   content: string;
   rating: number;
-  constructor(id: string, content: string, rating: number) {
+  time_created?: Date;
+  views: number;
+  plays: number;
+  constructor(
+    id: string, content: string, rating: number,
+    views: number, plays: number,
+  ) {
     this.id = id;
     this.content = content;
     this.rating = rating;
+    this.views = views;
+    this.plays = plays;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing

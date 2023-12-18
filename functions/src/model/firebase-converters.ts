@@ -130,18 +130,32 @@ export const userConverter: FirestoreDataConverter<CAAUser> = {
 };
 
 export const promptDeckCardConverter: FirestoreDataConverter<PromptDeckCard> = {
-  toFirestore: (card: PromptDeckCard) => copyFields(card),
+  toFirestore: (card: PromptDeckCard) => copyFields2(card, {
+    time_created: card.time_created ?
+      Timestamp.fromDate(card.time_created) :
+      Timestamp.now(), // set new time when creating a new card
+  }),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new PromptDeckCard(snapshot.id, data.content, data.pick, data.rating);
+    const ret = new PromptDeckCard(snapshot.id, data.content, data.pick,
+      data.rating, data.views, data.plays);
+    ret.time_created = (data.time_created as Timestamp).toDate();
+    return ret;
   },
 };
 
 export const responseDeckCardConverter: FirestoreDataConverter<ResponseDeckCard> = {
-  toFirestore: (card: ResponseDeckCard) => copyFields(card),
+  toFirestore: (card: ResponseDeckCard) => copyFields2(card, {
+    time_created: card.time_created ?
+      Timestamp.fromDate(card.time_created) :
+      Timestamp.now(), // set new time when creating a new card
+  }),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new ResponseDeckCard(snapshot.id, data.content, data.rating);
+    const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating,
+      data.views, data.plays);
+    ret.time_created = (data.time_created as Timestamp).toDate();
+    return ret;
   },
 };
 
