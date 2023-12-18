@@ -41,10 +41,16 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
 };
 
 export const playerConverter: FirestoreDataConverter<PlayerInLobby> = {
-  toFirestore: (player: PlayerInLobby) => copyFields(player),
+  toFirestore: (player: PlayerInLobby) => copyFields2(player, {
+    time_joined: player.time_joined ?
+      Timestamp.fromDate(player.time_joined) :
+      Timestamp.now(), // set new time when adding a new player
+  }),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new PlayerInLobby(data.uid, data.name, data.role);
+    const ret = new PlayerInLobby(data.uid, data.name, data.role);
+    ret.time_joined = (data.time_joined as Timestamp | null)?.toDate();
+    return ret;
   },
 };
 

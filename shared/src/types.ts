@@ -45,6 +45,7 @@ export class PlayerInLobby {
   name: string;
   avatar_url?: URL;
   role: PlayerRole;
+  time_joined?: Date;
 
   constructor(
     uid: string,

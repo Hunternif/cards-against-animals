@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { endLobbyFun, findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, startLobbyFun, usersRef } from "../firebase";
@@ -140,8 +140,9 @@ export function useLobby(lobbyID: string) {
 
 /** React hook to fetch list of players and subscribe to it. */
 export function usePlayers(lobbyID: string) {
-  return useCollectionData(
+  return useCollectionData(query(
     collection(lobbiesRef, lobbyID, 'players')
-      .withConverter(playerConverter)
+      .withConverter(playerConverter),
+    orderBy('time_joined', 'asc'))
   );
 }
