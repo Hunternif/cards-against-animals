@@ -6,13 +6,15 @@ import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { usePlayerData, usePlayerResponse } from "../../model/turn-api";
-import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
+import { usePlayerData } from "../../model/turn-api";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, ResponseCardInGame } from "../../shared/types";
 
 interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  players: PlayerInLobby[],
+  responses: PlayerResponse[],
 }
 
 const containerStyle: CSSProperties = {
@@ -40,16 +42,17 @@ const botRowStyle: CSSProperties = {
   justifyContent: "center",
 }
 
-export function PlayerAnsweringScreen({ lobby, turn, user }: TurnProps) {
+export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }: TurnProps) {
   const [data] = usePlayerData(lobby, turn, user.uid);
-  const [response] = usePlayerResponse(lobby, turn, user.uid);
+  const response = responses.find((r) => r.player_uid === user.uid);
   const submitted = response != undefined;
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
   return <>
     {data ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
         <PromptCard card={turn.prompt} />
-        {turn.prompt && <GameMiniResponses lobby={lobby} turn={turn} />}
+        {turn.prompt && <GameMiniResponses lobby={lobby} turn={turn}
+          players={players} responses={responses} />}
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
         <GameControlRow lobby={lobby} turn={turn} userID={user.uid}

@@ -4,8 +4,8 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { GameMenu } from "../../components/GameMenu";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { FillLayout } from "../../components/layout/FillLayout";
-import { useLastTurn } from "../../model/turn-api";
-import { GameLobby, GameTurn } from "../../shared/types";
+import { useAllPlayerResponses, useLastTurn } from "../../model/turn-api";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
 import { CardReadingScreen } from "./CardReadingScreen";
 import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
 import { JudgePickPromptScreen } from "./JudgePickPromptScreen";
@@ -15,6 +15,7 @@ import { WinnerScreen } from "./WinnerScreen";
 interface ScreenProps {
   lobby: GameLobby,
   user: User,
+  players: PlayerInLobby[],
 }
 
 const menuStyle: CSSProperties = {
@@ -24,31 +25,45 @@ const menuStyle: CSSProperties = {
   top: "1rem",
 }
 
-export function GameScreen({ lobby, user }: ScreenProps) {
+export function GameScreen({ lobby, user, players }: ScreenProps) {
   const [turn, loading, error] = useLastTurn(lobby.id);
   const { setError } = useContext(ErrorContext);
   useEffect(() => { if (error) setError(error); }, [error, setError]);
   if (!turn || loading) return <LoadingSpinner delay text="Waiting for next turn..." />;
   // if (!turn) throw new Error("No turn");
-  return <TurnScreen turn={turn} lobby={lobby} user={user} />;
+  return <TurnScreen turn={turn} lobby={lobby} user={user} players={players} />;
+}
+
+interface PreTurnProps {
+  lobby: GameLobby,
+  turn: GameTurn,
+  user: User,
+  players: PlayerInLobby[],
+}
+
+function TurnScreen(props: PreTurnProps) {
+  const [responses, loading, error] = useAllPlayerResponses(props.lobby, props.turn);
+  const { setError } = useContext(ErrorContext);
+  useEffect(() => { if (error) setError(error); }, [error, setError]);
+  const isJudge = props.turn.judge_uid === props.user.uid;
+  const className = `game-screen phase-${props.turn.phase} miniscrollbar miniscrollbar-light`;
+  if (!responses || loading) return <LoadingSpinner delay text="Loading..." />
+  const newProps = { responses, ...props };
+  return (
+    <FillLayout className={className} style={{ overflowY: "auto", }}>
+      <div className={`game-bg phase-${props.turn.phase}`} />
+      <GameMenu style={menuStyle} {...newProps} />
+      {isJudge ? <JudgeScreen {...newProps} /> : <PlayerScreen {...newProps} />}
+    </FillLayout>
+  );
 }
 
 interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
-}
-
-function TurnScreen(props: TurnProps) {
-  const isJudge = props.turn.judge_uid === props.user.uid;
-  const className = `game-screen phase-${props.turn.phase} miniscrollbar miniscrollbar-light`;
-  return (
-    <FillLayout className={className} style={{ overflowY: "auto", }}>
-      <div className={`game-bg phase-${props.turn.phase}`} />
-      <GameMenu style={menuStyle} {...props} />
-      {isJudge ? <JudgeScreen {...props} /> : <PlayerScreen {...props} />}
-    </FillLayout>
-  );
+  players: PlayerInLobby[],
+  responses: PlayerResponse[],
 }
 
 function JudgeScreen(props: TurnProps) {

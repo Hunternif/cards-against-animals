@@ -1,18 +1,19 @@
 import { User } from "firebase/auth";
+import { CSSProperties, useContext } from "react";
+import { GameButton } from "../../components/Buttons";
+import { PromptCard } from "../../components/Cards";
+import { ErrorContext } from "../../components/ErrorContext";
 import { MiniResponseCard } from "../../components/MiniResponseCard";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { startReadingPhase, useAllPlayerResponses } from "../../model/turn-api";
+import { startReadingPhase } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
-import { usePlayers } from "../../model/lobby-api";
-import { GameButton } from "../../components/Buttons";
-import { CSSProperties, useContext } from "react";
-import { ErrorContext } from "../../components/ErrorContext";
-import { PromptCard } from "../../components/Cards";
 
 interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  players: PlayerInLobby[],
+  responses: PlayerResponse[],
 }
 
 const topRowStyle: CSSProperties = {
@@ -42,14 +43,12 @@ const botRowStyle: CSSProperties = {
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
 
 /** Similar to GameMiniResponses, but slightly different */
-export function JudgeAwaitResponsesScreen({ lobby, turn }: TurnProps) {
+export function JudgeAwaitResponsesScreen({ lobby, turn, players, responses }: TurnProps) {
   // const players = dummyPlayers;
-  const [players] = usePlayers(lobby.id);
-  const [responses] = useAllPlayerResponses(lobby, turn);
   const { setError } = useContext(ErrorContext);
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
-    return responses?.find((res) => res.player_uid === player.uid) ?? null;
+    return responses.find((res) => res.player_uid === player.uid) ?? null;
   }
 
   async function handleNext() {
@@ -57,7 +56,7 @@ export function JudgeAwaitResponsesScreen({ lobby, turn }: TurnProps) {
   }
 
   // Filter out spectators and the judge:
-  const validPlayers = players?.filter((p) =>
+  const validPlayers = players.filter((p) =>
     p.role === "player" && p.uid !== turn.judge_uid
   );
   const allResponded = validPlayers && validPlayers.every((p) =>

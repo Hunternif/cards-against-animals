@@ -1,14 +1,12 @@
 import { User } from "firebase/auth";
 import { ReactNode, useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
-import { usePlayers } from "../model/lobby-api";
 import { GameLobby, PlayerInLobby } from "../shared/types";
-import { FillLayout } from "./layout/FillLayout";
-import { LoadingSpinner } from "./LoadingSpinner";
 
 interface ListProps {
   lobby: GameLobby,
   user: User,
+  players: PlayerInLobby[],
 }
 
 function EmptyCard() {
@@ -64,8 +62,7 @@ function PlayerCard({ player, isMe, isCreator }: PlayerProps) {
 const initialSlotCount = 6;
 
 /** List of players in the lobby */
-export function LobbyPlayerList({ lobby, user }: ListProps) {
-  const [players, loadingPlayers] = usePlayers(lobby.id);
+export function LobbyPlayerList({ lobby, user, players }: ListProps) {
   const [slotCount, setSlotCount] = useState(initialSlotCount);
   const [slots, setSlots] = useState<Array<ReactNode>>([]);
 
@@ -74,7 +71,7 @@ export function LobbyPlayerList({ lobby, user }: ListProps) {
       const newSlotCount = Math.max(slotCount, players.length + 2);
       const newSlots = new Array<ReactNode>();
       for (let i = 0; i < newSlotCount; i++) {
-        if (players && players[i]) {
+        if (players[i]) {
           newSlots.push(<PlayerCard player={players[i]}
             isMe={user.uid === players[i].uid}
             isCreator={lobby.creator_uid === players[i].uid}
@@ -86,9 +83,7 @@ export function LobbyPlayerList({ lobby, user }: ListProps) {
       setSlots(newSlots);
       setSlotCount(newSlotCount);
     }
-  }, [players?.length]);
-
-  if (loadingPlayers) return <FillLayout><LoadingSpinner delay /></FillLayout>;
+  }, [players.length]);
 
   return (
     <ul style={{ padding: 0, margin: 0 }}>

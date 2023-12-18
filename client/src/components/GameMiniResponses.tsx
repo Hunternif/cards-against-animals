@@ -1,28 +1,26 @@
-import { usePlayers } from "../model/lobby-api";
-import { useAllPlayerResponses } from "../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../shared/types";
 import { MiniResponseCard } from "./MiniResponseCard";
 
 interface Props {
   lobby: GameLobby,
   turn: GameTurn,
+  players: PlayerInLobby[],
+  responses: PlayerResponse[],
 }
 
 // const dummyPlayer = new PlayerInLobby("01", "Dummy");
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
 
 /** Indicates which players responded */
-export function GameMiniResponses({ lobby, turn }: Props) {
+export function GameMiniResponses({ turn, players, responses }: Props) {
   // const players = dummyPlayers;
-  const [players] = usePlayers(lobby.id);
-  const [responses] = useAllPlayerResponses(lobby, turn);
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
-    return responses?.find((res) => res.player_uid === player.uid) ?? null;
+    return responses.find((res) => res.player_uid === player.uid) ?? null;
   }
 
   // Filter out spectators and the judge:
-  const validPlayers = players?.filter((p) =>
+  const validPlayers = players.filter((p) =>
     p.role === "player" && p.uid !== turn.judge_uid
   );
 

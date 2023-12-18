@@ -1,17 +1,19 @@
 import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
+import { GameButton } from "../../components/Buttons";
 import { PromptCard } from "../../components/Cards";
+import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { chooseWinner, revealPlayerResponse, useAllPlayerResponses } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../../shared/types";
-import { ErrorContext } from "../../components/ErrorContext";
-import { GameButton } from "../../components/Buttons";
+import { chooseWinner, revealPlayerResponse } from "../../model/turn-api";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
 
 interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  players: PlayerInLobby[],
+  responses: PlayerResponse[],
 }
 
 const topRowStyle: CSSProperties = {
@@ -34,13 +36,12 @@ const midRowStyle: CSSProperties = {
 // const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard, dummyCard], 123, true);
 // const dummyResponses = new Array<PlayerResponse>(10).fill(dummyResponse, 0, 10);
 
-export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
+export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
   // const responses = dummyResponses;
-  const [responses] = useAllPlayerResponses(lobby, turn);
   const [winner, setWinner] = useState<PlayerResponse | null>(null);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
-  const allRevealed = responses?.every((r) => r.revealed) ?? false;
+  const allRevealed = responses.every((r) => r.revealed) ?? false;
 
   async function handleClick(response: PlayerResponse) {
     if (allRevealed) {
@@ -73,7 +74,7 @@ export function CardReadingScreen({ lobby, turn, user }: TurnProps) {
     </div>
     <div style={midRowStyle}>
       <PromptCard card={turn.prompt} />
-      {responses && responses.sort((r) => r.random_index).map((r) =>
+      {responses.sort((r) => r.random_index).map((r) =>
         <ResponseReading
           key={r.player_uid}
           response={r}

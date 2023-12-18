@@ -5,7 +5,7 @@ import { useLoaderData } from "react-router-dom";
 import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { firebaseAuth } from "../firebase";
-import { useJoinLobby, useLobby } from "../model/lobby-api";
+import { useJoinLobby, useLobby, usePlayers } from "../model/lobby-api";
 import { EndedLobbyScreen } from "./lobby-screens/EndedLobbyScreen";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
@@ -25,7 +25,7 @@ export function LobbyPage() {
   const [error, setError] = useState<any | null>(null);
   return <>
     <ErrorModal error={error} setError={setError} />
-    <ErrorContext.Provider value={{error, setError}}>
+    <ErrorContext.Provider value={{ error, setError }}>
       <LobbyPageThrows />
     </ErrorContext.Provider>
   </>;
@@ -57,13 +57,14 @@ function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
 /** User logged in AND joined the lobby. */
 function JoinedLobbyScreen({ lobbyID, user }: LoggedInProps) {
   const [lobby, loadingLobby] = useLobby(lobbyID);
-  if (loadingLobby) return <LoadingSpinner delay text="Loading lobby..." />;
-  if (!lobby) throw new Error(`Failed to load lobby ${lobbyID}`);
+  const [players, loadingPlayers] = usePlayers(lobbyID);
+  if (loadingLobby || loadingPlayers) return <LoadingSpinner delay text="Loading lobby..." />;
+  if (!lobby || !players) throw new Error(`Failed to load lobby ${lobbyID}`);
   switch (lobby.status) {
     case "new":
-      return <NewLobbyScreen lobby={lobby} user={user} />;
+      return <NewLobbyScreen lobby={lobby} user={user} players={players} />;
     case "in_progress":
-      return <GameScreen lobby={lobby} user={user} />;
+      return <GameScreen lobby={lobby} user={user} players={players} />;
     case "ended":
       return <EndedLobbyScreen lobby={lobby} user={user} />;
     default:

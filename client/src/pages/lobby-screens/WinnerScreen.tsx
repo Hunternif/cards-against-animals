@@ -1,19 +1,20 @@
 import { User } from "@firebase/auth";
-import { GameLobby, GameTurn } from "../../shared/types";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { usePlayers } from "../../model/lobby-api";
-import { Delay, LoadingSpinner } from "../../components/LoadingSpinner";
 import { CSSProperties, useContext, useState } from "react";
-import { PromptCard } from "../../components/Cards";
-import { ResponseReading } from "../../components/ResponseReading";
-import { startNewTurn, useAllPlayerResponses } from "../../model/turn-api";
 import { GameButton } from "../../components/Buttons";
+import { PromptCard } from "../../components/Cards";
 import { ErrorContext } from "../../components/ErrorContext";
+import { Delay, LoadingSpinner } from "../../components/LoadingSpinner";
+import { ResponseReading } from "../../components/ResponseReading";
+import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { startNewTurn } from "../../model/turn-api";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
 
 interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  players: PlayerInLobby[],
+  responses: PlayerResponse[],
 }
 
 const midRowStyle: CSSProperties = {
@@ -32,16 +33,13 @@ const botRowStyle: CSSProperties = {
 }
 
 /** Displays winner of the turn */
-export function WinnerScreen({ lobby, turn, user }: TurnProps) {
-  const [players] = usePlayers(lobby.id);
-  const [responses] = useAllPlayerResponses(lobby, turn);
+export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProps) {
   const [startingNewTurn, setStartingNewTurn] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
-  const winner = players && players.find((p) => p.uid === turn.winner_uid);
+  const winner = players.find((p) => p.uid === turn.winner_uid);
 
-  const winnerResponse = responses &&
-    responses.find((r) => r.player_uid === turn.winner_uid);
+  const winnerResponse = responses.find((r) => r.player_uid === turn.winner_uid);
 
   async function handleNewTurn() {
     setStartingNewTurn(true);

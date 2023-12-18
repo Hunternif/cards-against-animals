@@ -6,13 +6,14 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { RowLayout } from "../../components/layout/RowLayout";
 import { leaveLobby } from "../../model/lobby-api";
-import { GameLobby } from "../../shared/types";
+import { GameLobby, PlayerInLobby } from "../../shared/types";
 import { CSSProperties } from "react";
 import { LobbyCreatorControls } from "../../components/LobbyCreatorControls";
 
 interface Props {
   lobby: GameLobby,
   user: User,
+  players: PlayerInLobby[],
 }
 
 const sidebarStyle: CSSProperties = {
@@ -36,7 +37,7 @@ const scrollableColumnStyle: CSSProperties = {
 };
 
 /** User logged in AND joined the lobby. */
-export function NewLobbyScreen({ lobby, user }: Props) {
+export function NewLobbyScreen({ lobby, user, players }: Props) {
   const navigate = useNavigate();
   const isCreator = lobby.creator_uid === user.uid;
   return (
@@ -46,7 +47,7 @@ export function NewLobbyScreen({ lobby, user }: Props) {
           <h3 style={{ textAlign: "center" }}>Players</h3>
           <FillLayout style={scrollableColumnStyle}
             className="miniscrollbar miniscrollbar-light">
-            <LobbyPlayerList lobby={lobby} user={user} />
+            <LobbyPlayerList lobby={lobby} user={user} players={players} />
           </FillLayout>
           <hr />
           <button style={{ margin: "0 1em" }}
