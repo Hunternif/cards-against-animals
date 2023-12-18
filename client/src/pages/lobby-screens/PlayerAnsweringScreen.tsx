@@ -55,9 +55,8 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
           players={players} responses={responses} />}
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
-        <GameControlRow lobby={lobby} turn={turn} userID={user.uid}
-          userName={data.player_name} selection={selectedCards}
-          submitted={submitted} players={players} />
+        <GameControlRow lobby={lobby} turn={turn} data={data}
+          selection={selectedCards} submitted={submitted} players={players} />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
         <GameHand pick={turn.prompt?.pick ?? 0} playerData={data} response={response}

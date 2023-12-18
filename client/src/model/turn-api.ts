@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { useCollection, useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { lobbiesRef, newTurnFun } from "../firebase";
-import { GameLobby, GameTurn, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
+import { GameLobby, GameTurn, PlayerDataInTurn, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
 import { randomIndex } from "../shared/utils";
 import {
   playerDataConverter,
@@ -108,12 +108,13 @@ export async function getPromptCount(lobby: GameLobby): Promise<number> {
 export async function submitPlayerResponse(
   lobby: GameLobby,
   turn: GameTurn,
-  userID: string,
-  userName: string,
+  data: PlayerDataInTurn,
   cards: ResponseCardInGame[],
 ) {
-  const response = new PlayerResponse(userID, userName, cards, randomIndex(), false)
-  await setDoc(doc(getPlayerResponsesRef(lobby.id, turn.id), userID), response);
+  const response = new PlayerResponse(
+    data.player_uid, data.player_name, cards, randomIndex(), false);
+  await setDoc(
+    doc(getPlayerResponsesRef(lobby.id, turn.id), data.player_uid), response);
 }
 
 /** Called by the judge when revealing a response. */

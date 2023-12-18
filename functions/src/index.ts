@@ -146,6 +146,8 @@ export const endLobby = onCall<
  * by a player in a lobby, and when they are played.
  * - Prompt impression should be logged only the "judege" who picked it.
  * - Response impression should be logged only by the player who was dealt it.
+ *   Response impression can be logged once per turn, so that unplayed cards
+ *   will accumulate more views over multiple turns.
  */
 export const logInteraction = onCall<
   {

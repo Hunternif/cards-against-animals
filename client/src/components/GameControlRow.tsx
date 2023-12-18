@@ -1,15 +1,15 @@
 import { CSSProperties, useContext, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { submitPlayerResponse } from "../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, ResponseCardInGame } from "../shared/types";
+import { GameLobby, GameTurn, PlayerDataInTurn, PlayerInLobby, ResponseCardInGame } from "../shared/types";
 import { GameButton } from "./Buttons";
 import { ErrorContext } from "./ErrorContext";
+import { logInteraction } from "./utils";
 
 interface ControlProps {
   lobby: GameLobby,
   turn: GameTurn,
-  userID: string,
-  userName: string,
+  data: PlayerDataInTurn,
   selection: ResponseCardInGame[], // card IDs
   submitted?: boolean,
   players: PlayerInLobby[],
@@ -23,7 +23,7 @@ const buttonAlignedStyle: CSSProperties = {
 }
 
 export function GameControlRow(
-  { lobby, turn, userID, userName, selection, submitted, players }: ControlProps
+  { lobby, turn, data, selection, submitted, players }: ControlProps
 ) {
   const picked = selection.length;
   const total = turn.prompt?.pick ?? 1;
@@ -34,8 +34,9 @@ export function GameControlRow(
   const { setError } = useContext(ErrorContext);
 
   function handleClick() {
+    logInteraction(lobby.id, {viewed: data.hand, played: selection});
     setSubmitting(true);
-    submitPlayerResponse(lobby, turn, userID, userName, selection)
+    submitPlayerResponse(lobby, turn, data, selection)
       .then(() => setSubmitting(false))
       .catch((e) => {
         setError(e);
