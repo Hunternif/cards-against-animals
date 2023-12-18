@@ -35,7 +35,7 @@ export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const ret = new GameLobby(snapshot.id, data.creator_uid, data.status);
-    ret.time_created = (data.time_created as Timestamp).toDate();
+    ret.time_created = (data.time_created as Timestamp | null)?.toDate();
     ret.deck_ids = new Set<string>(data.deck_ids || []);
     return ret;
   },
@@ -70,13 +70,13 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
   }, ['id', 'player_data', 'player_responses']),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    const time_created = data.time_created as Timestamp;
+    const time_created = data.time_created as Timestamp | null;
     const prompt = data.prompt && mapPromptCardInGame(data.prompt);
     const ret = new GameTurn(
       snapshot.id,
       data.judge_uid,
       prompt,
-      time_created.toDate(),
+      time_created?.toDate(),
     );
     ret.timer_ms = data.timer_ms || 0;
     ret.phase = data.phase || "new";
@@ -140,7 +140,7 @@ export const promptDeckCardConverter: FirestoreDataConverter<PromptDeckCard> = {
     const data = snapshot.data();
     const ret = new PromptDeckCard(snapshot.id, data.content, data.pick,
       data.rating, data.views, data.plays);
-    ret.time_created = (data.time_created as Timestamp).toDate();
+    ret.time_created = (data.time_created as Timestamp | null)?.toDate();
     return ret;
   },
 };
@@ -155,7 +155,7 @@ export const responseDeckCardConverter: FirestoreDataConverter<ResponseDeckCard>
     const data = snapshot.data();
     const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating,
       data.views, data.plays);
-    ret.time_created = (data.time_created as Timestamp).toDate();
+    ret.time_created = (data.time_created as Timestamp | null)?.toDate();
     return ret;
   },
 };
