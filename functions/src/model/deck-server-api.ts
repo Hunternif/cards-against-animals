@@ -51,18 +51,27 @@ function prefixID(deckID: string, cardID: string): string {
   return `${deckID}_${cardID}`;
 }
 
-/** Increments the "views" counts on the given cards */
-export async function logCardView(
-  prompts: PromptCardInGame[], responses: ResponseCardInGame[],
+/** Increments the "views" and "plays" counts on the given cards. */
+export async function logCardInteractions(
+  viewedPrompts: PromptCardInGame[], viewedResponses: ResponseCardInGame[],
+  playedPrompts: PromptCardInGame[], playedResponses: ResponseCardInGame[],
 ) {
   await db.runTransaction(async (transaction) => {
-    for (const prompt of prompts) {
+    for (const prompt of viewedPrompts) {
       const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id);
       transaction.update(cardRef, { views: FieldValue.increment(1) });
     }
-    for (const response of responses) {
+    for (const prompt of playedPrompts) {
+      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id);
+      transaction.update(cardRef, { plays: FieldValue.increment(1) });
+    }
+    for (const response of viewedResponses) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id);
       transaction.update(cardRef, { views: FieldValue.increment(1) });
+    }
+    for (const response of playedResponses) {
+      const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id);
+      transaction.update(cardRef, { plays: FieldValue.increment(1) });
     }
   });
 }

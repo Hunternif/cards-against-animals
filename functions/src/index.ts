@@ -21,8 +21,8 @@ import {
   getLastTurn,
   updateTurn
 } from "./model/turn-server-api";
-import { CardInGame, PromptCardInGame, ResponseCardInGame } from "./shared/types";
-import { logCardView } from "./model/deck-server-api";
+import { PromptCardInGame, ResponseCardInGame } from "./shared/types";
+import { logCardInteractions } from "./model/deck-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -143,22 +143,31 @@ export const endLobby = onCall<
 
 /**
  * Logs impression on a set of cards, when they were viewed for the first time
- * by a player in a lobby.
+ * by a player in a lobby, and when they are played.
  * - Prompt impression should be logged only the "judege" who picked it.
  * - Response impression should be logged only by the player who was dealt it.
  */
-export const logImpression = onCall<
+export const logInteraction = onCall<
   {
     lobby_id: string,
-    prompt: PromptCardInGame,
-    responses: ResponseCardInGame[],
+    viewed_prompts: PromptCardInGame[],
+    viewed_responses: ResponseCardInGame[],
+    played_prompts: PromptCardInGame[],
+    played_responses: ResponseCardInGame[],
   }, Promise<void>
 >(
   { region: firebaseConfig.region, maxInstances: 2 },
   async (event) => {
     assertLoggedIn(event);
     await assertPlayerInLobby(event, event.data.lobby_id);
-    await logCardView([event.data.prompt], event.data.responses);
-    logger.info(`Logged impression of ${event.data.responses.length + 1} cards`);
+    await logCardInteractions(
+      event.data.viewed_prompts, event.data.viewed_responses,
+      event.data.played_prompts, event.data.played_responses);
+    const total =
+      event.data.viewed_prompts.length +
+      event.data.played_prompts.length +
+      event.data.viewed_responses.length +
+      event.data.played_responses.length;
+    logger.info(`Logged ${total} interactions`);
   }
 );

@@ -60,10 +60,12 @@ export const endLobbyFun = httpsCallable<
     { lobby_id: string }, void
 >(functions, 'endLobby');
 
-export const logImpression = httpsCallable<
+export const logInteractionFun = httpsCallable<
     {
         lobby_id: string,
-        prompt: PromptCardInGame,
-        responses: ResponseCardInGame[],
+        viewed_prompts: PromptCardInGame[],
+        viewed_responses: ResponseCardInGame[],
+        played_prompts: PromptCardInGame[],
+        played_responses: ResponseCardInGame[],
     }, void
->(functions, 'logImpression');
+>(functions, 'logInteraction');
