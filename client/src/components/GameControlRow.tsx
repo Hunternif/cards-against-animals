@@ -1,7 +1,7 @@
 import { CSSProperties, useContext, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { submitPlayerResponse } from "../model/turn-api";
-import { GameLobby, GameTurn, ResponseCardInGame } from "../shared/types";
+import { GameLobby, GameTurn, PlayerInLobby, ResponseCardInGame } from "../shared/types";
 import { GameButton } from "./Buttons";
 import { ErrorContext } from "./ErrorContext";
 
@@ -12,6 +12,7 @@ interface ControlProps {
   userName: string,
   selection: ResponseCardInGame[], // card IDs
   submitted?: boolean,
+  players: PlayerInLobby[],
 }
 
 const buttonAlignedStyle: CSSProperties = {
@@ -22,13 +23,16 @@ const buttonAlignedStyle: CSSProperties = {
 }
 
 export function GameControlRow(
-  { lobby, turn, userID, userName, selection, submitted }: ControlProps
+  { lobby, turn, userID, userName, selection, submitted, players }: ControlProps
 ) {
   const picked = selection.length;
   const total = turn.prompt?.pick ?? 1;
   const ready = turn.prompt && picked >= total;
+  const judgeName = players.find((p) => p.uid === turn.judge_uid)?.name;
+
   const [submitting, setSubmitting] = useState(false);
   const { setError } = useContext(ErrorContext);
+
   function handleClick() {
     setSubmitting(true);
     submitPlayerResponse(lobby, turn, userID, userName, selection)
@@ -38,6 +42,7 @@ export function GameControlRow(
         setSubmitting(false);
       });
   }
+
   return (
     <div style={{
       display: "flex",
@@ -57,7 +62,10 @@ export function GameControlRow(
         </GameButton>) : (
           // Text displayed in place of button:
           <div style={buttonAlignedStyle} className="extra-dim">
-            {turn.prompt ? `Picked ${picked} out of ${total}` : "Waiting for prompt..."}
+            {turn.prompt ? `Picked ${picked} out of ${total}` : (
+              <span>
+                <i>{judgeName}</i> is Card Czar. Waiting for prompt...
+              </span>)}
           </div>
         )}
     </div>
