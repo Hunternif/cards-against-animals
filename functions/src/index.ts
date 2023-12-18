@@ -21,6 +21,8 @@ import {
   getLastTurn,
   updateTurn
 } from "./model/turn-server-api";
+import { CardInGame, PromptCardInGame, ResponseCardInGame } from "./shared/types";
+import { logCardView } from "./model/deck-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -103,7 +105,7 @@ export const newTurn = onCall<
   async (event) => {
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
-    await assertPlayerInLobby(event, lobby);
+    await assertPlayerInLobby(event, lobby.id);
     const lastTurn = await getLastTurn(lobby.id);
     if (lastTurn && lastTurn.phase != "complete") {
       throw new HttpsError("failed-precondition", "Last turn is not complete");
@@ -136,5 +138,27 @@ export const endLobby = onCall<
     lobby.status = "ended";
     await updateLobby(lobby);
     logger.info(`Ended lobby ${lobby.id}`);
+  }
+);
+
+/**
+ * Logs impression on a set of cards, when they were viewed for the first time
+ * by a player in a lobby.
+ * - Prompt impression should be logged only the "judege" who picked it.
+ * - Response impression should be logged only by the player who was dealt it.
+ */
+export const logImpression = onCall<
+  {
+    lobby_id: string,
+    prompt: PromptCardInGame,
+    responses: ResponseCardInGame[],
+  }, Promise<void>
+>(
+  { region: firebaseConfig.region, maxInstances: 2 },
+  async (event) => {
+    assertLoggedIn(event);
+    await assertPlayerInLobby(event, event.data.lobby_id);
+    await logCardView([event.data.prompt], event.data.responses);
+    logger.info(`Logged impression of ${event.data.responses.length + 1} cards`);
   }
 );

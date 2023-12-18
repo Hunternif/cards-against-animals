@@ -13,12 +13,12 @@ export function assertLoggedIn(event: CallableRequest) {
 
 /** Asserts that current user is a "player" in this lobby. */
 export async function assertPlayerInLobby(
-  event: CallableRequest, lobby: GameLobby) {
+  event: CallableRequest, lobbyID: string) {
   if (!event.auth) {
     throw new HttpsError("unauthenticated", "Must log in before calling functions");
   }
-  const playerDoc = await getPlayersRef(lobby.id).doc(event.auth.uid).get();
-  if (!playerDoc.exists) {
+  const player = (await getPlayersRef(lobbyID).doc(event.auth.uid).get()).data();
+  if (!player || player.role !== "player") {
     throw new HttpsError("unauthenticated", "Must be a player in lobby");
   }
 }
