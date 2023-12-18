@@ -5,6 +5,7 @@ import { deckConverter, lobbyConverter, playerConverter, userConverter } from '.
 import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
+import { PromptCardInGame, ResponseCardInGame } from './shared/types';
 
 export const firebaseApp = initializeApp(firebaseConfig)
 
@@ -58,3 +59,11 @@ export const newTurnFun = httpsCallable<
 export const endLobbyFun = httpsCallable<
     { lobby_id: string }, void
 >(functions, 'endLobby');
+
+export const logImpression = httpsCallable<
+    {
+        lobby_id: string,
+        prompt: PromptCardInGame,
+        responses: ResponseCardInGame[],
+    }, void
+>(functions, 'logImpression');

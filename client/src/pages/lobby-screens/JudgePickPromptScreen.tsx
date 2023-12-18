@@ -8,6 +8,7 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { endLobby } from "../../model/lobby-api";
 import { discardPrompt, getPromptCount, pickNewPrompt, playPrompt } from "../../model/turn-api";
 import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
+import { logImpression } from "../../firebase";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -65,6 +66,9 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
 
   async function handleChange() {
     if (prompt) {
+      // This is only called once per card, so we can safely log the impression
+      // of the previous card, because we will never see it again:
+      logImpression({ lobby_id: lobby.id, prompt, responses: [] });
       await discardPrompt(lobby, prompt)
         .then(() => pickNewPrompt(lobby))
         .then((card) => setPrompt(card))
@@ -74,6 +78,9 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
 
   async function handleSubmit() {
     if (prompt) {
+      // This is only called once per card, so we can safely log the impression
+      // of the submitted card:
+      logImpression({ lobby_id: lobby.id, prompt, responses: [] });
       setSubmitted(true);
       await playPrompt(lobby, turn, prompt).catch((e) => {
         setError(e);
