@@ -63,10 +63,7 @@ export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
       await endLobby(lobby);
     }
   }
-  const playersRef = collection(lobbiesRef, lobby.id, 'players')
-    .withConverter(playerConverter);
-  // Delete your 'player' document in lobby:
-  await deleteDoc(doc(playersRef, user.uid));
+
   // Delete your user info which contains 'current lobby':
   // - unless you're admin. In that case, remove the field.
   const caaUser = await getCAAUser(user.uid);
@@ -76,6 +73,12 @@ export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
   } else {
     await deleteDoc(doc(usersRef, user.uid));
   }
+
+  // Lastly, delete your 'player' document in lobby:
+  // (do it last, so you won't see the error due to failing to load lobby)
+  const playersRef = collection(lobbiesRef, lobby.id, 'players')
+    .withConverter(playerConverter);
+  await deleteDoc(doc(playersRef, user.uid));
 }
 
 export async function setLobbyCreator(lobby: GameLobby, userID: string):
