@@ -15,7 +15,7 @@ interface Props {
 export function AnonymousLogin({ onLogin, joining }: Props) {
   const [user, loadingUser] = useAuthState(firebaseAuth);
   const suggestedName = "CoolNickname123";
-  const [name, setName] = useState("");
+  const [name, setName] = useState(user?.displayName ?? "");
   const [loggingIn, setLoggingIn] = useState(false);
   const delayedLoadingUser = useDelay(loadingUser);
   const delayedLoggingIn = useDelay(loggingIn);
@@ -76,12 +76,12 @@ export function AnonymousLogin({ onLogin, joining }: Props) {
                 <Form.Control type="text" value={name}
                   placeholder={loadingUser ? "" : suggestedName}
                   onChange={(e) => setName(e.target.value)}
-                  disabled={loadingUser || joining}
+                  disabled={delayedLoadingUser || joining}
                 />
               )}
             </Form.Group>
             <CenteredLayout>
-              <button disabled={loadingUser || joining}>Start</button>
+              <button disabled={delayedLoadingUser || joining}>Start</button>
             </CenteredLayout>
           </Form>
         )}
