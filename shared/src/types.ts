@@ -138,10 +138,21 @@ export class Deck {
   prompts: Array<PromptDeckCard> = [];
   /** Must be fetched separately from a Firebase subcollection. */
   responses: Array<ResponseDeckCard> = [];
+  /** Must be fetched separately from a Firebase subcollection. */
+  tags: DeckTag[] = [];
 
   constructor(id: string, title: string) {
     this.id = id;
     this.title = title;
+  }
+}
+
+export class DeckTag {
+  name: string;
+  description?: string;
+  constructor(name: string, description?: string) {
+    this.name = name;
+    this.description = description;
   }
 }
 
@@ -156,6 +167,7 @@ export interface DeckCard {
   views: number;
   /** Analytics: how many times this card was played */
   plays: number;
+  tags: string[];
 }
 
 
@@ -169,9 +181,10 @@ export class PromptDeckCard implements DeckCard {
   time_created?: Date;
   views: number;
   plays: number;
+  tags: string[];
   constructor(
     id: string, content: string, pick: number, rating: number,
-    views: number, plays: number,
+    views: number, plays: number, tags: string[],
   ) {
     this.id = id;
     this.content = content;
@@ -179,6 +192,7 @@ export class PromptDeckCard implements DeckCard {
     this.rating = rating;
     this.views = views;
     this.plays = plays;
+    this.tags = tags;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
@@ -192,15 +206,17 @@ export class ResponseDeckCard implements DeckCard {
   time_created?: Date;
   views: number;
   plays: number;
+  tags: string[];
   constructor(
     id: string, content: string, rating: number,
-    views: number, plays: number,
+    views: number, plays: number, tags: string[],
   ) {
     this.id = id;
     this.content = content;
     this.rating = rating;
     this.views = views;
     this.plays = plays;
+    this.tags = tags;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing

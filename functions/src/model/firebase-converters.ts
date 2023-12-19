@@ -6,6 +6,7 @@ import {
 import {
   CAAUser,
   Deck,
+  DeckTag,
   GameLobby,
   GameTurn,
   PlayerDataInTurn,
@@ -65,6 +66,14 @@ export const deckConverter: FirestoreDataConverter<Deck> = {
     const ret = new Deck(snapshot.id, data.title);
     // all cards must be fetched separately as a subcollection
     return ret;
+  },
+};
+
+export const deckTagConverter: FirestoreDataConverter<DeckTag> = {
+  toFirestore: (tag: DeckTag) => copyFields(tag),
+  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+    const data = snapshot.data();
+    return new DeckTag(data.name, data.description);
   },
 };
 
@@ -144,7 +153,7 @@ export const promptDeckCardConverter: FirestoreDataConverter<PromptDeckCard> = {
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const ret = new PromptDeckCard(snapshot.id, data.content, data.pick,
-      data.rating, data.views, data.plays);
+      data.rating, data.views, data.plays, data.tags || []);
     ret.time_created = (data.time_created as Timestamp | null)?.toDate();
     return ret;
   },
@@ -159,7 +168,7 @@ export const responseDeckCardConverter: FirestoreDataConverter<ResponseDeckCard>
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating,
-      data.views, data.plays);
+      data.views, data.plays, data.tags || []);
     ret.time_created = (data.time_created as Timestamp | null)?.toDate();
     return ret;
   },
