@@ -22,8 +22,9 @@ export function GameMenu({ lobby, turn, user, className, style }: MenuProps) {
   const isJudge = turn.judge_uid === user.uid;
 
   async function handleLeave() {
-    await leaveLobby(lobby, user);
-    navigate("/");
+    await leaveLobby(lobby, user)
+      .then(() => navigate("/"))
+      .catch((e) => setError(e));
   }
 
   async function handleEnd() {

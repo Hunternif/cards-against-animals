@@ -7,6 +7,9 @@ import { firebaseAuth } from "../firebase";
 import { AdminUserPill } from "../components/AdminUserPill";
 import { signOut, useCAAUserOnce } from "../model/users-api";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { ErrorContext } from "../components/ErrorContext";
+import { ErrorModal } from "../components/ErrorModal";
+import { useContext, useState } from "react";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -23,10 +26,14 @@ interface UserProps {
 }
 
 function AccessDeniedView({ user }: UserProps) {
+  const {setError} = useContext(ErrorContext);
+  async function handleSignOut() {
+    await signOut(user).catch((e) => setError(e));
+  }
   return <CenteredLayout style={{ textAlign: "center" }}>
     <p>Hello, {user.displayName}!</p>
     <p>Access denied</p>
-    <button onClick={() => signOut(user)}>Sign out</button>
+    <button onClick={handleSignOut}>Sign out</button>
   </CenteredLayout>;
 }
 
@@ -76,6 +83,16 @@ function AdminContent({ user }: UserProps) {
 }
 
 export function AdminPage() {
+  const [error, setError] = useState<any | null>(null);
+  return <>
+    <ErrorModal error={error} setError={setError} />
+    <ErrorContext.Provider value={{ error, setError }}>
+      <AdminPageThrows />
+    </ErrorContext.Provider>
+  </>;
+}
+
+function AdminPageThrows() {
   const [user, loading] = useAuthState(firebaseAuth);
   if (loading) return <LoadingSpinner />
   if (user) return <LoggedInView user={user} />;
