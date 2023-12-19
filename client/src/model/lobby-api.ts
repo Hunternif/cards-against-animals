@@ -113,9 +113,14 @@ export async function findOrCreateLobbyAndJoin(user: User): Promise<string> {
   return res.data.lobby_id;
 }
 
-async function joinLobbyIfNeeded(lobbyID: string, user: User) {
+export async function isUserInLobby(lobbyID: string, user: User): Promise<boolean> {
   const caaUser = await getCAAUser(user.uid);
-  if (caaUser?.current_lobby_id !== lobbyID) {
+  return caaUser?.current_lobby_id === lobbyID;
+}
+
+/** If the user is not already in the lobby, joins it. */
+export async function joinLobbyIfNeeded(lobbyID: string, user: User) {
+  if (!await isUserInLobby(lobbyID, user)) {
     await joinLobby(lobbyID, user);
   }
 }

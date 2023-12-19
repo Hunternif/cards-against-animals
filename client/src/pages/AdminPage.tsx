@@ -3,9 +3,9 @@ import { Container } from "react-bootstrap";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { CenteredLayout } from "../components/layout/CenteredLayout";
 import { Sidebar } from "../components/layout/SidebarLayout";
-import { firebaseAuth, useFetchCAAUser } from "../firebase";
+import { firebaseAuth } from "../firebase";
 import { AdminUserPill } from "../components/AdminUserPill";
-import { signOut } from "../model/users-api";
+import { signOut, useCAAUserOnce } from "../model/users-api";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
 function LogInBox() {
@@ -39,7 +39,7 @@ function AnonymousLoggedInView({ user }: UserProps) {
 }
 
 function LoggedInView({ user }: UserProps) {
-  const [caaUser, loading] = useFetchCAAUser(user.uid ?? "invalid");
+  const [caaUser, loading] = useCAAUserOnce(user.uid ?? "invalid");
   const isAdmin = caaUser?.is_admin ?? false;
   if (loading) return <LoadingSpinner delay text="Loading..." />
   if (user.isAnonymous) return <AnonymousLoggedInView user={user} />

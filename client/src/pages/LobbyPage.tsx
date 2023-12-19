@@ -4,13 +4,14 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useLoaderData } from "react-router-dom";
 import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import { firebaseAuth } from "../firebase";
-import { useJoinLobby, useLobby, usePlayers } from "../model/lobby-api";
+import { useLobby, usePlayers } from "../model/lobby-api";
+import { useCAAUser } from "../model/users-api";
 import { EndedLobbyScreen } from "./lobby-screens/EndedLobbyScreen";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
-import { LoadingSpinner } from "../components/LoadingSpinner";
 
 interface LoaderParams {
   params: any
@@ -49,8 +50,11 @@ interface LoggedInProps {
 
 /** User logged in, but not necessarily joined the lobby. */
 function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
-  const [joined] = useJoinLobby(lobbyID, user);
-  if (!joined) return <LoadingSpinner delay text="Joining..." />;
+  const [caaUser, loadingUser] = useCAAUser(user.uid);
+  const isInLobby = caaUser?.current_lobby_id === lobbyID;
+  if (loadingUser) return <LoadingSpinner delay text="Loading..." />;
+  // User may be logged in, but we offer to change their name before joining:
+  if (!isInLobby) return <LoginScreen existingLobbyID={lobbyID} />;
   return <JoinedLobbyScreen user={user} lobbyID={lobbyID} />
 }
 
