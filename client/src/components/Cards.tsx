@@ -25,6 +25,7 @@ const containerStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   position: "relative",
+  flexShrink: "0",
 }
 
 const fillCardStyle: CSSProperties = {

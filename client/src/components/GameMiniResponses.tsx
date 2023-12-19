@@ -8,12 +8,12 @@ interface Props {
   responses: PlayerResponse[],
 }
 
-// const dummyPlayer = new PlayerInLobby("01", "Dummy");
-// const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
+const dummyPlayer = new PlayerInLobby("01", "Dummy");
+const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
 
 /** Indicates which players responded */
-export function GameMiniResponses({ turn, players, responses }: Props) {
-  // const players = dummyPlayers;
+export function GameMiniResponses({ turn, responses }: Props) {
+  const players = dummyPlayers;
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
     return responses.find((res) => res.player_uid === player.uid) ?? null;
@@ -27,7 +27,7 @@ export function GameMiniResponses({ turn, players, responses }: Props) {
   return <div style={{
     flex: "1 1 auto",
     display: "flex",
-    flexFlow: "nowrap",
+    flexWrap: "wrap",
     gap: "0.5rem",
     justifyContent: "flex-end",
     overflow: "hidden",

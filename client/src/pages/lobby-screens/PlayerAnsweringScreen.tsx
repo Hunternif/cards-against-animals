@@ -23,7 +23,6 @@ const containerStyle: CSSProperties = {
   alignItems: "flex-start",
   justifyContent: "space-between",
   gap: "1em",
-  padding: "1.5em",
 };
 const rowStyle: CSSProperties = {
   width: "100%",
@@ -35,11 +34,17 @@ const rowStyle: CSSProperties = {
 };
 const topRowStyle: CSSProperties = {
   justifyContent: "flex-start",
-  flexWrap: "wrap",
+  flexWrap: "nowrap",
+  padding: "1em",
 }
 const midRowStyle: CSSProperties = {}
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
+}
+const miniResponsesContainerStyle: CSSProperties = {
+  overflow: "hidden",
+  maxHeight: "20rem",
+  marginTop: "2em",
 }
 
 export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }: TurnProps) {
@@ -51,8 +56,16 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
     {data ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
         <PromptCard card={turn.prompt} />
-        {turn.prompt && <GameMiniResponses lobby={lobby} turn={turn}
-          players={players} responses={responses} />}
+        {turn.prompt &&
+          <div style={miniResponsesContainerStyle}>
+            <GameMiniResponses
+              lobby={lobby}
+              turn={turn}
+              players={players}
+              responses={responses}
+            />
+          </div>
+        }
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
         <GameControlRow lobby={lobby} turn={turn} data={data}
