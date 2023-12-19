@@ -6,6 +6,7 @@ import { endLobbyFun, findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLob
 import { GameLobby, PlayerInLobby } from "../shared/types";
 import { playerConverter } from "./firebase-converters";
 import { getCAAUser } from "./users-api";
+import { getLastTurn, setTurnJudge } from "./turn-api";
 
 export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
   return (await getDoc(doc(lobbiesRef, lobbyID))).data() ?? null;
@@ -52,9 +53,9 @@ export async function joinLobby(lobbyID: string, user: User): Promise<void> {
 
 /** Remove yourself from this lobby */
 export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
+  const players = await getAllPlayersInLobby(lobby.id);
   // If you're creator, reassign this role to the next user:
   if (lobby.creator_uid === user.uid) {
-    const players = await getAllPlayersInLobby(lobby.id);
     const nextPlayer = players.find((p) => p.uid !== user.uid);
     if (nextPlayer) {
       await setLobbyCreator(lobby, nextPlayer.uid);
@@ -62,6 +63,14 @@ export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
       // You're the last player! Close the lobby:
       await endLobby(lobby);
     }
+  }
+  // If you're the current judge, reassign this role to the next user:
+  const lastTurn = await getLastTurn(lobby.id);
+  if (lastTurn && lastTurn.phase != "complete" && lastTurn.judge_uid === user.uid) {
+    const nextPlayer = players.find((p) => p.uid !== user.uid);
+    if (nextPlayer) {
+      await setTurnJudge(lobby, lastTurn, nextPlayer.uid);
+    } // else should not happen
   }
 
   // Delete your user info which contains 'current lobby':
@@ -81,8 +90,8 @@ export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
   await deleteDoc(doc(playersRef, user.uid));
 }
 
-export async function setLobbyCreator(lobby: GameLobby, userID: string):
-  Promise<void> {
+/** Reassign lobby "creator" to a different user */
+export async function setLobbyCreator(lobby: GameLobby, userID: string) {
   lobby.creator_uid = userID;
   await updateLobby(lobby);
 }

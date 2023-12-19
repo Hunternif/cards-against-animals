@@ -47,13 +47,13 @@ async function updateTurn(lobbyID: string, turn: GameTurn): Promise<void> {
  * Finds the last turn in the lobby.
  * On the client side, it should alway be non-null.
  */
-export async function getLastTurn(lobbyID: string): Promise<GameTurn> {
+export async function getLastTurn(lobbyID: string): Promise<GameTurn | null> {
   const turns = (await getDocs(query(
     getTurnsRef(lobbyID),
     orderBy("time_created", "desc"),
     limit(1)))
   ).docs.map((d) => d.data());
-  if (turns.length === 0) throw new Error("No turns found");
+  if (turns.length === 0) return null;
   return turns[0];
 }
 
@@ -131,6 +131,12 @@ export async function chooseWinner(
 ) {
   turn.winner_uid = winnerID;
   turn.phase = "complete";
+  await updateTurn(lobby.id, turn);
+}
+
+/** Reassign turn "judge" to a different user */
+export async function setTurnJudge(lobby: GameLobby, turn: GameTurn, userID: string) {
+  turn.judge_uid = userID;
   await updateTurn(lobby.id, turn);
 }
 
