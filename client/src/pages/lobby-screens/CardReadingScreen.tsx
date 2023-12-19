@@ -5,8 +5,10 @@ import { PromptCard } from "../../components/Cards";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { chooseWinner, revealPlayerResponse } from "../../model/turn-api";
+import { chooseWinner, revealPlayerResponse, startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { Delay } from "../../components/LoadingSpinner";
+import { endLobby } from "../../model/lobby-api";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -32,6 +34,17 @@ const midRowStyle: CSSProperties = {
   gap: "1rem",
 }
 
+const botRowStyle: CSSProperties = {
+  position: "relative",
+  marginTop: "1.5rem",
+  height: "3rem",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  gap: "1rem",
+}
+
 // const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);
 // const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard, dummyCard], 123, true);
 // const dummyResponses = new Array<PlayerResponse>(10).fill(dummyResponse, 0, 10);
@@ -39,9 +52,12 @@ const midRowStyle: CSSProperties = {
 export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
   // const responses = dummyResponses;
   const [winner, setWinner] = useState<PlayerResponse | null>(null);
+  const [startingNewTurn, setStartingNewTurn] = useState(false);
+  const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
   const allRevealed = responses.every((r) => r.revealed) ?? false;
+  const noResponses = responses.length === 0;
 
   async function handleClick(response: PlayerResponse) {
     if (allRevealed) {
@@ -62,11 +78,29 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
     }
   }
 
+  async function handleSkipTurn() {
+    setStartingNewTurn(true);
+    await startNewTurn(lobby)
+      .catch((e) => {
+        setError(e);
+        setStartingNewTurn(false);
+      });
+  }
+
+  async function handleEndGame() {
+    setEnding(true);
+    await endLobby(lobby).catch((e) => {
+      setError(e);
+      setEnding(false);
+    });
+  }
+
   return <CenteredLayout>
     <div style={topRowStyle}>
       {isJudge && <>
         <h2 className="dim">
-          {allRevealed ? "Select winner:" : "Click to reveal answers:"}
+          {noResponses ? "No responses :(" :
+            allRevealed ? "Select winner:" : "Click to reveal answers:"}
         </h2>
         {winner &&
           <GameButton accent onClick={handleConfirm}>Confirm</GameButton>}
@@ -84,6 +118,20 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
           onClick={(r) => handleClick(r)}
         />
       )}
+    </div>
+    <div style={botRowStyle}>
+      {noResponses && <>
+        <GameButton accent onClick={handleSkipTurn}
+          disabled={startingNewTurn || ending}>
+          Next turn
+        </GameButton>
+        <Delay delayMs={1000}>
+          <GameButton secondary onClick={handleEndGame}
+            disabled={startingNewTurn || ending}>
+            End game
+          </GameButton>
+        </Delay>
+      </>}
     </div>
   </CenteredLayout>;
 }

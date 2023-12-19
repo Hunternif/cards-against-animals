@@ -35,7 +35,7 @@ export function GameMenu({ lobby, turn, user, className, style }: MenuProps) {
       toggle={<IconHamburger />} toggleClassName="game-menu-icon">
       <Dropdown.Menu>
         <Dropdown.Item onClick={handleLeave}>Leave</Dropdown.Item>
-        {isJudge && <Dropdown.Item onClick={handleEnd}>End lobby</Dropdown.Item>}
+        {isJudge && <Dropdown.Item onClick={handleEnd}>End game</Dropdown.Item>}
       </Dropdown.Menu>
     </CustomDropdown>
   );

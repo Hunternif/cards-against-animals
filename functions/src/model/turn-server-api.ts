@@ -66,10 +66,11 @@ export async function getPlayerData(
  */
 export async function createNewTurn(lobbyID: string): Promise<GameTurn> {
   const lastTurn = await getLastTurn(lobbyID);
-  if (lastTurn && lastTurn.phase != "complete") {
-    throw new HttpsError("failed-precondition",
-      `Last turn has not completed in lobby ${lobbyID}`);
-  }
+  // Allow players to start a new turn whenever:
+  // if (lastTurn && lastTurn.phase != "complete") {
+  //   throw new HttpsError("failed-precondition",
+  //     `Last turn has not completed in lobby ${lobbyID}`);
+  // }
   const judge = await selectJudge(lobbyID, lastTurn);
   const id = String(await countTurns(lobbyID) + 1);
   const newTurn = new GameTurn(id, judge);

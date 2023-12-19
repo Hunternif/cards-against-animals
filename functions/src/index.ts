@@ -106,10 +106,11 @@ export const newTurn = onCall<
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
     await assertPlayerInLobby(event, lobby.id);
-    const lastTurn = await getLastTurn(lobby.id);
-    if (lastTurn && lastTurn.phase != "complete") {
-      throw new HttpsError("failed-precondition", "Last turn is not complete");
-    }
+    // Allow players to start a new turn whenever:
+    // const lastTurn = await getLastTurn(lobby.id);
+    // if (lastTurn && lastTurn.phase != "complete") { 
+    //   throw new HttpsError("failed-precondition", "Last turn is not complete");
+    // }
     await createNewTurn(lobby.id);
     logger.info(`Started new turn in lobby ${lobby.id}`);
   }
