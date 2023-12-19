@@ -46,14 +46,20 @@ function TurnScreen(props: PreTurnProps) {
   const { setError } = useContext(ErrorContext);
   useEffect(() => { if (error) setError(error); }, [error, setError]);
   const isJudge = props.turn.judge_uid === props.user.uid;
+  const isSpectator = props.players.find((p) => p.uid === props.user.uid)?.role === "spectator";
   const className = `game-screen phase-${props.turn.phase} miniscrollbar miniscrollbar-light`;
-  if (!responses || loading) return <LoadingSpinner delay text="Loading..." />
+
+  if (!responses || loading) {
+    return <LoadingSpinner delay text="Loading..." />
+  }
   const newProps = { responses, ...props };
   return (
     <FillLayout className={className} style={{ overflowY: "auto", }}>
       <div className={`game-bg phase-${props.turn.phase}`} />
       <GameMenu style={menuStyle} {...newProps} />
-      {isJudge ? <JudgeScreen {...newProps} /> : <PlayerScreen {...newProps} />}
+      {isJudge ? <JudgeScreen {...newProps} /> :
+        isSpectator ? <SpectatorScreen {...newProps} /> :
+          <PlayerScreen {...newProps} />}
     </FillLayout>
   );
 }
@@ -79,6 +85,15 @@ function PlayerScreen(props: TurnProps) {
   switch (props.turn.phase) {
     case "new":
     case "answering": return <PlayerAnsweringScreen {...props} />;
+    case "reading": return <CardReadingScreen {...props} />;
+    case "complete": return <WinnerScreen {...props} />;
+  }
+}
+
+function SpectatorScreen(props: TurnProps) {
+  switch (props.turn.phase) {
+    case "new":
+    case "answering": return <JudgeAwaitResponsesScreen {...props} />;
     case "reading": return <CardReadingScreen {...props} />;
     case "complete": return <WinnerScreen {...props} />;
   }

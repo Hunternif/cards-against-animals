@@ -43,9 +43,12 @@ const botRowStyle: CSSProperties = {
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
 
 /** Similar to GameMiniResponses, but slightly different */
-export function JudgeAwaitResponsesScreen({ lobby, turn, players, responses }: TurnProps) {
+export function JudgeAwaitResponsesScreen(
+  { lobby, turn, user, players, responses }: TurnProps
+) {
   // const players = dummyPlayers;
   const { setError } = useContext(ErrorContext);
+  const isJudge = turn.judge_uid === user.uid;
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
     return responses.find((res) => res.player_uid === player.uid) ?? null;
@@ -77,7 +80,7 @@ export function JudgeAwaitResponsesScreen({ lobby, turn, players, responses }: T
       })}
     </div>
     <div style={botRowStyle}>
-      {allResponded && (<>
+      {allResponded && isJudge && (<>
         <span>All players responded!</span>
         <GameButton accent onClick={handleNext}>Next</GameButton>
       </>)}
