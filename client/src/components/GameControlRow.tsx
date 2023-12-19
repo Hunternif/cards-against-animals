@@ -53,7 +53,7 @@ export function GameControlRow(
     }}>
       {submitted ? (
         // Text displayed in place of button:
-        <div style={buttonAlignedStyle} className="extra-dim">
+        <div style={buttonAlignedStyle} className="light">
           Submitted!
         </div>
       ) :
@@ -62,7 +62,7 @@ export function GameControlRow(
           Submit
         </GameButton>) : (
           // Text displayed in place of button:
-          <div style={buttonAlignedStyle} className="extra-dim">
+          <div style={buttonAlignedStyle} className="light">
             {turn.prompt ? `Picked ${picked} out of ${total}` : (
               <span>
                 <i>{judgeName}</i> is Card Czar. Waiting for prompt...
