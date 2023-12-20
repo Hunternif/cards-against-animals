@@ -6,6 +6,8 @@ import { GameButton } from "./Buttons";
 import { ErrorContext } from "./ErrorContext";
 import { IconLink, IconPlay } from "./Icons";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { Timed } from "./Delay";
+import { sleep } from "./utils";
 
 interface Props {
   lobby: GameLobby,
@@ -27,10 +29,20 @@ const footerStyle: CSSProperties = {
 const startButtonStyle: CSSProperties = {
   width: "10rem",
   maxWidth: "40vw",
+  position: "relative",
+};
+
+const linkCopiedStyle: CSSProperties = {
+  position: "absolute",
+  bottom: "100%",
+  paddingBottom: "0.3rem",
+  width: "100%",
+  left: 0,
 };
 
 export function LobbyCreatorControls({ lobby }: Props) {
   const [starting, setStarting] = useState(false);
+  const [showLink, setShowLink] = useState(false);
   const { setError } = useContext(ErrorContext);
 
   async function handleStart() {
@@ -43,9 +55,10 @@ export function LobbyCreatorControls({ lobby }: Props) {
     }
   }
 
-  function handleInvite() {
+  async function handleInvite() {
     // Copies link
     navigator.clipboard.writeText(document.URL);
+    setShowLink(true);
   }
 
   if (starting) return <LoadingSpinner text="Starting..." delay />;
@@ -56,6 +69,9 @@ export function LobbyCreatorControls({ lobby }: Props) {
       <GameButton light style={startButtonStyle} className="start-button"
         onClick={handleInvite} icon={<IconLink />}>
         Invite
+        {showLink && <Timed onClear={() => setShowLink(false)}>
+          <span style={linkCopiedStyle} className="light">Link copied</span>
+        </Timed>}
       </GameButton>
       <GameButton accent style={startButtonStyle} className="start-button"
         onClick={handleStart}
