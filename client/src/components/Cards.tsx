@@ -1,6 +1,7 @@
-import { CSSProperties } from "react";
+import { CSSProperties, MouseEventHandler } from "react";
 import { CardInGame, PromptCardInGame } from "../shared/types";
 import { FillLayout } from "./layout/FillLayout";
+import { IconThumbsDown } from "./Icons";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
@@ -62,11 +63,18 @@ export function ResponseCard(
   const selectableStyle = selectable ? "hoverable-card" : "locked-card";
   const selectedStyle = selected ? "selected" : "unselected";
   const className = `game-card card-response ${selectableStyle} ${selectedStyle}`;
+
   function handleClick() {
     if (onToggle) onToggle(!selected);
   }
+
+  function handleDownvote() {
+    //TODO
+  }
+
   return <div className={className} onClick={handleClick} style={containerStyle}>
     <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
+    <Downvote onClick={handleDownvote} />
     {showIndex && selected && <FillLayout
       className="selected-response-index"
       style={fillCardStyle}>
@@ -100,4 +108,25 @@ function PromptCardPick({ pick }: PickProps) {
       </div>
     </div>
   </>;
+}
+
+interface DownvoteProps {
+  onClick?: () => void,
+}
+
+function Downvote({ onClick }: DownvoteProps) {
+  return <div className="downvote-card" style={{
+    display: "flex",
+    alignItems: "baseline",
+    flexDirection: "row",
+    marginTop: "auto",
+    marginLeft: "auto",
+  }}
+    title="Downvote card"
+    onClick={(e) => {
+      e.stopPropagation();
+      if (onClick) onClick();
+    }}>
+    <IconThumbsDown width={24} height={24} />
+  </div>;
 }

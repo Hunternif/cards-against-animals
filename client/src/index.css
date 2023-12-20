@@ -387,3 +387,11 @@ button:disabled {
   box-shadow: 0 0px 16px rgba(0, 0, 0, 0.3);
   margin-top: -80%;
 }
+
+.downvote-card {
+  color: rgb(185, 28, 28);
+  opacity: 0.1
+}
+.downvote-card:hover {
+  opacity: 0.5
+}
