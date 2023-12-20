@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
-import { parsePromptPick, processCardText, processPromptText } from '../deck-api';
+import { parseDeckTsv, parsePromptPick, processCardText, processPromptText } from '../deck-api';
+import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from '../../shared/types';
 
 test('parse pick from prompt text', () => {
   expect(parsePromptPick("No gaps!")).toBe(1);
@@ -26,4 +27,31 @@ test('process prompt text', () => {
     .toBe("respect _markdown_, _!");
   expect(processPromptText("punctuation, _, is important _. Right _? _: yes _; _"))
     .toBe("punctuation, _, is important _. Right _? _: yes _; _");
+});
+
+test('parse TSV deck', () => {
+  const deck = parseDeckTsv("My deck",
+    `Type\tText\tTags...
+Prompt\tHello, __\tlol\t\t\t
+Prompt\tBye __ and _\t\twut
+Response\tPoop`,
+    `Tag\tDescription
+lol\tFirst tag
+wut\tSecond tag`);
+  const expected = new Deck("My deck", "My deck");
+  expected.prompts = [
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, ["lol"]),
+    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, ["wut"]),
+  ];
+  expected.responses = [
+    new ResponseDeckCard("0003", "Poop", 0, 0, 0, []),
+  ];
+  expected.tags = [
+    new DeckTag("lol", "First tag"),
+    new DeckTag("wut", "Second tag"),
+  ];
+  expect(deck).toEqual(expected);
+  expect(deck.title).toBe("My deck");
+  expect(deck.prompts.length).toBe(2);
+  expect(deck.prompts[0]).toEqual(new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, ["lol"]));
 });

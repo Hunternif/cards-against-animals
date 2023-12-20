@@ -1,6 +1,6 @@
 import { collection, doc, getCountFromServer, getDoc, getDocs, runTransaction, setDoc, writeBatch } from "firebase/firestore";
 import { db, decksRef, lobbiesRef } from "../firebase";
-import { Deck, PromptDeckCard, ResponseDeckCard } from "../shared/types";
+import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from "../shared/types";
 import { promptDeckCardConverter, responseDeckCardConverter } from "./firebase-converters";
 
 /** Returns Firestore subcollection reference of prompt cards in deck. */
@@ -42,6 +42,47 @@ export function parseDeck(
       const text = processCardText(line);
       return new ResponseDeckCard(id, text, 0, 0, 0, []);
     });
+  return deck;
+}
+
+/**
+ * Parses deck TSV data
+ */
+export function parseDeckTsv(
+  title: string,
+  cardData: string,
+  tagData: string,
+): Deck {
+  const deck = new Deck(title, title);
+  const cardLines = cardData.split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line != "");
+  // Skip row of headers
+  if (cardLines[0].startsWith("Type")) cardLines.splice(0, 1);
+  cardLines.forEach((line, i) => {
+    const id = String(i + 1).padStart(4, '0');
+    const items = line.split("\t");
+    const type = items[0];
+    const rawText = items[1];
+    const tags = items.splice(2).filter((c) => c != "");
+    if (type === "Prompt") {
+      const text = processPromptText(processCardText(rawText));
+      const pick = parsePromptPick(text);
+      deck.prompts.push(new PromptDeckCard(id, text, pick, 0, 0, 0, tags));
+    } else if (type === "Response") {
+      const text = processCardText(items[1]);
+      deck.responses.push(new ResponseDeckCard(id, text, 0, 0, 0, tags));
+    }
+  });
+  const tagLines = tagData.split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line != "");
+  // Skip row of headers
+  if (tagLines[0].startsWith("Tag")) tagLines.splice(0, 1);
+  deck.tags = tagLines.map((line) => {
+    const items = line.split("\t");
+    return new DeckTag(items[0], items[1]);
+  });
   return deck;
 }
 

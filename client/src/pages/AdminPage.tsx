@@ -74,6 +74,10 @@ function AdminContent({ user }: UserProps) {
         {
           label: "Upload deck",
           path: "uploadDeck"
+        },
+        {
+          label: "Upload deck from TSV",
+          path: "uploadDeckTsv"
         }
       ]}
       loginNode={<AdminUserPill user={user} />}

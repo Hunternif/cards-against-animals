@@ -56,6 +56,11 @@ h1 {
 h2 {
   margin-bottom: 1.5rem;
 }
+pre {
+  background-color: #32373b;
+  padding: 0.5em;
+  border-radius: 0.25em;
+}
 
 button {
   border-radius: 8px;

@@ -14,6 +14,7 @@ import { WelcomePage } from './pages/WelcomePage.tsx'
 import { DecksAdmin } from './pages/admin-screens/DecksAdmin.tsx'
 import { LobbiesAdmin } from './pages/admin-screens/LobbiesAdmin.tsx'
 import { UploadDeck } from './pages/admin-screens/UploadDeck.tsx'
+import { UploadDeckTsv } from './pages/admin-screens/UploadDeckTsv.tsx'
 
 
 const router = createBrowserRouter([
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "uploadDeck",
         element: <UploadDeck />
+      },
+      {
+        path: "uploadDeckTsv",
+        element: <UploadDeckTsv />
       }
     ],
   }
