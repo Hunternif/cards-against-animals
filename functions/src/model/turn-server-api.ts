@@ -170,9 +170,9 @@ async function dealCards(
     if (lastTurn) {
       // copy old hand, discarding submitted cards:
       const playedCardIds = new Set(
-        lastResponses.get(pData.player_uid)?.cards?.map(c => c.card_id));
+        lastResponses.get(pData.player_uid)?.cards?.map(card => card.id));
       const oldHand = (await getPlayerHand(lobbyID, lastTurn.id, pData.player_uid))
-        ?.filter(c => !playedCardIds.has(c.card_id)) || [];
+        ?.filter(card => !playedCardIds.has(card.id)) || [];
       // temporarily write hand here, then upload it as a subcollection
       pData.hand.push(...oldHand);
     }
@@ -201,7 +201,7 @@ async function dealCards(
       transaction.set(playerDataRef.doc(pData.player_uid), pData);
       const handRef = getPlayerHandRef(lobbyID, newTurn.id, pData.player_uid);
       for (const card of pData.hand) {
-        transaction.set(handRef.doc(card.card_id), card);
+        transaction.set(handRef.doc(card.id), card);
       }
     }
   });

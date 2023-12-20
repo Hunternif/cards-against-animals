@@ -18,7 +18,7 @@ export function GameHand(
   function getSelectedIndex(card: ResponseCardInGame): number {
     // check card by ID, because the response instance could be unequal:
     if (response) {
-      return response.cards.findIndex((c) => c.card_id === card.card_id);
+      return response.cards.findIndex((c) => c.id === card.id);
     } else {
       return selectedCards.indexOf(card);
     }

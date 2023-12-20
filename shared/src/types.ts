@@ -228,9 +228,12 @@ export class ResponseDeckCard implements DeckCard {
  * original DeckCard and its cached content.
  */
 export interface CardInGame {
+  /** Unique ID that identifies this card across the whole app.
+   * Usually combines deck id and card id. */
   id: string;
   deck_id: string;
-  card_id: string;
+  /** Card id within the deck */
+  card_id_in_deck: string;
   /** Used for selecting a random card */
   random_index: number;
   content: string;
@@ -243,7 +246,7 @@ export interface CardInGame {
 export class PromptCardInGame implements CardInGame {
   id: string;
   deck_id: string;
-  card_id: string;
+  card_id_in_deck: string;
   random_index: number;
   content: string;
   pick: number;
@@ -252,7 +255,7 @@ export class PromptCardInGame implements CardInGame {
   constructor(
     id: string,
     deck_id: string,
-    card_id: string,
+    card_id_in_deck: string,
     random_index: number,
     content: string,
     pick: number,
@@ -261,7 +264,7 @@ export class PromptCardInGame implements CardInGame {
   ) {
     this.id = id;
     this.deck_id = deck_id;
-    this.card_id = card_id;
+    this.card_id_in_deck = card_id_in_deck;
     this.random_index = random_index;
     this.content = content;
     this.pick = pick;
@@ -276,7 +279,7 @@ export class PromptCardInGame implements CardInGame {
 export class ResponseCardInGame implements CardInGame {
   id: string;
   deck_id: string;
-  card_id: string;
+  card_id_in_deck: string;
   random_index: number;
   content: string;
   rating: number;
@@ -284,7 +287,7 @@ export class ResponseCardInGame implements CardInGame {
   constructor(
     id: string,
     deck_id: string,
-    card_id: string,
+    card_id_in_deck: string,
     random_index: number,
     content: string,
     rating: number,
@@ -292,7 +295,7 @@ export class ResponseCardInGame implements CardInGame {
   ) {
     this.id = id;
     this.deck_id = deck_id;
-    this.card_id = card_id;
+    this.card_id_in_deck = card_id_in_deck;
     this.random_index = random_index;
     this.content = content;
     this.rating = rating;

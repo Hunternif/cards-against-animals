@@ -58,19 +58,19 @@ export async function logCardInteractions(
 ) {
   await db.runTransaction(async (transaction) => {
     for (const prompt of viewedPrompts) {
-      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id);
+      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
       transaction.update(cardRef, { views: FieldValue.increment(1) });
     }
     for (const prompt of playedPrompts) {
-      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id);
+      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
       transaction.update(cardRef, { plays: FieldValue.increment(1) });
     }
     for (const response of viewedResponses) {
-      const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id);
+      const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { views: FieldValue.increment(1) });
     }
     for (const response of playedResponses) {
-      const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id);
+      const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { plays: FieldValue.increment(1) });
     }
   });

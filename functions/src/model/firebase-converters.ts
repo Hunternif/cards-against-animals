@@ -123,11 +123,11 @@ export const playerResponseConverter: FirestoreDataConverter<PlayerResponse> = {
 };
 
 function mapPromptCardInGame(data: any): PromptCardInGame {
-  return new PromptCardInGame(data.id, data.deck_id, data.card_id,
+  return new PromptCardInGame(data.id, data.deck_id, data.card_id_in_deck,
     data.random_index, data.content, data.pick, data.rating, data.downvoted);
 }
 function mapResponseCardInGame(data: any): ResponseCardInGame {
-  return new ResponseCardInGame(data.id, data.deck_id, data.card_id,
+  return new ResponseCardInGame(data.id, data.deck_id, data.card_id_in_deck,
     data.random_index, data.content, data.rating, data.downvoted);
 }
 
@@ -174,7 +174,7 @@ export const promptCardInGameConverter: FirestoreDataConverter<PromptCardInGame>
   toFirestore: (card: PromptCardInGame) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id,
+    return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
       data.random_index, data.content, data.pick, data.rating, data.downvoted);
   },
 };
@@ -183,7 +183,7 @@ export const responseCardInGameConverter: FirestoreDataConverter<ResponseCardInG
   toFirestore: (card: ResponseCardInGame) => copyFields(card),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
-    return new ResponseCardInGame(snapshot.id, data.deck_id, data.card_id,
+    return new ResponseCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
       data.random_index, data.content, data.rating, data.downvoted);
   },
 };

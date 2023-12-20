@@ -32,7 +32,7 @@ service cloud.firestore {
       // Can't iterate arrays, so will only check the first card:
       let card = request.resource.data.cards[0];
       // TODO: users could potentially hack their 2nd & 3rd card, lol.
-      return exists(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)/player_data/$(request.auth.uid)/hand/$(card.card_id));
+      return exists(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)/player_data/$(request.auth.uid)/hand/$(card.id));
     }
 
   	match /decks/{document=**} {

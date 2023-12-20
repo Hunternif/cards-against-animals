@@ -68,7 +68,7 @@ export function ResponseReading(
         <div style={cardCombinerStyle} className={`many-cards ${featureClass}`} >
           {
             response.cards.map((card, i) =>
-              <ResponseReadingCard key={card.card_id} card={card} offset={i}
+              <ResponseReadingCard key={card.id} card={card} offset={i}
                 selectable={canSelect} selected={selected} />
             )
           }
