@@ -8,6 +8,7 @@ import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { endLobby } from "../../model/lobby-api";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -26,15 +27,20 @@ const midRowStyle: CSSProperties = {
 }
 
 const botRowStyle: CSSProperties = {
+  position: "relative",
   marginTop: "1.5rem",
   height: "3rem",
   display: "flex",
-  justifyContent: "center",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  gap: "1rem",
 }
 
 /** Displays winner of the turn */
 export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProps) {
   const [startingNewTurn, setStartingNewTurn] = useState(false);
+  const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
   const winner = players.find((p) => p.uid === turn.winner_uid);
@@ -49,6 +55,14 @@ export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProp
     });
   }
 
+  async function handleEndGame() {
+    setEnding(true);
+    await endLobby(lobby).catch((e) => {
+      setError(e);
+      setEnding(false);
+    });
+  }
+
   if (!winner) return <LoadingSpinner delay text="Loading..." />
 
   return <CenteredLayout>
@@ -59,9 +73,16 @@ export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProp
     </div>
     <div style={botRowStyle}>
       {isJudge && <Delay>
-        <GameButton accent onClick={handleNewTurn} disabled={startingNewTurn}>
+        <GameButton accent onClick={handleNewTurn}
+          disabled={startingNewTurn || ending}>
           Next turn
         </GameButton>
+        <Delay delayMs={1000}>
+          <GameButton secondary onClick={handleEndGame}
+            disabled={startingNewTurn || ending}>
+            End game
+          </GameButton>
+        </Delay>
       </Delay>}
     </div>
   </CenteredLayout>
