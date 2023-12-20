@@ -42,6 +42,7 @@ const botRowStyle: CSSProperties = {
   justifyContent: "center",
 }
 const miniResponsesContainerStyle: CSSProperties = {
+  flex: "1 1 auto",
   overflow: "hidden",
   maxHeight: "20rem",
   marginTop: "2em",
