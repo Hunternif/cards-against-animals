@@ -101,15 +101,11 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
 };
 
 export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
-  toFirestore: (pdata: PlayerDataInTurn) => copyFields2(pdata, {
-    hand: pdata.hand.map((card) => copyFields(card, [])),
-  }),
+  toFirestore: (pdata: PlayerDataInTurn) => copyFields(pdata, ['hand']),
   fromFirestore: (snapshot: QueryDocumentSnapshot) => {
     const data = snapshot.data();
     const player_uid = snapshot.id;
     const ret = new PlayerDataInTurn(player_uid, data.player_name);
-    ret.hand = (data.hand as Array<any>)
-      ?.map(mapResponseCardInGame) || [];
     return ret;
   },
 };

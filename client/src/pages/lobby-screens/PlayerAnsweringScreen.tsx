@@ -6,7 +6,7 @@ import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { usePlayerData } from "../../model/turn-api";
+import { usePlayerData, usePlayerHand } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, ResponseCardInGame } from "../../shared/types";
 
 interface TurnProps {
@@ -50,11 +50,12 @@ const miniResponsesContainerStyle: CSSProperties = {
 
 export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }: TurnProps) {
   const [data] = usePlayerData(lobby, turn, user.uid);
+  const [hand] = usePlayerHand(lobby, turn, user.uid);
   const response = responses.find((r) => r.player_uid === user.uid);
   const submitted = response != undefined;
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
   return <>
-    {data ? <CenteredLayout style={containerStyle}>
+    {data && hand ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
         <PromptCard card={turn.prompt} />
         {turn.prompt &&
@@ -69,12 +70,21 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
         }
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
-        <GameControlRow lobby={lobby} turn={turn} data={data}
+        <GameControlRow
+          lobby={lobby}
+          turn={turn}
+          data={data}
+          hand={hand}
           selection={selectedCards} submitted={submitted} players={players} />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
-        <GameHand pick={turn.prompt?.pick ?? 0} playerData={data} response={response}
-          selectedCards={selectedCards} setSelectedCards={setSelectedCards} />
+        <GameHand
+          pick={turn.prompt?.pick ?? 0}
+          hand={hand}
+          response={response}
+          selectedCards={selectedCards}
+          setSelectedCards={setSelectedCards}
+        />
       </div>
     </CenteredLayout> :
       <LoadingSpinner delay text="Loading..." />}

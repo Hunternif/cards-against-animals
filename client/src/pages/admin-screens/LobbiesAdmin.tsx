@@ -5,9 +5,10 @@ import { lobbiesRef } from "../../firebase";
 import {
   playerDataConverter,
   playerResponseConverter,
+  responseCardInGameConverter,
   turnConverter
 } from "../../model/firebase-converters";
-import { GameLobby, GameTurn } from "../../shared/types";
+import { GameLobby, GameTurn, PlayerDataInTurn, PlayerResponse } from "../../shared/types";
 import { usePlayers } from "../../model/lobby-api";
 
 interface LobbyProps {
@@ -76,22 +77,37 @@ function TurnData({ turn, turnRef }: TurnProps) {
   return <div>
     <div>{turn.id}: {turn.prompt?.content}</div>
     <ul>
-      {playerData && playerData.map((pdata, i) => {
-        const isJudge = turn.judge_uid == pdata.player_uid;
-        const isWinner = turn.winner_uid == pdata.player_uid;
-        const hand = pdata.hand.map((c) => c.content).join(', ');
-        const played = findResponse(pdata.player_uid);
-        return <li key={i}>
-          {pdata.player_name}:
-          {isJudge && " 💬 "}
-          {isWinner && " 🏆 "}
-          {` [${hand}]`}
-          {played && `, played "${played}"`}
-        </li>;
-      }
+      {playerData && playerData.map((pdata, i) =>
+        <PlayerInTurnData turn={turn} turnRef={turnRef} data={pdata}
+          responses={playerResponses} />
       )}
     </ul>
   </div>;
+}
+
+interface PlayerProps {
+  turn: GameTurn,
+  turnRef: DocumentReference<GameTurn>;
+  data: PlayerDataInTurn,
+  responses?: PlayerResponse[],
+}
+function PlayerInTurnData({ turn, turnRef, data, responses }: PlayerProps) {
+  const [hand] = useCollectionData(
+    collection(turnRef, 'player_data', data.player_uid, 'hand')
+      .withConverter(responseCardInGameConverter)
+  );
+  const played = responses?.find((r) => r.player_uid === data.player_uid)
+    ?.cards.join(', ') ?? null;
+  const isJudge = turn.judge_uid == data.player_uid;
+  const isWinner = turn.winner_uid == data.player_uid;
+  const handStr = hand?.map((c) => c.content).join(', ');
+  return <li key={data.player_uid}>
+    {data.player_name}:
+    {isJudge && " 💬 "}
+    {isWinner && " 🏆 "}
+    {` [${handStr}]`}
+    {played && `, played "${played}"`}
+  </li>;
 }
 
 export function LobbiesAdmin() {

@@ -101,7 +101,8 @@ export class GameTurn {
 export class PlayerDataInTurn {
   player_uid: string;
   player_name: string; // Copied from 'Players' for convenience.
-  /** Cards in the player's hand, including `current_response`. */
+  /** Cards in the player's hand, including `current_response`.
+   * Must be fetched separately from a Firebase subcollection. */
   hand: Array<ResponseCardInGame> = [];
 
   constructor(player_uid: string, player_name: string) {

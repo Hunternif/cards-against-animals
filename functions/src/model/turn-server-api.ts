@@ -2,7 +2,7 @@
 
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
-import { GameTurn, PlayerDataInTurn, PlayerResponse, PromptCardInGame } from "../shared/types";
+import { GameTurn, PlayerDataInTurn, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
 import {
   playerDataConverter,
   playerResponseConverter,
@@ -21,6 +21,12 @@ function getTurnsRef(lobbyID: string) {
 function getPlayerDataRef(lobbyID: string, turnID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data`)
     .withConverter(playerDataConverter);
+}
+
+/** Returns Firestore subcollection reference. */
+function getPlayerHandRef(lobbyID: string, turnID: string, userID: string) {
+  return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data/${userID}/hand`)
+    .withConverter(responseCardInGameConverter);
 }
 
 /** Returns Firestore subcollection reference. */
@@ -70,6 +76,14 @@ export async function getPlayerData(
   lobbyID: string, turnID: string, uid: string
 ): Promise<PlayerDataInTurn | null> {
   return (await getPlayerDataRef(lobbyID, turnID).doc(uid).get()).data() ?? null;
+}
+
+/** Hand from a specific player, from a specific turn. */
+export async function getPlayerHand(
+  lobbyID: string, turnID: string, uid: string
+): Promise<ResponseCardInGame[]> {
+  return (await getPlayerHandRef(lobbyID, turnID, uid).get())
+    .docs.map((t) => t.data());
 }
 
 /** Responses from all players in this turn. */
@@ -157,8 +171,9 @@ async function dealCards(
       // copy old hand, discarding submitted cards:
       const playedCardIds = new Set(
         lastResponses.get(pData.player_uid)?.cards?.map(c => c.card_id));
-      const oldHand = (await getPlayerData(lobbyID, lastTurn.id, pData.player_uid))
-        ?.hand?.filter(c => !playedCardIds.has(c.card_id)) || [];
+      const oldHand = (await getPlayerHand(lobbyID, lastTurn.id, pData.player_uid))
+        ?.filter(c => !playedCardIds.has(c.card_id)) || [];
+      // temporarily write hand here, then upload it as a subcollection
       pData.hand.push(...oldHand);
     }
     totalCardsNeeded += Math.max(0, cardsPerPerson - pData.hand.length);
@@ -184,6 +199,10 @@ async function dealCards(
     }
     for (const pData of newPlayerData) {
       transaction.set(playerDataRef.doc(pData.player_uid), pData);
+      const handRef = getPlayerHandRef(lobbyID, newTurn.id, pData.player_uid);
+      for (const card of pData.hand) {
+        transaction.set(handRef.doc(card.card_id), card);
+      }
     }
   });
 }

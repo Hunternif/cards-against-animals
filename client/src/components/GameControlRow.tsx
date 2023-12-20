@@ -10,6 +10,7 @@ interface ControlProps {
   lobby: GameLobby,
   turn: GameTurn,
   data: PlayerDataInTurn,
+  hand: ResponseCardInGame[],
   selection: ResponseCardInGame[], // card IDs
   submitted?: boolean,
   players: PlayerInLobby[],
@@ -23,7 +24,7 @@ const buttonAlignedStyle: CSSProperties = {
 }
 
 export function GameControlRow(
-  { lobby, turn, data, selection, submitted, players }: ControlProps
+  { lobby, turn, data, hand, selection, submitted, players }: ControlProps
 ) {
   const picked = selection.length;
   const total = turn.prompt?.pick ?? 1;
@@ -34,7 +35,7 @@ export function GameControlRow(
   const { setError } = useContext(ErrorContext);
 
   function handleClick() {
-    logInteraction(lobby.id, {viewed: data.hand, played: selection});
+    logInteraction(lobby.id, { viewed: hand, played: selection });
     setSubmitting(true);
     submitPlayerResponse(lobby, turn, data, selection)
       .then(() => setSubmitting(false))

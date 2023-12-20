@@ -1,9 +1,9 @@
-import { PlayerDataInTurn, PlayerResponse, ResponseCardInGame } from "../shared/types";
+import { PlayerResponse, ResponseCardInGame } from "../shared/types";
 import { ResponseCard } from "./Cards";
 
 interface HandProps {
   pick: number,
-  playerData: PlayerDataInTurn,
+  hand: ResponseCardInGame[],
   response?: PlayerResponse,
   selectedCards: ResponseCardInGame[],
   setSelectedCards: (cards: ResponseCardInGame[]) => void,
@@ -11,7 +11,7 @@ interface HandProps {
 
 /** Displays cards that the player has on hand */
 export function GameHand(
-  { pick, playerData, response, selectedCards, setSelectedCards }: HandProps
+  { pick, hand, response, selectedCards, setSelectedCards }: HandProps
 ) {
   const selectable = !response && pick > 0;
 
@@ -42,7 +42,7 @@ export function GameHand(
       setSelectedCards(newSelection);
     }
   }
-  return playerData.hand.map((card) =>
+  return hand.map((card) =>
     <ResponseCard key={card.id} card={card}
       selectable={selectable}
       selectedIndex={getSelectedIndex(card)}

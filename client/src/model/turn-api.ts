@@ -3,21 +3,33 @@
 import {
   collection, deleteDoc, doc,
   getCountFromServer,
-  getDoc,
   getDocs, limit, orderBy,
-  query, setDoc, updateDoc,
+  query, setDoc, updateDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useCollection, useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
+import {
+  useCollection,
+  useCollectionData,
+  useDocumentData
+} from "react-firebase-hooks/firestore";
 import { lobbiesRef, newTurnFun } from "../firebase";
-import { GameLobby, GameTurn, PlayerDataInTurn, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
+import {
+  GameLobby,
+  GameTurn,
+  PlayerDataInTurn,
+  PlayerResponse,
+  PromptCardInGame,
+  ResponseCardInGame
+} from "../shared/types";
 import { randomIndex } from "../shared/utils";
 import {
   playerDataConverter,
   playerResponseConverter,
   promptCardInGameConverter,
+  responseCardInGameConverter,
   turnConverter
 } from "./firebase-converters";
+import { User } from "firebase/auth";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 function getTurnsRef(lobbyID: string) {
@@ -171,6 +183,14 @@ export function usePlayerData(lobby: GameLobby, turn: GameTurn, userID: string) 
   return useDocumentData(
     doc(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID)
       .withConverter(playerDataConverter));
+}
+
+/** Returns and subscribes to current user's player hand in the current turn
+ * in the lobby. */
+export function usePlayerHand(lobby: GameLobby, turn: GameTurn, userID: string) {
+  return useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID, "hand")
+      .withConverter(responseCardInGameConverter));
 }
 
 /** Returns and subscribes to current user's player response that they played
