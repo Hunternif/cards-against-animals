@@ -390,8 +390,11 @@ button:disabled {
 
 .downvote-card {
   color: rgb(185, 28, 28);
-  opacity: 0.1
+  opacity: 0.1;
 }
 .downvote-card:hover {
-  opacity: 0.5
+  opacity: 0.5;
+}
+.game-card.locked-card .downvote-card {
+  opacity: 0.1;
 }
