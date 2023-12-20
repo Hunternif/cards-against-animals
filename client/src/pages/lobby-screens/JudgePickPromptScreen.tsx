@@ -3,12 +3,13 @@ import { CSSProperties, useContext, useEffect, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { PromptCard } from "../../components/Cards";
 import { ErrorContext } from "../../components/ErrorContext";
-import { Delay, LoadingSpinner } from "../../components/LoadingSpinner";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { endLobby } from "../../model/lobby-api";
 import { discardPrompt, getPromptCount, pickNewPrompt, playPrompt } from "../../model/turn-api";
 import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
 import { logInteraction } from "../../components/utils";
+import { Delay } from "../../components/Delay";
 
 interface TurnProps {
   lobby: GameLobby,

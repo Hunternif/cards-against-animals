@@ -5,10 +5,10 @@ import { PromptCard } from "../../components/Cards";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { endLobby } from "../../model/lobby-api";
 import { chooseWinner, revealPlayerResponse, startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
-import { Delay } from "../../components/LoadingSpinner";
-import { endLobby } from "../../model/lobby-api";
+import { Delay } from "../../components/Delay";
 
 interface TurnProps {
   lobby: GameLobby,

@@ -2,13 +2,14 @@ import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { PromptCard } from "../../components/Cards";
+import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
-import { Delay, LoadingSpinner } from "../../components/LoadingSpinner";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { endLobby } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
-import { endLobby } from "../../model/lobby-api";
 
 interface TurnProps {
   lobby: GameLobby,

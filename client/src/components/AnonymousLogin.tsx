@@ -5,8 +5,9 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CenteredLayout } from "./layout/CenteredLayout";
-import { useDelay, useEffectOnce } from "./utils";
+import { useEffectOnce } from "./utils";
 import { GameButton } from "./Buttons";
+import { useDelay } from "./Delay";
 
 interface Props {
   onLogin?: (user: User) => void,

@@ -1,7 +1,7 @@
+import { CSSProperties } from "react";
 import { Spinner } from "react-bootstrap";
 import { CenteredLayout } from "./layout/CenteredLayout";
-import { CSSProperties, ReactNode } from "react";
-import { useDelay } from "./utils";
+import { Delay } from "./Delay";
 
 interface LoadingProps {
   text?: string,
@@ -19,17 +19,4 @@ export function LoadingSpinner({ text, delay, delayMs, style }: LoadingProps) {
   </CenteredLayout>
   if (delay || delayMs) return <Delay delayMs={delayMs}>{component}</Delay>;
   else return component;
-}
-
-interface DelayProps {
-  children: ReactNode,
-  /** Defaults to 1000 ms */
-  delayMs?: number,
-}
-
-/** Delays rendering children by [delayMs] milliseconds. */
-export function Delay({children, delayMs}: DelayProps) {
-  const show = useDelay(true, delayMs);
-  if (show) return children;
-  else return <></>;
 }
