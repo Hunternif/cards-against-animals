@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { copyFields } from "../shared/utils";
 
 interface ButtonProps
@@ -6,14 +6,16 @@ interface ButtonProps
   icon?: ReactNode,
   accent?: boolean,
   secondary?: boolean,
+  light?: boolean,
   small?: boolean,
 }
 
 export function GameButton(props: ButtonProps) {
   const accentClass = props.accent ? "accent-button " : "";
+  const lightClass = props.light ? "light-button " : "";
   const secondaryClass = props.secondary ? "secondary-button " : "";
   const smallClass = props.small ? "small-button " : "";
-  const className = `${accentClass}${secondaryClass}${smallClass}${props.className}`;
+  const className = `${lightClass}${secondaryClass}${accentClass}${smallClass}${props.className}`;
   // Remove new fields when passing props to DOM:
   const propsCopy = copyFields(props, ['accent', 'icon', 'secondary', 'small']);
   return <button {...propsCopy}
@@ -25,11 +27,7 @@ export function GameButton(props: ButtonProps) {
       ...props.style,
     }}
   >
-    <span style={{
-      display: "flex",
-      marginLeft: "-0.6em",
-      marginRight: "0.6em",
-    }}>
+    <span style={{ display: "flex" }}>
       {props.icon}
     </span>
     <span style={{ flexGrow: 1 }}>{props.children}</span>
