@@ -29,8 +29,8 @@ export function LoginScreen({ existingLobbyID }: Props) {
       setError(e);
     }
   }
-  return <CenteredLayout>
-    <h1 style={{ marginBottom: "1em" }}>Cards Against Animals</h1>
+  return <CenteredLayout className="welcome-screen">
+    <h1>Cards Against Animals</h1>
     <AnonymousLogin onLogin={handleLogin} joining={joining} />
   </CenteredLayout>;
 }

@@ -1,11 +1,12 @@
 import { User, onAuthStateChanged, signInAnonymously, updateProfile } from "firebase/auth";
 import { useState } from "react";
-import { Card, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
+import { LoadingSpinner } from "./LoadingSpinner";
 import { CenteredLayout } from "./layout/CenteredLayout";
 import { useDelay, useEffectOnce } from "./utils";
-import { LoadingSpinner } from "./LoadingSpinner";
+import { GameButton } from "./Buttons";
 
 interface Props {
   onLogin?: (user: User) => void,
@@ -63,10 +64,7 @@ export function AnonymousLogin({ onLogin, joining }: Props) {
   }
 
   return <CenteredLayout>
-    <Card style={{
-      padding: "1em",
-      maxWidth: "300px",
-    }}>
+    <div className="login-card">
       {delayedLoggingIn ? <LoadingSpinner text="Logging in..." /> :
         delayedJoining ? <LoadingSpinner text="Joining..." /> : (
           <Form onSubmit={(e) => { e.preventDefault(); login(); }}>
@@ -81,10 +79,10 @@ export function AnonymousLogin({ onLogin, joining }: Props) {
               )}
             </Form.Group>
             <CenteredLayout>
-              <button disabled={delayedLoadingUser || joining}>Start</button>
+              <GameButton disabled={delayedLoadingUser || joining}>Start</GameButton>
             </CenteredLayout>
           </Form>
         )}
-    </Card>
+    </div>
   </CenteredLayout>;
 }

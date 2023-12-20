@@ -76,7 +76,7 @@ button {
   height: 3rem;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #8BB9F9;
 }
 button:focus,
 button:focus-visible {
@@ -202,6 +202,25 @@ button:disabled {
   opacity: 1;
   background-image: linear-gradient(to bottom,
   #030711 0%,#324464 48%, #324464 52%, #111827 100%);
+}
+
+.welcome-screen {
+  background-image: linear-gradient(to bottom, #111827, #374151);
+}
+.welcome-screen h1 {
+  margin-bottom: 1em;
+  text-align: center;
+}
+.login-card {
+  padding: 1em;
+  border-radius: 0.735rem;
+  /* background-color: rgba(20, 20, 20, 0.4); */
+  /* background-image: linear-gradient(to bottom, #494f5c66, #85879266); */
+  /* background-color: #494f5c99; */
+  background-color: #2f3542;
+  /* border: 1px solid; */
+  border-color: #374151;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .game-screen {
