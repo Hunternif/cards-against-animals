@@ -108,7 +108,7 @@ export const newTurn = onCall<
     await assertPlayerInLobby(event, lobby.id);
     // Allow players to start a new turn whenever:
     // const lastTurn = await getLastTurn(lobby.id);
-    // if (lastTurn && lastTurn.phase != "complete") { 
+    // if (lastTurn && lastTurn.phase != "complete") {
     //   throw new HttpsError("failed-precondition", "Last turn is not complete");
     // }
     await createNewTurn(lobby.id);

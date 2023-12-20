@@ -30,6 +30,7 @@ npm --prefix functions run build
 
 ### Type-Check, Compile and Minify for Production
 
+Don't forget to set `useEmulator: false` in `firebase-config.json`!
 ```sh
 firebase deploy
 ```
