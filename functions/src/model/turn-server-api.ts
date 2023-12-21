@@ -13,12 +13,12 @@ import {
 import { getPlayers } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
-function getTurnsRef(lobbyID: string) {
+export function getTurnsRef(lobbyID: string) {
   return db.collection(`lobbies/${lobbyID}/turns`).withConverter(turnConverter);
 }
 
 /** Returns Firestore subcollection reference. */
-function getPlayerDataRef(lobbyID: string, turnID: string) {
+export function getPlayerDataRef(lobbyID: string, turnID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data`)
     .withConverter(playerDataConverter);
 }
@@ -170,9 +170,9 @@ async function dealCards(
     if (lastTurn) {
       // copy old hand, discarding submitted cards:
       const playedCardIds = new Set(
-        lastResponses.get(pData.player_uid)?.cards?.map(card => card.id));
+        lastResponses.get(pData.player_uid)?.cards?.map((card) => card.id));
       const oldHand = (await getPlayerHand(lobbyID, lastTurn.id, pData.player_uid))
-        ?.filter(card => !playedCardIds.has(card.id)) || [];
+        ?.filter((card) => !playedCardIds.has(card.id)) || [];
       // temporarily write hand here, then upload it as a subcollection
       pData.hand.push(...oldHand);
     }

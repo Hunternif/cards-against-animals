@@ -22,7 +22,7 @@ import {
   updateTurn
 } from "./model/turn-server-api";
 import { PromptCardInGame, ResponseCardInGame } from "./shared/types";
-import { logCardInteractions } from "./model/deck-server-api";
+import { logCardInteractions, logDownvotes } from "./model/deck-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -134,6 +134,8 @@ export const endLobby = onCall<
       // End last turn:
       lastTurn.phase = "complete";
       await updateTurn(lobby.id, lastTurn);
+      // Apply downvotes to the deck:
+      await logDownvotes(lobby.id);
     }
     // End lobby:
     lobby.status = "ended";
