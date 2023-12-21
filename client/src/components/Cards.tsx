@@ -1,7 +1,7 @@
-import { CSSProperties, MouseEventHandler } from "react";
+import { CSSProperties } from "react";
 import { CardInGame, PromptCardInGame } from "../shared/types";
-import { FillLayout } from "./layout/FillLayout";
 import { IconThumbsDown } from "./Icons";
+import { FillLayout } from "./layout/FillLayout";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
@@ -16,6 +16,7 @@ interface ResponseCardProps {
   /** Whether to show the above index. Doesn't make sense for 1 card. */
   showIndex?: boolean,
   onToggle?: (selected: boolean) => void,
+  onToggleDownvote?: (downvoted: boolean) => void,
 }
 
 interface PickProps {
@@ -57,19 +58,20 @@ export function PromptCard({ card }: PromptCardProps) {
 }
 
 export function ResponseCard(
-  { card, selectable, selectedIndex, showIndex, onToggle }: ResponseCardProps
+  { card, selectable, selectedIndex, showIndex, onToggle, onToggleDownvote }: ResponseCardProps
 ) {
   const selected = selectedIndex != undefined && selectedIndex > -1;
   const selectableStyle = selectable ? "hoverable-card" : "locked-card";
   const selectedStyle = selected ? "selected" : "unselected";
-  const className = `game-card card-response ${selectableStyle} ${selectedStyle}`;
+  const voteStyle = card.downvoted ? "downvoted" : "";
+  const className = `game-card card-response ${selectableStyle} ${selectedStyle} ${voteStyle}`;
 
   function handleClick() {
-    if (onToggle) onToggle(!selected);
+    if (onToggle && selectable) onToggle(!selected);
   }
 
-  function handleDownvote() {
-    //TODO
+  async function handleDownvote() {
+    if (onToggleDownvote && selectable) onToggleDownvote(!card.downvoted);
   }
 
   return <div className={className} onClick={handleClick} style={containerStyle}>
@@ -115,7 +117,7 @@ interface DownvoteProps {
 }
 
 function Downvote({ onClick }: DownvoteProps) {
-  return <div className="downvote-card" style={{
+  return <div className="downvote-card-icon" style={{
     display: "flex",
     alignItems: "baseline",
     flexDirection: "row",

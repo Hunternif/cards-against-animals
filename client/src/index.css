@@ -388,13 +388,22 @@ button:disabled {
   margin-top: -80%;
 }
 
-.downvote-card {
+.downvote-card-icon {
   color: rgb(185, 28, 28);
   opacity: 0.1;
 }
-.downvote-card:hover {
+.game-card.downvoted .downvote-card-icon {
+  opacity: 0.9;
+}
+.downvote-card-icon:hover {
   opacity: 0.5;
 }
-.game-card.locked-card .downvote-card {
+.game-card.downvoted .downvote-card-icon:hover {
+  opacity: 1;
+}
+.game-card.locked-card .downvote-card-icon {
   opacity: 0.1;
+}
+.game-card.locked-card.downvoted .downvote-card-icon {
+  opacity: 1;
 }

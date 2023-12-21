@@ -34,6 +34,10 @@ service cloud.firestore {
       // TODO: users could potentially hack their 2nd & 3rd card, lol.
       return exists(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)/player_data/$(request.auth.uid)/hand/$(card.id));
     }
+    function isCardContentUnmodified(lobby, turn, userID, cardID) {
+      let card = get(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)/player_data/$(userID)/hand/$(cardID)).data;
+      return request.resource.data['content'] == card['content'];
+    }
 
   	match /decks/{document=**} {
     	allow read;
@@ -72,6 +76,11 @@ service cloud.firestore {
                       && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
         // Judge can reveal:
         allow update: if isLoggedIn() && userIsJudge(lobby, turn);
+      }
+      match /turns/{turn}/player_data/{userID}/hand/{cardID} {
+        // Allow players to update some fields:
+        allow update: if isLoggedIn() && request.auth.uid == userID
+                      && isCardContentUnmodified(lobby, turn, userID, cardID);
       }
     }
     match /users/{userID} {

@@ -79,6 +79,9 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
         <GameHand
+          lobby={lobby}
+          turn={turn}
+          user={user}
           pick={turn.prompt?.pick ?? 0}
           hand={hand}
           response={response}

@@ -49,10 +49,24 @@ function getPlayerResponsesRef(lobbyID: string, turnID: string) {
     .withConverter(playerResponseConverter);
 }
 
+/** Returns Firestore subcollection reference of player responses in turn. */
+function getPlayerHandRef(lobbyID: string, turnID: string, userID: string) {
+  return collection(lobbiesRef, lobbyID, "turns", turnID, "player_data", userID, "hand")
+    .withConverter(responseCardInGameConverter);
+}
+
 /** Updates Firestore document with this turn data.
  * Doesn't update subcollections! */
 async function updateTurn(lobbyID: string, turn: GameTurn): Promise<void> {
   await setDoc(doc(getTurnsRef(lobbyID), turn.id), turn);
+}
+
+/** Updates Firestore document with this turn data.
+ * Doesn't update subcollections! */
+async function updateHandCard(
+  lobbyID: string, turnID: string, userID: string, card: ResponseCardInGame,
+) {
+  await setDoc(doc(getPlayerHandRef(lobbyID, turnID, userID), card.id), card);
 }
 
 /**
@@ -150,6 +164,16 @@ export async function chooseWinner(
 export async function setTurnJudge(lobby: GameLobby, turn: GameTurn, userID: string) {
   turn.judge_uid = userID;
   await updateTurn(lobby.id, turn);
+}
+
+/** Set card as downvoted. This will be copied to all following turns,
+ * and recorded at the end of the game. */
+export async function toggleDownvoteCard(
+  lobby: GameLobby, turn: GameTurn, userID: string, card: ResponseCardInGame,
+  downvoted: boolean,
+) {
+  card.downvoted = downvoted;
+  await updateHandCard(lobby.id, turn.id, userID, card);
 }
 
 
