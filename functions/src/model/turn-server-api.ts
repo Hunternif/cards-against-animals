@@ -103,7 +103,7 @@ export async function createNewTurn(lobbyID: string): Promise<GameTurn> {
   //     `Last turn has not completed in lobby ${lobbyID}`);
   // }
   const judge = await selectJudge(lobbyID, lastTurn);
-  const id = String(await countTurns(lobbyID) + 1);
+  const id = String(await countTurns(lobbyID) + 1).padStart(2, '0');;
   const newTurn = new GameTurn(id, judge);
   await getTurnsRef(lobbyID).doc(id).set(newTurn);
   await dealCards(lobbyID, lastTurn, newTurn);
