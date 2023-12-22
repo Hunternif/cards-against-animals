@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import {
   useCollection,
   useCollectionData,
+  useCollectionDataOnce,
   useDocumentData
 } from "react-firebase-hooks/firestore";
 import { lobbiesRef, newTurnFun } from "../firebase";
@@ -29,7 +30,6 @@ import {
   responseCardInGameConverter,
   turnConverter
 } from "./firebase-converters";
-import { User } from "firebase/auth";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 function getTurnsRef(lobbyID: string) {
@@ -201,6 +201,18 @@ export function useLastTurn(lobbyID: string): LastTurnHook {
   return [lastTurn, loading, error];
 }
 
+/** Returns and subscribes to all turns in the lobby. */
+export function useAllTurns(lobby: GameLobby) {
+  return useCollectionData(collection(lobbiesRef, lobby.id, "turns")
+    .withConverter(turnConverter));
+}
+
+/** Returns to all turns in the lobby. */
+export function useAllTurnsOnce(lobby: GameLobby) {
+  return useCollectionDataOnce(collection(lobbiesRef, lobby.id, "turns")
+    .withConverter(turnConverter));
+}
+
 /** Returns and subscribes to current user's player data in the current turn
  * in the lobby. */
 export function usePlayerData(lobby: GameLobby, turn: GameTurn, userID: string) {
@@ -209,10 +221,32 @@ export function usePlayerData(lobby: GameLobby, turn: GameTurn, userID: string) 
       .withConverter(playerDataConverter));
 }
 
+/** Returns and subscribes to all users's player data in the current turn
+ * in the lobby. */
+export function useAllPlayerData(lobby: GameLobby, turn: GameTurn) {
+  return useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data")
+      .withConverter(playerDataConverter));
+}
+
+/** Returns all users's player data in the current turn in the lobby. */
+export function useAllPlayerDataOnce(lobby: GameLobby, turn: GameTurn) {
+  return useCollectionDataOnce(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data")
+      .withConverter(playerDataConverter));
+}
+
 /** Returns and subscribes to current user's player hand in the current turn
  * in the lobby. */
 export function usePlayerHand(lobby: GameLobby, turn: GameTurn, userID: string) {
   return useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID, "hand")
+      .withConverter(responseCardInGameConverter));
+}
+
+/** Returns to current user's player hand in the current turn in the lobby. */
+export function usePlayerHandOnce(lobby: GameLobby, turn: GameTurn, userID: string) {
+  return useCollectionDataOnce(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID, "hand")
       .withConverter(responseCardInGameConverter));
 }
@@ -229,6 +263,14 @@ export function usePlayerResponse(lobby: GameLobby, turn: GameTurn, userID: stri
  * in the current turn in the lobby. */
 export function useAllPlayerResponses(lobby: GameLobby, turn: GameTurn) {
   return useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses")
+      .withConverter(playerResponseConverter));
+}
+
+/** Returns to all players responses that they played
+ * in the current turn in the lobby. */
+export function useAllPlayerResponsesOnce(lobby: GameLobby, turn: GameTurn) {
+  return useCollectionDataOnce(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses")
       .withConverter(playerResponseConverter));
 }
