@@ -64,10 +64,11 @@ export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProp
     });
   }
 
-  if (!winner) return <LoadingSpinner delay text="Loading..." />
-
   return <CenteredLayout>
-    <h2 style={{ textAlign: "center" }}>Winner <i>{winner.name}</i></h2>
+    <h2 style={{ textAlign: "center" }}>
+      {winner ? <>Winner <i>{winner.name}</i></> :
+        <Delay>No winner</Delay>}
+    </h2>
     <div style={midRowStyle}>
       <PromptCard card={turn.prompt} />
       {winnerResponse && <ResponseReading response={winnerResponse} />}

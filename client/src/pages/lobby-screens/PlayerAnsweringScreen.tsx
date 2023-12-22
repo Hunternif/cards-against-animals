@@ -90,6 +90,6 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
         />
       </div>
     </CenteredLayout> :
-      <LoadingSpinner delay text="Loading..." />}
+      <LoadingSpinner delay text="Loading player data..." />}
   </>;
 }

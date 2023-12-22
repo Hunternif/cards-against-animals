@@ -4,8 +4,8 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { GameMenu } from "../../components/GameMenu";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { FillLayout } from "../../components/layout/FillLayout";
-import { useAllPlayerResponses, useLastTurn } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { useAllPlayerResponses, useLastTurn, usePlayerData } from "../../model/turn-api";
+import { GameLobby, GameTurn, PlayerDataInTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
 import { CardReadingScreen } from "./CardReadingScreen";
 import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
 import { JudgePickPromptScreen } from "./JudgePickPromptScreen";
@@ -50,7 +50,7 @@ function TurnScreen(props: PreTurnProps) {
   const className = `game-screen phase-${props.turn.phase} miniscrollbar miniscrollbar-light`;
 
   if (!responses || loading) {
-    return <LoadingSpinner delay text="Loading..." />
+    return <LoadingSpinner delay text="Loading turn data..." />
   }
   const newProps = { responses, ...props };
   return (
