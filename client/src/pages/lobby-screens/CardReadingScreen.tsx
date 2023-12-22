@@ -58,6 +58,7 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
   const isJudge = turn.judge_uid === user.uid;
   const allRevealed = responses.every((r) => r.revealed) ?? false;
   const noResponses = responses.length === 0;
+  const shuffledResponses = responses.sort((r1, r2) => r1.random_index - r2.random_index);
 
   async function handleClick(response: PlayerResponse) {
     if (allRevealed) {
@@ -108,7 +109,7 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
     </div>
     <div style={midRowStyle}>
       <PromptCard card={turn.prompt} />
-      {responses.sort((r) => r.random_index).map((r) =>
+      {shuffledResponses.sort((r) => r.random_index).map((r) =>
         <ResponseReading
           key={r.player_uid}
           response={r}
