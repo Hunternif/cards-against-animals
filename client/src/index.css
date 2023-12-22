@@ -377,7 +377,7 @@ button:disabled {
   box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
 }
 .game-card.overlaid {
-  margin-top: -120%;
+  margin-top: -114%;
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 100ms;
