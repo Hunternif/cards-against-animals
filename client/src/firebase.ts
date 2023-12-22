@@ -3,7 +3,7 @@ import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { collection, collectionGroup, connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 import firebaseConfig from '../../firebase-config.json';
-import { deckConverter, lobbyConverter, playerConverter, userConverter } from './model/firebase-converters';
+import { deckConverter, lobbyConverter, playerConverter, userConverter } from './shared/firestore-converters';
 import { PromptCardInGame, ResponseCardInGame } from './shared/types';
 
 export const firebaseApp = initializeApp(firebaseConfig)

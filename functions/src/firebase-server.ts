@@ -6,7 +6,7 @@ import {
   deckConverter,
   lobbyConverter,
   userConverter
-} from "./model/firebase-converters";
+} from "./shared/firestore-converters";
 
 // Initialize Firebase
 export const firebaseApp = admin.initializeApp(firebaseConfig);

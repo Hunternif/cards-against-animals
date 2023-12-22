@@ -29,7 +29,7 @@ import {
   promptCardInGameConverter,
   responseCardInGameConverter,
   turnConverter
-} from "./firebase-converters";
+} from "../shared/firestore-converters";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 function getTurnsRef(lobbyID: string) {

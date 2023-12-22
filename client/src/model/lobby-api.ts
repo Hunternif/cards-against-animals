@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { endLobbyFun, findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, startLobbyFun, usersRef } from "../firebase";
 import { GameLobby, PlayerInLobby } from "../shared/types";
-import { playerConverter } from "./firebase-converters";
+import { playerConverter } from "../shared/firestore-converters";
 import { getCAAUser } from "./users-api";
 import { getLastTurn, setTurnJudge } from "./turn-api";
 

@@ -1,8 +1,9 @@
 import {
-  FirestoreDataConverter,
-  QueryDocumentSnapshot,
-  Timestamp
-} from "firebase-admin/firestore";
+  FConverter,
+  FDocSnapshot,
+  FTimestamp,
+  fServerTimestamp
+} from "../firestore-adapter";
 import {
   CAAUser,
   Deck,
@@ -16,52 +17,52 @@ import {
   PromptDeckCard,
   ResponseCardInGame,
   ResponseDeckCard
-} from "../shared/types";
-import { copyFields, copyFields2 } from "../shared/utils";
+} from "./types";
+import { copyFields, copyFields2 } from "./utils";
 
-export const lobbyConverter: FirestoreDataConverter<GameLobby> = {
+export const lobbyConverter: FConverter<GameLobby> = {
   toFirestore: (lobby: GameLobby) => {
     return {
       status: lobby.status,
       creator_uid: lobby.creator_uid,
       time_created: lobby.time_created ?
-        Timestamp.fromDate(lobby.time_created) :
-        Timestamp.now(), // set new time when creating a new lobby
+        FTimestamp.fromDate(lobby.time_created) :
+        fServerTimestamp(), // set new time when creating a new lobby
       deck_ids: Array.from(lobby.deck_ids),
       // the rest of the fields are subcollections, and they
       // should not be uploaded during creation.
     };
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new GameLobby(snapshot.id, data.creator_uid, data.status);
-    ret.time_created = (data.time_created as Timestamp | null)?.toDate();
+    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     ret.deck_ids = new Set<string>(data.deck_ids || []);
     return ret;
   },
 };
 
-export const playerConverter: FirestoreDataConverter<PlayerInLobby> = {
+export const playerConverter: FConverter<PlayerInLobby> = {
   toFirestore: (player: PlayerInLobby) => copyFields2(player, {
     time_joined: player.time_joined ?
-      Timestamp.fromDate(player.time_joined) :
-      Timestamp.now(), // set new time when adding a new player
+      FTimestamp.fromDate(player.time_joined) :
+      fServerTimestamp(), // set new time when adding a new player
   }),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PlayerInLobby(data.uid, data.name, data.role);
-    ret.time_joined = (data.time_joined as Timestamp | null)?.toDate();
+    ret.time_joined = (data.time_joined as FTimestamp | null)?.toDate();
     return ret;
   },
 };
 
-export const deckConverter: FirestoreDataConverter<Deck> = {
+export const deckConverter: FConverter<Deck> = {
   toFirestore: (deck: Deck) => {
     return {
       title: deck.title,
     };
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new Deck(snapshot.id, data.title);
     // all cards must be fetched separately as a subcollection
@@ -69,22 +70,22 @@ export const deckConverter: FirestoreDataConverter<Deck> = {
   },
 };
 
-export const deckTagConverter: FirestoreDataConverter<DeckTag> = {
+export const deckTagConverter: FConverter<DeckTag> = {
   toFirestore: (tag: DeckTag) => copyFields(tag),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new DeckTag(data.name, data.description);
   },
 };
 
-export const turnConverter: FirestoreDataConverter<GameTurn> = {
+export const turnConverter: FConverter<GameTurn> = {
   toFirestore: (turn: GameTurn) => copyFields2(turn, {
-    time_created: Timestamp.fromDate(turn.time_created),
+    time_created: FTimestamp.fromDate(turn.time_created),
     prompt: turn.prompt && copyFields(turn.prompt, []),
   }, ['id', 'player_data', 'player_responses']),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
-    const time_created = data.time_created as Timestamp | null;
+    const time_created = data.time_created as FTimestamp | null;
     const prompt = data.prompt && mapPromptCardInGame(data.prompt);
     const ret = new GameTurn(
       snapshot.id,
@@ -99,9 +100,9 @@ export const turnConverter: FirestoreDataConverter<GameTurn> = {
   },
 };
 
-export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
+export const playerDataConverter: FConverter<PlayerDataInTurn> = {
   toFirestore: (pdata: PlayerDataInTurn) => copyFields(pdata, ['hand']),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const player_uid = snapshot.id;
     const ret = new PlayerDataInTurn(player_uid, data.player_name);
@@ -109,11 +110,11 @@ export const playerDataConverter: FirestoreDataConverter<PlayerDataInTurn> = {
   },
 };
 
-export const playerResponseConverter: FirestoreDataConverter<PlayerResponse> = {
+export const playerResponseConverter: FConverter<PlayerResponse> = {
   toFirestore: (pdata: PlayerResponse) => copyFields2(pdata, {
     cards: pdata.cards.map((card) => copyFields(card, [])),
   }),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const player_uid = snapshot.id;
     const cards = (data.cards as Array<any>)?.map(mapResponseCardInGame) || [];
@@ -131,57 +132,57 @@ function mapResponseCardInGame(data: any): ResponseCardInGame {
     data.random_index, data.content, data.rating, data.downvoted);
 }
 
-export const userConverter: FirestoreDataConverter<CAAUser> = {
+export const userConverter: FConverter<CAAUser> = {
   toFirestore: (user: CAAUser) => copyFields(user),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new CAAUser(data.uid, data.name, data.email, data.is_admin ?? false,
       data.current_lobby_id);
   },
 };
 
-export const promptDeckCardConverter: FirestoreDataConverter<PromptDeckCard> = {
+export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
   toFirestore: (card: PromptDeckCard) => copyFields2(card, {
     time_created: card.time_created ?
-      Timestamp.fromDate(card.time_created) :
-      Timestamp.now(), // set new time when creating a new card
+      FTimestamp.fromDate(card.time_created) :
+      fServerTimestamp(), // set new time when creating a new card
   }),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PromptDeckCard(snapshot.id, data.content, data.pick,
       data.rating, data.views, data.plays, data.tags || []);
-    ret.time_created = (data.time_created as Timestamp | null)?.toDate();
+    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },
 };
 
-export const responseDeckCardConverter: FirestoreDataConverter<ResponseDeckCard> = {
+export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
   toFirestore: (card: ResponseDeckCard) => copyFields2(card, {
     time_created: card.time_created ?
-      Timestamp.fromDate(card.time_created) :
-      Timestamp.now(), // set new time when creating a new card
+      FTimestamp.fromDate(card.time_created) :
+      fServerTimestamp(), // set new time when creating a new card
   }),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating,
       data.views, data.plays, data.tags || []);
-    ret.time_created = (data.time_created as Timestamp | null)?.toDate();
+    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },
 };
 
-export const promptCardInGameConverter: FirestoreDataConverter<PromptCardInGame> = {
+export const promptCardInGameConverter: FConverter<PromptCardInGame> = {
   toFirestore: (card: PromptCardInGame) => copyFields(card),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
       data.random_index, data.content, data.pick, data.rating, data.downvoted);
   },
 };
 
-export const responseCardInGameConverter: FirestoreDataConverter<ResponseCardInGame> = {
+export const responseCardInGameConverter: FConverter<ResponseCardInGame> = {
   toFirestore: (card: ResponseCardInGame) => copyFields(card),
-  fromFirestore: (snapshot: QueryDocumentSnapshot) => {
+  fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new ResponseCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
       data.random_index, data.content, data.rating, data.downvoted);

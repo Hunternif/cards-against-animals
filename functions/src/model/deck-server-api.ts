@@ -8,7 +8,7 @@ import { randomIndex } from "../shared/utils";
 import {
   promptDeckCardConverter,
   responseDeckCardConverter,
-} from "./firebase-converters";
+} from "../shared/firestore-converters";
 import { getPlayerDataRef, getPlayerHand, getTurnsRef } from "./turn-server-api";
 
 function getDeckPromptsRef(deckID: string) {

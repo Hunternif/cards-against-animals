@@ -1,7 +1,7 @@
 import { collection, doc, getCountFromServer, getDoc, getDocs, runTransaction, setDoc, writeBatch } from "firebase/firestore";
 import { db, decksRef, lobbiesRef } from "../firebase";
 import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from "../shared/types";
-import { deckTagConverter, promptDeckCardConverter, responseDeckCardConverter } from "./firebase-converters";
+import { deckTagConverter, promptDeckCardConverter, responseDeckCardConverter } from "../shared/firestore-converters";
 
 /** Returns Firestore subcollection reference of prompt cards in deck. */
 function getPromptsRef(deckID: string) {

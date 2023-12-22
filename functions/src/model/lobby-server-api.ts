@@ -17,7 +17,7 @@ import {
   playerConverter,
   promptCardInGameConverter,
   responseCardInGameConverter
-} from "./firebase-converters";
+} from "../shared/firestore-converters";
 import {
   getCAAUser,
   setUsersCurrentLobby,
