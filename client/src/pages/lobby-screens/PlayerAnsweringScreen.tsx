@@ -37,7 +37,9 @@ const topRowStyle: CSSProperties = {
   flexWrap: "nowrap",
   padding: "1em",
 }
-const midRowStyle: CSSProperties = {}
+const midRowStyle: CSSProperties = {
+  justifyContent: "center",
+}
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
 }
@@ -55,7 +57,7 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
   const submitted = response != undefined;
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
   return <>
-    {data && hand ? <CenteredLayout style={containerStyle}>
+    {hand ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
         <PromptCard card={turn.prompt} />
         {turn.prompt &&
@@ -70,12 +72,16 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
         }
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
-        <GameControlRow
+        {data ? <GameControlRow
           lobby={lobby}
           turn={turn}
           data={data}
           hand={hand}
-          selection={selectedCards} submitted={submitted} players={players} />
+          selection={selectedCards} submitted={submitted} players={players}
+        /> : (
+          // Assume we just joined the game in the middle of it:
+          <span className="light">Wait for next turn</span>
+        )}
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
         <GameHand

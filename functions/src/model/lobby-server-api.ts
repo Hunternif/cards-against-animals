@@ -110,7 +110,9 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
   if (lobby.status == "ended") {
     throw new HttpsError("unavailable", `Lobby already ended: ${lobby.id}`);
   }
-  const role = (lobby.status == "new") ? "player" : "spectator";
+  // TODO: make it configurable in settings if new players can join.
+  // const role = (lobby.status == "new") ? "player" : "spectator";
+  const role = "player";
   const player = new PlayerInLobby(userID, userName, role);
   await playerRef.set(player);
   await setUsersCurrentLobby(userID, lobby.id);
