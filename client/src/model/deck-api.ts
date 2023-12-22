@@ -90,7 +90,7 @@ export function parseDeckTsv(
  * "I like __ and _" => 2. */
 export function parsePromptPick(text: string): number {
   // Remove markup like "_words words_":
-  text = text.replace(/(_[^_\s.,:;!?\-~]|[^_\s.,:;!?\-~]_)/g, "");
+  text = text.replace(/(_[^_"'«»\s.,:;!?\-~]|[^_"'«»\s.,:;!?\-~]_)/g, "");
   const match = text.match(/(_+)/g);
   // Minimum number is 1, in case the __ is omitted.
   if (!match) return 1;

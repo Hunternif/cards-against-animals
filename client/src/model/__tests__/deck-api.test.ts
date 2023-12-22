@@ -13,6 +13,9 @@ test('parse pick from prompt text', () => {
   expect(parsePromptPick("Variable gap: _ but ____")).toBe(2);
   expect(parsePromptPick("Markdown: how _about_ *this* _? _...")).toBe(2);
   expect(parsePromptPick("Broken markdown: my _special _ is _")).toBe(2);
+  expect(parsePromptPick("Quotes: _ in my band \"__\"")).toBe(2);
+  expect(parsePromptPick("Quotes 2: _ in my band «__»")).toBe(2);
+  expect(parsePromptPick("Quotes 3: book «\"_\" или _»")).toBe(2);
 });
 
 test('process card text', () => {
@@ -27,6 +30,12 @@ test('process prompt text', () => {
     .toBe("respect _markdown_, _!");
   expect(processPromptText("punctuation, _, is important _. Right _? _: yes _; _"))
     .toBe("punctuation, _, is important _. Right _? _: yes _; _");
+  expect(processPromptText("Quotes: _ in my band \"__\""))
+    .toBe("Quotes: _ in my band \"_\"");
+  expect(processPromptText("Quotes 2: _ in my band «__»"))
+    .toBe("Quotes 2: _ in my band «_»");
+  expect(processPromptText("Quotes 3: book «\"__\" или __»"))
+    .toBe("Quotes 3: book «\"_\" или _»");
 });
 
 test('parse TSV deck', () => {
