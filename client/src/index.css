@@ -230,6 +230,11 @@ button.start-button {
   /* border: 1px solid; */
   border-color: #374151;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  min-width: 16em;
+  min-height: 11em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .game-screen {

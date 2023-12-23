@@ -7,9 +7,10 @@ import { FillLayout } from "../../components/layout/FillLayout";
 import { RowLayout } from "../../components/layout/RowLayout";
 import { leaveLobby } from "../../model/lobby-api";
 import { GameLobby, PlayerInLobby } from "../../shared/types";
-import { CSSProperties, useContext } from "react";
+import { CSSProperties, useContext, useState } from "react";
 import { LobbyCreatorControls } from "../../components/LobbyCreatorControls";
 import { ErrorContext } from "../../components/ErrorContext";
+import { GameButton } from "../../components/Buttons";
 
 interface Props {
   lobby: GameLobby,
@@ -39,14 +40,19 @@ const scrollableColumnStyle: CSSProperties = {
 
 /** User logged in AND joined the lobby. */
 export function NewLobbyScreen({ lobby, user, players }: Props) {
+  const [leaving, setLeaving] = useState(false);
   const { setError } = useContext(ErrorContext);
   const navigate = useNavigate();
   const isCreator = lobby.creator_uid === user.uid;
 
   async function handleLeave() {
+    setLeaving(true);
     await leaveLobby(lobby, user)
       .then(() => navigate("/"))
-      .catch((e) => setError(e));
+      .catch((e) => {
+        setError(e);
+        setLeaving(false);
+      });
   }
 
   return (
@@ -59,9 +65,10 @@ export function NewLobbyScreen({ lobby, user, players }: Props) {
             <LobbyPlayerList lobby={lobby} user={user} players={players} />
           </FillLayout>
           <hr />
-          <button style={{ margin: "0 1em" }} onClick={handleLeave}>
+          <GameButton style={{ margin: "0 1em" }} onClick={handleLeave}
+            disabled={leaving}>
             Leave
-          </button>
+          </GameButton>
         </Col>
         <Col style={contentStyle}>
           {isCreator ? <LobbyCreatorControls lobby={lobby} /> : (

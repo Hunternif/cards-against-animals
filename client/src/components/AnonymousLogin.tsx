@@ -3,11 +3,11 @@ import { useState } from "react";
 import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
+import { GameButton } from "./Buttons";
+import { useDelay } from "./Delay";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CenteredLayout } from "./layout/CenteredLayout";
 import { useEffectOnce } from "./utils";
-import { GameButton } from "./Buttons";
-import { useDelay } from "./Delay";
 
 interface Props {
   onLogin?: (user: User) => void,
@@ -19,9 +19,9 @@ export function AnonymousLogin({ onLogin, joining }: Props) {
   const suggestedName = "CoolNickname123";
   const [name, setName] = useState(user?.displayName ?? "");
   const [loggingIn, setLoggingIn] = useState(false);
-  const delayedLoadingUser = useDelay(loadingUser);
-  const delayedLoggingIn = useDelay(loggingIn);
-  const delayedJoining = useDelay(joining);
+  const delayedLoadingUser = useDelay(loadingUser, 400);
+  const delayedLoggingIn = useDelay(loggingIn, 400);
+  const delayedJoining = useDelay(joining, 400);
 
   useEffectOnce(() => {
     // Load user's name only once

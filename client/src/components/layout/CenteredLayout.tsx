@@ -12,7 +12,6 @@ export function CenteredLayout({ children, className, style }: LayoutProps) {
       height: "100%",
       justifyContent: "center",
       display: "flex",
-      alignItems: "flex"
     }}
       className={className}
     >
