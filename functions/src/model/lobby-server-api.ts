@@ -23,6 +23,7 @@ import {
   setUsersCurrentLobby,
   updateCAAUser
 } from "./user-server-api";
+import { dealCardsToPlayer, getLastTurn } from "./turn-server-api";
 
 export function getPlayersRef(lobbyID: string) {
   return db.collection(`lobbies/${lobbyID}/players`)
@@ -111,12 +112,21 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
     throw new HttpsError("unavailable", `Lobby already ended: ${lobby.id}`);
   }
   // TODO: make it configurable in settings if new players can join.
-  // const role = (lobby.status == "new") ? "player" : "spectator";
   const role = "player";
   const player = new PlayerInLobby(userID, userName, role);
   await playerRef.set(player);
   await setUsersCurrentLobby(userID, lobby.id);
   logger.info(`User ${userName} (${userID}) joined lobby ${lobby.id} as ${role}`);
+
+  // deal cards to new player
+  if (lobby.status == "in_progress") {
+    const turn = await getLastTurn(lobby.id);
+    if (!turn) {
+      throw new HttpsError("failed-precondition",
+        `Can't deal cards. Lobby ${lobby.id} is in progess but has no turns.`)
+    }
+    await dealCardsToPlayer(lobby.id, null, turn, userID);
+  }
 }
 
 /**

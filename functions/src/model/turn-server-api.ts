@@ -1,5 +1,6 @@
 // Server APIs for game turns, when the game is in progress.
 
+import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
 import { GameTurn, PlayerDataInTurn, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
@@ -10,7 +11,7 @@ import {
   responseCardInGameConverter,
   turnConverter
 } from "../shared/firestore-converters";
-import { getPlayers } from "./lobby-server-api";
+import { getPlayer, getPlayers } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
@@ -87,6 +88,14 @@ export async function getPlayerHand(
 }
 
 /** Responses from all players in this turn. */
+export async function getPlayerResponse(
+  lobbyID: string, turnID: string, userID: string
+): Promise<PlayerResponse | null> {
+  return (await getPlayerResponsesRef(lobbyID, turnID).doc(userID).get())
+    .data() ?? null;
+}
+
+/** Responses from all players in this turn. */
 export async function getAllPlayerResponses(lobbyID: string, turnID: string):
   Promise<Array<PlayerResponse>> {
   return (await getPlayerResponsesRef(lobbyID, turnID).get()).docs.map((t) => t.data());
@@ -155,56 +164,57 @@ const cardsPerPerson = 10;
 async function dealCards(
   lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn,
 ): Promise<void> {
+  const players = await getPlayers(lobbyID, "player");
+  for (const player of players) {
+    await dealCardsToPlayer(lobbyID, lastTurn, newTurn, player.uid);
+  }
+}
+
+/** Deal cards to a given player, up to the limit. */
+export async function dealCardsToPlayer(
+  lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn, userID: string,
+) {
   const deckResponsesRef = db.collection(`lobbies/${lobbyID}/deck_responses`)
     .withConverter(responseCardInGameConverter);
-  const players = await getPlayers(lobbyID, "player");
-  // Map last turn's responses by player uid:
-  const lastResponses = new Map(
-    (lastTurn ? await getAllPlayerResponses(lobbyID, lastTurn.id) : [])
-      .map((r) => [r.player_uid, r])
-  );
-  const newPlayerData = players.map((p) => new PlayerDataInTurn(p.uid, p.name));
-  // Find how many more cards we need:
-  let totalCardsNeeded = 0;
-  for (const pData of newPlayerData) {
-    if (lastTurn) {
-      // copy old hand, discarding submitted cards:
-      const playedCardIds = new Set(
-        lastResponses.get(pData.player_uid)?.cards?.map((card) => card.id));
-      const oldHand = (await getPlayerHand(lobbyID, lastTurn.id, pData.player_uid))
-        ?.filter((card) => !playedCardIds.has(card.id)) || [];
-      // temporarily write hand here, then upload it as a subcollection
-      pData.hand.push(...oldHand);
-    }
-    totalCardsNeeded += Math.max(0, cardsPerPerson - pData.hand.length);
+  const player = await getPlayer(lobbyID, userID);
+  if (!player) {
+    throw new HttpsError("not-found", `Player data not found for user ${userID}`);
   }
+  const newPlayerData = new PlayerDataInTurn(userID, player.name);
+  if (lastTurn) {
+    const lastResponse = await getPlayerResponse(lobbyID, lastTurn.id, userID);
+    // copy old hand, discarding submitted cards:
+    const playedCardIds = new Set(lastResponse?.cards?.map((card) => card.id));
+    const oldHand = (await getPlayerHand(lobbyID, lastTurn.id, userID))
+      ?.filter((card) => !playedCardIds.has(card.id)) || [];
+    // temporarily write hand here, then upload it as a subcollection
+    newPlayerData.hand.push(...oldHand);
+  }
+  // Find how many more cards we need:
+  const totalCardsNeeded = Math.max(0, cardsPerPerson - newPlayerData.hand.length);
+
   // Fetch new cards:
-  const newCards = (await deckResponsesRef
+  const newCards = totalCardsNeeded <= 0 ? [] : (await deckResponsesRef
     .orderBy("random_index")
     .limit(totalCardsNeeded).get()
   ).docs.map((c) => c.data());
-  let i = 0;
-  for (const pData of newPlayerData) {
-    while (pData.hand.length < cardsPerPerson && i < newCards.length) {
-      pData.hand.push(newCards[i]);
-      i++;
-    }
-    // If we ran out of cards, sorry!
-  }
-  // Remove dealt cards from the deck and upload player data:
+  // Add cards to the new player hand
+  newPlayerData.hand.push(...newCards);
+  // If we ran out of cards, sorry!
+
+  // Remove dealt cards from the deck and upload player data & hand:
   const playerDataRef = getPlayerDataRef(lobbyID, newTurn.id);
   await db.runTransaction(async (transaction) => {
     for (const card of newCards) {
       transaction.delete(deckResponsesRef.doc(card.id));
     }
-    for (const pData of newPlayerData) {
-      transaction.set(playerDataRef.doc(pData.player_uid), pData);
-      const handRef = getPlayerHandRef(lobbyID, newTurn.id, pData.player_uid);
-      for (const card of pData.hand) {
-        transaction.set(handRef.doc(card.id), card);
-      }
+    transaction.set(playerDataRef.doc(userID), newPlayerData);
+    const handRef = getPlayerHandRef(lobbyID, newTurn.id, userID);
+    for (const card of newPlayerData.hand) {
+      transaction.set(handRef.doc(card.id), card);
     }
   });
+  logger.info(`Dealt ${newCards.length} cards to player ${userID}`);
 }
 
 /**
