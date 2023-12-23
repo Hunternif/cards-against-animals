@@ -123,7 +123,7 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
     const turn = await getLastTurn(lobby.id);
     if (!turn) {
       throw new HttpsError("failed-precondition",
-        `Can't deal cards. Lobby ${lobby.id} is in progess but has no turns.`)
+        `Can't deal cards. Lobby ${lobby.id} is in progess but has no turns.`);
     }
     await dealCardsToPlayer(lobby.id, null, turn, userID);
   }
