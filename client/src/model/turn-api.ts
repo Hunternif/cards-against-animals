@@ -69,6 +69,11 @@ async function updateHandCard(
   await setDoc(doc(getPlayerHandRef(lobbyID, turnID, userID), card.id), card);
 }
 
+/** Fetches all turns that occurred in the lobby. */
+export async function getAllTurns(lobbyID: string): Promise<Array<GameTurn>> {
+  return (await getDocs(getTurnsRef(lobbyID))).docs.map((d) => d.data());
+}
+
 /**
  * Finds the last turn in the lobby.
  * On the client side, it should alway be non-null.
@@ -196,6 +201,7 @@ export function useLastTurn(lobbyID: string): LastTurnHook {
       setLoading(false);
     }).catch((e) => {
       setError(e);
+      setLoading(false);
     });
   }, [turnsSnap]);
   return [lastTurn, loading, error];

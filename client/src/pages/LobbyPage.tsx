@@ -7,11 +7,11 @@ import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { firebaseAuth } from "../firebase";
 import { setPlayerStatus, useLobby, usePlayerInLobby, usePlayers } from "../model/lobby-api";
-import { EndedLobbyScreen } from "./lobby-screens/EndedLobbyScreen";
+import { PlayerInLobby } from "../shared/types";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
-import { PlayerInLobby } from "../shared/types";
+import { ScoreboardScreen } from "./lobby-screens/ScoreboardScreen";
 
 interface LoaderParams {
   params: any
@@ -88,7 +88,7 @@ function JoinedLobbyScreen({ lobbyID, user, player }: LoggedInJoinedProps) {
     case "in_progress":
       return <GameScreen lobby={lobby} user={user} players={players} />;
     case "ended":
-      return <EndedLobbyScreen lobby={lobby} user={user} />;
+      return <ScoreboardScreen lobby={lobby} user={user} />;
     default:
       throw new Error(`Unknown lobby status "${lobby.status}"`);
   }

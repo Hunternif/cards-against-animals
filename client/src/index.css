@@ -208,6 +208,11 @@ button.start-button {
   #030711 0%,#324464 48%, #324464 52%, #111827 100%);
 }
 
+.scoreboard-screen {
+  background-image: linear-gradient(to bottom,
+  #030711 0%,#324464 100%);
+}
+
 .welcome-screen {
   background-image: linear-gradient(to bottom, #111827, #374151);
 }
@@ -410,4 +415,23 @@ button.start-button {
 }
 .game-card.locked-card.downvoted .downvote-card-icon {
   opacity: 1;
+}
+
+.scoreboard-screen h2 {
+  text-align: center;
+  opacity: 0.8;
+}
+.scoreboard-table td, .scoreboard-table th {
+  background-color: rgba(0, 0, 0, 0);
+}
+.scoreboard-table {
+  min-width: 15em;
+  max-width: 50vw;
+  margin-bottom: 3em;
+}
+.sb-col-score {
+  width: 30%;
+}
+.sb-col-name {
+  /* font-weight: bold; */
 }

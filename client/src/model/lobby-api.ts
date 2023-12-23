@@ -5,7 +5,7 @@ import { useCollectionData, useDocumentData } from "react-firebase-hooks/firesto
 import { endLobbyFun, findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, startLobbyFun, usersRef } from "../firebase";
 import { playerConverter } from "../shared/firestore-converters";
 import { GameLobby, PlayerInLobby, PlayerStatus } from "../shared/types";
-import { getLastTurn, setTurnJudge } from "./turn-api";
+import { getAllTurns, getLastTurn, setTurnJudge } from "./turn-api";
 import { getCAAUser } from "./users-api";
 
 function getPlayersRef(lobbyID: string) {
@@ -151,6 +151,40 @@ export async function joinLobbyIfNeeded(lobbyID: string, user: User) {
   }
 }
 
+interface PlayerScore {
+  player: PlayerInLobby;
+  score: number;
+}
+
+/**
+ * Calculates scores for all users from all turns in the lobby,
+ * including players who have left the game.
+ * Returns a map from player object to their score number, in descending order.
+*/
+export async function getScoreboard(lobbyID: string): Promise<Array<PlayerScore>> {
+  // map uid to result
+  const board = new Map<string, PlayerScore>();
+  const players = await getAllPlayersInLobby(lobbyID);
+  // map uid to player:
+  const playerMap = new Map(players.map((p) => [p.uid, p]));
+  const turns = await getAllTurns(lobbyID);
+  for (const turn of turns) {
+    if (turn.winner_uid) {
+      const winner = playerMap.get(turn.winner_uid);
+      if (winner) {
+        const entry = board.get(turn.winner_uid);
+        if (entry) {
+          entry.score++;
+        } else {
+          board.set(turn.winner_uid, { player: winner, score: 1 });
+        }
+      }
+    }
+  }
+  return Array.from(board.values()).sort((a, b) => b.score - a.score);
+}
+
+
 /** React hook to join lobby, if the user is not in it. */
 export function useJoinLobby(lobbyID: string, user: User): [joined: boolean] {
   const [joined, setJoined] = useState(false);
@@ -180,4 +214,29 @@ export function usePlayers(lobbyID: string) {
 /** React hook to fetch and subscribe to user data from player list in lobby. */
 export function usePlayerInLobby(lobbyID: string, user: User) {
   return useDocumentData(doc(getPlayersRef(lobbyID), user.uid));
+}
+
+
+type ScoresHook = [
+  scores: Array<PlayerScore> | null,
+  loading: boolean,
+  error: any,
+]
+
+/** React hook to fetch scoreboard data once. */
+export function useScores(lobbyID: string): ScoresHook {
+  const [scores, setScores] = useState<Array<PlayerScore> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    setLoading(true);
+    getScoreboard(lobbyID).then((scores) => {
+      setScores(scores);
+      setLoading(false);
+    }).catch((e) => {
+      setError(e);
+      setLoading(false);
+    });
+  }, [lobbyID]);
+  return [scores, loading, error];
 }
