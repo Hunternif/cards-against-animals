@@ -21,7 +21,7 @@ export function GameMiniResponses({ turn, players, responses }: Props) {
 
   // Filter out spectators and the judge:
   const validPlayers = players.filter((p) =>
-    p.role === "player" && p.uid !== turn.judge_uid
+    p.role === "player" && p.status !== "left" && p.uid !== turn.judge_uid
   );
 
   return <div style={{

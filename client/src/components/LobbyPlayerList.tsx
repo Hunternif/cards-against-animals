@@ -65,25 +65,25 @@ const initialSlotCount = 6;
 export function LobbyPlayerList({ lobby, user, players }: ListProps) {
   const [slotCount, setSlotCount] = useState(initialSlotCount);
   const [slots, setSlots] = useState<Array<ReactNode>>([]);
+  // Filter out people who left:
+  const validPlayers = players.filter((p) => p.status !== "left");
 
   useEffect(() => {
-    if (players) {
-      const newSlotCount = Math.max(slotCount, players.length + 2);
-      const newSlots = new Array<ReactNode>();
-      for (let i = 0; i < newSlotCount; i++) {
-        if (players[i]) {
-          newSlots.push(<PlayerCard player={players[i]}
-            isMe={user.uid === players[i].uid}
-            isCreator={lobby.creator_uid === players[i].uid}
-          />);
-        } else {
-          newSlots.push(<EmptyCard />);
-        }
+    const newSlotCount = Math.max(slotCount, validPlayers.length + 2);
+    const newSlots = new Array<ReactNode>();
+    for (let i = 0; i < newSlotCount; i++) {
+      if (validPlayers[i]) {
+        newSlots.push(<PlayerCard player={validPlayers[i]}
+          isMe={user.uid === validPlayers[i].uid}
+          isCreator={lobby.creator_uid === validPlayers[i].uid}
+        />);
+      } else {
+        newSlots.push(<EmptyCard />);
       }
-      setSlots(newSlots);
-      setSlotCount(newSlotCount);
     }
-  }, [players.length]);
+    setSlots(newSlots);
+    setSlotCount(newSlotCount);
+  }, [validPlayers.length]);
 
   return (
     <ul style={{ padding: 0, margin: 0 }}>

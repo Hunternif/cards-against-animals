@@ -60,7 +60,7 @@ export function JudgeAwaitResponsesScreen(
 
   // Filter out spectators and the judge:
   const validPlayers = players.filter((p) =>
-    p.role === "player" && p.uid !== turn.judge_uid
+    p.role === "player" && p.status !== "left" && p.uid !== turn.judge_uid
   );
   const allResponded = validPlayers && validPlayers.every((p) =>
     findResponse(p)
