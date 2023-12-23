@@ -3,10 +3,15 @@ import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc } f
 import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { endLobbyFun, findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, startLobbyFun, usersRef } from "../firebase";
-import { GameLobby, PlayerInLobby } from "../shared/types";
 import { playerConverter } from "../shared/firestore-converters";
-import { getCAAUser } from "./users-api";
+import { GameLobby, PlayerInLobby, PlayerStatus } from "../shared/types";
 import { getLastTurn, setTurnJudge } from "./turn-api";
+import { getCAAUser } from "./users-api";
+
+function getPlayersRef(lobbyID: string) {
+  return collection(lobbiesRef, lobbyID, 'players')
+    .withConverter(playerConverter);
+}
 
 export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
   return (await getDoc(doc(lobbiesRef, lobbyID))).data() ?? null;
@@ -16,18 +21,18 @@ async function updateLobby(lobby: GameLobby): Promise<void> {
   await setDoc(doc(lobbiesRef, lobby.id), lobby);
 }
 
+async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
+  await setDoc(doc(getPlayersRef(lobbyID), player.uid), player);
+}
+
 export async function getAllPlayersInLobby(lobbyID: string):
   Promise<Array<PlayerInLobby>> {
-  const playersRef = collection(lobbiesRef, lobbyID, 'players')
-    .withConverter(playerConverter);
-  return (await getDocs(playersRef)).docs.map((p) => p.data());
+  return (await getDocs(getPlayersRef(lobbyID))).docs.map((p) => p.data());
 }
 
 export async function getPlayerInLobby(lobbyID: string, userID: string):
   Promise<PlayerInLobby | null> {
-  const playersRef = collection(lobbiesRef, lobbyID, 'players')
-    .withConverter(playerConverter);
-  return (await getDoc(doc(playersRef, userID))).data() ?? null;
+  return (await getDoc(doc(getPlayersRef(lobbyID), userID))).data() ?? null;
 }
 
 export async function findOrCreateLobbyID(user: User): Promise<string> {
@@ -83,11 +88,20 @@ export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
     await deleteDoc(doc(usersRef, user.uid));
   }
 
-  // Lastly, delete your 'player' document in lobby:
+  // Lastly, set player status in lobby as "left":
   // (do it last, so you won't see the error due to failing to load lobby)
-  const playersRef = collection(lobbiesRef, lobby.id, 'players')
-    .withConverter(playerConverter);
-  await deleteDoc(doc(playersRef, user.uid));
+  await setPlayerStatus(lobby.id, user.uid, "left");
+}
+
+/** Updates player status in the current game. */
+export async function setPlayerStatus(
+  lobbyID: string, userID: string, status: PlayerStatus
+) {
+  const player = await getPlayerInLobby(lobbyID, userID);
+  if (player) {
+    player.status = status;
+    await updatePlayer(lobbyID, player);
+  }
 }
 
 /** Reassign lobby "creator" to a different user */
@@ -158,14 +172,12 @@ export function useLobby(lobbyID: string) {
 /** React hook to fetch list of players and subscribe to it. */
 export function usePlayers(lobbyID: string) {
   return useCollectionData(query(
-    collection(lobbiesRef, lobbyID, 'players')
-      .withConverter(playerConverter),
+    getPlayersRef(lobbyID),
     orderBy('time_joined', 'asc'))
   );
 }
 
 /** React hook to fetch and subscribe to user data from player list in lobby. */
 export function usePlayerInLobby(lobbyID: string, user: User) {
-  return useDocumentData(doc(lobbiesRef, lobbyID, 'players', user.uid)
-    .withConverter(playerConverter));
+  return useDocumentData(doc(getPlayersRef(lobbyID), user.uid));
 }

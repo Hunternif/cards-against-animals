@@ -45,16 +45,19 @@ export class PlayerInLobby {
   name: string;
   avatar_url?: URL;
   role: PlayerRole;
+  status: PlayerStatus;
   time_joined?: Date;
 
   constructor(
     uid: string,
     name: string,
-    role: PlayerRole = "player",
+    role: PlayerRole,
+    status: PlayerStatus,
   ) {
     this.uid = uid;
     this.name = name;
     this.role = role;
+    this.status = status;
   }
 }
 
@@ -306,6 +309,8 @@ export class ResponseCardInGame implements CardInGame {
 }
 
 export type PlayerRole = "player" | "spectator";
+
+export type PlayerStatus = "online" | "left";
 
 export type TurnPhase = "new" | "answering" | "reading" | "complete";
 

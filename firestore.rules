@@ -55,8 +55,9 @@ service cloud.firestore {
       }
       
       match /players/{userID} {
-        // allow reading and deleting your own info.
-        allow read, delete: if isLoggedIn() && request.auth.uid == userID;
+        // Allow reading and updating your own info.
+        // Don't allow creating or deleting, to preserve history.
+        allow read, update: if isLoggedIn() && request.auth.uid == userID;
       }
       match /deck_prompts/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);
