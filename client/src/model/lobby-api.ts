@@ -156,12 +156,18 @@ interface PlayerScore {
   score: number;
 }
 
+// const dummyScore = {
+//   player: new PlayerInLobby("01", "Dummy", "player", "online"),
+//   score: 3,
+// }
+
 /**
  * Calculates scores for all users from all turns in the lobby,
  * including players who have left the game.
  * Returns a map from player object to their score number, in descending order.
 */
 export async function getScoreboard(lobbyID: string): Promise<Array<PlayerScore>> {
+  // return new Array<PlayerScore>(50).fill(dummyScore, 0, 50);
   // map uid to result
   const board = new Map<string, PlayerScore>();
   const players = await getAllPlayersInLobby(lobbyID);
