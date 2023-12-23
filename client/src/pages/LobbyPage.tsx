@@ -6,8 +6,7 @@ import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { firebaseAuth } from "../firebase";
-import { useLobby, usePlayers } from "../model/lobby-api";
-import { useCAAUser } from "../model/users-api";
+import { useLobby, usePlayerInLobby, usePlayers } from "../model/lobby-api";
 import { EndedLobbyScreen } from "./lobby-screens/EndedLobbyScreen";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
@@ -50,11 +49,10 @@ interface LoggedInProps {
 
 /** User logged in, but not necessarily joined the lobby. */
 function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
-  const [caaUser, loadingUser] = useCAAUser(user.uid);
-  const isInLobby = caaUser?.current_lobby_id === lobbyID;
-  if (loadingUser) return <LoadingSpinner delay text="Loading user..." />;
+  const [player, loadingPlayer] = usePlayerInLobby(lobbyID, user);
+  if (loadingPlayer) return <LoadingSpinner delay text="Loading user..." />;
   // User may be logged in, but we offer to change their name before joining:
-  if (!isInLobby) return <LoginScreen existingLobbyID={lobbyID} />;
+  if (!player) return <LoginScreen existingLobbyID={lobbyID} />;
   return <JoinedLobbyScreen user={user} lobbyID={lobbyID} />
 }
 

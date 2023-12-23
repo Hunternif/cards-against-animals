@@ -163,3 +163,9 @@ export function usePlayers(lobbyID: string) {
     orderBy('time_joined', 'asc'))
   );
 }
+
+/** React hook to fetch and subscribe to user data from player list in lobby. */
+export function usePlayerInLobby(lobbyID: string, user: User) {
+  return useDocumentData(doc(lobbiesRef, lobbyID, 'players', user.uid)
+    .withConverter(playerConverter));
+}
