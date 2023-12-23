@@ -1,13 +1,12 @@
 import { User } from "firebase/auth";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useLoaderData } from "react-router-dom";
 import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { firebaseAuth } from "../firebase";
-import { setPlayerStatus, useLobby, usePlayerInLobby, usePlayers } from "../model/lobby-api";
-import { PlayerInLobby } from "../shared/types";
+import { useLobby, usePlayerInLobby, usePlayers } from "../model/lobby-api";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
@@ -53,32 +52,21 @@ function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
   const [player, loadingPlayer] = usePlayerInLobby(lobbyID, user);
   if (loadingPlayer) return <LoadingSpinner delay text="Loading user..." />;
   // User may be logged in, but we offer to change their name before joining:
-  if (!player) return <LoginScreen existingLobbyID={lobbyID} />;
-  return <JoinedLobbyScreen user={user} lobbyID={lobbyID} player={player} />
+  if (!player || player.status === "left") {
+    return <LoginScreen existingLobbyID={lobbyID} />;
+  }
+  return <JoinedLobbyScreen user={user} lobbyID={lobbyID} />
 }
 
 interface LoggedInJoinedProps {
   lobbyID: string,
   user: User,
-  player: PlayerInLobby;
 }
 
 /** User logged in AND joined the lobby. */
-function JoinedLobbyScreen({ lobbyID, user, player }: LoggedInJoinedProps) {
+function JoinedLobbyScreen({ lobbyID, user }: LoggedInJoinedProps) {
   const [lobby, loadingLobby] = useLobby(lobbyID);
   const [players, loadingPlayers] = usePlayers(lobbyID);
-  const { setError } = useContext(ErrorContext);
-
-  async function rejoin() {
-    if (player.status === "left") {
-      await setPlayerStatus(lobbyID, player.uid, "online");
-    }
-  }
-
-  useEffect(() => {
-    // If re-joining, set status to online:
-    rejoin().catch((e) => setError(e));;
-  }, [player.uid]);
 
   if (loadingLobby || loadingPlayers) return <LoadingSpinner delay text="Loading lobby..." />;
   if (!lobby || !players) throw new Error(`Failed to load lobby ${lobbyID}`);

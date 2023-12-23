@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnonymousLogin } from "../../components/AnonymousLogin";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { findOrCreateLobbyAndJoin, joinLobbyIfNeeded } from "../../model/lobby-api";
+import { findOrCreateLobbyAndJoin, getPlayerInLobby, joinLobbyIfNeeded, setPlayerStatus, updatePlayer } from "../../model/lobby-api";
 
 interface Props {
   existingLobbyID?: string,
@@ -20,6 +20,13 @@ export function LoginScreen({ existingLobbyID }: Props) {
       setJoining(true);
       if (existingLobbyID) {
         await joinLobbyIfNeeded(existingLobbyID, user);
+        // If previously left, re-join:
+        const player = await getPlayerInLobby(existingLobbyID, user.uid);
+        if (player?.status === "left") {
+          player.status = "online";
+          if (user.displayName) player.name = user.displayName;
+          await updatePlayer(existingLobbyID, player);
+        }
       } else {
         const lobbyID = await findOrCreateLobbyAndJoin(user);
         navigate(`/${lobbyID}`);

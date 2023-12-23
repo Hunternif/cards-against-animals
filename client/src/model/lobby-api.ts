@@ -21,7 +21,7 @@ async function updateLobby(lobby: GameLobby): Promise<void> {
   await setDoc(doc(lobbiesRef, lobby.id), lobby);
 }
 
-async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
+export async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
   await setDoc(doc(getPlayersRef(lobbyID), player.uid), player);
 }
 
