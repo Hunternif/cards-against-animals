@@ -148,10 +148,10 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
           {prompt ? (
             <>
               <GameButton accent onClick={handleSubmit}
-                disabled={!prompt || submitted}>Play</GameButton>
+                disabled={!prompt || submitted || ending}>Play</GameButton>
               <Delay delayMs={1000}>
                 <GameButton secondary onClick={handleEndGame}
-                  disabled={ending}>
+                  disabled={submitted || ending}>
                   End game
                 </GameButton>
               </Delay>

@@ -88,44 +88,44 @@ button:disabled {
   opacity: 0.4;
 }
 
-.accent-button {
+button.accent-button {
   background-color: #ffc90f;
   color: #000000;
   border: 2px solid transparent;
 }
-.accent-button:hover {
+button.accent-button:hover {
   border-color: #ffffff;
   /** Glow: */
   /* box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.5); */
 }
-.accent-button:disabled {
+button.accent-button:disabled {
   cursor: auto;
   border: 2px solid transparent;
   opacity: 0.4;
 }
 
-.light-button {
+button.light-button {
   background-color: #374151;
 }
 
-.secondary-button {
+button.secondary-button, button.secondary-button:hover:disabled {
   border: 2px solid;
   color: rgba(229, 231, 235, 0.8);
   border-color: rgba(229, 231, 235, 0.4);
   background-color: rgba(229, 231, 235, 0);
 }
-.secondary-button:hover {
+button.secondary-button:hover {
   border: 2px solid transparent;
   background-color: rgba(229, 231, 235, 0.6);
   color: #000;
 }
 
-.small-button {
+button.small-button {
   font-size: small;
   height: 2.5rem;
 }
 
-.start-button {
+button.start-button {
   font-size: large;
   font-weight: bold;
 }
