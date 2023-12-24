@@ -3,7 +3,6 @@
 import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
-import { GameTurn, PlayerDataInTurn, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
 import {
   playerDataConverter,
   playerResponseConverter,
@@ -11,7 +10,14 @@ import {
   responseCardInGameConverter,
   turnConverter
 } from "../shared/firestore-converters";
-import { getPlayer, getPlayers } from "./lobby-server-api";
+import {
+  GameTurn,
+  PlayerDataInTurn,
+  PlayerResponse,
+  PromptCardInGame,
+  ResponseCardInGame
+} from "../shared/types";
+import { getOnlinePlayers, getPlayer } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
@@ -164,7 +170,7 @@ const cardsPerPerson = 10;
 async function dealCards(
   lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn,
 ): Promise<void> {
-  const players = await getPlayers(lobbyID, "player");
+  const players = await getOnlinePlayers(lobbyID);
   for (const player of players) {
     await dealCardsToPlayer(lobbyID, lastTurn, newTurn, player.uid);
   }
@@ -223,7 +229,7 @@ export async function dealCardsToPlayer(
  * The sequence must be stable!
  */
 async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
-  const players = await getPlayers(lobbyID, "player");
+  const players = await getOnlinePlayers(lobbyID);
   // Simply sort players by UIDs:
   const uids = players.map((p) => p.uid);
   return uids.sort();

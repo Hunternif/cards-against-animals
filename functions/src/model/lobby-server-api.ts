@@ -95,6 +95,13 @@ export async function getPlayers(lobbyID: string, role?: PlayerRole):
   }
 }
 
+/** Get active "online" players, usable for game functions. */
+export async function getOnlinePlayers(lobbyID: string):
+  Promise<Array<PlayerInLobby>> {
+  return (await getPlayers(lobbyID))
+    .filter((p) => p.role === "player" && p.status === "online");
+}
+
 /**
  * Attempts to add player to lobby as "player",
  * or as "spectator" if the game is already in progress.

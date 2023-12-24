@@ -30,6 +30,12 @@ export async function getAllPlayersInLobby(lobbyID: string):
   return (await getDocs(getPlayersRef(lobbyID))).docs.map((p) => p.data());
 }
 
+export async function getAllOnlinePlayersInLobby(lobbyID: string):
+  Promise<Array<PlayerInLobby>> {
+  return (await getAllPlayersInLobby(lobbyID))
+    .filter((p) => p.role === "player" && p.status === "online");
+}
+
 export async function getPlayerInLobby(lobbyID: string, userID: string):
   Promise<PlayerInLobby | null> {
   return (await getDoc(doc(getPlayersRef(lobbyID), userID))).data() ?? null;
@@ -58,7 +64,7 @@ export async function joinLobby(lobbyID: string, user: User): Promise<void> {
 
 /** Remove yourself from this lobby */
 export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
-  const players = await getAllPlayersInLobby(lobby.id);
+  const players = await getAllOnlinePlayersInLobby(lobby.id);
   // If you're creator, reassign this role to the next user:
   if (lobby.creator_uid === user.uid) {
     const nextPlayer = players.find((p) => p.uid !== user.uid);
