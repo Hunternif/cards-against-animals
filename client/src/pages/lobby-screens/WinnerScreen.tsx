@@ -4,10 +4,8 @@ import { GameButton } from "../../components/Buttons";
 import { PromptCard } from "../../components/Cards";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { endLobby } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
 
@@ -41,7 +39,6 @@ const botRowStyle: CSSProperties = {
 /** Displays winner of the turn */
 export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProps) {
   const [startingNewTurn, setStartingNewTurn] = useState(false);
-  const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
   const winner = players.find((p) => p.uid === turn.winner_uid);
@@ -53,14 +50,6 @@ export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProp
     await startNewTurn(lobby).catch((e) => {
       setError(e);
       setStartingNewTurn(false);
-    });
-  }
-
-  async function handleEndGame() {
-    setEnding(true);
-    await endLobby(lobby).catch((e) => {
-      setError(e);
-      setEnding(false);
     });
   }
 
@@ -76,15 +65,9 @@ export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProp
     <div style={botRowStyle}>
       {isJudge && <Delay>
         <GameButton accent onClick={handleNewTurn}
-          disabled={startingNewTurn || ending}>
+          disabled={startingNewTurn}>
           Next turn
         </GameButton>
-        <Delay delayMs={1000}>
-          <GameButton secondary onClick={handleEndGame}
-            disabled={startingNewTurn || ending}>
-            End game
-          </GameButton>
-        </Delay>
       </Delay>}
     </div>
   </CenteredLayout>

@@ -5,10 +5,8 @@ import { PromptCard } from "../../components/Cards";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { endLobby } from "../../model/lobby-api";
 import { chooseWinner, revealPlayerResponse, startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
-import { Delay } from "../../components/Delay";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -53,7 +51,6 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
   // const responses = dummyResponses;
   const [winner, setWinner] = useState<PlayerResponse | null>(null);
   const [startingNewTurn, setStartingNewTurn] = useState(false);
-  const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
   const allRevealed = responses.every((r) => r.revealed) ?? false;
@@ -88,14 +85,6 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
       });
   }
 
-  async function handleEndGame() {
-    setEnding(true);
-    await endLobby(lobby).catch((e) => {
-      setError(e);
-      setEnding(false);
-    });
-  }
-
   return <CenteredLayout>
     <div style={topRowStyle}>
       {isJudge && <>
@@ -123,15 +112,9 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
     <div style={botRowStyle}>
       {noResponses && <>
         <GameButton accent onClick={handleSkipTurn}
-          disabled={startingNewTurn || ending}>
+          disabled={startingNewTurn}>
           Next turn
         </GameButton>
-        <Delay delayMs={1000}>
-          <GameButton secondary onClick={handleEndGame}
-            disabled={startingNewTurn || ending}>
-            End game
-          </GameButton>
-        </Delay>
       </>}
     </div>
   </CenteredLayout>;

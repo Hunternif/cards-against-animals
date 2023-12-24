@@ -5,11 +5,10 @@ import { PromptCard } from "../../components/Cards";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { logInteraction } from "../../components/utils";
 import { endLobby } from "../../model/lobby-api";
 import { discardPrompt, getPromptCount, pickNewPrompt, playPrompt } from "../../model/turn-api";
 import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
-import { logInteraction } from "../../components/utils";
-import { Delay } from "../../components/Delay";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -146,16 +145,8 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
         </div>
         <div style={botRowStyle}>
           {prompt ? (
-            <>
-              <GameButton accent onClick={handleSubmit}
-                disabled={!prompt || submitted || ending}>Play</GameButton>
-              <Delay delayMs={1000}>
-                <GameButton secondary onClick={handleEndGame}
-                  disabled={submitted || ending}>
-                  End game
-                </GameButton>
-              </Delay>
-            </>
+            <GameButton accent onClick={handleSubmit}
+              disabled={!prompt || submitted || ending}>Play</GameButton>
           ) : (
             <>
               {cardCount == 0 &&
