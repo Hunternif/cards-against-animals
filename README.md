@@ -30,10 +30,10 @@ npm --prefix functions run build
 
 ### Type-Check, Compile and Minify for Production
 
-Don't forget to set `useEmulator: false` in `firebase-config.json`!
 ```sh
 firebase deploy
 ```
+During deployment, `firebase-config.json` will be auto-updated to disable emulator, by setting `"useEmulator": false`.
 
 ### Run Unit Tests
 

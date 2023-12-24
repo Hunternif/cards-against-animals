@@ -21,6 +21,7 @@
   ],
   "hosting": {
     "predeploy": [
+      "npm --prefix client run predeploy",
       "npm --prefix client run build"
     ],
     "public": "client/dist",
