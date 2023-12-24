@@ -190,6 +190,18 @@ export async function getScoreboard(lobbyID: string): Promise<Array<PlayerScore>
   return Array.from(board.values()).sort((a, b) => b.score - a.score);
 }
 
+/** Calculates scores for the user from all turns in the lobby. */
+export async function getPlayerScore(lobbyID: string, userID: string): Promise<number> {
+  let result = 0;
+  const turns = await getAllTurns(lobbyID);
+  for (const turn of turns) {
+    if (turn.winner_uid === userID) {
+      result++;
+    }
+  }
+  return result;
+}
+
 
 /** React hook to join lobby, if the user is not in it. */
 export function useJoinLobby(lobbyID: string, user: User): [joined: boolean] {
