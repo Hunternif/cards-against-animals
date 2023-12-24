@@ -30,7 +30,7 @@ export function GameHand(
     if (response) {
       return response.cards.findIndex((c) => c.id === card.id);
     } else {
-      return selectedCards.indexOf(card);
+      return selectedCards.findIndex((c) => c.id === card.id);
     }
   }
 
@@ -44,9 +44,9 @@ export function GameHand(
     setSelectedCards(newSelection);
   }
 
-  function deselectCard(cardID: ResponseCardInGame) {
+  function deselectCard(card: ResponseCardInGame) {
     const newSelection = selectedCards.slice();
-    const index = newSelection.indexOf(cardID);
+    const index = newSelection.findIndex((c) => c.id === card.id);
     if (index > -1) {
       newSelection.splice(index, 1);
       setSelectedCards(newSelection);
