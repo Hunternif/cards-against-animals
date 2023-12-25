@@ -6,6 +6,7 @@ import { endLobby, getPlayerScore, leaveLobby } from "../model/lobby-api";
 import { GameLobby, GameTurn, PlayerInLobby } from "../shared/types";
 import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
+import { Scoreboard } from "./Scoreboard";
 
 interface MenuProps {
   lobby: GameLobby,
@@ -21,7 +22,7 @@ const rowStyle: CSSProperties = {
   flexDirection: "row",
   justifyContent: "flex-end",
   alignItems: "center",
-  gap: "1rem",
+  gap: "0.5rem",
   zIndex: 99,
 }
 
@@ -52,7 +53,16 @@ export function GameMenu(
 
   return (
     <div style={{ ...rowStyle, ...style }}>
-      {score !== null && <span>⭐{score}</span>}
+      {(score !== null) && <CustomDropdown className={className}
+        toggle={
+          <span className="score-menu-icon">⭐{score}</span>
+        }>
+        <Dropdown.Menu>
+          <div className="menu-scoreboard">
+            <Scoreboard lobby={lobby} />
+          </div>
+        </Dropdown.Menu>
+      </CustomDropdown>}
       <CustomDropdown className={className} showArrow
         toggle={
           <span className="light">
