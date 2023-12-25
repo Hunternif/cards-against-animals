@@ -1,23 +1,15 @@
 import { CSSProperties, ReactNode } from "react";
 
-interface LayoutProps {
-  children: ReactNode,
-  className?: string,
-  style?: CSSProperties,
-}
+interface LayoutProps extends React.HTMLAttributes<HTMLElement> { }
 
 /** Fills all available space */
-export function FillLayout({ children, className, style }: LayoutProps) {
+export function FillLayout(props: LayoutProps) {
   return (
-    <div style={{
+    <div {...props} style={{
       flex: "1 1 auto",
       width: "100%",
       height: "100%",
-      ...style
-    }}
-      className={className}
-    >
-      {children}
-    </div>
+      ...props.style
+    }} />
   );
 }

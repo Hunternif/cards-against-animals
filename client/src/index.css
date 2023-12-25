@@ -283,14 +283,10 @@ button.start-button {
   font-weight: bold;
   align-content: center;
   justify-content: center;
-  user-select: none;
 }
 .prompt-unknown-icon {
   color: rgba(229, 231, 235, 0.4);
   font-size: 5rem;
-  align-content: center;
-  justify-content: center;
-  user-select: none;
 }
 .game-card.card-response.response-reading.can-reveal.unrevealed:hover {
   opacity: 1;
@@ -302,9 +298,6 @@ button.start-button {
 .reading-unrevealed-icon {
   color: #111827cc;
   font-size: 5rem;
-  align-content: center;
-  justify-content: center;
-  user-select: none;
 }
 .game-card.selectable {
   cursor: pointer;

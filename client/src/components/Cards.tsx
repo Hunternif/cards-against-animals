@@ -1,7 +1,6 @@
-import { CSSProperties } from "react";
 import { CardInGame, PromptCardInGame } from "../shared/types";
 import { IconThumbsDown } from "./Icons";
-import { FillLayout } from "./layout/FillLayout";
+import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
@@ -23,38 +22,28 @@ interface PickProps {
   pick: number,
 }
 
-const containerStyle: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  position: "relative",
-  flexShrink: "0",
-}
-
-const fillCardStyle: CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  position: "absolute",
-  top: 0,
-  left: 0,
-}
-
 /** Formats gaps to be longer. */
 function formatPrompt(text: string): string {
   return text.replace(/_+/g, "______");
 }
 
 export function PromptCard({ card }: PromptCardProps) {
-  return <div className="game-card card-prompt" style={containerStyle}>
-    {card ? (<>
-      <span style={{ whiteSpace: "pre-line" }}>
-        {formatPrompt(card.content)}
-      </span>
-      {card.pick > 1 && <PromptCardPick pick={card.pick} />}
-    </>) :
-      <FillLayout className="prompt-unknown-icon" style={fillCardStyle} >
-        ?
-      </FillLayout>}
-  </div>;
+  return (
+    <LargeCard className="card-prompt">
+      {card ? (<>
+        <CardContent>{formatPrompt(card.content)}</CardContent>
+        {card.pick > 1 && (
+          <CardBottomRight>
+            <PromptCardPick pick={card.pick} />
+          </CardBottomRight>
+        )}
+      </>) : (
+        <CardCenterIcon className="prompt-unknown-icon">
+          ?
+        </CardCenterIcon>
+      )}
+    </LargeCard>
+  );
 }
 
 export function ResponseCard(
@@ -64,7 +53,7 @@ export function ResponseCard(
   const selectableStyle = selectable ? "hoverable-card" : "locked-card";
   const selectedStyle = selected ? "selected" : "unselected";
   const voteStyle = card.downvoted ? "downvoted" : "";
-  const className = `game-card card-response ${selectableStyle} ${selectedStyle} ${voteStyle}`;
+  const className = `card-response ${selectableStyle} ${selectedStyle} ${voteStyle}`;
 
   function handleClick() {
     if (onToggle && selectable) onToggle(!selected);
@@ -74,40 +63,36 @@ export function ResponseCard(
     if (onToggleDownvote && selectable) onToggleDownvote(!card.downvoted);
   }
 
-  return <div className={className} onClick={handleClick} style={containerStyle}>
-    <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
-    <Downvote onClick={handleDownvote} />
-    {showIndex && selected && <FillLayout
-      className="selected-response-index"
-      style={fillCardStyle}>
-      {selectedIndex + 1}
-    </FillLayout>}
-  </div>;
+  return (
+    <LargeCard className={className} onClick={handleClick}>
+      <CardContent>{card.content}</CardContent>
+      {showIndex && selected && (
+        <CardCenterIcon className="selected-response-index">
+          {selectedIndex + 1}
+        </CardCenterIcon>
+      )}
+      <CardBottomRight>
+        <Downvote onClick={handleDownvote} />
+      </CardBottomRight>
+    </LargeCard>
+  );
 }
 
 function PromptCardPick({ pick }: PickProps) {
   return <>
-    <div className="prompt-pick" style={{
-      display: "flex",
-      alignItems: "baseline",
-      flexDirection: "row",
-      marginTop: "auto",
-      marginLeft: "auto",
+    PICK
+    <div className="prompt-pick-number" style={{
+      textAlign: "center",
+      borderRadius: "50%",
+      width: "1rem",
+      height: "1rem",
+      lineHeight: "1rem",
+      marginLeft: "0.5em",
+      backgroundColor: "#fff",
+      color: "#000",
+      fontWeight: "bold",
     }}>
-      PICK
-      <div className="prompt-pick-number" style={{
-        textAlign: "center",
-        borderRadius: "50%",
-        width: "1rem",
-        height: "1rem",
-        lineHeight: "1rem",
-        marginLeft: "0.5em",
-        backgroundColor: "#fff",
-        color: "#000",
-        fontWeight: "bold",
-      }}>
-        {pick}
-      </div>
+      {pick}
     </div>
   </>;
 }
@@ -117,13 +102,7 @@ interface DownvoteProps {
 }
 
 function Downvote({ onClick }: DownvoteProps) {
-  return <div className="downvote-card-icon" style={{
-    display: "flex",
-    alignItems: "baseline",
-    flexDirection: "row",
-    marginTop: "auto",
-    marginLeft: "auto",
-  }}
+  return <div className="downvote-card-icon"
     title="Downvote card"
     onClick={(e) => {
       e.stopPropagation();

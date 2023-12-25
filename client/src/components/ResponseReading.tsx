@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import { PlayerResponse, ResponseCardInGame } from "../shared/types";
-import { FillLayout } from "./layout/FillLayout";
+import { CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 
 interface Props {
   response: PlayerResponse,
@@ -12,30 +12,12 @@ interface Props {
   onClick?: (response: PlayerResponse) => void,
 }
 
-const containerStyle: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  position: "relative",
-}
-
-const cardPlaceholderStyle: CSSProperties = {
-  position: "relative",
-}
-
 const cardCombinerStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   justifyItems: "flex-start",
   alignItems: "space-between",
   position: "absolute",
-}
-
-const fillCardStyle: CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  position: "absolute",
-  top: 0,
-  left: 0,
 }
 
 /**
@@ -58,10 +40,10 @@ export function ResponseReading(
     return <>{hasManyCards ? (
       /* Overlay multiple cards on top of each other */
       /* "Placeholder" component holds place the size of a card */
-      <div className={`game-card-placeholder`} style={{
+      <div className="game-card-placeholder" style={{
         // Add extra margin below for the overlaid cards:
         marginBottom: `${response.cards.length}em`,
-        ...cardPlaceholderStyle
+        position: "relative",
       }} onClick={handleClick}>
         {/* Card combiner renders cards on top with absolute positioning,
             without interfering with the flow of the rest of the page.*/}
@@ -83,12 +65,12 @@ export function ResponseReading(
     }</>;
   } else {
     return (
-      <div className={`game-card card-response response-reading ${featureClass}`}
-        onClick={handleClick} style={containerStyle}>
-        <FillLayout className="reading-unrevealed-icon" style={fillCardStyle} >
+      <LargeCard onClick={handleClick}
+        className={`card-response response-reading ${featureClass}`}>
+        <CardCenterIcon className="reading-unrevealed-icon">
           ?
-        </FillLayout>
-      </div>
+        </CardCenterIcon>
+      </LargeCard>
     );
   }
 }
@@ -104,9 +86,8 @@ function ResponseReadingCard({ card, offset, selectable, selected }: CardProps) 
   const overlayClass = (offset && offset > 0) ? "overlaid" : ""
   const selectedClass = `${selectable && "selectable"} ${selected && "selected"}`;
   return (
-    <div className={`game-card card-response response-reading ${selectedClass} ${overlayClass}`}
-      style={{ ...containerStyle }}>
-      <span style={{ whiteSpace: "pre-line" }}>{card.content}</span>
-    </div>
+    <LargeCard className={`card-response response-reading ${selectedClass} ${overlayClass}`}>
+      <CardContent>{card.content}</CardContent>
+    </LargeCard>
   );
 }
