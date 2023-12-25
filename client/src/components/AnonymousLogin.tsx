@@ -1,5 +1,5 @@
 import { User, onAuthStateChanged, signInAnonymously, updateProfile } from "firebase/auth";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
@@ -11,17 +11,18 @@ import { useEffectOnce } from "./utils";
 
 interface Props {
   onLogin?: (user: User) => void,
-  joining: boolean,
+  loadingNode?: ReactNode,
 }
 
-export function AnonymousLogin({ onLogin, joining }: Props) {
+export function AnonymousLogin({ onLogin, loadingNode }: Props) {
   const [user, loadingUser] = useAuthState(firebaseAuth);
   const suggestedName = "CoolNickname123";
   const [name, setName] = useState(user?.displayName ?? "");
   const [loggingIn, setLoggingIn] = useState(false);
   const delayedLoadingUser = useDelay(loadingUser, 400);
   const delayedLoggingIn = useDelay(loggingIn, 400);
-  const delayedJoining = useDelay(joining, 400);
+  const showLoading = loadingNode !== undefined && loadingNode !== null;
+  const delayedLoading = useDelay(showLoading, 400);
 
   useEffectOnce(() => {
     // Load user's name only once
@@ -67,7 +68,7 @@ export function AnonymousLogin({ onLogin, joining }: Props) {
   return <CenteredLayout>
     <div className="login-card">
       {delayedLoggingIn ? <LoadingSpinner text="Logging in..." /> :
-        delayedJoining ? <LoadingSpinner text="Joining..." /> : (
+        delayedLoading ? loadingNode : (
           <Form onSubmit={(e) => { e.preventDefault(); login(); }}>
             <Form.Group style={{ marginBottom: "1em" }}>
               <Form.Label><h4>Choose a nickname</h4></Form.Label>
@@ -75,12 +76,12 @@ export function AnonymousLogin({ onLogin, joining }: Props) {
                 <Form.Control type="text" value={name}
                   placeholder={loadingUser ? "" : suggestedName}
                   onChange={(e) => setName(e.target.value)}
-                  disabled={delayedLoadingUser || joining}
+                  disabled={showLoading}
                 />
               )}
             </Form.Group>
             <CenteredLayout>
-              <GameButton disabled={delayedLoadingUser || joining}>Start</GameButton>
+              <GameButton disabled={delayedLoadingUser || showLoading}>Start</GameButton>
             </CenteredLayout>
           </Form>
         )}

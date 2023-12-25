@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AnonymousLogin } from "../../components/AnonymousLogin";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { findOrCreateLobbyAndJoin, getPlayerInLobby, joinLobbyIfNeeded, setPlayerStatus, updatePlayer } from "../../model/lobby-api";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 
 interface Props {
   existingLobbyID?: string,
@@ -14,6 +15,10 @@ export function LoginScreen({ existingLobbyID }: Props) {
   const [joining, setJoining] = useState(false);
   const navigate = useNavigate();
   if (error) throw error;
+  const loadingNode = joining ? (existingLobbyID ?
+    <LoadingSpinner text="Joining..." /> :
+    <LoadingSpinner text="Starting new lobby..." />
+  ) : undefined;
 
   async function handleLogin(user: User) {
     try {
@@ -38,6 +43,6 @@ export function LoginScreen({ existingLobbyID }: Props) {
   }
   return <CenteredLayout className="welcome-screen">
     <h1>Cards Against Animals</h1>
-    <AnonymousLogin onLogin={handleLogin} joining={joining} />
+    <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode} />
   </CenteredLayout>;
 }
