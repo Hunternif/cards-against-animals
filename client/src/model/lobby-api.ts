@@ -177,6 +177,9 @@ export async function getScoreboard(lobbyID: string): Promise<Array<PlayerScore>
   // map uid to result
   const board = new Map<string, PlayerScore>();
   const players = await getAllPlayersInLobby(lobbyID);
+  for (const player of players) {
+    board.set(player.uid, { player: player, score: 0 })
+  }
   // map uid to player:
   const playerMap = new Map(players.map((p) => [p.uid, p]));
   const turns = await getAllTurns(lobbyID);
