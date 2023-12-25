@@ -101,7 +101,7 @@ export const turnConverter: FConverter<GameTurn> = {
 };
 
 export const playerDataConverter: FConverter<PlayerDataInTurn> = {
-  toFirestore: (pdata: PlayerDataInTurn) => copyFields(pdata, ['hand']),
+  toFirestore: (pdata: PlayerDataInTurn) => copyFields(pdata, ['hand', 'discarded']),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const player_uid = snapshot.id;

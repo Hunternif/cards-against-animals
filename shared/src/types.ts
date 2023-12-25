@@ -107,6 +107,9 @@ export class PlayerDataInTurn {
   /** Cards in the player's hand, including `current_response`.
    * Must be fetched separately from a Firebase subcollection. */
   hand: Array<ResponseCardInGame> = [];
+  /** Cards that were discarded this turn.
+   * Must be fetched separately from a Firebase subcollection. */
+  discarded: Array<ResponseCardInGame> = [];
 
   constructor(player_uid: string, player_name: string) {
     this.player_uid = player_uid;
