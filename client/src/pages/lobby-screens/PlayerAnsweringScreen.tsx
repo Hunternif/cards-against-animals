@@ -1,13 +1,26 @@
 import { User } from "@firebase/auth";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useContext, useEffect, useState } from "react";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
-import { GameControlRow } from "../../components/GameControlRow";
+import { ErrorContext } from "../../components/ErrorContext";
 import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { usePlayerData, usePlayerHand } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, ResponseCardInGame } from "../../shared/types";
+import { logInteraction } from "../../components/utils";
+import {
+  cancelPlayerResponse,
+  submitPlayerResponse,
+  usePlayerData,
+  usePlayerHand
+} from "../../model/turn-api";
+import {
+  GameLobby,
+  GameTurn,
+  PlayerInLobby,
+  PlayerResponse,
+  ResponseCardInGame
+} from "../../shared/types";
+import { GameControlRow } from "../../components/GameControlRow";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -40,6 +53,7 @@ const topRowStyle: CSSProperties = {
 }
 const midRowStyle: CSSProperties = {
   justifyContent: "center",
+  height: "auto",
 }
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
@@ -57,8 +71,31 @@ export function PlayerAnsweringScreen(
   const [data] = usePlayerData(lobby, turn, user.uid);
   const [hand] = usePlayerHand(lobby, turn, user.uid);
   const response = responses.find((r) => r.player_uid === user.uid);
-  const submitted = response != undefined;
+  const submitted = response !== undefined;
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
+  const { setError } = useContext(ErrorContext);
+
+  async function handleSelect(cards: ResponseCardInGame[]) {
+    setSelectedCards(cards);
+    if (!data) return;
+    if (cards.length === turn.prompt?.pick) {
+      logInteraction(lobby.id, { played: cards });
+      await submitPlayerResponse(lobby, turn, data, cards)
+        .catch((e) => setError(e));
+    } else {
+      await cancelPlayerResponse(lobby, turn, data)
+        .catch((e) => setError(e));
+    }
+  }
+
+  const [loggedView, setLoggedView] = useState(false);
+  useEffect(() => {
+    if (hand && !loggedView) {
+      setLoggedView(true);
+      logInteraction(lobby.id, { viewed: hand });
+    }
+  }, [hand, turn.id]);
+
   return <>
     {hand ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
@@ -75,16 +112,12 @@ export function PlayerAnsweringScreen(
         }
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
-        {data ? <GameControlRow
-          lobby={lobby}
+        <GameControlRow
           turn={turn}
           data={data}
-          hand={hand}
-          selection={selectedCards} submitted={submitted} players={players}
-        /> : (
-          // Assume we just joined the game in the middle of it:
-          <span className="light">Wait for next turn</span>
-        )}
+          selection={selectedCards}
+          submitted={submitted}
+        />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
         <GameHand
@@ -95,7 +128,7 @@ export function PlayerAnsweringScreen(
           hand={hand}
           response={response}
           selectedCards={selectedCards}
-          setSelectedCards={setSelectedCards}
+          setSelectedCards={handleSelect}
         />
       </div>
     </CenteredLayout> :

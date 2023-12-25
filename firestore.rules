@@ -72,9 +72,10 @@ service cloud.firestore {
         allow update: if isLoggedIn() && userIsJudge(lobby, turn);
       }
       match /turns/{turn}/player_responses/{userID} {
-        // Allow players to submit once:
-        allow create: if isLoggedIn() && request.auth.uid == userID
-                      && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
+        // Allow players to submit as many times as needed:
+        allow create, update: if isLoggedIn() && request.auth.uid == userID
+                              && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
+        allow delete: if isLoggedIn() && request.auth.uid == userID;
         // Judge can reveal:
         allow update: if isLoggedIn() && userIsJudge(lobby, turn);
       }

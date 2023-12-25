@@ -22,7 +22,7 @@ export function GameHand(
     selectedCards, setSelectedCards
   }: HandProps
 ) {
-  const selectable = !response && pick > 0;
+  const selectable = pick > 0;
   const { setError } = useContext(ErrorContext);
 
   function getSelectedIndex(card: ResponseCardInGame): number {

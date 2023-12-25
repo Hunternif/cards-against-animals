@@ -149,6 +149,16 @@ export async function submitPlayerResponse(
     doc(getPlayerResponsesRef(lobby.id, turn.id), data.player_uid), response);
 }
 
+/** Retract player's response */
+export async function cancelPlayerResponse(
+  lobby: GameLobby,
+  turn: GameTurn,
+  data: PlayerDataInTurn,
+) {
+  await deleteDoc(
+    doc(getPlayerResponsesRef(lobby.id, turn.id), data.player_uid));
+}
+
 /** Called by the judge when revealing a response. */
 export async function revealPlayerResponse(
   lobby: GameLobby, turn: GameTurn, playerID: string,
