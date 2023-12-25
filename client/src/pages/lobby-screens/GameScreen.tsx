@@ -45,14 +45,15 @@ function TurnScreen(props: PreTurnProps) {
   const [responses, loading, error] = useAllPlayerResponses(props.lobby, props.turn);
   const { setError } = useContext(ErrorContext);
   useEffect(() => { if (error) setError(error); }, [error, setError]);
-  const isJudge = props.turn.judge_uid === props.user.uid;
+  const judge = props.players.find((p) => p.uid === props.turn.judge_uid);
+  const isJudge = judge?.uid === props.user.uid;
   const isSpectator = props.players.find((p) => p.uid === props.user.uid)?.role === "spectator";
   const className = `game-screen phase-${props.turn.phase} miniscrollbar miniscrollbar-light`;
 
   if (!responses || loading) {
     return <LoadingSpinner delay text="Loading turn data..." />
   }
-  const newProps = { responses, ...props };
+  const newProps = { responses, judge, ...props };
   return (
     <FillLayout className={className} style={{ overflowY: "auto", }}>
       <div className={`game-bg phase-${props.turn.phase}`} />
@@ -68,6 +69,7 @@ interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
 }

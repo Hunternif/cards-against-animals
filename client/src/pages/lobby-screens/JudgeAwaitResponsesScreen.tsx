@@ -1,7 +1,7 @@
 import { User } from "firebase/auth";
 import { CSSProperties, useContext } from "react";
 import { GameButton } from "../../components/Buttons";
-import { CardPrompt } from "../../components/CardPrompt";
+import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { MiniCardResponse } from "../../components/MiniCardResponse";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
@@ -12,6 +12,7 @@ interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
 }
@@ -44,7 +45,7 @@ const botRowStyle: CSSProperties = {
 
 /** Similar to GameMiniResponses, but slightly different */
 export function JudgeAwaitResponsesScreen(
-  { lobby, turn, user, players, responses }: TurnProps
+  { lobby, turn, user, judge, players, responses }: TurnProps
 ) {
   // const players = dummyPlayers;
   const { setError } = useContext(ErrorContext);
@@ -69,7 +70,8 @@ export function JudgeAwaitResponsesScreen(
   return <CenteredLayout>
     <h2 style={{ textAlign: "center" }} className="dim">Wait for responses:</h2>
     <div style={midRowStyle}>
-      <CardPrompt card={turn.prompt} />
+      <CardPromptWithCzar card={turn.prompt}
+        judge={isJudge ? null : judge} />
       {validPlayers && validPlayers.map((player) => {
         const response = findResponse(player);
         return <MiniCardResponse

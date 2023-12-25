@@ -1,7 +1,7 @@
 import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { CardPrompt } from "../../components/CardPrompt";
+import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
@@ -12,6 +12,7 @@ interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
 }
@@ -47,7 +48,7 @@ const botRowStyle: CSSProperties = {
 // const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard, dummyCard], 123, true);
 // const dummyResponses = new Array<PlayerResponse>(10).fill(dummyResponse, 0, 10);
 
-export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
+export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnProps) {
   // const responses = dummyResponses;
   const [winner, setWinner] = useState<PlayerResponse | null>(null);
   const [startingNewTurn, setStartingNewTurn] = useState(false);
@@ -97,7 +98,7 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
       </>}
     </div>
     <div style={midRowStyle}>
-      <CardPrompt card={turn.prompt} />
+      <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
       {shuffledResponses.sort((r) => r.random_index).map((r) =>
         <ResponseReading
           key={r.player_uid}

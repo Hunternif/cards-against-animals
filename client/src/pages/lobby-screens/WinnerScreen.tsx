@@ -1,7 +1,7 @@
 import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { CardPrompt } from "../../components/CardPrompt";
+import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
@@ -13,6 +13,7 @@ interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
 }
@@ -37,7 +38,9 @@ const botRowStyle: CSSProperties = {
 }
 
 /** Displays winner of the turn */
-export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProps) {
+export function WinnerScreen(
+  { lobby, turn, user, judge, players, responses }: TurnProps
+) {
   const [startingNewTurn, setStartingNewTurn] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
@@ -59,7 +62,7 @@ export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProp
         <Delay>No winner</Delay>}
     </h2>
     <div style={midRowStyle}>
-      <CardPrompt card={turn.prompt} />
+      <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
       {winnerResponse && <ResponseReading response={winnerResponse} />}
     </div>
     <div style={botRowStyle}>

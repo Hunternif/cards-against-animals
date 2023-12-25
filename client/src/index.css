@@ -302,6 +302,15 @@ button.start-button {
 .game-card.selectable {
   cursor: pointer;
 }
+.prompt-czar-name {
+  padding: 0.75rem 0.3rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 9pt;
+  /* font-size: small; */
+  text-align: center;
+  color: #fff;
+}
 
 .hoverable-card {
   transition-property: transform, box-shadow, opacity;
@@ -315,6 +324,10 @@ button.start-button {
 .dim {
   /* Dimmed slightly to not attract too much attention*/
   opacity: 0.8;
+}
+.dimmer {
+  /* Dimmed slightly to not attract too much attention*/
+  opacity: 0.6;
 }
 .light {
   font-size: 0.9rem;

@@ -1,4 +1,4 @@
-import { PromptCardInGame } from "../shared/types";
+import { PlayerInLobby, PromptCardInGame } from "../shared/types";
 import { LargeCard, CardContent, CardBottomRight, CardCenterIcon } from "./LargeCard";
 
 interface PromptCardProps {
@@ -28,6 +28,29 @@ export function CardPrompt({ card }: PromptCardProps) {
       )}
     </LargeCard>
   );
+}
+
+interface PromptWithCzarProps {
+  /** Undefined while the judge hasn't picked a prompt yet */
+  card: PromptCardInGame | undefined | null,
+  judge?: PlayerInLobby | null,
+}
+
+/** Displays the prompt card and the current judge name below it. */
+export function CardPromptWithCzar({ card, judge }: PromptWithCzarProps) {
+  return <div className="game-card-placeholder">
+    <CardPrompt card={card} />
+    {judge &&
+      <div className="prompt-czar-name" style={{
+        width: "100%",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+      }}>
+        <span className="dimmer">Card Czar:</span> {judge.name}
+      </div>
+    }
+  </div>;
 }
 
 interface PickProps {

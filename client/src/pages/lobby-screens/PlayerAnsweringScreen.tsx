@@ -1,6 +1,6 @@
 import { User } from "@firebase/auth";
 import { CSSProperties, useState } from "react";
-import { CardPrompt } from "../../components/CardPrompt";
+import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { GameControlRow } from "../../components/GameControlRow";
 import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
@@ -13,6 +13,7 @@ interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
 }
@@ -50,7 +51,9 @@ const miniResponsesContainerStyle: CSSProperties = {
   marginTop: "2em",
 }
 
-export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }: TurnProps) {
+export function PlayerAnsweringScreen(
+  { lobby, turn, user, judge, players, responses }: TurnProps
+) {
   const [data] = usePlayerData(lobby, turn, user.uid);
   const [hand] = usePlayerHand(lobby, turn, user.uid);
   const response = responses.find((r) => r.player_uid === user.uid);
@@ -59,7 +62,7 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
   return <>
     {hand ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
-        <CardPrompt card={turn.prompt} />
+        <CardPromptWithCzar card={turn.prompt} judge={judge} />
         {turn.prompt &&
           <div style={miniResponsesContainerStyle}>
             <GameMiniResponses
