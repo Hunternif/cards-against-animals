@@ -73,6 +73,7 @@ export function PlayerAnsweringScreen(
   const response = responses.find((r) => r.player_uid === user.uid);
   const submitted = response !== undefined;
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
+  const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
   async function handleSelect(cards: ResponseCardInGame[]) {
@@ -96,6 +97,11 @@ export function PlayerAnsweringScreen(
     }
   }, [hand, turn.id]);
 
+  function handleDiscard() {
+    //TODO call API to discard cards.
+    setDiscarding(false);
+  }
+
   return <>
     {hand ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
@@ -117,6 +123,9 @@ export function PlayerAnsweringScreen(
           data={data}
           selection={selectedCards}
           submitted={submitted}
+          discarding={discarding}
+          onToggleDiscard={(enabled) => setDiscarding(enabled)}
+          onSubmitDiscard={handleDiscard}
         />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
