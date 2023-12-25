@@ -1,7 +1,7 @@
 import { User } from "firebase/auth";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { PromptCard } from "../../components/Cards";
+import { CardPrompt } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
@@ -126,7 +126,7 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
         <div style={midRowStyle}>
           {prompt ? (
             <>
-              <PromptCard card={prompt} />
+              <CardPrompt card={prompt} />
               <div style={sideSectionStyle}>
                 <GameButton secondary small onClick={handleChange}>
                   Change

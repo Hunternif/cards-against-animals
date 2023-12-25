@@ -50,7 +50,7 @@ export function ResponseReading(
         <div style={cardCombinerStyle} className={`many-cards ${featureClass}`} >
           {
             response.cards.map((card, i) =>
-              <ResponseReadingCard key={card.id} card={card} offset={i}
+              <CardResponseReading key={card.id} card={card} offset={i}
                 selectable={canSelect} selected={selected} />
             )
           }
@@ -58,7 +58,7 @@ export function ResponseReading(
       </div>
     ) : (
       <div className={canSelect ? "hoverable-card" : ""} onClick={handleClick}>
-        <ResponseReadingCard card={response.cards[0]}
+        <CardResponseReading card={response.cards[0]}
           selectable={canSelect} selected={selected} />
       </div>
     )
@@ -82,7 +82,7 @@ interface CardProps {
   offset?: number,
 }
 
-function ResponseReadingCard({ card, offset, selectable, selected }: CardProps) {
+function CardResponseReading({ card, offset, selectable, selected }: CardProps) {
   const overlayClass = (offset && offset > 0) ? "overlaid" : ""
   const selectedClass = `${selectable && "selectable"} ${selected && "selected"}`;
   return (

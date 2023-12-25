@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../shared/types";
-import { ResponseCard } from "./Cards";
+import { CardResponse } from "./CardResponse";
 import { ErrorContext } from "./ErrorContext";
 import { toggleDownvoteCard } from "../model/turn-api";
 import { User } from "firebase/auth";
@@ -59,7 +59,7 @@ export function GameHand(
   }
 
   return hand.map((card) =>
-    <ResponseCard key={card.id} card={card}
+    <CardResponse key={card.id} card={card}
       selectable={selectable}
       selectedIndex={getSelectedIndex(card)}
       showIndex={pick > 1}

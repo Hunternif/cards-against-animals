@@ -1,6 +1,6 @@
 import { User } from "@firebase/auth";
 import { CSSProperties, useState } from "react";
-import { PromptCard } from "../../components/Cards";
+import { CardPrompt } from "../../components/CardPrompt";
 import { GameControlRow } from "../../components/GameControlRow";
 import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
@@ -59,7 +59,7 @@ export function PlayerAnsweringScreen({ lobby, turn, user, players, responses }:
   return <>
     {hand ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
-        <PromptCard card={turn.prompt} />
+        <CardPrompt card={turn.prompt} />
         {turn.prompt &&
           <div style={miniResponsesContainerStyle}>
             <GameMiniResponses

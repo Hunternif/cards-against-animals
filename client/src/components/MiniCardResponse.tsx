@@ -6,7 +6,7 @@ interface Props {
 }
 
 /** Indicates whether a player responded */
-export function MiniResponseCard({ ready, pick, playerName }: Props) {
+export function MiniCardResponse({ ready, pick, playerName }: Props) {
   const readyClass = ready ? "ready" : "notready";
   const pickClass = pick > 1 ? "multiple" : "single";
   return (

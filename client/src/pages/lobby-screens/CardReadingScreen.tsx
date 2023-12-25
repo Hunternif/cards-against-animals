@@ -1,7 +1,7 @@
 import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { PromptCard } from "../../components/Cards";
+import { CardPrompt } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
@@ -97,7 +97,7 @@ export function CardReadingScreen({ lobby, turn, user, responses }: TurnProps) {
       </>}
     </div>
     <div style={midRowStyle}>
-      <PromptCard card={turn.prompt} />
+      <CardPrompt card={turn.prompt} />
       {shuffledResponses.sort((r) => r.random_index).map((r) =>
         <ResponseReading
           key={r.player_uid}

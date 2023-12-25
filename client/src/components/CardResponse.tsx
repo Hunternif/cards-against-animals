@@ -1,11 +1,6 @@
-import { CardInGame, PromptCardInGame } from "../shared/types";
+import { CardInGame } from "../shared/types";
 import { IconThumbsDown } from "./Icons";
 import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
-
-interface PromptCardProps {
-  /** Undefined while the judge hasn't picked a prompt yet */
-  card: PromptCardInGame | undefined | null,
-}
 
 interface ResponseCardProps {
   card: CardInGame,
@@ -18,35 +13,7 @@ interface ResponseCardProps {
   onToggleDownvote?: (downvoted: boolean) => void,
 }
 
-interface PickProps {
-  pick: number,
-}
-
-/** Formats gaps to be longer. */
-function formatPrompt(text: string): string {
-  return text.replace(/_+/g, "______");
-}
-
-export function PromptCard({ card }: PromptCardProps) {
-  return (
-    <LargeCard className="card-prompt">
-      {card ? (<>
-        <CardContent>{formatPrompt(card.content)}</CardContent>
-        {card.pick > 1 && (
-          <CardBottomRight>
-            <PromptCardPick pick={card.pick} />
-          </CardBottomRight>
-        )}
-      </>) : (
-        <CardCenterIcon className="prompt-unknown-icon">
-          ?
-        </CardCenterIcon>
-      )}
-    </LargeCard>
-  );
-}
-
-export function ResponseCard(
+export function CardResponse(
   { card, selectable, selectedIndex, showIndex, onToggle, onToggleDownvote }: ResponseCardProps
 ) {
   const selected = selectedIndex != undefined && selectedIndex > -1;
@@ -76,25 +43,6 @@ export function ResponseCard(
       </CardBottomRight>
     </LargeCard>
   );
-}
-
-function PromptCardPick({ pick }: PickProps) {
-  return <>
-    PICK
-    <div className="prompt-pick-number" style={{
-      textAlign: "center",
-      borderRadius: "50%",
-      width: "1rem",
-      height: "1rem",
-      lineHeight: "1rem",
-      marginLeft: "0.5em",
-      backgroundColor: "#fff",
-      color: "#000",
-      fontWeight: "bold",
-    }}>
-      {pick}
-    </div>
-  </>;
 }
 
 interface DownvoteProps {

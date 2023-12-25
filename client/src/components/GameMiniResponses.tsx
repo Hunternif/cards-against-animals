@@ -1,5 +1,5 @@
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../shared/types";
-import { MiniResponseCard } from "./MiniResponseCard";
+import { MiniCardResponse } from "./MiniCardResponse";
 
 interface Props {
   lobby: GameLobby,
@@ -35,7 +35,7 @@ export function GameMiniResponses({ turn, players, responses }: Props) {
   }}>
     {validPlayers && validPlayers.map((player) => {
       const response = findResponse(player);
-      return <MiniResponseCard
+      return <MiniCardResponse
         key={player.uid}
         playerName={player.name}
         ready={response != null}

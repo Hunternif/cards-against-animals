@@ -1,7 +1,7 @@
 import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { PromptCard } from "../../components/Cards";
+import { CardPrompt } from "../../components/CardPrompt";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
@@ -59,7 +59,7 @@ export function WinnerScreen({ lobby, turn, user, players, responses }: TurnProp
         <Delay>No winner</Delay>}
     </h2>
     <div style={midRowStyle}>
-      <PromptCard card={turn.prompt} />
+      <CardPrompt card={turn.prompt} />
       {winnerResponse && <ResponseReading response={winnerResponse} />}
     </div>
     <div style={botRowStyle}>
