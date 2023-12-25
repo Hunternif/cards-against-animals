@@ -1,14 +1,14 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { db } from "../firebase-server";
 import {
-  PromptCardInGame,
-  ResponseCardInGame
-} from "../shared/types";
-import { randomIndex } from "../shared/utils";
-import {
   promptDeckCardConverter,
   responseDeckCardConverter,
 } from "../shared/firestore-converters";
+import { RNG } from "../shared/rng";
+import {
+  PromptCardInGame,
+  ResponseCardInGame
+} from "../shared/types";
 import { getPlayerDataRef, getPlayerHand, getTurnsRef } from "./turn-server-api";
 
 function getDeckPromptsRef(deckID: string) {
@@ -24,11 +24,12 @@ function getDeckResponsesRef(deckID: string) {
 /** Converts Prompt cards from a deck to a in-game Prompt cards. */
 export async function getAllPromptsForGame(deckID: string):
   Promise<Array<PromptCardInGame>> {
+  const rng = RNG.fromStrSeedWithTimestamp("prompts");
   return (await getDeckPromptsRef(deckID).get()).docs.map((p) => {
     const card = p.data();
     const cardInLobby = new PromptCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
-      randomIndex(), card.content, card.pick, card.rating, false);
+      rng.randomInt(), card.content, card.pick, card.rating, false);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
@@ -37,11 +38,12 @@ export async function getAllPromptsForGame(deckID: string):
 /** Converts Response cards from a deck to a in-game Response cards. */
 export async function getAllResponsesForGame(deckID: string):
   Promise<Array<ResponseCardInGame>> {
+  const rng = RNG.fromStrSeedWithTimestamp("responses");
   return (await getDeckResponsesRef(deckID).get()).docs.map((p) => {
     const card = p.data();
     const cardInLobby = new ResponseCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
-      randomIndex(), card.content, card.rating, false);
+      rng.randomInt(), card.content, card.rating, false);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });

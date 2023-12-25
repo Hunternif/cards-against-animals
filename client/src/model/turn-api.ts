@@ -15,6 +15,14 @@ import {
 } from "react-firebase-hooks/firestore";
 import { lobbiesRef, newTurnFun } from "../firebase";
 import {
+  playerDataConverter,
+  playerResponseConverter,
+  promptCardInGameConverter,
+  responseCardInGameConverter,
+  turnConverter
+} from "../shared/firestore-converters";
+import { RNG } from "../shared/rng";
+import {
   GameLobby,
   GameTurn,
   PlayerDataInTurn,
@@ -22,14 +30,6 @@ import {
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
-import { randomIndex } from "../shared/utils";
-import {
-  playerDataConverter,
-  playerResponseConverter,
-  promptCardInGameConverter,
-  responseCardInGameConverter,
-  turnConverter
-} from "../shared/firestore-converters";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 function getTurnsRef(lobbyID: string) {
@@ -142,8 +142,9 @@ export async function submitPlayerResponse(
   data: PlayerDataInTurn,
   cards: ResponseCardInGame[],
 ) {
+  const rng = RNG.fromTimestamp();
   const response = new PlayerResponse(
-    data.player_uid, data.player_name, cards, randomIndex(), false);
+    data.player_uid, data.player_name, cards, rng.randomInt(), false);
   await setDoc(
     doc(getPlayerResponsesRef(lobby.id, turn.id), data.player_uid), response);
 }
