@@ -65,18 +65,20 @@ export class RNG {
    * The returned function will yield random 32-bit integers.
    */
   private mulberry32(a: number) {
-    return function (): number {
-      var t = a += 0x6D2B79F5;
+    return function(): number {
+      let t = a += 0x6D2B79F5;
       t = Math.imul(t ^ t >>> 15, t | 1);
       t ^= t + Math.imul(t ^ t >>> 7, t | 61);
       return (t ^ t >>> 14) >>> 0;
-    }
+    };
   }
 
   /** Generates a 128-bit seed, as 4 32-bit integers. */
   private cyrb128(str: string) {
-    let h1 = 1779033703, h2 = 3144134277,
-      h3 = 1013904242, h4 = 2773480762;
+    let h1 = 1779033703;
+    let h2 = 3144134277;
+    let h3 = 1013904242;
+    let h4 = 2773480762;
     for (let i = 0, k; i < str.length; i++) {
       k = str.charCodeAt(i);
       h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
@@ -97,16 +99,16 @@ export class RNG {
    * The returned function will yield random 32-bit integers.
    */
   private sfc32(a: number, b: number, c: number, d: number) {
-    return function (): number {
+    return function(): number {
       // |= 0 converts to 32-bit integer:
       a |= 0; b |= 0; c |= 0; d |= 0;
-      var t = (a + b | 0) + d | 0;
+      const t = (a + b | 0) + d | 0;
       d = d + 1 | 0;
       a = b ^ b >>> 9;
       b = c + (c << 3) | 0;
       c = (c << 21 | c >>> 11);
       c = c + t | 0;
       return t >>> 0;
-    }
+    };
   }
 }
