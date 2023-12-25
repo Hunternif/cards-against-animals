@@ -14,12 +14,16 @@ interface HandProps {
   response?: PlayerResponse,
   selectedCards: ResponseCardInGame[],
   setSelectedCards: (cards: ResponseCardInGame[]) => void,
+  discarding: boolean,
+  discardedCards: ResponseCardInGame[],
+  setDiscardedCards: (cards: ResponseCardInGame[]) => void,
 }
 
 /** Displays cards that the player has on hand */
 export function GameHand(
   { lobby, turn, user, pick, hand, response,
-    selectedCards, setSelectedCards
+    selectedCards, setSelectedCards,
+    discarding, discardedCards, setDiscardedCards,
   }: HandProps
 ) {
   const selectable = pick > 0;
@@ -58,6 +62,12 @@ export function GameHand(
       .catch((e) => setError(e));
   }
 
+  function isDiscarded(card: ResponseCardInGame): boolean {
+    if (!discarding) return false;
+    // check card by ID, because the response instance could be unequal:
+    return discardedCards.findIndex((c) => c.id === card.id) > -1;
+  }
+
   return hand.map((card) =>
     <CardResponse key={card.id} card={card}
       selectable={selectable}
@@ -70,6 +80,8 @@ export function GameHand(
         }
       }}
       onToggleDownvote={(downvoted) => handleDownvote(card, downvoted)}
+      discarding={discarding}
+      discarded={isDiscarded(card)}
     />
   );
 }

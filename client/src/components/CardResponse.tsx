@@ -11,10 +11,15 @@ interface ResponseCardProps {
   showIndex?: boolean,
   onToggle?: (selected: boolean) => void,
   onToggleDownvote?: (downvoted: boolean) => void,
+  discarding?: boolean,
+  discarded?: boolean,
 }
 
 export function CardResponse(
-  { card, selectable, selectedIndex, showIndex, onToggle, onToggleDownvote }: ResponseCardProps
+  {
+    card, selectable, selectedIndex, showIndex, onToggle, onToggleDownvote,
+    discarding, discarded
+  }: ResponseCardProps
 ) {
   const selected = selectedIndex != undefined && selectedIndex > -1;
   const selectableStyle = selectable ? "hoverable-card" : "locked-card";

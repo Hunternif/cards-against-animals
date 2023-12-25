@@ -73,6 +73,7 @@ export function PlayerAnsweringScreen(
   const response = responses.find((r) => r.player_uid === user.uid);
   const submitted = response !== undefined;
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
+  const [discardedCards, setDiscardedCards] = useState<ResponseCardInGame[]>([]);
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
@@ -138,6 +139,9 @@ export function PlayerAnsweringScreen(
           response={response}
           selectedCards={selectedCards}
           setSelectedCards={handleSelect}
+          discarding={discarding}
+          discardedCards={discardedCards}
+          setDiscardedCards={setDiscardedCards}
         />
       </div>
     </CenteredLayout> :
