@@ -72,7 +72,8 @@ export function PlayerAnsweringScreen(
   const [hand] = usePlayerHand(lobby, turn, user.uid);
   const response = responses.find((r) => r.player_uid === user.uid);
   const submitted = response !== undefined;
-  const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>([]);
+  const [selectedCards, setSelectedCards] =
+    useState<ResponseCardInGame[]>(response?.cards?.slice() ?? []);
   const [discardedCards, setDiscardedCards] = useState<ResponseCardInGame[]>([]);
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
