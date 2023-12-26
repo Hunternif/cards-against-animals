@@ -1,5 +1,5 @@
 import { CardInGame } from "../shared/types";
-import { IconThumbsDown } from "./Icons";
+import { IconThumbsDown, IconTrash } from "./Icons";
 import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 
 interface ResponseCardProps {
@@ -13,22 +13,29 @@ interface ResponseCardProps {
   onToggleDownvote?: (downvoted: boolean) => void,
   discarding?: boolean,
   discarded?: boolean,
+  onToggleDiscard?: (discarded: boolean) => void,
 }
 
 export function CardResponse(
   {
     card, selectable, selectedIndex, showIndex, onToggle, onToggleDownvote,
-    discarding, discarded
+    discarding, discarded, onToggleDiscard,
   }: ResponseCardProps
 ) {
   const selected = selectedIndex != undefined && selectedIndex > -1;
   const selectableStyle = selectable ? "hoverable-card" : "locked-card";
   const selectedStyle = selected ? "selected" : "unselected";
+  const discardingStyle = discarding ? "discarding" : "";
+  const discardedStyle = discarded ? "discarded" : "";
   const voteStyle = card.downvoted ? "downvoted" : "";
-  const className = `card-response ${selectableStyle} ${selectedStyle} ${voteStyle}`;
+  const className = `card-response ${selectableStyle} ${selectedStyle} ${voteStyle} ${discardingStyle} ${discardedStyle}`;
 
   function handleClick() {
-    if (onToggle && selectable) onToggle(!selected);
+    if (discarding) {
+      if (onToggleDiscard) onToggleDiscard(!discarded);
+    } else {
+      if (onToggle && selectable) onToggle(!selected);
+    }
   }
 
   async function handleDownvote() {
@@ -41,6 +48,11 @@ export function CardResponse(
       {showIndex && selected && (
         <CardCenterIcon className="selected-response-index">
           {selectedIndex + 1}
+        </CardCenterIcon>
+      )}
+      {(discarding || discarded) && (
+        <CardCenterIcon className="card-discard-icon">
+          <IconTrash width={64} height={64} />
         </CardCenterIcon>
       )}
       <CardBottomRight>

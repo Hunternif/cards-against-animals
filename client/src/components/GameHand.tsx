@@ -63,9 +63,23 @@ export function GameHand(
   }
 
   function isDiscarded(card: ResponseCardInGame): boolean {
-    if (!discarding) return false;
     // check card by ID, because the response instance could be unequal:
     return discardedCards.findIndex((c) => c.id === card.id) > -1;
+  }
+
+  function discardCard(card: ResponseCardInGame) {
+    const newDiscarded = discardedCards.slice();
+    newDiscarded.push(card);
+    setDiscardedCards(newDiscarded);
+  }
+
+  function undiscardCard(card: ResponseCardInGame) {
+    const newDiscarded = discardedCards.slice();
+    const index = newDiscarded.findIndex((c) => c.id === card.id);
+    if (index > -1) {
+      newDiscarded.splice(index, 1);
+      setDiscardedCards(newDiscarded);
+    }
   }
 
   return hand.map((card) =>
@@ -75,13 +89,23 @@ export function GameHand(
       showIndex={pick > 1}
       onToggle={(selected) => {
         if (selectable) {
-          if (selected) selectCard(card);
+          if (selected) {
+            selectCard(card);
+            undiscardCard(card);
+          }
           else deselectCard(card);
         }
       }}
       onToggleDownvote={(downvoted) => handleDownvote(card, downvoted)}
       discarding={discarding}
       discarded={isDiscarded(card)}
+      onToggleDiscard={(discarded) => {
+        if (discarded) {
+          discardCard(card);
+          deselectCard(card);
+        }
+        else undiscardCard(card);
+      }}
     />
   );
 }

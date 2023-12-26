@@ -104,6 +104,15 @@ export function PlayerAnsweringScreen(
     setDiscarding(false);
   }
 
+  function toggleDiscard(on: boolean) {
+    if (on) {
+      setDiscarding(true);
+    } else {
+      setDiscarding(false);
+      setDiscardedCards([]);
+    }
+  }
+
   return <>
     {hand ? <CenteredLayout style={containerStyle}>
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
@@ -126,7 +135,7 @@ export function PlayerAnsweringScreen(
           selection={selectedCards}
           submitted={submitted}
           discarding={discarding}
-          onToggleDiscard={(enabled) => setDiscarding(enabled)}
+          onToggleDiscard={toggleDiscard}
           onSubmitDiscard={handleDiscard}
         />
       </div>
