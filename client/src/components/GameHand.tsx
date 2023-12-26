@@ -26,7 +26,7 @@ export function GameHand(
     discarding, discardedCards, setDiscardedCards,
   }: HandProps
 ) {
-  const selectable = pick > 0;
+  const isHandSelectable = pick > 0;
   const { setError } = useContext(ErrorContext);
 
   function getSelectedIndex(card: ResponseCardInGame): number {
@@ -62,7 +62,7 @@ export function GameHand(
       .catch((e) => setError(e));
   }
 
-  function isDiscarded(card: ResponseCardInGame): boolean {
+  function getIsDiscarded(card: ResponseCardInGame): boolean {
     // check card by ID, because the response instance could be unequal:
     return discardedCards.findIndex((c) => c.id === card.id) > -1;
   }
@@ -82,13 +82,16 @@ export function GameHand(
     }
   }
 
-  return hand.map((card) =>
-    <CardResponse key={card.id} card={card}
-      selectable={selectable}
+  return hand.map((card) => {
+    const selectedIndex = getSelectedIndex(card);
+    const isSelected = selectedIndex >= 0;
+    const isDiscarded = getIsDiscarded(card);
+    return <CardResponse key={card.id} card={card}
+      selectable={isHandSelectable && !(discarding && isSelected)}
       selectedIndex={getSelectedIndex(card)}
       showIndex={pick > 1}
       onToggle={(selected) => {
-        if (selectable) {
+        if (isHandSelectable) {
           if (selected) {
             selectCard(card);
             undiscardCard(card);
@@ -97,8 +100,8 @@ export function GameHand(
         }
       }}
       onToggleDownvote={(downvoted) => handleDownvote(card, downvoted)}
-      discarding={discarding}
-      discarded={isDiscarded(card)}
+      discarding={!isSelected && discarding}
+      discarded={isDiscarded}
       onToggleDiscard={(discarded) => {
         if (discarded) {
           discardCard(card);
@@ -107,5 +110,6 @@ export function GameHand(
         else undiscardCard(card);
       }}
     />
+  }
   );
 }

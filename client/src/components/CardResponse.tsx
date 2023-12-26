@@ -50,13 +50,12 @@ export function CardResponse(
           {selectedIndex + 1}
         </CardCenterIcon>
       )}
-      {(discarding || discarded) && (
-        <CardCenterIcon className="card-discard-icon">
-          <IconTrash width={64} height={64} />
-        </CardCenterIcon>
-      )}
       <CardBottomRight>
-        <Downvote onClick={handleDownvote} />
+        {(discarding || discarded) ? (
+          <IconTrash width={24} height={24} className="card-discard-icon" />
+        ) : (
+          <Downvote onClick={handleDownvote} />
+        )}
       </CardBottomRight>
     </LargeCard>
   );

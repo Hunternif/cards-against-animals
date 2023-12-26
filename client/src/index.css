@@ -435,36 +435,27 @@ button.start-button {
   font-size: 5rem;
   opacity: 0.1;
 }
-.card-response.discarding:hover .card-discard-icon {
+.card-response.discarding.hoverable-card:hover .card-discard-icon {
   opacity: 0.4;
 }
-.card-response.discarding:hover {
+.card-response.discarding.hoverable-card:hover {
   opacity: 1;
-  /* background-image: linear-gradient(to bottom, #fee2e2, #fff);
-  box-shadow: 0px 0px 20px 5px rgba(227, 59, 59, 0.5); */
-  /* background-image: linear-gradient(to bottom, #c5adad, #dddddd); */
-  /* box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.3); */
-  background-image: linear-gradient(to bottom, #a8a7a5, #fff);
+  box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.1);
 }
-/* Selected card still has a yellow tint */
-.card-response.selected.discarding:hover {
-  color: #47280c;
-  background-image: linear-gradient(to bottom, #a89e8b, #fff);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-.card-response.selected.discarding .card-discard-icon {
-  color: #47280c;
-}
-.card-response.discarded {
-  background-image: linear-gradient(to bottom, #919191, #ebebeb);
-  box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.3);
+.card-response.unselected.discarded {
+  background-color: #bbb;
+  box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.2);
   opacity: 1;
 }
 .card-response.discarded .card-discard-icon {
-  opacity: 0.7;
+  opacity: 0.9;
 }
-.card-response.discarded:hover .card-discard-icon {
-  opacity: 0.7;
+.card-response.discarded.hoverable-card:hover .card-discard-icon {
+  opacity: 0.9;
+}
+.card-response.discarded.hoverable-card:hover {
+  background-color: #ccc;
+  box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.1);
 }
 
 /*--------------------- Scoreboard on the final screen -----------------*/
