@@ -51,7 +51,9 @@ const rowStyle: CSSProperties = {
 const topRowStyle: CSSProperties = {
   justifyContent: "flex-start",
   flexWrap: "nowrap",
-  padding: "1em",
+  paddingLeft: "1em",
+  paddingRight: "1em",
+  paddingBottom: "1em",
 }
 const midRowStyle: CSSProperties = {
   justifyContent: "center",
@@ -67,7 +69,7 @@ const miniResponsesContainerStyle: CSSProperties = {
   flex: "1 1 auto",
   overflow: "hidden",
   maxHeight: "20rem",
-  marginTop: "2em",
+  marginTop: "1em",
 }
 
 export function PlayerAnsweringScreen(

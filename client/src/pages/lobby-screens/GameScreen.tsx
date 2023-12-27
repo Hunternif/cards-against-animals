@@ -19,10 +19,7 @@ interface ScreenProps {
 }
 
 const menuStyle: CSSProperties = {
-  position: "absolute",
-  marginLeft: "auto",
-  right: "0.5rem",
-  top: "0.5rem",
+  padding: "0.5rem",
 }
 
 export function GameScreen({ lobby, user, players }: ScreenProps) {
