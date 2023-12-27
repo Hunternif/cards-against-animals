@@ -43,7 +43,7 @@ function getPlayerResponsesRef(lobbyID: string, turnID: string) {
 }
 
 /** Returns Firestore subcollection reference. */
-export function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
+function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data/${userID}/discarded`)
     .withConverter(responseCardInGameConverter);
 }
@@ -96,6 +96,14 @@ export async function getPlayerHand(
   lobbyID: string, turnID: string, uid: string
 ): Promise<ResponseCardInGame[]> {
   return (await getPlayerHandRef(lobbyID, turnID, uid).get())
+    .docs.map((t) => t.data());
+}
+
+/** Discarded cards from a specific player, from a specific turn. */
+export async function getPlayerDiscard(
+  lobbyID: string, turnID: string, uid: string
+): Promise<ResponseCardInGame[]> {
+  return (await getPlayerDiscardRef(lobbyID, turnID, uid).get())
     .docs.map((t) => t.data());
 }
 
@@ -195,10 +203,11 @@ export async function dealCardsToPlayer(
   const newPlayerData = new PlayerDataInTurn(userID, player.name);
   if (lastTurn) {
     const lastResponse = await getPlayerResponse(lobbyID, lastTurn.id, userID);
-    // copy old hand, discarding submitted cards:
-    const playedCardIds = new Set(lastResponse?.cards?.map((card) => card.id));
+    const lastDiscard = await getPlayerDiscard(lobbyID, lastTurn.id, userID);
+    // copy old hand, without the submitted and discarded cards:
     const oldHand = (await getPlayerHand(lobbyID, lastTurn.id, userID))
-      ?.filter((card) => !playedCardIds.has(card.id)) || [];
+      ?.filter((card) => !lastResponse?.cards?.find((c) => c.id === card.id))
+      ?.filter((card) => !lastDiscard.find((c) => c.id === card.id));
     // temporarily write hand here, then upload it as a subcollection
     newPlayerData.hand.push(...oldHand);
   }
