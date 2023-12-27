@@ -104,7 +104,7 @@ export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnP
     </div>
     <div style={midRowStyle}>
       <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
-      {shuffledResponses.sort((r) => r.random_index).map((r) =>
+      {shuffledResponses.map((r) =>
         <ResponseReading
           key={r.player_uid}
           response={r}
