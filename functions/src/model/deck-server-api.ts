@@ -59,11 +59,11 @@ function prefixID(deckID: string, cardID: string): string {
 function getCardIndex(card: DeckCard, rng: RNG): number {
   const base = rng.randomInt();
   // TODO: enable this based on lobby settings.
-  let factor = (100.0 + card.rating) / 100.0
-    * (card.plays + 1.0)
-    * 10.0 / (card.views + 10.0)
-    * (2 * card.wins + 1.0)
-    * 1.0 / (card.discards + 1.0);
+  let factor = (100.0 + card.rating) / 100.0 *
+    (card.plays + 1.0) *
+    10.0 / (card.views + 10.0) *
+    (2 * card.wins + 1.0) *
+    1.0 / (card.discards + 1.0);
   factor = Math.max(0.0001, factor);
   factor = Math.min(factor, 1.2);
   const result = (base * factor) >>> 0;
