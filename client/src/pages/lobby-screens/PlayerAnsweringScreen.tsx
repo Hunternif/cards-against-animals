@@ -2,6 +2,7 @@ import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
+import { GameControlRow } from "../../components/GameControlRow";
 import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
@@ -21,7 +22,6 @@ import {
   PlayerResponse,
   ResponseCardInGame
 } from "../../shared/types";
-import { GameControlRow } from "../../components/GameControlRow";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -103,12 +103,6 @@ export function PlayerAnsweringScreen(
     }
   }, [hand, turn.id]);
 
-  async function submitDiscard() {
-    setDiscarding(false);
-    await discardCards(lobby, turn, user.uid, discardedCards)
-      .catch((e) => setError(e));
-  }
-
   /** When discarding mode is turned on/off. */
   function toggleDiscard(on: boolean) {
     if (on) {
@@ -119,9 +113,11 @@ export function PlayerAnsweringScreen(
     }
   }
 
-  /** When new discarded cards are clicked. */
+  /** When new discarded cards are clicked, automatically update firestore. */
   async function handleDiscard(cards: ResponseCardInGame[]) {
     setDiscardedCards(cards);
+    await discardCards(lobby, turn, user.uid, cards)
+      .catch((e) => setError(e));
   }
 
   return <>
@@ -147,7 +143,6 @@ export function PlayerAnsweringScreen(
           submitted={submitted}
           discarding={discarding}
           onToggleDiscard={toggleDiscard}
-          onSubmitDiscard={submitDiscard}
         />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>

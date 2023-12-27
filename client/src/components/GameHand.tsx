@@ -94,7 +94,9 @@ export function GameHand(
         if (isHandSelectable) {
           if (selected) {
             selectCard(card);
-            undiscardCard(card);
+            if (isDiscarded) {
+              undiscardCard(card);
+            }
           }
           else deselectCard(card);
         }
@@ -103,10 +105,7 @@ export function GameHand(
       discarding={!isSelected && discarding}
       discarded={isDiscarded}
       onToggleDiscard={(discarded) => {
-        if (discarded) {
-          discardCard(card);
-          deselectCard(card);
-        }
+        if (discarded) discardCard(card);
         else undiscardCard(card);
       }}
     />

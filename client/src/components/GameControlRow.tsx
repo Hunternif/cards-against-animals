@@ -13,7 +13,6 @@ interface ControlProps {
   submitted: boolean,
   discarding: boolean,
   onToggleDiscard: (enabled: boolean) => void,
-  onSubmitDiscard: () => void,
 }
 
 const containerStyle: CSSProperties = {
@@ -56,7 +55,7 @@ const rightStyle: CSSProperties = {
 export function GameControlRow(
   {
     turn, data, selection, submitted,
-    discarding, onToggleDiscard, onSubmitDiscard,
+    discarding, onToggleDiscard,
   }: ControlProps
 ) {
   const picked = selection.length;
@@ -81,8 +80,7 @@ export function GameControlRow(
       </div>
       <div style={rightStyle}>
         {discarding ? (<>
-          <GameButton small onClick={() => onSubmitDiscard()}>Discard</GameButton>
-          <GameButton secondary small onClick={() => onToggleDiscard(false)}>Cancel</GameButton>
+          <GameButton small onClick={() => onToggleDiscard(false)}>Done</GameButton>
         </>) : (
           <GameButton secondary small onClick={() => onToggleDiscard(true)}>Discard...</GameButton>
         )}
