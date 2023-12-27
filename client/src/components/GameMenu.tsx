@@ -26,6 +26,30 @@ const rowStyle: CSSProperties = {
   zIndex: 99,
 }
 
+const leftStyle: CSSProperties = {
+  flexGrow: 1,
+  flexShrink: 1,
+  flexBasis: "0%",
+  display: "flex",
+  justifyContent: "flex-start",
+};
+const midStyle: CSSProperties = {
+  flexGrow: 1,
+  flexShrink: 0,
+  flexBasis: "0%",
+  display: "flex",
+  justifyContent: "center",
+};
+const rightStyle: CSSProperties = {
+  flexGrow: 1,
+  flexShrink: 1,
+  flexBasis: "0%",
+  display: "flex",
+  gap: "0.5em",
+  justifyContent: "flex-end",
+  alignItems: "center",
+};
+
 export function GameMenu(
   { lobby, turn, user, players, className, style }: MenuProps
 ) {
@@ -47,27 +71,32 @@ export function GameMenu(
 
   return (
     <div style={{ ...rowStyle, ...style }}>
-      {(player) && <CustomDropdown className={className}
-        toggle={
-          <span className="score-menu-icon">⭐{player.score}</span>
-        }>
-        <Dropdown.Menu>
-          <div className="menu-scoreboard">
-            <Scoreboard lobby={lobby} players={players} />
-          </div>
-        </Dropdown.Menu>
-      </CustomDropdown>}
-      <CustomDropdown className={className} showArrow
-        toggle={
-          <span className="light">
-            {user.displayName}{isSpectator && " (spectator)"}
-          </span>
-        } toggleClassName="game-menu-icon">
-        <Dropdown.Menu>
-          <Dropdown.Item onClick={handleLeave}>Leave</Dropdown.Item>
-          {isJudge && <Dropdown.Item onClick={handleEnd}>End game</Dropdown.Item>}
-        </Dropdown.Menu>
-      </CustomDropdown>
+      <div style={leftStyle}>
+        <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
+      </div>
+      <div style={rightStyle}>
+        {(player) && <CustomDropdown className={className}
+          toggle={
+            <span className="score-menu-icon">⭐{player.score}</span>
+          }>
+          <Dropdown.Menu>
+            <div className="menu-scoreboard">
+              <Scoreboard lobby={lobby} players={players} />
+            </div>
+          </Dropdown.Menu>
+        </CustomDropdown>}
+        <CustomDropdown className={className} showArrow
+          toggle={
+            <span className="light">
+              {user.displayName}{isSpectator && " (spectator)"}
+            </span>
+          } toggleClassName="game-menu-icon">
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={handleLeave}>Leave</Dropdown.Item>
+            {isJudge && <Dropdown.Item onClick={handleEnd}>End game</Dropdown.Item>}
+          </Dropdown.Menu>
+        </CustomDropdown>
+      </div>
     </div>
   );
 }

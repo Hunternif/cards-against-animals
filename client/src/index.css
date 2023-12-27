@@ -373,13 +373,6 @@ button.start-button {
   user-select: none;
 }
 
-.game-menu-icon {
-  opacity: 0.5;
-}
-.game-menu-icon:hover {
-  opacity: 1;
-}
-
 .stat-label {
   color: rgba(229, 231, 235, 0.7);
 }
@@ -513,6 +506,18 @@ button.start-button {
 }
 .menu-scoreboard tr:last-child td {
   border-style: none;
+}
+
+/*------------------------------- Game menu ----------------------------*/
+
+.game-menu-icon {
+  opacity: 0.5;
+}
+.game-menu-icon:hover {
+  opacity: 1;
+}
+.menu-turn-ordinal {
+  opacity: 0.4;
 }
 
 /*======================= Mobile =======================*/
