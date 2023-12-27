@@ -76,6 +76,11 @@ export async function updateLobby(lobby: GameLobby): Promise<void> {
   await lobbiesRef.doc(lobby.id).set(lobby);
 }
 
+/** Updates player data in lobby in Firestore. */
+export async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
+  await getPlayersRef(lobbyID).doc(player.uid).set(player);
+}
+
 /** Find player in this lobby. */
 export async function getPlayer(lobbyID: string, userID: string):
   Promise<PlayerInLobby | null> {

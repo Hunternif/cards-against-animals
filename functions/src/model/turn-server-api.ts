@@ -17,7 +17,7 @@ import {
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
-import { getOnlinePlayers, getPlayer } from "./lobby-server-api";
+import { getOnlinePlayers, getPlayer, getPlayers, updatePlayer } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
@@ -40,6 +40,12 @@ function getPlayerHandRef(lobbyID: string, turnID: string, userID: string) {
 function getPlayerResponsesRef(lobbyID: string, turnID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_responses`)
     .withConverter(playerResponseConverter);
+}
+
+/** Returns Firestore subcollection reference. */
+export function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
+  return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data/${userID}/discarded`)
+    .withConverter(responseCardInGameConverter);
 }
 
 /** Returns all turns that occurred in this lobby. */
@@ -233,4 +239,22 @@ async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
   // Simply sort players by UIDs:
   const uids = players.map((p) => p.uid);
   return uids.sort();
+}
+
+/** Updates all player's scores from this turn, if it has ended. */
+export async function updatePlayerScoresFromTurn(
+  lobbyID: string, turn: GameTurn,
+) {
+  const players = await getPlayers(lobbyID, "player");
+  for (const player of players) {
+    if (turn.winner_uid === player.uid) {
+      player.score++;
+    }
+    const discardRef = getPlayerDiscardRef(lobbyID, turn.id, player.uid);
+    const discardCount = (await discardRef.count().get()).data().count;
+    if (discardCount > 0) {
+      player.score--;
+    }
+    await updatePlayer(lobbyID, player);
+  }
 }

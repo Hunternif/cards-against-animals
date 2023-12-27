@@ -1,4 +1,7 @@
 import * as logger from "firebase-functions/logger";
+import {
+  onDocumentUpdated
+} from "firebase-functions/v2/firestore";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 // This import is copied during build
@@ -8,6 +11,7 @@ import {
   assertLoggedIn,
   assertPlayerInLobby
 } from "./model/auth-api";
+import { logCardInteractions, logDownvotes } from "./model/deck-server-api";
 import {
   addPlayer,
   copyDecksToLobby,
@@ -19,10 +23,11 @@ import {
 import {
   createNewTurn,
   getLastTurn,
+  updatePlayerScoresFromTurn,
   updateTurn
 } from "./model/turn-server-api";
+import { turnConverter } from "./shared/firestore-converters";
 import { PromptCardInGame, ResponseCardInGame } from "./shared/types";
-import { logCardInteractions, logDownvotes } from "./model/deck-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -176,3 +181,13 @@ export const logInteraction = onCall<
     logger.info(`Logged ${total} interactions`);
   }
 );
+
+export const onTurnEndUpdateScores = onDocumentUpdated(
+  "lobbies/{lobbyID}/turns/{turnID}",
+  async (event) => {
+    if (!event.data) return;
+    const turnBefore = turnConverter.fromFirestore(event.data.before);
+    const turnAfter = turnConverter.fromFirestore(event.data.after);
+    if (turnBefore.phase !== turnAfter.phase && turnAfter.phase === "complete")
+      await updatePlayerScoresFromTurn(event.params.lobbyID, turnAfter);
+  });
