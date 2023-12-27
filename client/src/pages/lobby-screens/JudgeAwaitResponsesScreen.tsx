@@ -38,6 +38,7 @@ const botRowStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   gap: "1rem",
+  height: "3em",
 }
 
 // const dummyPlayer = new PlayerInLobby("01", "Dummy");
