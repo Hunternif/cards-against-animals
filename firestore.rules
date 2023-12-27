@@ -38,6 +38,11 @@ service cloud.firestore {
       let card = get(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)/player_data/$(userID)/hand/$(cardID)).data;
       return request.resource.data['content'] == card['content'];
     }
+    // Don't allow changing a player's score
+    function isScoreUnchanged(lobby, userID) {
+      let doc = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
+      return doc == null || doc.data['score'] == request.resource.data['score'];
+    }
 
   	match /decks/{document=**} {
     	allow read;
@@ -57,7 +62,8 @@ service cloud.firestore {
       match /players/{userID} {
         // Allow reading and updating your own info.
         // Don't allow creating or deleting, to preserve history.
-        allow read, update: if isLoggedIn() && request.auth.uid == userID;
+        allow read, update: if isLoggedIn() && request.auth.uid == userID
+                            && isScoreUnchanged(lobby, userID);
       }
       match /deck_prompts/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);

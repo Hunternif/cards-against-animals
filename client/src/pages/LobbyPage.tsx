@@ -76,7 +76,7 @@ function JoinedLobbyScreen({ lobbyID, user }: LoggedInJoinedProps) {
     case "in_progress":
       return <GameScreen lobby={lobby} user={user} players={players} />;
     case "ended":
-      return <ScoreboardScreen lobby={lobby} user={user} />;
+      return <ScoreboardScreen lobby={lobby} user={user} players={players} />;
     default:
       throw new Error(`Unknown lobby status "${lobby.status}"`);
   }

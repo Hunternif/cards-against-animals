@@ -5,11 +5,12 @@ import { GameButton } from "../../components/Buttons";
 import { Delay } from "../../components/Delay";
 import { Scoreboard } from "../../components/Scoreboard";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { GameLobby } from "../../shared/types";
+import { GameLobby, PlayerInLobby } from "../../shared/types";
 
 interface Props {
   lobby: GameLobby,
   user: User,
+  players: PlayerInLobby[],
 }
 
 const midRowStyle: CSSProperties = {
@@ -30,12 +31,12 @@ const botRowStyle: CSSProperties = {
   alignItems: "center",
 }
 
-export function ScoreboardScreen({ lobby }: Props) {
+export function ScoreboardScreen({ lobby, players }: Props) {
   const navigate = useNavigate();
   return <CenteredLayout className="scoreboard-screen">
     <h2>Scoreboard</h2>
     <div style={midRowStyle}>
-      <Scoreboard lobby={lobby} />
+      <Scoreboard lobby={lobby} players={players} />
     </div>
     <div style={botRowStyle}>
       <Delay>
