@@ -87,7 +87,7 @@ export function GameHand(
     const isSelected = selectedIndex >= 0;
     const isDiscarded = getIsDiscarded(card);
     return <CardResponse key={card.id} card={card}
-      selectable={isHandSelectable && !(discarding && isSelected)}
+      selectable={(discarding || isHandSelectable) && !(discarding && isSelected)}
       selectedIndex={getSelectedIndex(card)}
       showIndex={pick > 1}
       onToggle={(selected) => {
