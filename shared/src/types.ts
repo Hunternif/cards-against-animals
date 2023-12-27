@@ -86,6 +86,8 @@ export class GameTurn {
 
   //================== Technical stuff ==================
   id: string;
+  /** Turn's ordinal number: 1, 2, 3, ... */
+  ordinal: number;
   /** Counts down to 0 in ms, to limit time for the next action. */
   timer_ms: number = 0;
   time_created: Date;
@@ -93,11 +95,13 @@ export class GameTurn {
 
   constructor(
     id: string,
+    ordinal: number,
     judge_uid: string,
     prompt?: PromptCardInGame,
     time_created: Date = new Date(),
   ) {
     this.id = id;
+    this.ordinal = ordinal;
     this.judge_uid = judge_uid;
     this.prompt = prompt;
     this.time_created = time_created;

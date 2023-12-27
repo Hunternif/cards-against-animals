@@ -90,6 +90,7 @@ export const turnConverter: FConverter<GameTurn> = {
     const prompt = data.prompt && mapPromptCardInGame(data.prompt);
     const ret = new GameTurn(
       snapshot.id,
+      data.ordinal,
       data.judge_uid,
       prompt,
       time_created?.toDate(),
