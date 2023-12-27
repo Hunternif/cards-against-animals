@@ -27,7 +27,6 @@ const midRowStyle: CSSProperties = {
 }
 
 const botRowStyle: CSSProperties = {
-  position: "relative",
   marginTop: "1.5rem",
   height: "3rem",
   display: "flex",
@@ -65,7 +64,7 @@ export function WinnerScreen(
       <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
       {winnerResponse && <ResponseReading response={winnerResponse} />}
     </div>
-    <div style={botRowStyle}>
+    <div style={botRowStyle} className="winner-control-row">
       {isJudge && <Delay>
         <GameButton accent onClick={handleNewTurn}
           disabled={startingNewTurn}>
