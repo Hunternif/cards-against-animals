@@ -4,7 +4,7 @@ import {
   collection, deleteDoc, doc,
   getCountFromServer,
   getDocs, limit, orderBy,
-  query, setDoc, updateDoc
+  query, runTransaction, setDoc, updateDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
@@ -13,7 +13,7 @@ import {
   useCollectionDataOnce,
   useDocumentData
 } from "react-firebase-hooks/firestore";
-import { lobbiesRef, newTurnFun } from "../firebase";
+import { db, lobbiesRef, newTurnFun } from "../firebase";
 import {
   playerDataConverter,
   playerResponseConverter,
@@ -52,6 +52,12 @@ function getPlayerResponsesRef(lobbyID: string, turnID: string) {
 /** Returns Firestore subcollection reference of player responses in turn. */
 function getPlayerHandRef(lobbyID: string, turnID: string, userID: string) {
   return collection(lobbiesRef, lobbyID, "turns", turnID, "player_data", userID, "hand")
+    .withConverter(responseCardInGameConverter);
+}
+
+/** Returns Firestore subcollection reference of player's discarded cards in turn. */
+function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
+  return collection(lobbiesRef, lobbyID, "turns", turnID, "player_data", userID, "discarded")
     .withConverter(responseCardInGameConverter);
 }
 
@@ -192,6 +198,24 @@ export async function toggleDownvoteCard(
   await updateHandCard(lobby.id, turn.id, userID, card);
 }
 
+/** Set cards as discarded. When the next turn begins, these cards will be
+ * removed from the player's hand, and their final score will decrease by 1. */
+export async function discardCards(
+  lobby: GameLobby, turn: GameTurn, userID: string, cards: ResponseCardInGame[],
+) {
+  const discardRef = getPlayerDiscardRef(lobby.id, turn.id, userID);
+  const currentDiscard = (await getDocs(discardRef)).docs;
+  await runTransaction(db, async (transaction) => {
+    // Delete old discard:
+    for (const oldDoc of currentDiscard) {
+      transaction.delete(doc(discardRef, oldDoc.id));
+    }
+    for (const card of cards) {
+      transaction.set(doc(discardRef, card.id), card);
+    }
+  });
+}
+
 
 type LastTurnHook = [
   lastTurn: GameTurn | null,
@@ -290,4 +314,12 @@ export function useAllPlayerResponsesOnce(lobby: GameLobby, turn: GameTurn) {
   return useCollectionDataOnce(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses")
       .withConverter(playerResponseConverter));
+}
+
+/** Returns and subscribes to current user's player discarded cards
+ * in the current turn in the lobby. */
+export function usePlayerDiscard(lobby: GameLobby, turn: GameTurn, userID: string) {
+  return useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID, "discarded")
+      .withConverter(responseCardInGameConverter));
 }

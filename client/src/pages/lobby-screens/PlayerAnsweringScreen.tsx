@@ -9,6 +9,7 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { logInteraction } from "../../components/utils";
 import {
   cancelPlayerResponse,
+  discardCards,
   submitPlayerResponse,
   usePlayerData,
   usePlayerHand
@@ -29,6 +30,7 @@ interface TurnProps {
   judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
+  playerDiscard: ResponseCardInGame[],
 }
 
 const containerStyle: CSSProperties = {
@@ -66,7 +68,7 @@ const miniResponsesContainerStyle: CSSProperties = {
 }
 
 export function PlayerAnsweringScreen(
-  { lobby, turn, user, judge, players, responses }: TurnProps
+  { lobby, turn, user, judge, players, responses, playerDiscard }: TurnProps
 ) {
   const [data] = usePlayerData(lobby, turn, user.uid);
   const [hand] = usePlayerHand(lobby, turn, user.uid);
@@ -74,10 +76,12 @@ export function PlayerAnsweringScreen(
   const submitted = response !== undefined;
   const [selectedCards, setSelectedCards] =
     useState<ResponseCardInGame[]>(response?.cards?.slice() ?? []);
-  const [discardedCards, setDiscardedCards] = useState<ResponseCardInGame[]>([]);
+  const [discardedCards, setDiscardedCards] =
+    useState<ResponseCardInGame[]>(playerDiscard.slice());
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
+  /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {
     setSelectedCards(cards);
     if (!data) return;
@@ -99,18 +103,25 @@ export function PlayerAnsweringScreen(
     }
   }, [hand, turn.id]);
 
-  function handleDiscard() {
-    //TODO call API to discard cards.
+  async function submitDiscard() {
     setDiscarding(false);
+    await discardCards(lobby, turn, user.uid, discardedCards)
+      .catch((e) => setError(e));
   }
 
+  /** When discarding mode is turned on/off. */
   function toggleDiscard(on: boolean) {
     if (on) {
       setDiscarding(true);
     } else {
       setDiscarding(false);
-      setDiscardedCards([]);
+      setDiscardedCards(playerDiscard);
     }
+  }
+
+  /** When new discarded cards are clicked. */
+  async function handleDiscard(cards: ResponseCardInGame[]) {
+    setDiscardedCards(cards);
   }
 
   return <>
@@ -136,7 +147,7 @@ export function PlayerAnsweringScreen(
           submitted={submitted}
           discarding={discarding}
           onToggleDiscard={toggleDiscard}
-          onSubmitDiscard={handleDiscard}
+          onSubmitDiscard={submitDiscard}
         />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
@@ -151,7 +162,7 @@ export function PlayerAnsweringScreen(
           setSelectedCards={handleSelect}
           discarding={discarding}
           discardedCards={discardedCards}
-          setDiscardedCards={setDiscardedCards}
+          setDiscardedCards={handleDiscard}
         />
       </div>
     </CenteredLayout> :

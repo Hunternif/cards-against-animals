@@ -84,6 +84,10 @@ service cloud.firestore {
         allow update: if isLoggedIn() && request.auth.uid == userID
                       && isCardContentUnmodified(lobby, turn, userID, cardID);
       }
+      match /turns/{turn}/player_data/{userID}/discarded/{cardID} {
+        // Allow players to read & write their own discard:
+        allow read, write: if isLoggedIn() && request.auth.uid == userID;
+      }
     }
     match /users/{userID} {
       // allow reading only your own info when you are logged in.

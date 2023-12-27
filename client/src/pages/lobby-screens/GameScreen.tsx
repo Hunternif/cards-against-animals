@@ -4,8 +4,8 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { GameMenu } from "../../components/GameMenu";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { FillLayout } from "../../components/layout/FillLayout";
-import { useAllPlayerResponses, useLastTurn } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { useAllPlayerResponses, useLastTurn, usePlayerDiscard } from "../../model/turn-api";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, ResponseCardInGame } from "../../shared/types";
 import { CardReadingScreen } from "./CardReadingScreen";
 import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
 import { JudgePickPromptScreen } from "./JudgePickPromptScreen";
@@ -42,18 +42,21 @@ interface PreTurnProps {
 }
 
 function TurnScreen(props: PreTurnProps) {
-  const [responses, loading, error] = useAllPlayerResponses(props.lobby, props.turn);
+  const [responses, loadingResponses, error] = useAllPlayerResponses(props.lobby, props.turn);
+  const [playerDiscard, loadingDiscard, error2] = usePlayerDiscard(props.lobby, props.turn, props.user.uid);
   const { setError } = useContext(ErrorContext);
-  useEffect(() => { if (error) setError(error); }, [error, setError]);
+  useEffect(() => {
+    if (error || error2) setError(error || error2);
+  }, [error, setError]);
   const judge = props.players.find((p) => p.uid === props.turn.judge_uid);
   const isJudge = judge?.uid === props.user.uid;
   const isSpectator = props.players.find((p) => p.uid === props.user.uid)?.role === "spectator";
   const className = `game-screen phase-${props.turn.phase} miniscrollbar miniscrollbar-light`;
 
-  if (!responses || loading) {
-    return <LoadingSpinner delay text="Loading turn data..." />
+  if (!responses || loadingResponses || !playerDiscard || loadingDiscard) {
+    return <LoadingSpinner delay text="Loading turn data..." />;
   }
-  const newProps = { responses, judge, ...props };
+  const newProps = { responses, playerDiscard, judge, ...props };
   return (
     <FillLayout className={className} style={{ overflowY: "auto", }}>
       <div className={`game-bg phase-${props.turn.phase}`} />
@@ -72,6 +75,7 @@ interface TurnProps {
   judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
+  playerDiscard: ResponseCardInGame[],
 }
 
 function JudgeScreen(props: TurnProps) {
