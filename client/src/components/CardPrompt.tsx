@@ -1,3 +1,4 @@
+import { CSSProperties } from "react";
 import { PlayerInLobby, PromptCardInGame } from "../shared/types";
 import { LargeCard, CardContent, CardBottomRight, CardCenterIcon } from "./LargeCard";
 
@@ -30,6 +31,10 @@ export function CardPrompt({ card }: PromptCardProps) {
   );
 }
 
+const containerStyle: CSSProperties = {
+  height: "auto",
+}
+
 interface PromptWithCzarProps {
   /** Undefined while the judge hasn't picked a prompt yet */
   card: PromptCardInGame | undefined | null,
@@ -38,7 +43,7 @@ interface PromptWithCzarProps {
 
 /** Displays the prompt card and the current judge name below it. */
 export function CardPromptWithCzar({ card, judge }: PromptWithCzarProps) {
-  return <div className="game-card-placeholder">
+  return <div className="game-card-placeholder" style={containerStyle}>
     <CardPrompt card={card} />
     {judge &&
       <div className="prompt-czar-name" style={{

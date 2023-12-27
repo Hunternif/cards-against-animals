@@ -151,6 +151,8 @@ button.start-button {
   background: rgba(255, 255, 255, 0.5);
 }
 
+/*=========================== Lobby screen ===========================*/
+
 .deck-box {
   /* Sets base color. Can be adjusted in React */
   background-color: #181d29;
@@ -187,6 +189,8 @@ button.start-button {
 .new-lobby-sidebar {
   background-color: rgba(0, 0, 0, 0.4);
 }
+
+/*=========================== Game screens ===========================*/
 
 .game-bg {
   position: fixed; /* Not affected by scrolling or layout */
@@ -235,6 +239,12 @@ button.start-button {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+/*--------------------- Player screen with cards --------------------*/
+
+.player-answering-container {
+  gap: 1em;
 }
 
 .game-screen {
@@ -523,7 +533,10 @@ button.start-button {
 /*======================= Mobile =======================*/
 
 @media (max-width: 25rem) {
-  .player-answering-screen .game-card.card-response {
+  .player-answering-container {
+    gap: 0;
+  }
+  .player-answering-container .game-card.card-response {
     width: 100%;
     height: auto;
   }

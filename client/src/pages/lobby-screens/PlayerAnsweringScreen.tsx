@@ -38,7 +38,6 @@ const containerStyle: CSSProperties = {
   flexDirection: "column",
   alignItems: "flex-start",
   justifyContent: "space-between",
-  gap: "1em",
 };
 const rowStyle: CSSProperties = {
   width: "100%",
@@ -53,7 +52,6 @@ const topRowStyle: CSSProperties = {
   flexWrap: "nowrap",
   paddingLeft: "1em",
   paddingRight: "1em",
-  paddingBottom: "1em",
 }
 const midRowStyle: CSSProperties = {
   justifyContent: "center",
@@ -61,9 +59,7 @@ const midRowStyle: CSSProperties = {
 }
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-  paddingBottom: "1rem",
+  padding: "1rem",
 }
 const miniResponsesContainerStyle: CSSProperties = {
   flex: "1 1 auto",
