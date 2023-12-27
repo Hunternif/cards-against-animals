@@ -92,7 +92,7 @@ export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnP
   }
 
   return <CenteredLayout>
-    <div style={topRowStyle}>
+    <div style={topRowStyle} className="reading-control-row">
       {isJudge && <>
         <h2 className="dim">
           {noResponses ? "No responses :(" :

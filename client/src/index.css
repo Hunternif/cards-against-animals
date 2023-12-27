@@ -310,6 +310,9 @@ button.start-button {
   color: rgba(229, 231, 235, 0.4);
   font-size: 5rem;
 }
+
+/*--------------------- Screen for reading responses --------------------*/
+
 .game-card.card-response.response-reading.can-reveal.unrevealed:hover {
   opacity: 1;
   cursor: pointer;
@@ -557,5 +560,20 @@ button.start-button {
   }
   .selected-response-index {
     font-size: 3.5rem;
+  }
+  .reading-control-row {
+    position: sticky;
+    margin-top: 0;
+    top: 0;
+    z-index: 100;
+    padding-top: 1em;
+    background-attachment: fixed;
+    background-image: linear-gradient(to bottom,
+      /* TODO: this only roughly matches the actual gradient.*/
+      #090a0d, #3d434e, #090a0d
+    );
+  }
+  .reading-control-row button {
+    height: 2.5em;
   }
 }
