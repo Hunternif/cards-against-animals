@@ -91,7 +91,7 @@ export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnP
       });
   }
 
-  return <CenteredLayout>
+  return <CenteredLayout innerClassName="reading-layout-container">
     <div style={topRowStyle} className="reading-control-row">
       {isJudge && <>
         <h2 className="dim">
@@ -102,7 +102,7 @@ export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnP
           <GameButton accent onClick={handleConfirm}>Confirm</GameButton>}
       </>}
     </div>
-    <div style={midRowStyle}>
+    <div style={midRowStyle} className="reading-main-row">
       <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
       {shuffledResponses.map((r) =>
         <ResponseReading

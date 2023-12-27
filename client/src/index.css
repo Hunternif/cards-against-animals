@@ -557,6 +557,7 @@ button.start-button {
   .player-answering-container .game-card.card-response {
     width: 100%;
     height: auto;
+    min-height: 4em;
   }
   .selected-response-index {
     font-size: 3.5rem;
@@ -579,7 +580,7 @@ button.start-button {
   .winner-control-row {
     position: sticky;
     bottom: 0;
-    z-index: 100;
+    z-index: 2;
     padding: 0.5em;
     height: auto !important;
     background-attachment: fixed;
@@ -589,5 +590,34 @@ button.start-button {
   }
   .winner-control-row button {
     height: 2.5em;
+  }
+  .reading-layout-container {
+    width: 100%;
+    padding: 1em;
+  }
+  .reading-main-row {
+    flex-direction: column !important;
+    align-content: center;
+    width: 100%;
+  }
+  .reading-main-row .card-prompt {
+    margin: auto;
+  }
+  .reading-main-row .game-card-placeholder,
+  .reading-main-row .game-card.card-response,
+  .reading-main-row .many-cards {
+    width: 100%;
+    height: auto;
+    min-height: 4em;
+  }
+  .reading-main-row .game-card.overlaid {
+    margin-top: -0.5rem;
+  }
+  .reading-main-row .many-cards:hover > .game-card.overlaid {
+    margin-top: -0.5rem;
+  }
+  .reading-main-row .reading-unrevealed-icon {
+    font-size: 2.5rem;
+    font-weight: 700;
   }
 }
