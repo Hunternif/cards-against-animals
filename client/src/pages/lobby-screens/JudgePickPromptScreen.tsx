@@ -128,12 +128,18 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
             <>
               <CardPrompt card={prompt} />
               <div style={sideSectionStyle}>
-                <GameButton secondary small onClick={handleChange}>
-                  Change
-                </GameButton>
-                <span style={countStyle} className="extra-dim">
-                  {cardCount} cards left
-                </span>
+                {cardCount > 1 ? (<>
+                  <GameButton secondary small onClick={handleChange}>
+                    Change
+                  </GameButton>
+                  <span style={countStyle} className="extra-dim">
+                    {cardCount} cards left
+                  </span>
+                </>) : (
+                  <span className="extra-dim" style={{ whiteSpace: "nowrap" }}>
+                    Last card
+                  </span>
+                )}
               </div>
             </>
           ) : (
