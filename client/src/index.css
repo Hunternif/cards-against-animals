@@ -253,6 +253,18 @@ button.start-button {
   background-color: #999;
   background-image: linear-gradient(to bottom,#111827cc,#374151cc);
 }
+
+/* Make sure the control row stays on the screen when you scroll down: */
+.game-mid-row {
+  position: sticky;
+  top: 0;
+  background-color: #999;
+  background-image: linear-gradient(to bottom,#111827cc,#374151cc);
+  background-attachment: fixed;
+  z-index: 100;
+  padding: 0.5em 0;
+}
+
 .game-card {
   color: #000;
   background-color: #fff;
@@ -313,7 +325,10 @@ button.start-button {
   cursor: pointer;
 }
 .prompt-czar-name {
-  padding: 0.75rem 0.3rem;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0;
   justify-content: center;
   align-items: center;
   font-size: 9pt;

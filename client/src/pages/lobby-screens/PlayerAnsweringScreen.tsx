@@ -59,7 +59,10 @@ const midRowStyle: CSSProperties = {
 }
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
-  padding: "1rem",
+  paddingTop: "0.5rem",
+  paddingBottom: "1rem",
+  paddingLeft: "1em",
+  paddingRight: "1em",
 }
 const miniResponsesContainerStyle: CSSProperties = {
   flex: "1 1 auto",
