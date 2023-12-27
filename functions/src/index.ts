@@ -24,6 +24,7 @@ import {
 import {
   createNewTurn,
   getLastTurn,
+  logPlayedResponses,
   updatePlayerScoresFromTurn,
   updateTurn
 } from "./model/turn-server-api";
@@ -187,13 +188,21 @@ export const logInteraction = onCall<
   }
 );
 
-export const onTurnEndUpdateScores = onDocumentUpdated(
+export const onTurnPhaseChange = onDocumentUpdated(
   "lobbies/{lobbyID}/turns/{turnID}",
   async (event) => {
     if (!event.data) return;
     const turnBefore = turnConverter.fromFirestore(event.data.before);
     const turnAfter = turnConverter.fromFirestore(event.data.after);
-    if (turnBefore.phase !== turnAfter.phase && turnAfter.phase === "complete") {
-      await updatePlayerScoresFromTurn(event.params.lobbyID, turnAfter);
+    if (turnBefore.phase !== turnAfter.phase) {
+      // Changed phase
+      if (turnAfter.phase === "reading") {
+        // All responses submitted: log "played" interactions.
+        await logPlayedResponses(event.params.lobbyID, turnAfter);
+      }
+      if (turnAfter.phase === "complete") {
+        // Turn completed: update all scores.
+        await updatePlayerScoresFromTurn(event.params.lobbyID, turnAfter);
+      }
     }
   });

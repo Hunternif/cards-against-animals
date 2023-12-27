@@ -18,6 +18,7 @@ import {
   ResponseCardInGame
 } from "../shared/types";
 import { getOnlinePlayers, getPlayer, getPlayers, updatePlayer } from "./lobby-server-api";
+import { logCardInteractions } from "./deck-server-api";
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
@@ -266,4 +267,14 @@ export async function updatePlayerScoresFromTurn(
     }
     await updatePlayer(lobbyID, player);
   }
+}
+
+/** Log interactions from played responses in this turn */
+export async function logPlayedResponses(lobbyID: string, turn: GameTurn) {
+  const responses = await getAllPlayerResponses(lobbyID, turn.id);
+  const playedCards = responses.reduce((array, resp) => {
+    array.push(...resp.cards);
+    return array;
+  }, new Array<ResponseCardInGame>());
+  logCardInteractions([], [], [], playedCards);
 }

@@ -86,7 +86,6 @@ export function PlayerAnsweringScreen(
     setSelectedCards(cards);
     if (!data) return;
     if (cards.length === turn.prompt?.pick) {
-      logInteraction(lobby.id, { played: cards });
       await submitPlayerResponse(lobby, turn, data, cards)
         .catch((e) => setError(e));
     } else {
