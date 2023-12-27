@@ -143,6 +143,7 @@ export function PlayerAnsweringScreen(
           submitted={submitted}
           discarding={discarding}
           onToggleDiscard={toggleDiscard}
+          discardedCards={discardedCards}
         />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>

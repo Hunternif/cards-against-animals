@@ -13,6 +13,7 @@ interface ControlProps {
   submitted: boolean,
   discarding: boolean,
   onToggleDiscard: (enabled: boolean) => void,
+  discardedCards: ResponseCardInGame[],
 }
 
 const containerStyle: CSSProperties = {
@@ -22,7 +23,7 @@ const containerStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "space-between",
   padding: "0 1em",
-  gap: "0.5em",
+  gap: "1em",
 };
 const equalSizeStyle: CSSProperties = {
   flexGrow: 1,
@@ -39,7 +40,7 @@ const leftStyle: CSSProperties = {
 const midStyle: CSSProperties = {
   flexGrow: 1,
   flexShrink: 0,
-  flexBasis: "50%",
+  flexBasis: "0%",
   display: "flex",
   justifyContent: "center",
 };
@@ -50,22 +51,32 @@ const rightStyle: CSSProperties = {
   display: "flex",
   gap: "0.75em",
   justifyContent: "flex-end",
+  alignItems: "center",
+};
+const discardInfoStyle: CSSProperties = {
+  padding: "0.5rem 0",
+  whiteSpace: "nowrap",
+  textAlign: "center",
+};
+const discardCountStyle: CSSProperties = {
+  whiteSpace: "nowrap",
 };
 
 export function GameControlRow(
   {
     turn, data, selection, submitted,
-    discarding, onToggleDiscard,
+    discarding, onToggleDiscard, discardedCards,
   }: ControlProps
 ) {
   const picked = selection.length;
   const total = turn.prompt?.pick ?? 1;
+  const discardCount = discardedCards.length;
 
   return (
     <div style={containerStyle}>
       <div style={leftStyle}></div>
       <div style={midStyle}>
-        <span className="light" style={{ padding: "0.5rem 0" }}>
+        <span className="light" style={discardInfoStyle}>
           {discarding ? (
             <>Discard any number of cards for <i>1 point</i></>
           ) : !data ? (
@@ -79,7 +90,15 @@ export function GameControlRow(
         </span>
       </div>
       <div style={rightStyle}>
+        {discardCount > 0 &&
+          <span className="light" style={discardCountStyle}>
+            Will discard {discardCount} cards
+          </span>}
         {discarding ? (<>
+          {discardCount === 0 &&
+            <span className="light" style={discardCountStyle}>
+              No discard
+            </span>}
           <GameButton small onClick={() => onToggleDiscard(false)}>Done</GameButton>
         </>) : (
           <GameButton secondary small onClick={() => onToggleDiscard(true)}>Discard...</GameButton>
