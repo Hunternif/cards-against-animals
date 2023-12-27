@@ -276,5 +276,5 @@ export async function logPlayedResponses(lobbyID: string, turn: GameTurn) {
     array.push(...resp.cards);
     return array;
   }, new Array<ResponseCardInGame>());
-  logCardInteractions([], [], [], playedCards);
+  logCardInteractions([], [], [], playedCards, [], [], []);
 }

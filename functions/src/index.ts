@@ -170,6 +170,9 @@ export const logInteraction = onCall<
     viewed_responses: ResponseCardInGame[],
     played_prompts: PromptCardInGame[],
     played_responses: ResponseCardInGame[],
+    discarded_prompts: PromptCardInGame[],
+    discarded_responses: ResponseCardInGame[],
+    won_responses: ResponseCardInGame[],
   }, Promise<void>
 >(
   { maxInstances: 2 },
@@ -178,7 +181,10 @@ export const logInteraction = onCall<
     await assertPlayerInLobby(event, event.data.lobby_id);
     await logCardInteractions(
       event.data.viewed_prompts, event.data.viewed_responses,
-      event.data.played_prompts, event.data.played_responses);
+      event.data.played_prompts, event.data.played_responses,
+      event.data.discarded_prompts, event.data.discarded_responses,
+      event.data.won_responses,
+    );
     const total =
       event.data.viewed_prompts.length +
       event.data.played_prompts.length +

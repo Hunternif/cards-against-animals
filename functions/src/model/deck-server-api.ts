@@ -58,6 +58,8 @@ function prefixID(deckID: string, cardID: string): string {
 export async function logCardInteractions(
   viewedPrompts: PromptCardInGame[], viewedResponses: ResponseCardInGame[],
   playedPrompts: PromptCardInGame[], playedResponses: ResponseCardInGame[],
+  discardedPrompts: PromptCardInGame[], discardedResponses: ResponseCardInGame[],
+  wonResponses: ResponseCardInGame[],
 ) {
   await db.runTransaction(async (transaction) => {
     for (const prompt of viewedPrompts) {
@@ -68,6 +70,10 @@ export async function logCardInteractions(
       const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
       transaction.update(cardRef, { plays: FieldValue.increment(1) });
     }
+    for (const prompt of discardedPrompts) {
+      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
+      transaction.update(cardRef, { discards: FieldValue.increment(1) });
+    }
     for (const response of viewedResponses) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { views: FieldValue.increment(1) });
@@ -75,6 +81,14 @@ export async function logCardInteractions(
     for (const response of playedResponses) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { plays: FieldValue.increment(1) });
+    }
+    for (const response of discardedResponses) {
+      const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
+      transaction.update(cardRef, { discards: FieldValue.increment(1) });
+    }
+    for (const response of wonResponses) {
+      const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
+      transaction.update(cardRef, { wins: FieldValue.increment(1) });
     }
   });
 }

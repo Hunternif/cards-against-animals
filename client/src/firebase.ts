@@ -60,5 +60,8 @@ export const logInteractionFun = httpsCallable<
         viewed_responses: ResponseCardInGame[],
         played_prompts: PromptCardInGame[],
         played_responses: ResponseCardInGame[],
+        discarded_prompts: PromptCardInGame[],
+        discarded_responses: ResponseCardInGame[],
+        won_responses: ResponseCardInGame[],
     }, void
 >(functions, 'logInteraction');
