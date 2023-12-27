@@ -41,7 +41,7 @@ export function LoginScreen({ existingLobbyID }: Props) {
       setError(e);
     }
   }
-  return <CenteredLayout className="welcome-screen">
+  return <CenteredLayout outerClassName="welcome-screen">
     <h1>Cards Against Animals</h1>
     <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode} />
   </CenteredLayout>;

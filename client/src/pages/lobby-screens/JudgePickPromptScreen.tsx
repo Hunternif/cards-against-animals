@@ -110,7 +110,7 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
     getPromptCount(lobby).then((c) => setCardCount(c));
   }, [lobby, prompt]);
 
-  return <CenteredLayout style={{
+  return <CenteredLayout innerStyle={{
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

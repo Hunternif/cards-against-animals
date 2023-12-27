@@ -30,7 +30,7 @@ function AccessDeniedView({ user }: UserProps) {
   async function handleSignOut() {
     await signOut(user).catch((e) => setError(e));
   }
-  return <CenteredLayout style={{ textAlign: "center" }}>
+  return <CenteredLayout innerStyle={{ textAlign: "center" }}>
     <p>Hello, {user.displayName}!</p>
     <p>Access denied</p>
     <button onClick={handleSignOut}>Sign out</button>

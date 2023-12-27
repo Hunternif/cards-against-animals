@@ -125,7 +125,9 @@ export function PlayerAnsweringScreen(
   }
 
   return <>
-    {hand ? <CenteredLayout style={containerStyle} className="player-answering-screen">
+    {hand ? <CenteredLayout innerStyle={containerStyle}
+      outerClassName="player-answering-screen"
+      innerClassName="player-answering-container">
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
         <CardPromptWithCzar card={turn.prompt} judge={judge} />
         {turn.prompt &&

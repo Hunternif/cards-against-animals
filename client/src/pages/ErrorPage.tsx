@@ -31,7 +31,7 @@ const botRowStyle: CSSProperties = {
 export function ErrorPage() {
   const error = useRouteError();
   const navigate = useNavigate();
-  return <CenteredLayout style={{ maxWidth: "500px" }}>
+  return <CenteredLayout innerStyle={{ maxWidth: "500px" }}>
     <h1>Oops!</h1>
     <p>Sorry, an unexpected error has occurred.</p>
     {error != undefined && error != null && <p>

@@ -33,7 +33,7 @@ const botRowStyle: CSSProperties = {
 
 export function ScoreboardScreen({ lobby, players }: Props) {
   const navigate = useNavigate();
-  return <CenteredLayout className="scoreboard-screen">
+  return <CenteredLayout outerClassName="scoreboard-screen">
     <h2>Scoreboard</h2>
     <div style={midRowStyle}>
       <Scoreboard lobby={lobby} players={players} />

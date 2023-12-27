@@ -2,23 +2,30 @@ import { CSSProperties, ReactNode } from "react";
 
 interface LayoutProps {
   children: ReactNode,
-  className?: string,
-  style?: CSSProperties,
+  outerClassName?: string,
+  outerStyle?: CSSProperties,
+  innerClassName?: string,
+  innerStyle?: CSSProperties,
 }
 
-export function CenteredLayout({ children, className, style }: LayoutProps) {
+export function CenteredLayout(
+  { children, outerClassName, outerStyle, innerClassName, innerStyle }: LayoutProps
+) {
   return (
     <div style={{
       height: "100%",
       justifyContent: "center",
       display: "flex",
+      ...outerStyle,
     }}
-      className={className}
+      className={outerClassName}
     >
       <div style={{
         margin: "auto",
-        ...style
-      }}>
+        ...innerStyle
+      }}
+        className={innerClassName}
+      >
         {children}
       </div>
     </div>

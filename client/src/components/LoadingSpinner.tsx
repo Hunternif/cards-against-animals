@@ -13,7 +13,7 @@ interface LoadingProps {
 
 /** Displays a spinner at the center of the parent component. */
 export function LoadingSpinner({ text, delay, delayMs, style }: LoadingProps) {
-  const component = <CenteredLayout style={{ textAlign: "center", ...style }}>
+  const component = <CenteredLayout innerStyle={{ textAlign: "center", ...style }}>
     {text && <h5 style={{ marginBottom: "1em" }}>{text}</h5>}
     <Spinner />
   </CenteredLayout>
