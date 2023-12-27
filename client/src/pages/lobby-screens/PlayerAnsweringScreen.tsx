@@ -59,6 +59,9 @@ const midRowStyle: CSSProperties = {
 }
 const botRowStyle: CSSProperties = {
   justifyContent: "center",
+  paddingLeft: "1rem",
+  paddingRight: "1rem",
+  paddingBottom: "1rem",
 }
 const miniResponsesContainerStyle: CSSProperties = {
   flex: "1 1 auto",
@@ -120,7 +123,7 @@ export function PlayerAnsweringScreen(
   }
 
   return <>
-    {hand ? <CenteredLayout style={containerStyle}>
+    {hand ? <CenteredLayout style={containerStyle} className="player-answering-screen">
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
         <CardPromptWithCzar card={turn.prompt} judge={judge} />
         {turn.prompt &&

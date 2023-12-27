@@ -514,3 +514,15 @@ button.start-button {
 .menu-scoreboard tr:last-child td {
   border-style: none;
 }
+
+/*======================= Mobile =======================*/
+
+@media (max-width: 25rem) {
+  .player-answering-screen .game-card.card-response {
+    width: 100%;
+    height: auto;
+  }
+  .selected-response-index {
+    font-size: 3.5rem;
+  }
+}
