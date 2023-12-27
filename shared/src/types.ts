@@ -178,6 +178,8 @@ export interface DeckCard {
   views: number;
   /** Analytics: how many times this card was played */
   plays: number;
+  /** Analytics: how many times this card was discarded */
+  discards: number;
   tags: string[];
 }
 
@@ -192,10 +194,11 @@ export class PromptDeckCard implements DeckCard {
   time_created?: Date;
   views: number;
   plays: number;
+  discards: number;
   tags: string[];
   constructor(
     id: string, content: string, pick: number, rating: number,
-    views: number, plays: number, tags: string[],
+    views: number, plays: number, discards: number, tags: string[],
   ) {
     this.id = id;
     this.content = content;
@@ -203,6 +206,7 @@ export class PromptDeckCard implements DeckCard {
     this.rating = rating;
     this.views = views;
     this.plays = plays;
+    this.discards = discards;
     this.tags = tags;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -217,16 +221,22 @@ export class ResponseDeckCard implements DeckCard {
   time_created?: Date;
   views: number;
   plays: number;
+  discards: number;
+  /** Analytics: how many times this card won a turn */
+  wins: number;
   tags: string[];
   constructor(
     id: string, content: string, rating: number,
-    views: number, plays: number, tags: string[],
+    views: number, plays: number, discards: number, wins: number,
+    tags: string[],
   ) {
     this.id = id;
     this.content = content;
     this.rating = rating;
     this.views = views;
     this.plays = plays;
+    this.discards = discards;
+    this.wins = wins;
     this.tags = tags;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function

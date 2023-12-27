@@ -151,7 +151,7 @@ export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PromptDeckCard(snapshot.id, data.content, data.pick,
-      data.rating, data.views, data.plays, data.tags || []);
+      data.rating, data.views, data.plays, data.discards, data.tags || []);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },
@@ -166,7 +166,7 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating,
-      data.views, data.plays, data.tags || []);
+      data.views, data.plays, data.discards, data.wins, data.tags || []);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },
