@@ -73,7 +73,7 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
     if (prompt) {
       // This is only called once per card, so we can safely log the impression
       // of the previous card, because we will never see it again:
-      logInteraction(lobby.id, { viewed: [prompt] });
+      logInteraction(lobby.id, { viewed: [prompt], discarded: [prompt] });
       await discardPrompt(lobby, prompt)
         .then(() => pickNewPrompt(lobby))
         .then((card) => setPrompt(card))

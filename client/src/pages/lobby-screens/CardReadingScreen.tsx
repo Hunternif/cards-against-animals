@@ -7,6 +7,7 @@ import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { chooseWinner, revealPlayerResponse, startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { logInteraction } from "../../components/utils";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -72,8 +73,12 @@ export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnP
   async function handleConfirm() {
     // confirm winner
     if (winner) {
-      await chooseWinner(lobby, turn, winner.player_uid)
-        .catch((e) => setError(e));
+      try {
+        await chooseWinner(lobby, turn, winner.player_uid);
+        await logInteraction(lobby.id, { won: winner.cards });
+      } catch (e: any) {
+        setError(e);
+      }
     }
   }
 

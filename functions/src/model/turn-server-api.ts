@@ -92,6 +92,13 @@ export async function getPlayerData(
   return (await getPlayerDataRef(lobbyID, turnID).doc(uid).get()).data() ?? null;
 }
 
+/** Data from all players, from a specific turn. */
+export async function getAllPlayerData(lobbyID: string, turnID: string):
+  Promise<PlayerDataInTurn[]> {
+  return (await getPlayerDataRef(lobbyID, turnID).get())
+    .docs.map((d) => d.data());
+}
+
 /** Hand from a specific player, from a specific turn. */
 export async function getPlayerHand(
   lobbyID: string, turnID: string, uid: string
@@ -269,12 +276,20 @@ export async function updatePlayerScoresFromTurn(
   }
 }
 
-/** Log interactions from played responses in this turn */
+/** Log interactions from played responses and discards in this turn */
 export async function logPlayedResponses(lobbyID: string, turn: GameTurn) {
+  // Played cards:
   const responses = await getAllPlayerResponses(lobbyID, turn.id);
   const playedCards = responses.reduce((array, resp) => {
     array.push(...resp.cards);
     return array;
   }, new Array<ResponseCardInGame>());
-  logCardInteractions([], [], [], playedCards, [], [], []);
+  // Discarded cards:
+  const playerData = await getAllPlayerData(lobbyID, turn.id);
+  const discardedResponses = new Array<ResponseCardInGame>();
+  for (const pData of playerData) {
+    const discarded = await getPlayerDiscard(lobbyID, turn.id, pData.player_uid);
+    discardedResponses.push(...discarded);
+  }
+  logCardInteractions([], [], [], playedCards, [], discardedResponses, []);
 }
