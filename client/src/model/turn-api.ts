@@ -98,7 +98,7 @@ export async function getLastTurn(lobbyID: string): Promise<GameTurn | null> {
  * If no more prompts in deck, returns null. */
 export async function pickNewPrompt(lobby: GameLobby): Promise<PromptCardInGame | null> {
   const prompts = (await getDocs(query(
-    getPromptsRef(lobby.id), orderBy("random_index"), limit(1)))
+    getPromptsRef(lobby.id), orderBy("random_index", "desc"), limit(1)))
   ).docs.map((d) => d.data());
   if (prompts.length === 0) return null;
   return prompts[0];

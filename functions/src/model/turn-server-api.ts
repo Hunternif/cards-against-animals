@@ -224,7 +224,7 @@ export async function dealCardsToPlayer(
 
   // Fetch new cards:
   const newCards = totalCardsNeeded <= 0 ? [] : (await deckResponsesRef
-    .orderBy("random_index")
+    .orderBy("random_index", "desc")
     .limit(totalCardsNeeded).get()
   ).docs.map((c) => c.data());
   // Add cards to the new player hand

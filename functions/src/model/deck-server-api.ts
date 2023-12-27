@@ -6,6 +6,7 @@ import {
 } from "../shared/firestore-converters";
 import { RNG } from "../shared/rng";
 import {
+  DeckCard,
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
@@ -29,7 +30,7 @@ export async function getAllPromptsForGame(deckID: string):
     const card = p.data();
     const cardInLobby = new PromptCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
-      rng.randomInt(), card.content, card.pick, card.rating, false);
+      getCardIndex(card, rng), card.content, card.pick, card.rating, false);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
@@ -43,7 +44,7 @@ export async function getAllResponsesForGame(deckID: string):
     const card = p.data();
     const cardInLobby = new ResponseCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
-      rng.randomInt(), card.content, card.rating, false);
+      getCardIndex(card, rng), card.content, card.rating, false);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
@@ -52,6 +53,22 @@ export async function getAllResponsesForGame(deckID: string):
 /** Creates prefixed ID to prevent collisions between decks. */
 function prefixID(deckID: string, cardID: string): string {
   return `${deckID}_${cardID}`;
+}
+
+/** Calculates card's shuffling index, adjusting based on win/discard statistics */
+function getCardIndex(card: DeckCard, rng: RNG): number {
+  const base = rng.randomInt();
+  // TODO: enable this based on lobby settings.
+  let factor = (100.0 + card.rating) / 100.0
+    * (card.plays + 1.0)
+    * 10.0 / (card.views + 10.0)
+    * (2 * card.wins + 1.0)
+    * 1.0 / (card.discards + 1.0);
+  factor = Math.max(0.0001, factor);
+  factor = Math.min(factor, 1.2);
+  const result = (base * factor) >>> 0;
+  // logger.debug(`Shuffle: base ${base} * factor ${factor} = ${result}`);
+  return result;
 }
 
 /** Increments the "views" and "plays" counts on the given cards. */

@@ -180,6 +180,8 @@ export interface DeckCard {
   plays: number;
   /** Analytics: how many times this card was discarded */
   discards: number;
+  /** Analytics: how many times this card won a turn */
+  wins: number;
   tags: string[];
 }
 
@@ -195,18 +197,21 @@ export class PromptDeckCard implements DeckCard {
   views: number;
   plays: number;
   discards: number;
+  wins: number;
   tags: string[];
   constructor(
     id: string, content: string, pick: number, rating: number,
-    views: number, plays: number, discards: number, tags: string[],
+    views: number, plays: number, discards: number,
+    tags: string[],
   ) {
     this.id = id;
     this.content = content;
     this.pick = pick;
-    this.rating = rating;
-    this.views = views;
-    this.plays = plays;
-    this.discards = discards;
+    this.rating = rating || 0;
+    this.views = views || 0;
+    this.plays = plays || 0;
+    this.discards = discards || 0;
+    this.wins = 0;
     this.tags = tags;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -222,7 +227,6 @@ export class ResponseDeckCard implements DeckCard {
   views: number;
   plays: number;
   discards: number;
-  /** Analytics: how many times this card won a turn */
   wins: number;
   tags: string[];
   constructor(
@@ -232,11 +236,11 @@ export class ResponseDeckCard implements DeckCard {
   ) {
     this.id = id;
     this.content = content;
-    this.rating = rating;
-    this.views = views;
-    this.plays = plays;
-    this.discards = discards;
-    this.wins = wins;
+    this.rating = rating || 0;
+    this.views = views || 0;
+    this.plays = plays || 0;
+    this.discards = discards || 0;
+    this.wins = wins || 0;
     this.tags = tags;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
