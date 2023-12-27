@@ -3,6 +3,7 @@ import {
   onDocumentUpdated
 } from "firebase-functions/v2/firestore";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
+import { setGlobalOptions } from "firebase-functions/v2/options";
 
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
@@ -31,11 +32,15 @@ import { PromptCardInGame, ResponseCardInGame } from "./shared/types";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+setGlobalOptions({
+  region: firebaseConfig.region,
+});
+
 /** Finds an existing active lobby for the user, or creates a new one. */
 export const findOrCreateLobby = onCall<
   { creator_uid: string }, Promise<{ lobby_id: string }>
 >(
-  { region: firebaseConfig.region, maxInstances: 2 },
+  { maxInstances: 2 },
   async (event) => {
     // await sleep(2000);
     assertLoggedIn(event);
@@ -58,7 +63,7 @@ export const findOrCreateLobby = onCall<
 export const joinLobby = onCall<
   { user_id: string, lobby_id: string }, Promise<void>
 >(
-  { region: firebaseConfig.region, maxInstances: 2 },
+  { maxInstances: 2 },
   async (event) => {
     // await sleep(2000);
     assertLoggedIn(event);
@@ -71,7 +76,7 @@ export const joinLobby = onCall<
 export const findOrCreateLobbyAndJoin = onCall<
   { user_id: string }, Promise<{ lobby_id: string }>
 >(
-  { region: firebaseConfig.region, maxInstances: 2 },
+  { maxInstances: 2 },
   async (event) => {
     // await sleep(2000);
     assertLoggedIn(event);
@@ -87,7 +92,7 @@ export const findOrCreateLobbyAndJoin = onCall<
 export const startLobby = onCall<
   { lobby_id: string }, Promise<void>
 >(
-  { region: firebaseConfig.region, maxInstances: 2 },
+  { maxInstances: 2 },
   async (event) => {
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
@@ -106,7 +111,7 @@ export const startLobby = onCall<
 export const newTurn = onCall<
   { lobby_id: string }, Promise<void>
 >(
-  { region: firebaseConfig.region, maxInstances: 2 },
+  { maxInstances: 2 },
   async (event) => {
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
@@ -125,7 +130,7 @@ export const newTurn = onCall<
 export const endLobby = onCall<
   { lobby_id: string }, Promise<void>
 >(
-  { region: firebaseConfig.region, maxInstances: 2 },
+  { maxInstances: 2 },
   async (event) => {
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
@@ -166,7 +171,7 @@ export const logInteraction = onCall<
     played_responses: ResponseCardInGame[],
   }, Promise<void>
 >(
-  { region: firebaseConfig.region, maxInstances: 2 },
+  { maxInstances: 2 },
   async (event) => {
     assertLoggedIn(event);
     await assertPlayerInLobby(event, event.data.lobby_id);
@@ -188,6 +193,7 @@ export const onTurnEndUpdateScores = onDocumentUpdated(
     if (!event.data) return;
     const turnBefore = turnConverter.fromFirestore(event.data.before);
     const turnAfter = turnConverter.fromFirestore(event.data.after);
-    if (turnBefore.phase !== turnAfter.phase && turnAfter.phase === "complete")
+    if (turnBefore.phase !== turnAfter.phase && turnAfter.phase === "complete") {
       await updatePlayerScoresFromTurn(event.params.lobbyID, turnAfter);
+    }
   });
