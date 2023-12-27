@@ -47,17 +47,21 @@ export class PlayerInLobby {
   role: PlayerRole;
   status: PlayerStatus;
   time_joined?: Date;
+  /** Current score accumulated over the entire game. */
+  score: number;
 
   constructor(
     uid: string,
     name: string,
     role: PlayerRole,
     status: PlayerStatus,
+    score: number
   ) {
     this.uid = uid;
     this.name = name;
     this.role = role;
     this.status = status;
+    this.score = score;
   }
 }
 
