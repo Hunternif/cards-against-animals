@@ -19,11 +19,6 @@ export function GameMiniResponses({ turn, players, responses }: Props) {
     return responses.find((res) => res.player_uid === player.uid) ?? null;
   }
 
-  // Filter out spectators and the judge:
-  const validPlayers = players.filter((p) =>
-    p.role === "player" && p.status !== "left" && p.uid !== turn.judge_uid
-  );
-
   return <div style={{
     flex: "1 1 auto",
     display: "flex",
@@ -33,7 +28,7 @@ export function GameMiniResponses({ turn, players, responses }: Props) {
     overflow: "hidden",
     maxWidth: "100vw",
   }}>
-    {validPlayers && validPlayers.map((player) => {
+    {players && players.map((player) => {
       const response = findResponse(player);
       return <MiniCardResponse
         key={player.uid}

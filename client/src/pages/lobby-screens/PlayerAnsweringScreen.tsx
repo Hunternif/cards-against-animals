@@ -22,6 +22,8 @@ import {
   PlayerResponse,
   ResponseCardInGame
 } from "../../shared/types";
+import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
+import { ResponseCount } from "../../components/ResponseCount";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -85,6 +87,11 @@ export function PlayerAnsweringScreen(
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
+  // Filter out spectators and the judge:
+  const validPlayers = players.filter((p) =>
+    p.role === "player" && p.status !== "left" && p.uid !== turn.judge_uid
+  );
+
   /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {
     setSelectedCards(cards);
@@ -130,14 +137,22 @@ export function PlayerAnsweringScreen(
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
         <CardPromptWithCzar card={turn.prompt} judge={judge} />
         {turn.prompt &&
-          <div style={miniResponsesContainerStyle}>
-            <GameMiniResponses
-              lobby={lobby}
-              turn={turn}
-              players={players}
-              responses={responses}
-            />
-          </div>
+          <ScreenSizeSwitch
+            widthBreakpoint={480}
+            smallScreen={
+              <ResponseCount players={validPlayers} responses={responses} />
+            }
+            bigScreen={
+              <div style={miniResponsesContainerStyle}>
+                <GameMiniResponses
+                  lobby={lobby}
+                  turn={turn}
+                  players={validPlayers}
+                  responses={responses}
+                />
+              </div>
+            }
+          />
         }
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>

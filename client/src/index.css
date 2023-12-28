@@ -401,6 +401,35 @@ button.start-button {
   user-select: none;
 }
 
+.response-count-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: end;
+}
+.response-count-header {
+  font-size: smaller;
+  opacity: 0.6;
+  margin-top: 0.5rem;
+  margin-bottom: -0.5rem;
+}
+.response-count-group {
+  font-size: 3rem;
+  font-weight: 600;
+}
+.response-count-group .count-current {
+  opacity: 0.6;
+}
+.response-count-group .slash {
+  opacity: 0.3;
+  font-weight: 400;
+}
+.response-count-group .count-total {
+  opacity: 0.3;
+  
+}
+
 .stat-label {
   color: rgba(229, 231, 235, 0.7);
 }

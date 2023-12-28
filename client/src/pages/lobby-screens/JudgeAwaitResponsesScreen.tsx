@@ -7,6 +7,8 @@ import { MiniCardResponse } from "../../components/MiniCardResponse";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { startReadingPhase } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
+import { ResponseCount } from "../../components/ResponseCount";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -73,14 +75,16 @@ export function JudgeAwaitResponsesScreen(
     <div style={midRowStyle}>
       <CardPromptWithCzar card={turn.prompt}
         judge={isJudge ? null : judge} />
-      {validPlayers && validPlayers.map((player) => {
-        const response = findResponse(player);
-        return <MiniCardResponse
-          key={player.uid}
-          playerName={player.name}
-          ready={response != null}
-          pick={turn.prompt?.pick ?? 0} />
-      })}
+      <ScreenSizeSwitch
+        widthBreakpoint={500}
+        smallScreen={
+          <ResponseCount players={validPlayers} responses={responses} />
+        }
+        bigScreen={
+          <DetailedResponses players={validPlayers} responses={responses}
+            pick={turn.prompt?.pick ?? 0} />
+        }
+      />
     </div>
     <div style={botRowStyle}>
       {allResponded && isJudge && (<>
@@ -89,4 +93,24 @@ export function JudgeAwaitResponsesScreen(
       </>)}
     </div>
   </CenteredLayout>;
+}
+
+interface DetailedResponsesProps {
+  pick: number,
+  players: PlayerInLobby[],
+  responses: PlayerResponse[],
+}
+
+function DetailedResponses({ pick, players, responses }: DetailedResponsesProps) {
+  function findResponse(player: PlayerInLobby): PlayerResponse | null {
+    return responses.find((res) => res.player_uid === player.uid) ?? null;
+  }
+  return <>{players && players.map((player) => {
+    const response = findResponse(player);
+    return <MiniCardResponse
+      key={player.uid}
+      playerName={player.name}
+      ready={response != null}
+      pick={pick} />
+  })}</>;
 }
