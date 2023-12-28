@@ -90,15 +90,14 @@ export function GameControlRow(
         </span>
       </div>
       <div style={rightStyle}>
-        {discardCount > 0 &&
+        {!discarding && discardCount > 0 &&
           <span className="light" style={discardCountStyle}>
             Will discard {discardCount} cards
           </span>}
         {discarding ? (<>
-          {discardCount === 0 &&
-            <span className="light" style={discardCountStyle}>
-              No discard
-            </span>}
+          <span className="light" style={discardCountStyle}>
+            Will discard {discardCount} cards
+          </span>
           <GameButton small onClick={() => onToggleDiscard(false)}>Done</GameButton>
         </>) : (
           <GameButton secondary small onClick={() => onToggleDiscard(true)}>Discard...</GameButton>
