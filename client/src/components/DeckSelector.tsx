@@ -86,7 +86,8 @@ interface DecksProps {
 }
 
 function Decks({ lobby, decks }: DecksProps) {
-  const selectedRef = useRef<Array<DeckWithCount>>([]);
+  const selectedRef = useRef<Array<DeckWithCount>>(
+    decks.filter((d) => lobby.deck_ids.has(d.id)));
   const [promptCount, setPromptCount] = useState(0);
   const [responseCount, setResponseCount] = useState(0);
 
