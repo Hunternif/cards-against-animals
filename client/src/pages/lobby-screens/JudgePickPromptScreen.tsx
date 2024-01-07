@@ -83,9 +83,7 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
 
   async function handleSubmit() {
     if (prompt) {
-      // This is only called once per card, so we can safely log the impression
-      // of the submitted card:
-      logInteraction(lobby.id, { viewed: [prompt], played: [prompt] });
+      // "Played" interaction will be logged on the server.
       setSubmitted(true);
       await playPrompt(lobby, turn, prompt).catch((e) => {
         setError(e);

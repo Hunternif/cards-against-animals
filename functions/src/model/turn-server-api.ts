@@ -277,20 +277,49 @@ export async function updatePlayerScoresFromTurn(
   }
 }
 
-/** Log interactions from played responses and discards in this turn */
-export async function logPlayedResponses(lobbyID: string, turn: GameTurn) {
+/** Log interaction for the played prompt. */
+export async function logPlayedPrompt(lobbyID: string, turn: GameTurn) {
+  if (!turn.prompt) {
+    logger.warn(`Answering phase without a prompt. Lobby ${lobbyID} turn ${turn.id}`);
+    return;
+  }
+  await logCardInteractions({ viewedPrompts: [turn.prompt], playedPrompts: [turn.prompt] });
+}
+
+/**
+ * Log interactions from the completed turn:
+ * - viewed hand
+ * - played responses
+ * - discards
+ */
+export async function logPlayerHandInteractions(lobbyID: string, turn: GameTurn) {
   // Played cards:
   const responses = await getAllPlayerResponses(lobbyID, turn.id);
-  const playedCards = responses.reduce((array, resp) => {
+  const playedResponses = responses.reduce((array, resp) => {
     array.push(...resp.cards);
     return array;
   }, new Array<ResponseCardInGame>());
   // Discarded cards:
   const playerData = await getAllPlayerData(lobbyID, turn.id);
   const discardedResponses = new Array<ResponseCardInGame>();
+  const viewedResponses = new Array<ResponseCardInGame>();
   for (const pData of playerData) {
+    if (pData.player_uid === turn.judge_uid) {
+      // Skip judge, they didn't see their hand:
+      continue;
+    }
+    const hand = await getPlayerHand(lobbyID, turn.id, pData.player_uid);
+    viewedResponses.push(...hand);
     const discarded = await getPlayerDiscard(lobbyID, turn.id, pData.player_uid);
     discardedResponses.push(...discarded);
   }
-  logCardInteractions([], [], [], playedCards, [], discardedResponses, []);
+  await logCardInteractions({ viewedResponses, playedResponses, discardedResponses });
+}
+
+/** Log interaction for the winning response. */
+export async function logWinner(lobbyID: string, turn: GameTurn) {
+  if (!turn.winner_uid) return;
+  const winnerResponse = await getPlayerResponse(lobbyID, turn.id, turn.winner_uid);
+  if (!winnerResponse) return;
+  await logCardInteractions({ wonResponses: winnerResponse.cards });
 }

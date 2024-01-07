@@ -24,7 +24,9 @@ import {
 import {
   createNewTurn,
   getLastTurn,
-  logPlayedResponses,
+  logPlayedPrompt,
+  logPlayerHandInteractions,
+  logWinner,
   updatePlayerScoresFromTurn,
   updateTurn
 } from "./model/turn-server-api";
@@ -179,12 +181,15 @@ export const logInteraction = onCall<
   async (event) => {
     assertLoggedIn(event);
     await assertPlayerInLobby(event, event.data.lobby_id);
-    await logCardInteractions(
-      event.data.viewed_prompts, event.data.viewed_responses,
-      event.data.played_prompts, event.data.played_responses,
-      event.data.discarded_prompts, event.data.discarded_responses,
-      event.data.won_responses,
-    );
+    await logCardInteractions({
+      viewedPrompts: event.data.viewed_prompts,
+      viewedResponses: event.data.viewed_responses,
+      playedPrompts: event.data.played_prompts,
+      playedResponses: event.data.played_responses,
+      discardedPrompts: event.data.discarded_prompts,
+      discardedResponses: event.data.discarded_responses,
+      wonResponses: event.data.won_responses,
+    });
     const total =
       event.data.viewed_prompts.length +
       event.data.played_prompts.length +
@@ -198,17 +203,20 @@ export const onTurnPhaseChange = onDocumentUpdated(
   "lobbies/{lobbyID}/turns/{turnID}",
   async (event) => {
     if (!event.data) return;
+    const lobbyID = event.params.lobbyID;
     const turnBefore = turnConverter.fromFirestore(event.data.before);
     const turnAfter = turnConverter.fromFirestore(event.data.after);
     if (turnBefore.phase !== turnAfter.phase) {
       // Changed phase
-      if (turnAfter.phase === "reading") {
-        // All responses submitted: log "played" interactions.
-        await logPlayedResponses(event.params.lobbyID, turnAfter);
-      }
-      if (turnAfter.phase === "complete") {
+      if (turnAfter.phase === "answering") {
+        await logPlayedPrompt(lobbyID, turnAfter);
+      } else if (turnAfter.phase === "reading") {
+        // All responses submitted: log interactions.
+        await logPlayerHandInteractions(lobbyID, turnAfter);
+      } else if (turnAfter.phase === "complete") {
         // Turn completed: update all scores.
-        await updatePlayerScoresFromTurn(event.params.lobbyID, turnAfter);
+        await updatePlayerScoresFromTurn(lobbyID, turnAfter);
+        await logWinner(lobbyID, turnAfter);
       }
     }
   });

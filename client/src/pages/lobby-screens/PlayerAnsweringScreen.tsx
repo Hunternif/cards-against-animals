@@ -1,13 +1,14 @@
 import { User } from "@firebase/auth";
-import { CSSProperties, useContext, useEffect, useState } from "react";
+import { CSSProperties, useContext, useState } from "react";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { GameControlRow } from "../../components/GameControlRow";
 import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { ResponseCount } from "../../components/ResponseCount";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { logInteraction } from "../../components/utils";
+import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import {
   cancelPlayerResponse,
   discardCards,
@@ -22,8 +23,6 @@ import {
   PlayerResponse,
   ResponseCardInGame
 } from "../../shared/types";
-import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
-import { ResponseCount } from "../../components/ResponseCount";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -104,14 +103,6 @@ export function PlayerAnsweringScreen(
         .catch((e) => setError(e));
     }
   }
-
-  const [loggedView, setLoggedView] = useState(false);
-  useEffect(() => {
-    if (hand && !loggedView) {
-      setLoggedView(true);
-      logInteraction(lobby.id, { viewed: hand });
-    }
-  }, [hand, turn.id]);
 
   /** When discarding mode is turned on/off. */
   function toggleDiscard(on: boolean) {

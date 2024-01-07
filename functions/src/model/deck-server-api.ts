@@ -71,39 +71,44 @@ function getCardIndex(card: DeckCard, rng: RNG): number {
   return result;
 }
 
+export interface LogData {
+  viewedPrompts?: PromptCardInGame[],
+  viewedResponses?: ResponseCardInGame[],
+  playedPrompts?: PromptCardInGame[],
+  playedResponses?: ResponseCardInGame[],
+  discardedPrompts?: PromptCardInGame[],
+  discardedResponses?: ResponseCardInGame[],
+  wonResponses?: ResponseCardInGame[],
+}
+
 /** Increments the "views" and "plays" counts on the given cards. */
-export async function logCardInteractions(
-  viewedPrompts: PromptCardInGame[], viewedResponses: ResponseCardInGame[],
-  playedPrompts: PromptCardInGame[], playedResponses: ResponseCardInGame[],
-  discardedPrompts: PromptCardInGame[], discardedResponses: ResponseCardInGame[],
-  wonResponses: ResponseCardInGame[],
-) {
+export async function logCardInteractions(logData: LogData) {
   await db.runTransaction(async (transaction) => {
-    for (const prompt of viewedPrompts) {
+    for (const prompt of logData.viewedPrompts || []) {
       const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
       transaction.update(cardRef, { views: FieldValue.increment(1) });
     }
-    for (const prompt of playedPrompts) {
+    for (const prompt of logData.playedPrompts || []) {
       const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
       transaction.update(cardRef, { plays: FieldValue.increment(1) });
     }
-    for (const prompt of discardedPrompts) {
+    for (const prompt of logData.discardedPrompts || []) {
       const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
       transaction.update(cardRef, { discards: FieldValue.increment(1) });
     }
-    for (const response of viewedResponses) {
+    for (const response of logData.viewedResponses || []) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { views: FieldValue.increment(1) });
     }
-    for (const response of playedResponses) {
+    for (const response of logData.playedResponses || []) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { plays: FieldValue.increment(1) });
     }
-    for (const response of discardedResponses) {
+    for (const response of logData.discardedResponses || []) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { discards: FieldValue.increment(1) });
     }
-    for (const response of wonResponses) {
+    for (const response of logData.wonResponses || []) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { wins: FieldValue.increment(1) });
     }
