@@ -187,7 +187,12 @@ button.start-button {
   background-image: linear-gradient(to bottom, #494f5c, #858792);
 }
 .new-lobby-sidebar {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-image: linear-gradient(to bottom, #2c3037, #505157);
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.4);
+}
+.small-player-count {
+  font-weight: 600;
+  margin: 0.3em;
 }
 
 /*=========================== Game screens ===========================*/

@@ -61,3 +61,19 @@ export function IconTrash(props: IconSvgProps) {
     <path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.7 23.7 0 0 0 -21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0 -16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z" />
   </Svg>;
 }
+
+export function IconArowLeft(props: IconSvgProps) {
+  // Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
+  // License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.
+  return <Svg {...props} height={props.height ?? 16} width={props.width ?? 14} viewBox="0 0 448 512">
+    <path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8 .4 34.3z"/>
+  </Svg>;
+}
+
+export function IconPerson(props: IconSvgProps) {
+  // Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
+  // License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.
+  return <Svg {...props} height={props.height ?? 16} width={props.width ?? 14} viewBox="0 0 448 512">
+    <path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"/>
+  </Svg>;
+}
