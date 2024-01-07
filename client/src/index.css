@@ -62,6 +62,9 @@ pre {
   border-radius: 0.25em;
 }
 
+
+/*------------------------- Button component ------------------------*/
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -130,8 +133,14 @@ button.start-button {
   font-weight: bold;
 }
 
+
+/*------------------------ Scrollbar component -----------------------*/
+
 .miniscrollbar {
   scrollbar-gutter: stable;
+}
+.miniscrollbar-auto {
+  scrollbar-gutter: auto;
 }
 
 .miniscrollbar::-webkit-scrollbar {
@@ -153,34 +162,26 @@ button.start-button {
 
 /*=========================== Lobby screen ===========================*/
 
-.deck-box {
-  /* Sets base color. Can be adjusted in React */
-  background-color: #181d29;
-  /* Gradient reflection: */
-  background-image: linear-gradient(to bottom,
-                  rgba(255, 255, 255, 0.14) 30%,
-                  rgba(255, 255, 255, 0) 60%);
-  /* background-image: linear-gradient(to bottom, #2f3842 30%, #111827 60%); */
-  /* Drop-shadow: */
-  box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.4),
-              /* Highlight on top: */
-              inset 0px 3px 1px -1px rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-  padding: 0.5em 0.8em;
-  width: 10em;
-  height: 14em;
+.deck-row {
+  border: 2px solid rgba(222, 226, 230, 0.25);
+  border-top-style: none;
+  border-left-style: none;
+  border-right-style: none;
   cursor: pointer;
+  background-color: #11182733;
 }
-.deck-box.selected {
-  /* border-color: #fff;
-  border-radius: 2px; */
-  outline: 3px solid;
-  outline-color: #fff;
+.deck-row:first-child {
+  border-top-style: solid;
 }
-.deck-box.hoverable-card:hover {
-  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.4),
-              /* Highlight on top: */
-              inset 0px 3px 1px -1px rgba(255, 255, 255, 0.3);
+.deck-row.selected {
+  color: #fff;
+  background-color: #11182766;
+}
+.deck-row-title {
+  font-weight: 600;
+}
+.deck-row-title.unselected {
+  opacity: 0.6;
 }
 
 .new-lobby-screen {

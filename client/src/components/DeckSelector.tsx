@@ -11,13 +11,27 @@ interface DeckProps {
   onToggle?: (selected: boolean) => void,
 }
 
-function DeckBox({ deck, selected, onToggle }: DeckProps) {
-  const className = `deck-box hoverable-card ${selected ? "selected" : ""}`;
+const deckRowStyle: CSSProperties = {
+  display: "flex",
+  height: "2.5em",
+  width: "100%",
+  alignItems: "center",
+  gap: "0.75em",
+  paddingLeft: "0.75em",
+  paddingRight: "0.75em",
+}
+
+function DeckRow({ deck, selected, onToggle }: DeckProps) {
+  const selectedClass = selected ? " selected" : " unselected";
   function handleClick() {
     if (onToggle) onToggle(!selected);
   }
-  return <div className={className} onClick={handleClick}>
-    <h4>{deck.title}</h4>
+  return <div
+    className={`deck-row${selectedClass}`}
+    style={deckRowStyle}
+    onClick={handleClick}>
+    <input type="checkbox" checked={selected} />
+    <span className={`deck-row-title${selectedClass}`}>{deck.title}</span>
   </div>;
 }
 
@@ -29,26 +43,12 @@ const containerStyle: CSSProperties = {
 
 const scrollableColumnStyle: CSSProperties = {
   overflowY: "auto",
-  paddingTop: "1em",
-  paddingBottom: "1.5em",
-  paddingLeft: "2em",
-  paddingRight: "calc(2em - 8px)",
-  display: "flex",
-  flexWrap: "wrap",
-  justifyContent: "center",
-  alignContent: "flex-start",
-  gap: "2em",
+  marginTop: "1em",
+  marginBottom: "1em",
 };
 
-const hrStyle: CSSProperties = {
-  marginTop: 0,
-  marginBottom: "1em",
-  marginLeft: "1em",
-  marginRight: "1em",
-}
-
-// const dummyDecks = Array<Deck>(20)
-//   .fill(new Deck("dummy", "Dummy Deck"), 0, 20);
+// const dummyDecks = Array<DeckWithCount>(20)
+//   .fill({ id: "dummy", title: "Dummy Deck", promptCount: 10, responseCount: 20 }, 0, 20);
 
 interface SelectorProps {
   lobby: GameLobby,
@@ -115,21 +115,18 @@ function Decks({ lobby, decks }: DecksProps) {
 
   return <>
     <div style={scrollableColumnStyle}
-      className="miniscrollbar miniscrollbar-dark deck-selector">
-      {decks?.map((deck, i) => <div key={i} style={{
-        display: "flex",
-        placeContent: "center"
-      }}>
-        <DeckBox deck={deck}
+      className="miniscrollbar miniscrollbar-auto miniscrollbar-light deck-selector">
+      {decks?.map((deck, i) =>
+        <DeckRow
+          key={deck.id}
+          deck={deck}
           selected={lobby.deck_ids.has(deck.id)}
           onToggle={(selected) => {
             if (selected) selectDeck(deck);
             else deselectDeck(deck);
           }} />
-      </div>
       )}
     </div>
-    <hr style={hrStyle} />
     <div style={{
       display: "flex",
       flexWrap: "wrap",
