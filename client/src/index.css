@@ -185,7 +185,10 @@ button.start-button {
   opacity: 0.6;
 }
 .deck-row.unselected .checkbox {
-  border-color: #cccccc66;
+  border-color: #ffffffaa;
+}
+.deck-row:hover .checkbox label::after {
+  opacity: 0.4;
 }
 
 .new-lobby-screen {
