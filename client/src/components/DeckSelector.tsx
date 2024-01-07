@@ -4,6 +4,7 @@ import { addDeck, removeDeck } from "../model/lobby-api";
 import { GameLobby } from "../shared/types";
 import { ErrorContext } from "./ErrorContext";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { Checkbox } from "./Checkbox";
 
 interface DeckProps {
   deck: DeckWithCount,
@@ -13,7 +14,6 @@ interface DeckProps {
 
 const deckRowStyle: CSSProperties = {
   display: "flex",
-  height: "2.5em",
   width: "100%",
   alignItems: "center",
   gap: "0.75em",
@@ -30,7 +30,7 @@ function DeckRow({ deck, selected, onToggle }: DeckProps) {
     className={`deck-row${selectedClass}`}
     style={deckRowStyle}
     onClick={handleClick}>
-    <input type="checkbox" checked={selected} />
+    <Checkbox checked={selected} onChange={handleClick}/>
     <span className={`deck-row-title${selectedClass}`}>{deck.title}</span>
   </div>;
 }

@@ -164,6 +164,7 @@ button.start-button {
 
 .deck-row {
   border: 2px solid rgba(222, 226, 230, 0.25);
+  height: 3rem;
   border-top-style: none;
   border-left-style: none;
   border-right-style: none;
@@ -182,6 +183,9 @@ button.start-button {
 }
 .deck-row-title.unselected {
   opacity: 0.6;
+}
+.deck-row.unselected .checkbox {
+  border-color: #cccccc66;
 }
 
 .new-lobby-screen {

@@ -14,3 +14,50 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 // Import all of Bootstrap's CSS
 @import "bootstrap/scss/bootstrap";
 
+
+/*------------------------ Checkbox component ------------------------*/
+// From https://codepen.io/alvarotrigo/pen/YzezaMR
+.checkbox {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  // background: #fcfff4;
+  // background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+  // box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+  border: 2px solid;
+  border-radius: 4px;
+  label {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    // background: linear-gradient(to bottom, #222 0%, #45484d 100%);
+    // box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+    &:after {
+      content: '';
+      width: 9px;
+      height: 5px;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-right: none;
+      background: transparent;
+      opacity: 0;
+      transform: rotate(-45deg);
+      box-sizing: content-box;
+    }
+    &:hover::after {
+      opacity: 0.3;
+    }
+  }
+  input[type=checkbox] {
+    visibility: hidden;
+    &:checked + label:after {
+      opacity: 1;
+    }    
+  }
+}
