@@ -62,6 +62,11 @@ pre {
   border-radius: 0.25em;
 }
 
+.star-icon {
+  color: #ffc90f;
+  margin-top: -0.2em;
+}
+
 
 /*------------------------- Button component ------------------------*/
 

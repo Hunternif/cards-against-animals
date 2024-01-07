@@ -7,6 +7,7 @@ import { GameLobby, GameTurn, PlayerInLobby } from "../shared/types";
 import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
 import { Scoreboard } from "./Scoreboard";
+import { IconStar, IconStarInline } from "./Icons";
 
 interface MenuProps {
   lobby: GameLobby,
@@ -77,7 +78,9 @@ export function GameMenu(
       <div style={rightStyle}>
         {(player) && <CustomDropdown className={className}
           toggle={
-            <span className="score-menu-icon">⭐{player.score}</span>
+            <span className="score-menu-icon">
+              <IconStarInline /> {player.score}
+            </span>
           }>
           <Dropdown.Menu>
             <div className="menu-scoreboard">

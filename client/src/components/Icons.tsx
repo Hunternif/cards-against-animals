@@ -66,7 +66,7 @@ export function IconArowLeft(props: IconSvgProps) {
   // Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
   // License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.
   return <Svg {...props} height={props.height ?? 16} width={props.width ?? 14} viewBox="0 0 448 512">
-    <path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8 .4 34.3z"/>
+    <path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8 .4 34.3z" />
   </Svg>;
 }
 
@@ -74,6 +74,23 @@ export function IconPerson(props: IconSvgProps) {
   // Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
   // License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.
   return <Svg {...props} height={props.height ?? 16} width={props.width ?? 14} viewBox="0 0 448 512">
-    <path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"/>
+    <path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z" />
   </Svg>;
+}
+
+export function IconStar(props: IconSvgProps) {
+  // From Google Fonts, Material Icons: https://fonts.google.com/icons
+  return <Svg {...props} height={props.height ?? 24} width={props.width ?? 24} viewBox="0 0 24 24">
+    <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z" />
+  </Svg>;
+  
+  // Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
+  // License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.
+  // return <Svg {...props} height={props.height ?? 16} width={props.width ?? 18} viewBox="0 0 576 512">
+  //   <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" />
+  // </Svg>;
+}
+
+export function IconStarInline() {
+  return <IconStar width={18} height={18} className="star-icon" />;
 }

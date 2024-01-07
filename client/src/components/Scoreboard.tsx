@@ -1,5 +1,6 @@
 import { CSSProperties } from "react";
 import { GameLobby, PlayerInLobby } from "../shared/types";
+import { IconStarInline } from "./Icons";
 
 interface Props {
   lobby: GameLobby,
@@ -22,7 +23,7 @@ export function Scoreboard({ players }: Props) {
         <tbody>
           {playersByScore.map((player) => <tr key={player.uid}>
             <td className="sb-col-score">
-              {player.score > 0 && `⭐ ${player.score}`}
+              {player.score > 0 && <><IconStarInline /> {player.score}</>}
               {/* {"⭐".repeat(score)} */}
             </td>
             <td className="sb-col-name">{player.name}</td>
