@@ -1,13 +1,13 @@
 import { CSSProperties, useContext, useState } from "react";
-import { GameLobby } from "../shared/types";
-import { DeckSelector } from "./DeckSelector";
+import { Container } from "react-bootstrap";
 import { startLobby } from "../model/lobby-api";
+import { GameLobby } from "../shared/types";
 import { GameButton } from "./Buttons";
+import { DeckSelector } from "./DeckSelector";
+import { Timed } from "./Delay";
 import { ErrorContext } from "./ErrorContext";
 import { IconLink, IconPlay } from "./Icons";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { Timed } from "./Delay";
-import { sleep } from "./utils";
 
 interface Props {
   lobby: GameLobby,
@@ -15,6 +15,12 @@ interface Props {
 
 const headerStyle: CSSProperties = {
   textAlign: "center",
+}
+
+const midStyle: CSSProperties = {
+  flexGrow: 1,
+  maxWidth: "50em",
+  padding: 0,
 }
 
 const footerStyle: CSSProperties = {
@@ -64,7 +70,9 @@ export function LobbyCreatorControls({ lobby }: Props) {
   if (starting) return <LoadingSpinner text="Starting..." delay />;
   return <>
     <h3 style={headerStyle}>Select decks</h3>
-    <DeckSelector lobby={lobby} />
+    <Container style={midStyle}>
+      <DeckSelector lobby={lobby} />
+    </Container>
     <div style={footerStyle}>
       <GameButton light style={startButtonStyle} className="start-button"
         onClick={handleInvite} icon={<IconLink />}>

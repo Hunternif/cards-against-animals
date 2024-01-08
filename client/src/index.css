@@ -67,6 +67,11 @@ pre {
   margin-top: -0.2em;
 }
 
+.modal-backdrop {
+  color: #000;
+  opacity: 0.6;
+}
+
 
 /*------------------------- Button component ------------------------*/
 
@@ -181,7 +186,7 @@ button.start-button {
 }
 .deck-row.selected {
   color: #fff;
-  background-color: #11182766;
+  background-color: #11182788;
 }
 .deck-row-title {
   font-weight: 600;

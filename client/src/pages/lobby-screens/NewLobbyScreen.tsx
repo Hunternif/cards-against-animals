@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { Col } from "react-bootstrap";
+import { Col, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { LobbyPlayerList } from "../../components/LobbyPlayerList";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
@@ -13,6 +13,7 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { GameButton } from "../../components/Buttons";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import { IconArowLeft, IconHamburger, IconPerson, IconTrash } from "../../components/Icons";
+import { ModalBackdrop } from "../../components/ModalBackdrop";
 
 interface Props {
   lobby: GameLobby,
@@ -57,7 +58,7 @@ const overlaySidebarStyle: CSSProperties = {
 
 const smallHeaderStyle: CSSProperties = {
   height: "3em",
-  width: "100%",
+  marginTop: "0.5em",
   position: "absolute",
   display: "flex",
   alignItems: "center",
@@ -89,21 +90,24 @@ function BigScreenLobby(props: Props) {
 
 function SmallScreenLobby(props: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
+  function openMenu() { setMenuOpen(true); }
+  function closeMenu() { setMenuOpen(false); }
   return <>
-    {menuOpen ? (
+    {menuOpen ? (<>
       <div style={overlaySidebarStyle}>
-        <div style={{ position: "absolute", ...menuButtonStyle }}
-          onClick={() => setMenuOpen(false)}>
+        <div style={{ position: "absolute", ...menuButtonStyle, ...smallHeaderStyle }}
+          onClick={closeMenu}>
           <IconArowLeft width={20} height={20} />
         </div>
         <PlayerListSidebar {...props} />
       </div>
-    ) : (
+      <ModalBackdrop onClick={closeMenu} />
+    </>) : (
       <div style={smallHeaderStyle}>
-        <div style={menuButtonStyle} onClick={() => setMenuOpen(true)}>
+        <div style={menuButtonStyle} onClick={openMenu}>
           <IconHamburger width={20} height={20} />
         </div>
-        <IconPerson className="dim"/>
+        <IconPerson className="dim" />
         <span className="dim small-player-count">{props.players.length} </span>
       </div>
     )}
