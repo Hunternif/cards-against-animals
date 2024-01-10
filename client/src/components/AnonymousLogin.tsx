@@ -12,9 +12,10 @@ import { useEffectOnce } from "./utils";
 interface Props {
   onLogin?: (user: User) => void,
   loadingNode?: ReactNode,
+  buttonText: string,
 }
 
-export function AnonymousLogin({ onLogin, loadingNode }: Props) {
+export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
   const [user, loadingUser] = useAuthState(firebaseAuth);
   const suggestedName = "CoolNickname123";
   const [name, setName] = useState(user?.displayName ?? "");
@@ -81,7 +82,9 @@ export function AnonymousLogin({ onLogin, loadingNode }: Props) {
               )}
             </Form.Group>
             <CenteredLayout>
-              <GameButton disabled={delayedLoadingUser || showLoading}>Start</GameButton>
+              <GameButton disabled={delayedLoadingUser || showLoading}>
+                {buttonText}
+              </GameButton>
             </CenteredLayout>
           </Form>
         )}

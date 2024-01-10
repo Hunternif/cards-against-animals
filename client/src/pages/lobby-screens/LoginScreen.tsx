@@ -43,6 +43,7 @@ export function LoginScreen({ existingLobbyID }: Props) {
   }
   return <CenteredLayout outerClassName="welcome-screen">
     <h1>Cards Against Animals</h1>
-    <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode} />
+    <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode}
+      buttonText={existingLobbyID ? "Join" : "Start"} />
   </CenteredLayout>;
 }
