@@ -181,6 +181,9 @@ button.start-button {
   cursor: pointer;
   background-color: #11182733;
 }
+.deck-row.readonly {
+  cursor: default;
+}
 .deck-row:first-child {
   border-top-style: solid;
 }
@@ -197,7 +200,7 @@ button.start-button {
 .deck-row.unselected .checkbox {
   border-color: #ffffffaa;
 }
-.deck-row:hover .checkbox label::after {
+.deck-row.editable.unselected:hover .checkbox label::after {
   opacity: 0.4;
 }
 

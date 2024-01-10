@@ -1,19 +1,19 @@
 import { User } from "firebase/auth";
-import { Col, Modal } from "react-bootstrap";
+import { CSSProperties, useContext, useState } from "react";
+import { Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { GameButton } from "../../components/Buttons";
+import { ErrorContext } from "../../components/ErrorContext";
+import { IconArowLeft, IconHamburger, IconPerson } from "../../components/Icons";
+import { LobbyCreationReadOnly } from "../../components/LobbyCreationReadOnly";
+import { LobbyCreatorControls } from "../../components/LobbyCreatorControls";
 import { LobbyPlayerList } from "../../components/LobbyPlayerList";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { ModalBackdrop } from "../../components/ModalBackdrop";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { RowLayout } from "../../components/layout/RowLayout";
+import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import { leaveLobby } from "../../model/lobby-api";
 import { GameLobby, PlayerInLobby } from "../../shared/types";
-import { CSSProperties, useContext, useState } from "react";
-import { LobbyCreatorControls } from "../../components/LobbyCreatorControls";
-import { ErrorContext } from "../../components/ErrorContext";
-import { GameButton } from "../../components/Buttons";
-import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
-import { IconArowLeft, IconHamburger, IconPerson, IconTrash } from "../../components/Icons";
-import { ModalBackdrop } from "../../components/ModalBackdrop";
 
 interface Props {
   lobby: GameLobby,
@@ -120,7 +120,7 @@ function MainContent({ lobby, user }: Props) {
   return (
     <div style={contentStyle}>
       {isCreator ? <LobbyCreatorControls lobby={lobby} /> : (
-        <CenteredLayout>Please wait for the game to start</CenteredLayout>
+        <LobbyCreationReadOnly lobby={lobby}/>
       )}
     </div>
   );

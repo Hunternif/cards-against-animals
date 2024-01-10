@@ -10,6 +10,7 @@ interface DeckProps {
   deck: DeckWithCount,
   selected?: boolean,
   onToggle?: (selected: boolean) => void,
+  readOnly?: boolean,
 }
 
 const deckRowStyle: CSSProperties = {
@@ -21,16 +22,17 @@ const deckRowStyle: CSSProperties = {
   paddingRight: "0.75em",
 }
 
-function DeckRow({ deck, selected, onToggle }: DeckProps) {
+function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
   const selectedClass = selected ? " selected" : " unselected";
+  const readOnlyClass = readOnly? " readonly" : " editable";
   function handleClick() {
-    if (onToggle) onToggle(!selected);
+    if (!readOnly && onToggle) onToggle(!selected);
   }
   return <div
-    className={`deck-row${selectedClass}`}
+    className={`deck-row${selectedClass}${readOnlyClass}`}
     style={deckRowStyle}
     onClick={handleClick}>
-    <Checkbox checked={selected} onChange={handleClick}/>
+    <Checkbox checked={selected} onChange={handleClick} disabled={readOnly}/>
     <span className={`deck-row-title${selectedClass}`}>{deck.title}</span>
   </div>;
 }
@@ -52,9 +54,10 @@ const scrollableColumnStyle: CSSProperties = {
 
 interface SelectorProps {
   lobby: GameLobby,
+  readOnly?: boolean,
 }
 
-export function DeckSelector({ lobby }: SelectorProps) {
+export function DeckSelector({ lobby, readOnly }: SelectorProps) {
   // const [decks, loading] = [dummyDecks, false]; // for testing UI
   const [loading, setLoading] = useState(true);
   const [decks, setDecks] = useState<Array<DeckWithCount>>([]);
@@ -75,7 +78,7 @@ export function DeckSelector({ lobby }: SelectorProps) {
   return (
     <div style={containerStyle}>
       {loading ? <LoadingSpinner delay text="Loading decks..." /> :
-        <Decks lobby={lobby} decks={decks} />}
+        <Decks lobby={lobby} decks={decks} readOnly={readOnly} />}
     </div>
   );
 }
@@ -83,9 +86,10 @@ export function DeckSelector({ lobby }: SelectorProps) {
 interface DecksProps {
   lobby: GameLobby,
   decks: Array<DeckWithCount>,
+  readOnly?: boolean,
 }
 
-function Decks({ lobby, decks }: DecksProps) {
+function Decks({ lobby, decks, readOnly }: DecksProps) {
   const selectedRef = useRef<Array<DeckWithCount>>(
     decks.filter((d) => lobby.deck_ids.has(d.id)));
   const [promptCount, setPromptCount] = useState(0);
@@ -125,7 +129,9 @@ function Decks({ lobby, decks }: DecksProps) {
           onToggle={(selected) => {
             if (selected) selectDeck(deck);
             else deselectDeck(deck);
-          }} />
+          }}
+          readOnly={readOnly}
+          />
       )}
     </div>
     <div style={{

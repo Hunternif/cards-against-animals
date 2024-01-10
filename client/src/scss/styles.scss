@@ -58,6 +58,13 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     visibility: hidden;
     &:checked + label:after {
       opacity: 1;
-    }    
+    }
+    // Disabled state:
+    &:disabled + label {
+      cursor: default;
+    }
+    &:not(:checked):disabled + label:hover:after {
+      opacity: 0;
+    }
   }
 }
