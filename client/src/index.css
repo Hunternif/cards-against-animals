@@ -203,6 +203,20 @@ button.start-button {
 .deck-row.editable.unselected:hover .checkbox label::after {
   opacity: 0.4;
 }
+.deck-row td {
+  padding: 0 0.5em;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.deck-row td:first-child {
+  padding-left: 1em;
+}
+.deck-selector th {
+  padding-bottom: 0.5em;
+  font-weight: 400;
+  opacity: 0.6;
+}
 
 .new-lobby-screen {
   background-image: linear-gradient(to bottom, #494f5c, #858792);

@@ -13,14 +13,7 @@ interface DeckProps {
   readOnly?: boolean,
 }
 
-const deckRowStyle: CSSProperties = {
-  display: "flex",
-  width: "100%",
-  alignItems: "center",
-  gap: "0.75em",
-  paddingLeft: "0.75em",
-  paddingRight: "0.75em",
-}
+const deckRowStyle: CSSProperties = {}
 
 function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
   const selectedClass = selected ? " selected" : " unselected";
@@ -28,13 +21,23 @@ function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
   function handleClick() {
     if (!readOnly && onToggle) onToggle(!selected);
   }
-  return <div
+  return <tr
     className={`deck-row${selectedClass}${readOnlyClass}`}
     style={deckRowStyle}
     onClick={handleClick}>
-    <Checkbox checked={selected} onChange={handleClick} disabled={readOnly} />
-    <span className={`deck-row-title${selectedClass}`}>{deck.title}</span>
-  </div>;
+    <td style={{ width: "2em" }}>
+      <Checkbox checked={selected} onChange={handleClick} disabled={readOnly} />
+    </td>
+    <td style={{ width: "50%" }}>
+      <span className={`deck-row-title${selectedClass}`}>{deck.title}</span>
+    </td>
+    <td>
+      <span className="deck-prompt-count">{deck.promptCount}</span>
+    </td>
+    <td>
+      <span className="deck-response-count">{deck.responseCount}</span>
+    </td>
+  </tr>;
 }
 
 const containerStyle: CSSProperties = {
@@ -125,18 +128,30 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
   return <>
     <div style={scrollableColumnStyle}
       className="miniscrollbar miniscrollbar-auto miniscrollbar-light deck-selector">
-      {decks?.map((deck, i) =>
-        <DeckRow
-          key={deck.id}
-          deck={deck}
-          selected={lobby.deck_ids.has(deck.id)}
-          onToggle={(selected) => {
-            if (selected) selectDeck(deck);
-            else deselectDeck(deck);
-          }}
-          readOnly={readOnly}
-        />
-      )}
+      <table style={{ width: "100%" }}>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Deck</th>
+            <th>Prompts</th>
+            <th>Responses</th>
+          </tr>
+        </thead>
+        <tbody>
+          {decks?.map((deck, i) =>
+            <DeckRow
+              key={deck.id}
+              deck={deck}
+              selected={lobby.deck_ids.has(deck.id)}
+              onToggle={(selected) => {
+                if (selected) selectDeck(deck);
+                else deselectDeck(deck);
+              }}
+              readOnly={readOnly}
+            />
+          )}
+        </tbody>
+      </table>
     </div>
     <div style={{
       display: "flex",
