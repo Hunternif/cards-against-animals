@@ -24,7 +24,7 @@ const deckRowStyle: CSSProperties = {
 
 function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
   const selectedClass = selected ? " selected" : " unselected";
-  const readOnlyClass = readOnly? " readonly" : " editable";
+  const readOnlyClass = readOnly ? " readonly" : " editable";
   function handleClick() {
     if (!readOnly && onToggle) onToggle(!selected);
   }
@@ -32,7 +32,7 @@ function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
     className={`deck-row${selectedClass}${readOnlyClass}`}
     style={deckRowStyle}
     onClick={handleClick}>
-    <Checkbox checked={selected} onChange={handleClick} disabled={readOnly}/>
+    <Checkbox checked={selected} onChange={handleClick} disabled={readOnly} />
     <span className={`deck-row-title${selectedClass}`}>{deck.title}</span>
   </div>;
 }
@@ -118,6 +118,9 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
     }
   }
 
+  // Update counts once after page load:
+  useEffect(() => updateCounts(), [lobby.id]);
+
   return <>
     <div style={scrollableColumnStyle}
       className="miniscrollbar miniscrollbar-auto miniscrollbar-light deck-selector">
@@ -131,7 +134,7 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
             else deselectDeck(deck);
           }}
           readOnly={readOnly}
-          />
+        />
       )}
     </div>
     <div style={{
