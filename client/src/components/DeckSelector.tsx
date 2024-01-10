@@ -41,6 +41,7 @@ const containerStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   minHeight: "16rem",
+  height: "100%",
 }
 
 const scrollableColumnStyle: CSSProperties = {

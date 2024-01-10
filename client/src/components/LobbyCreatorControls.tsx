@@ -21,6 +21,9 @@ const midStyle: CSSProperties = {
   flexGrow: 1,
   maxWidth: "50em",
   padding: 0,
+  flex: "1 1 auto",
+  width: "100%",
+  height: "40%", // No idea how this works with Flexbox here.
 }
 
 const footerStyle: CSSProperties = {
