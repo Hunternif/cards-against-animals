@@ -173,19 +173,12 @@ button.start-button {
 /*=========================== Lobby screen ===========================*/
 
 .deck-row {
-  border: 2px solid rgba(222, 226, 230, 0.25);
   height: 3rem;
-  border-top-style: none;
-  border-left-style: none;
-  border-right-style: none;
   cursor: pointer;
   background-color: #11182733;
 }
 .deck-row.readonly {
   cursor: default;
-}
-.deck-row:first-child {
-  border-top-style: solid;
 }
 .deck-row.selected {
   color: #fff;
@@ -203,11 +196,18 @@ button.start-button {
 .deck-row.editable.unselected:hover .checkbox label::after {
   opacity: 0.4;
 }
+.deck-selector table {
+  /* border collapse is needed for sticky header */
+  border-collapse: separate;
+  border-spacing: 0;
+}
 .deck-row td {
   padding: 0 0.5em;
   text-wrap: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  /* border must be set on td due to border collapse behavior */
+  border-bottom: 2px solid rgba(222, 226, 230, 0.25);
 }
 .deck-row td:first-child {
   padding-left: 1em;
@@ -215,13 +215,23 @@ button.start-button {
 .deck-selector th {
   padding-bottom: 0.5em;
   font-weight: 400;
-  opacity: 0.6;
+  color: rgba(222, 226, 230, 0.6);
+  border-bottom: 2px solid rgba(222, 226, 230, 0.25);
+  /* Sticky header: */
+  position: sticky;
+  background-attachment: fixed;
+  background-image: linear-gradient(to bottom, #494f5c, #858792);
+  z-index: 1;
+  top: 0;
 }
 
 .new-lobby-screen {
   background-image: linear-gradient(to bottom, #494f5c, #858792);
 }
 .new-lobby-sidebar {
+  /* position needs to be set to put drop shadow in front of sticky table header */
+  position: relative;
+  z-index: 2;
   background-image: linear-gradient(to bottom, #2c3037, #505157);
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.4);
 }
