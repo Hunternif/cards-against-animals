@@ -43,7 +43,6 @@ function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
 const containerStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  minHeight: "16rem",
   height: "100%",
 }
 

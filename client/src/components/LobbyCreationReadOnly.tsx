@@ -2,6 +2,7 @@ import { Container } from "react-bootstrap";
 import { GameLobby } from "../shared/types";
 import { CSSProperties } from "react";
 import { DeckSelector } from "./DeckSelector";
+import { LobbySettings } from "./LobbySettings";
 
 interface Props {
   lobby: GameLobby,
@@ -17,7 +18,13 @@ const midStyle: CSSProperties = {
   padding: 0,
   flex: "1 1 auto",
   width: "100%",
-  height: "40%", // No idea how this works with Flexbox here.
+  minHeight: 0, // this prevents overflowing parent flexbox
+  display: "flex",
+  flexDirection: "column",
+}
+const compactSectionStyle: CSSProperties = {
+  minHeight: 0,
+  width: "100%",
 }
 
 const footerStyle: CSSProperties = {
@@ -32,7 +39,11 @@ export function LobbyCreationReadOnly({ lobby }: Props) {
   return <>
     <h3 style={headerStyle}>Decks</h3>
     <Container style={midStyle}>
-      <DeckSelector lobby={lobby} readOnly />
+      {/* The section div keeps minimum height and prevents overflow */}
+      <div style={compactSectionStyle}>
+        <DeckSelector lobby={lobby} readOnly />
+      </div>
+      <LobbySettings lobby={lobby} readOnly />
     </Container>
     <div style={footerStyle}>
       Please wait for the game to start

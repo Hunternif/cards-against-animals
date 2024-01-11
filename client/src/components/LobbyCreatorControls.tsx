@@ -8,6 +8,7 @@ import { Timed } from "./Delay";
 import { ErrorContext } from "./ErrorContext";
 import { IconLink, IconPlay } from "./Icons";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { LobbySettings } from "./LobbySettings";
 
 interface Props {
   lobby: GameLobby,
@@ -23,7 +24,13 @@ const midStyle: CSSProperties = {
   padding: 0,
   flex: "1 1 auto",
   width: "100%",
-  height: "40%", // No idea how this works with Flexbox here.
+  minHeight: 0, // this prevents overflowing parent flexbox
+  display: "flex",
+  flexDirection: "column",
+}
+const compactSectionStyle: CSSProperties = {
+  minHeight: 0,
+  width: "100%",
 }
 
 const footerStyle: CSSProperties = {
@@ -74,7 +81,11 @@ export function LobbyCreatorControls({ lobby }: Props) {
   return <>
     <h3 style={headerStyle}>Select decks</h3>
     <Container style={midStyle}>
-      <DeckSelector lobby={lobby} />
+      {/* The section div keeps minimum height and prevents overflow */}
+      <div style={compactSectionStyle}>
+        <DeckSelector lobby={lobby} />
+      </div>
+      <LobbySettings lobby={lobby} />
     </Container>
     <div style={footerStyle}>
       <GameButton light style={startButtonStyle} className="start-button"
