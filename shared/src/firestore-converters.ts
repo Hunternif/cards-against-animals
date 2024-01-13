@@ -10,13 +10,15 @@ import {
   DeckTag,
   GameLobby,
   GameTurn,
+  LobbySettings,
   PlayerDataInTurn,
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
   PromptDeckCard,
   ResponseCardInGame,
-  ResponseDeckCard
+  ResponseDeckCard,
+  defaultLobbySettings
 } from "./types";
 import { copyFields, copyFields2 } from "./utils";
 
@@ -29,18 +31,29 @@ export const lobbyConverter: FConverter<GameLobby> = {
         FTimestamp.fromDate(lobby.time_created) :
         fServerTimestamp(), // set new time when creating a new lobby
       deck_ids: Array.from(lobby.deck_ids),
+      settings: copyFields(lobby.settings),
       // the rest of the fields are subcollections, and they
       // should not be uploaded during creation.
     };
   },
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
-    const ret = new GameLobby(snapshot.id, data.creator_uid, data.status);
+    const settings: LobbySettings = data.settings ?
+      mapSettings(data.settings) : defaultLobbySettings;
+    const ret = new GameLobby(snapshot.id, data.creator_uid, settings, data.status);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     ret.deck_ids = new Set<string>(data.deck_ids || []);
     return ret;
   },
 };
+
+function mapSettings(data: any): LobbySettings {
+  return copyFields2(defaultLobbySettings, {
+    play_until: data.play_until,
+    max_turns: data.max_turns,
+    max_score: data.max_score,
+  });
+}
 
 export const playerConverter: FConverter<PlayerInLobby> = {
   toFirestore: (player: PlayerInLobby) => copyFields2(player, {

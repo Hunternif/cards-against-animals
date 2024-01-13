@@ -12,6 +12,7 @@ export class GameLobby {
   time_created?: Date;
   creator_uid: string;
   status: LobbyStatus;
+  settings: LobbySettings;
 
   /* Must be fetched separately from a Firebase subcollection. */
   players: Array<PlayerInLobby> = [];
@@ -31,13 +32,29 @@ export class GameLobby {
   constructor(
     id: string,
     creator_uid: string,
+    settings: LobbySettings,
     status: LobbyStatus = "new",
   ) {
     this.id = id;
     this.creator_uid = creator_uid;
+    this.settings = settings;
     this.status = status;
   }
 }
+
+export interface LobbySettings {
+  play_until: PlayUntil;
+  max_turns: number;
+  max_score: number;
+}
+
+export const defaultLobbySettings: LobbySettings = {
+  play_until: "forever",
+  max_turns: 10,
+  max_score: 5,
+};
+
+export type PlayUntil = "forever" | "max_turns" | "max_score";
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {
