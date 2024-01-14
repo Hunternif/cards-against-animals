@@ -62,6 +62,7 @@ const smallHeaderStyle: CSSProperties = {
   position: "absolute",
   display: "flex",
   alignItems: "center",
+  zIndex: 3,
 }
 
 /** User logged in AND joined the lobby. */
