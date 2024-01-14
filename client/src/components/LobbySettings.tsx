@@ -34,12 +34,15 @@ export function LobbySettings(props: Props) {
   return (
     <div style={formStyle} className="lobby-settings-container">
       <FormItem label="Play until" control={<EndControl {...props} />} />
+      {/* Prevent another item appearing next to "play until": */}
+      {playUntil === "forever" && <div style={{ width: "100%", marginTop: "-0.25em" }} />}
       {playUntil === "max_turns" && (
         <FormItem label="Number of turns" control={<MaxTurnsControl {...props} />} />
       )}
       {playUntil === "max_score" && (
         <FormItem label="Maximum score" control={<MaxScoreControl {...props} />} />
       )}
+      <FormItem label="Cards per person" control={<CardsPerPersonControl {...props} />} />
     </div>
   );
 }
@@ -95,6 +98,22 @@ function MaxScoreControl({ lobby, readOnly }: Props) {
     <input className="control" style={controlStyle} disabled={readOnly}
       type="number" min="1" max="99"
       value={lobby.settings.max_score} onChange={handleChange} />
+  );
+}
+
+function CardsPerPersonControl({ lobby, readOnly }: Props) {
+  const { setError } = useContext(ErrorContext);
+
+  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    const newValue = parseInt(event.target.value);
+    lobby.settings.cards_per_person = newValue;
+    await updateLobby(lobby).catch((e) => setError(e));
+  }
+
+  return (
+    <input className="control" style={controlStyle} disabled={readOnly}
+      type="number" min="2" max="99"
+      value={lobby.settings.cards_per_person} onChange={handleChange} />
   );
 }
 

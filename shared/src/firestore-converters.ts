@@ -48,11 +48,13 @@ export const lobbyConverter: FConverter<GameLobby> = {
 };
 
 function mapSettings(data: any): LobbySettings {
-  return copyFields2(defaultLobbySettings, {
+  const readSettings: LobbySettings = {
     play_until: data.play_until,
     max_turns: data.max_turns,
     max_score: data.max_score,
-  });
+    cards_per_person: data.cards_per_person,
+  };
+  return copyFields2(defaultLobbySettings, readSettings);
 }
 
 export const playerConverter: FConverter<PlayerInLobby> = {

@@ -11,13 +11,14 @@ import {
   turnConverter
 } from "../shared/firestore-converters";
 import {
+  GameLobby,
   GameTurn,
   PlayerDataInTurn,
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
-import { getOnlinePlayers, getPlayer, getPlayers, updatePlayer } from "./lobby-server-api";
+import { getLobby, getOnlinePlayers, getPlayer, getPlayers, updatePlayer } from "./lobby-server-api";
 import { logCardInteractions } from "./deck-server-api";
 
 /** Returns Firestore subcollection reference. */
@@ -186,41 +187,40 @@ async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
   return selected;
 }
 
-// TODO: move this to lobby settings
-const cardsPerPerson = 10;
-
 /** Deal cards to active players. */
 async function dealCards(
   lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn,
 ): Promise<void> {
+  const lobby = await getLobby(lobbyID);
   const players = await getOnlinePlayers(lobbyID);
   for (const player of players) {
-    await dealCardsToPlayer(lobbyID, lastTurn, newTurn, player.uid);
+    await dealCardsToPlayer(lobby, lastTurn, newTurn, player.uid);
   }
 }
 
 /** Deal cards to a given player, up to the limit. */
 export async function dealCardsToPlayer(
-  lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn, userID: string,
+  lobby: GameLobby, lastTurn: GameTurn | null, newTurn: GameTurn, userID: string,
 ) {
-  const deckResponsesRef = db.collection(`lobbies/${lobbyID}/deck_responses`)
+  const deckResponsesRef = db.collection(`lobbies/${lobby.id}/deck_responses`)
     .withConverter(responseCardInGameConverter);
-  const player = await getPlayer(lobbyID, userID);
+  const player = await getPlayer(lobby.id, userID);
   if (!player) {
     throw new HttpsError("not-found", `Player data not found for user ${userID}`);
   }
   const newPlayerData = new PlayerDataInTurn(userID, player.name);
   if (lastTurn) {
-    const lastResponse = await getPlayerResponse(lobbyID, lastTurn.id, userID);
-    const lastDiscard = await getPlayerDiscard(lobbyID, lastTurn.id, userID);
+    const lastResponse = await getPlayerResponse(lobby.id, lastTurn.id, userID);
+    const lastDiscard = await getPlayerDiscard(lobby.id, lastTurn.id, userID);
     // copy old hand, without the submitted and discarded cards:
-    const oldHand = (await getPlayerHand(lobbyID, lastTurn.id, userID))
+    const oldHand = (await getPlayerHand(lobby.id, lastTurn.id, userID))
       ?.filter((card) => !lastResponse?.cards?.find((c) => c.id === card.id))
       ?.filter((card) => !lastDiscard.find((c) => c.id === card.id));
     // temporarily write hand here, then upload it as a subcollection
     newPlayerData.hand.push(...oldHand);
   }
   // Find how many more cards we need:
+  const cardsPerPerson = lobby.settings.cards_per_person;
   const totalCardsNeeded = Math.max(0, cardsPerPerson - newPlayerData.hand.length);
 
   // Fetch new cards:
@@ -233,13 +233,13 @@ export async function dealCardsToPlayer(
   // If we ran out of cards, sorry!
 
   // Remove dealt cards from the deck and upload player data & hand:
-  const playerDataRef = getPlayerDataRef(lobbyID, newTurn.id);
+  const playerDataRef = getPlayerDataRef(lobby.id, newTurn.id);
   await db.runTransaction(async (transaction) => {
     for (const card of newCards) {
       transaction.delete(deckResponsesRef.doc(card.id));
     }
     transaction.set(playerDataRef.doc(userID), newPlayerData);
-    const handRef = getPlayerHandRef(lobbyID, newTurn.id, userID);
+    const handRef = getPlayerHandRef(lobby.id, newTurn.id, userID);
     for (const card of newPlayerData.hand) {
       transaction.set(handRef.doc(card.id), card);
     }
