@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { endLobbyFun, findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, startLobbyFun, usersRef } from "../firebase";
 import { playerConverter } from "../shared/firestore-converters";
-import { GameLobby, PlayerInLobby, PlayerStatus } from "../shared/types";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerStatus } from "../shared/types";
 import { getLastTurn, setTurnJudge } from "./turn-api";
 import { getCAAUser } from "./users-api";
 
@@ -135,6 +135,26 @@ export async function removeDeck(lobby: GameLobby, deckID: string): Promise<void
   lobby.deck_ids.delete(deckID);
   await updateLobby(lobby);
 }
+
+/** Returns true if game end condition has been reached. */
+export function checkIfShouldEndGame(
+  lobby: GameLobby, turn: GameTurn, players: PlayerInLobby[],
+): boolean {
+  switch (lobby.settings.play_until) {
+    case "forever": return false;
+    case "max_turns":
+      return turn.ordinal >= lobby.settings.max_turns;
+    case "max_score": {
+      for (const player of players) {
+        if (player.score >= lobby.settings.max_score) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+}
+
 
 /**
  * Will find an active game or create a new one, and attempt to join.

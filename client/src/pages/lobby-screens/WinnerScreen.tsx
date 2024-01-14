@@ -8,6 +8,7 @@ import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { checkIfShouldEndGame, endLobby } from "../../model/lobby-api";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -41,17 +42,27 @@ export function WinnerScreen(
   { lobby, turn, user, judge, players, responses }: TurnProps
 ) {
   const [startingNewTurn, setStartingNewTurn] = useState(false);
+  const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
   const winner = players.find((p) => p.uid === turn.winner_uid);
 
   const winnerResponse = responses.find((r) => r.player_uid === turn.winner_uid);
+  const shouldEndNow = checkIfShouldEndGame(lobby, turn, players);
 
   async function handleNewTurn() {
     setStartingNewTurn(true);
     await startNewTurn(lobby).catch((e) => {
       setError(e);
       setStartingNewTurn(false);
+    });
+  }
+
+  async function handleEndGame() {
+    setEnding(true);
+    await endLobby(lobby).catch((e) => {
+      setError(e);
+      setEnding(false);
     });
   }
 
@@ -65,12 +76,21 @@ export function WinnerScreen(
       {winnerResponse && <ResponseReading response={winnerResponse} />}
     </div>
     <div style={botRowStyle} className="winner-control-row">
-      {isJudge && <Delay>
-        <GameButton accent onClick={handleNewTurn}
-          disabled={startingNewTurn}>
-          Next turn
-        </GameButton>
-      </Delay>}
+      {isJudge && (
+        shouldEndNow ? (
+          <Delay>
+            <GameButton onClick={handleEndGame} disabled={ending}>
+              End game
+            </GameButton>
+          </Delay>
+        ) : (
+          <Delay>
+            <GameButton accent onClick={handleNewTurn}
+              disabled={startingNewTurn}>
+              Next turn
+            </GameButton>
+          </Delay>
+        ))}
     </div>
   </CenteredLayout>
 }
