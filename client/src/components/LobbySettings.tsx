@@ -1,8 +1,7 @@
-import { CSSProperties, ChangeEvent, ReactNode, useContext } from "react";
+import { CSSProperties, ReactNode } from "react";
 import { updateLobby } from "../model/lobby-api";
-import { GameLobby, PlayUntil } from "../shared/types";
-import { ErrorContext } from "./ErrorContext";
-import { NumberInput } from "./FormControls";
+import { GameLobby } from "../shared/types";
+import { NumberInput, SelectInput } from "./FormControls";
 
 interface Props {
   lobby: GameLobby,
@@ -26,9 +25,6 @@ const formRowStyle: CSSProperties = {
   alignItems: "baseline",
 }
 
-const controlStyle: CSSProperties = {
-  maxWidth: "12em",
-}
 
 export function LobbySettings(props: Props) {
   const playUntil = props.lobby.settings.play_until;
@@ -48,26 +44,19 @@ export function LobbySettings(props: Props) {
   );
 }
 
-// TODO: typed components select and number input controls.
-
 function EndControl({ lobby, readOnly }: Props) {
-  const { setError } = useContext(ErrorContext);
-  const playUntil = lobby.settings.play_until;
-
-  async function handleSelect(event: ChangeEvent<HTMLSelectElement>) {
-    const newValue = event.target.value as PlayUntil;
-    lobby.settings.play_until = newValue;
-    await updateLobby(lobby).catch((e) => setError(e));
-  }
-
-  return (
-    <select style={controlStyle} disabled={readOnly}
-      value={playUntil} onChange={handleSelect}>
-      <option value="forever">Forever</option>
-      <option value="max_turns">X turns</option>
-      <option value="max_score">X score</option>
-    </select>
-  );
+  return <SelectInput disabled={readOnly}
+    value={lobby.settings.play_until}
+    onChange={async (newValue) => {
+      lobby.settings.play_until = newValue;
+      await updateLobby(lobby);
+    }}
+    options={[
+      ["forever", "Forever"],
+      ["max_turns", "X turns"],
+      ["max_score", "X score"],
+    ]}
+  />;
 }
 
 function MaxTurnsControl({ lobby, readOnly }: Props) {
