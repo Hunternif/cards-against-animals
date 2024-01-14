@@ -17,7 +17,7 @@ export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
   return (await getDoc(doc(lobbiesRef, lobbyID))).data() ?? null;
 }
 
-async function updateLobby(lobby: GameLobby): Promise<void> {
+export async function updateLobby(lobby: GameLobby): Promise<void> {
   await setDoc(doc(lobbiesRef, lobby.id), lobby);
 }
 

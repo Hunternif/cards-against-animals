@@ -1,5 +1,7 @@
-import { CSSProperties } from "react";
-import { GameLobby } from "../shared/types";
+import { CSSProperties, ChangeEvent, ReactNode, useContext } from "react";
+import { updateLobby } from "../model/lobby-api";
+import { GameLobby, PlayUntil } from "../shared/types";
+import { ErrorContext } from "./ErrorContext";
 
 interface Props {
   lobby: GameLobby,
@@ -15,28 +17,95 @@ const formStyle: CSSProperties = {
   gap: "0.25em",
 }
 
-export function LobbySettings({ lobby, readOnly }: Props) {
+const formRowStyle: CSSProperties = {
+  // flex: "1 1 auto",
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "0.75em",
+  alignItems: "baseline",
+}
+
+const controlStyle: CSSProperties = {
+  maxWidth: "12em",
+}
+
+export function LobbySettings(props: Props) {
+  const playUntil = props.lobby.settings.play_until;
   return (
     <div style={formStyle} className="lobby-settings-container">
-      <FormItem />
-      <FormItem />
-      <FormItem />
+      <FormItem label="Play until" control={<EndControl {...props} />} />
+      {playUntil === "max_turns" && (
+        <FormItem label="Number of turns" control={<MaxTurnsControl {...props} />} />
+      )}
+      {playUntil === "max_score" && (
+        <FormItem label="Maximum score" control={<MaxScoreControl {...props} />} />
+      )}
     </div>
   );
 }
 
-function FormItem() {
-  return <div style={{
-    // flex: "1 1 auto",
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "1em",
-    alignItems: "baseline",
-  }}>
-    <span style={{ textAlign: "end" }}>Play until</span>
-    <select style={{ maxWidth: "12em" }} className="">
+// TODO: typed components select and number input controls.
+
+function EndControl({ lobby, readOnly }: Props) {
+  const { setError } = useContext(ErrorContext);
+  const playUntil = lobby.settings.play_until;
+
+  async function handleSelect(event: ChangeEvent<HTMLSelectElement>) {
+    const newValue = event.target.value as PlayUntil;
+    lobby.settings.play_until = newValue;
+    await updateLobby(lobby).catch((e) => setError(e));
+  }
+
+  return (
+    <select style={controlStyle} disabled={readOnly}
+      value={playUntil} onChange={handleSelect}>
       <option value="forever">Forever</option>
-      <option value="x_turns">X Turns</option>
+      <option value="max_turns">X turns</option>
+      <option value="max_score">X score</option>
     </select>
+  );
+}
+
+function MaxTurnsControl({ lobby, readOnly }: Props) {
+  const { setError } = useContext(ErrorContext);
+
+  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    const newValue = parseInt(event.target.value);
+    lobby.settings.max_turns = newValue;
+    await updateLobby(lobby).catch((e) => setError(e));
+  }
+
+  return (
+    <input className="control" style={controlStyle} disabled={readOnly}
+      type="number" min="1" max="99"
+      value={lobby.settings.max_turns} onChange={handleChange} />
+  );
+}
+
+function MaxScoreControl({ lobby, readOnly }: Props) {
+  const { setError } = useContext(ErrorContext);
+
+  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    const newValue = parseInt(event.target.value);
+    lobby.settings.max_score = newValue;
+    await updateLobby(lobby).catch((e) => setError(e));
+  }
+
+  return (
+    <input className="control" style={controlStyle} disabled={readOnly}
+      type="number" min="1" max="99"
+      value={lobby.settings.max_score} onChange={handleChange} />
+  );
+}
+
+interface ItemProps {
+  label: string,
+  control: ReactNode,
+}
+
+function FormItem({ label, control }: ItemProps) {
+  return <div style={formRowStyle}>
+    <span style={{ textAlign: "end" }}>{label}</span>
+    {control}
   </div>;
 }

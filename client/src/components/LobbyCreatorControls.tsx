@@ -27,6 +27,7 @@ const midStyle: CSSProperties = {
   minHeight: 0, // this prevents overflowing parent flexbox
   display: "flex",
   flexDirection: "column",
+  gap: "1em",
 }
 const compactSectionStyle: CSSProperties = {
   minHeight: 0,

@@ -98,6 +98,33 @@ select {
   }
 }
 
+
+/*------------------------- Input component ------------------------*/
+/* Copied from Bootstrap and modified */
+input.control {
+  display: block;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  color: var(--bs-body-color);
+  appearance: none;
+  background-color: #11182744;
+  background-clip: padding-box;
+  border: 2px solid rgba(222, 226, 230, 0.5);
+  border-radius: var(--bs-border-radius);
+  &:focus,
+  &:focus-visible {
+    background-color: #11182788;
+    border-color: #86b7fe;
+    outline: 0;
+  }
+  option {
+    background-color: #323844;
+  }
+}
+
+
+/*=========================== Lobby screen ===========================*/
+
 .lobby-settings-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
