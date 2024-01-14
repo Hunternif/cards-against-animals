@@ -19,9 +19,11 @@ import {
   createLobby,
   findActiveLobbyWithPlayer,
   getLobby,
+  setLobbyEnded,
   updateLobby
 } from "./model/lobby-server-api";
 import {
+  checkEndCondition,
   createNewTurn,
   getLastTurn,
   logPlayedPrompt,
@@ -151,9 +153,7 @@ export const endLobby = onCall<
       await logDownvotes(lobby.id);
     }
     // End lobby:
-    lobby.status = "ended";
-    await updateLobby(lobby);
-    logger.info(`Ended lobby ${lobby.id}`);
+    await setLobbyEnded(lobby);
   }
 );
 
@@ -217,6 +217,7 @@ export const onTurnPhaseChange = onDocumentUpdated(
         // Turn completed: update all scores.
         await updatePlayerScoresFromTurn(lobbyID, turnAfter);
         await logWinner(lobbyID, turnAfter);
+        await checkEndCondition(lobbyID, turnAfter);
       }
     }
   });

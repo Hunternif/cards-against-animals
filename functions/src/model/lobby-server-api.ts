@@ -172,3 +172,10 @@ export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
   });
   logger.info(`Copied ${newPrompts.length} prompts and ${newResponses.length} responses to lobby ${lobby.id}`);
 }
+
+/** Sets lobby status to "ended" */
+export async function setLobbyEnded(lobby: GameLobby) {
+  lobby.status = "ended";
+  await updateLobby(lobby);
+  logger.info(`Ended lobby ${lobby.id}`);
+}

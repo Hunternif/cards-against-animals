@@ -17,8 +17,8 @@ import {
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
-import { getOnlinePlayers, getPlayer, getPlayers, updatePlayer } from "./lobby-server-api";
 import { logCardInteractions } from "./deck-server-api";
+import { getLobby, getOnlinePlayers, getPlayer, getPlayers, setLobbyEnded, updatePlayer } from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
@@ -322,4 +322,30 @@ export async function logWinner(lobbyID: string, turn: GameTurn) {
   const winnerResponse = await getPlayerResponse(lobbyID, turn.id, turn.winner_uid);
   if (!winnerResponse) return;
   await logCardInteractions({ wonResponses: winnerResponse.cards });
+}
+
+/** Checks if game end condition has been reached, and if yes ends the game */
+export async function checkEndCondition(lobbyID: string, turn: GameTurn) {
+  const lobby = await getLobby(lobbyID);
+  let shouldEnd = false;
+  switch (lobby.settings.play_until) {
+    case "forever": return;
+    case "max_turns": {
+      if (turn.ordinal >= lobby.settings.max_turns) {
+        shouldEnd = true;
+        break;
+      }
+    }
+    case "max_score": {
+      const players = await getPlayers(lobbyID, "player");
+      for (const player of players) {
+        if (player.score >= lobby.settings.max_score) {
+          shouldEnd = true;
+        }
+      }
+    }
+  }
+  if (shouldEnd) {
+    await setLobbyEnded(lobby);
+  }
 }
