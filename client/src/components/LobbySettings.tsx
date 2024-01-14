@@ -2,6 +2,7 @@ import { CSSProperties, ChangeEvent, ReactNode, useContext } from "react";
 import { updateLobby } from "../model/lobby-api";
 import { GameLobby, PlayUntil } from "../shared/types";
 import { ErrorContext } from "./ErrorContext";
+import { NumberInput } from "./FormControls";
 
 interface Props {
   lobby: GameLobby,
@@ -70,51 +71,33 @@ function EndControl({ lobby, readOnly }: Props) {
 }
 
 function MaxTurnsControl({ lobby, readOnly }: Props) {
-  const { setError } = useContext(ErrorContext);
-
-  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    const newValue = parseInt(event.target.value);
-    lobby.settings.max_turns = newValue;
-    await updateLobby(lobby).catch((e) => setError(e));
-  }
-
-  return (
-    <input className="control" style={controlStyle} disabled={readOnly}
-      type="number" min="1" max="99"
-      value={lobby.settings.max_turns} onChange={handleChange} />
-  );
+  return <NumberInput min={1} max={99} disabled={readOnly}
+    value={lobby.settings.max_turns}
+    onChange={async (newValue) => {
+      lobby.settings.max_turns = newValue;
+      await updateLobby(lobby);
+    }}
+  />;
 }
 
 function MaxScoreControl({ lobby, readOnly }: Props) {
-  const { setError } = useContext(ErrorContext);
-
-  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    const newValue = parseInt(event.target.value);
-    lobby.settings.max_score = newValue;
-    await updateLobby(lobby).catch((e) => setError(e));
-  }
-
-  return (
-    <input className="control" style={controlStyle} disabled={readOnly}
-      type="number" min="1" max="99"
-      value={lobby.settings.max_score} onChange={handleChange} />
-  );
+  return <NumberInput min={1} max={99} disabled={readOnly}
+    value={lobby.settings.max_score}
+    onChange={async (newValue) => {
+      lobby.settings.max_score = newValue;
+      await updateLobby(lobby);
+    }}
+  />;
 }
 
 function CardsPerPersonControl({ lobby, readOnly }: Props) {
-  const { setError } = useContext(ErrorContext);
-
-  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    const newValue = parseInt(event.target.value);
-    lobby.settings.cards_per_person = newValue;
-    await updateLobby(lobby).catch((e) => setError(e));
-  }
-
-  return (
-    <input className="control" style={controlStyle} disabled={readOnly}
-      type="number" min="2" max="99"
-      value={lobby.settings.cards_per_person} onChange={handleChange} />
-  );
+  return <NumberInput min={2} max={99} disabled={readOnly}
+    value={lobby.settings.cards_per_person}
+    onChange={async (newValue) => {
+      lobby.settings.cards_per_person = newValue;
+      await updateLobby(lobby);
+    }}
+  />;
 }
 
 interface ItemProps {
