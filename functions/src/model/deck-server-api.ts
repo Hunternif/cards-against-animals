@@ -68,15 +68,16 @@ function getCardIndex(
   let result = base;
 
   // Adjust index based on rating:
-  // TODO: enable this based on lobby settings.
-  let factor = (100.0 + card.rating) / 100.0 *
-    (card.plays + 1.0) *
-    10.0 / (card.views + 10.0) *
-    (2 * card.wins + 1.0) *
-    1.0 / (card.discards + 1.0);
-  factor = Math.max(0.0001, factor);
-  factor = Math.min(factor, 1.2);
-  result = (result * factor) >>> 0;
+  if (settings.sort_cards_by_rating) {
+    let factor = (100.0 + card.rating) / 100.0 *
+      (card.plays + 1.0) *
+      10.0 / (card.views + 10.0) *
+      (2 * card.wins + 1.0) *
+      1.0 / (card.discards + 1.0);
+    factor = Math.max(0.0001, factor);
+    factor = Math.min(factor, 1.2);
+    result = (result * factor) >>> 0;
+  }
 
   // Adjust index for unplayed cards
   if (settings.new_cards_first) {

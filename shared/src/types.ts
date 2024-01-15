@@ -47,7 +47,10 @@ export interface LobbySettings {
   max_turns: number;
   max_score: number;
   cards_per_person: number;
+  /** If ture, unplayed cards will be dealt first. */
   new_cards_first: boolean;
+  /** If true, card order will be affected by their rating. */
+  sort_cards_by_rating: boolean;
 }
 
 export const defaultLobbySettings: LobbySettings = {
@@ -56,6 +59,7 @@ export const defaultLobbySettings: LobbySettings = {
   max_score: 5,
   cards_per_person: 10,
   new_cards_first: true,
+  sort_cards_by_rating: true,
 };
 
 export type PlayUntil = "forever" | "max_turns" | "max_score";

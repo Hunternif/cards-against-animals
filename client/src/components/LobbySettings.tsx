@@ -42,6 +42,7 @@ export function LobbySettings(props: Props) {
       )}
       <FormItem label="Cards per person" control={<CardsPerPersonControl {...props} />} />
       <FormItem label="New cards first" control={<NewCardsFirstControl {...props} />} />
+      <FormItem label="Sort cards by rating" control={<SortCardsByRatingControl {...props} />} />
     </div>
   );
 }
@@ -96,6 +97,16 @@ function NewCardsFirstControl({ lobby, readOnly }: Props) {
     value={lobby.settings.new_cards_first}
     onChange={async (newValue) => {
       lobby.settings.new_cards_first = newValue;
+      await updateLobby(lobby);
+    }}
+  />;
+}
+
+function SortCardsByRatingControl({ lobby, readOnly }: Props) {
+  return <ToggleInput disabled={readOnly}
+    value={lobby.settings.sort_cards_by_rating}
+    onChange={async (newValue) => {
+      lobby.settings.sort_cards_by_rating = newValue;
       await updateLobby(lobby);
     }}
   />;
