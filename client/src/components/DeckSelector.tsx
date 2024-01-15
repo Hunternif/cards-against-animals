@@ -13,8 +13,6 @@ interface DeckProps {
   readOnly?: boolean,
 }
 
-const deckRowStyle: CSSProperties = {}
-
 function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
   const selectedClass = selected ? " selected" : " unselected";
   const readOnlyClass = readOnly ? " readonly" : " editable";
@@ -23,7 +21,6 @@ function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
   }
   return <tr
     className={`deck-row${selectedClass}${readOnlyClass}`}
-    style={deckRowStyle}
     onClick={handleClick}>
     <td style={{ width: "2em" }}>
       <Checkbox checked={selected} onChange={handleClick} disabled={readOnly} />
@@ -149,24 +146,14 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
               readOnly={readOnly}
             />
           )}
+          <tr className="deck-totals-row">
+            <td/>
+            <td className="deck-total-label"></td>
+            <td className="deck-total-value">{promptCount}</td>
+            <td className="deck-total-value">{responseCount}</td>
+          </tr>
         </tbody>
       </table>
-    </div>
-    <div style={{
-      display: "flex",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      gap: "2em",
-      marginBottom: "0.5em",
-    }}>
-      <span>
-        <span className="stat-label">Prompts: </span>
-        <span className="stat-value">{promptCount}</span>
-      </span>
-      <span>
-        <span className="stat-label">Responses: </span>
-        <span className="stat-value">{responseCount}</span>
-      </span>
     </div>
   </>;
 }

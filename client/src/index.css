@@ -224,6 +224,17 @@ button.start-button {
   z-index: 1;
   top: 0;
 }
+.deck-totals-row {
+  height: 3rem;
+}
+.deck-total-label {
+  color: rgba(222, 226, 230, 0.6);
+}
+.deck-total-value {
+  padding: 0 0.5em;
+  color: #fff;
+  font-weight: 500;
+}
 
 .new-lobby-screen {
   background-image: linear-gradient(to bottom, #494f5c, #858792);
@@ -477,16 +488,8 @@ button.start-button {
 }
 .response-count-group .count-total {
   opacity: 0.3;
-  
 }
 
-.stat-label {
-  color: rgba(229, 231, 235, 0.7);
-}
-.stat-value {
-  color: #fff;
-  font-weight: 500;
-}
 
 .game-card-placeholder {
   /* Maintains card size, but doesn't display anything */
