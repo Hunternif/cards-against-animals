@@ -21,9 +21,10 @@ const midStyle: CSSProperties = {
   minHeight: 0, // this prevents overflowing parent flexbox
   display: "flex",
   flexDirection: "column",
+  overflowY: "auto",
 }
 const compactSectionStyle: CSSProperties = {
-  minHeight: 0,
+  minHeight: "15em",
   width: "100%",
 }
 
@@ -38,7 +39,8 @@ const footerStyle: CSSProperties = {
 export function LobbyCreationReadOnly({ lobby }: Props) {
   return <>
     <h3 style={headerStyle}>Decks</h3>
-    <Container style={midStyle}>
+    <Container style={midStyle}
+      className="miniscrollbar miniscrollbar-auto miniscrollbar-light">
       {/* The section div keeps minimum height and prevents overflow */}
       <div style={compactSectionStyle}>
         <DeckSelector lobby={lobby} readOnly />

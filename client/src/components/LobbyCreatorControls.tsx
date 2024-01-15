@@ -28,9 +28,10 @@ const midStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   gap: "1em",
+  overflowY: "auto",
 }
 const compactSectionStyle: CSSProperties = {
-  minHeight: 0,
+  minHeight: "15em",
   width: "100%",
 }
 
@@ -81,7 +82,8 @@ export function LobbyCreatorControls({ lobby }: Props) {
   if (starting) return <LoadingSpinner text="Starting..." delay />;
   return <>
     <h3 style={headerStyle}>Select decks</h3>
-    <Container style={midStyle}>
+    <Container style={midStyle}
+      className="miniscrollbar miniscrollbar-auto miniscrollbar-light">
       {/* The section div keeps minimum height and prevents overflow */}
       <div style={compactSectionStyle}>
         <DeckSelector lobby={lobby} />
