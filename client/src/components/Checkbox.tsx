@@ -1,10 +1,24 @@
+import { ChangeEvent, useId } from "react";
+
 interface Props
   extends React.InputHTMLAttributes<HTMLInputElement> {
+  onToggle?: (checked: boolean) => void,
 }
 
 export function Checkbox(props: Props) {
-  return <div className="checkbox">
-    <input type="checkbox" name="check" {...props} />
-    <label></label>
+  // generate unique ID
+  const id = useId();
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    if (!props.disabled) {
+      const newChecked = event.target.checked;
+      if (props.onToggle) props.onToggle(newChecked);
+    }
+  }
+
+  return <div className={`checkbox ${props.className}`} style={props.style}>
+    <input type="checkbox" name="check" {...props} id={id}
+      onChange={props.onChange ?? handleChange} />
+    <label htmlFor={id}></label>
   </div>;
 }

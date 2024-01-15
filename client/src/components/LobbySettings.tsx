@@ -1,7 +1,7 @@
 import { CSSProperties, ReactNode } from "react";
 import { updateLobby } from "../model/lobby-api";
 import { GameLobby } from "../shared/types";
-import { NumberInput, SelectInput } from "./FormControls";
+import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
 
 interface Props {
   lobby: GameLobby,
@@ -22,7 +22,8 @@ const formRowStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
   gap: "0.75em",
-  alignItems: "baseline",
+  alignItems: "center",
+  minHeight: "2.5em",
 }
 
 
@@ -40,6 +41,7 @@ export function LobbySettings(props: Props) {
         <FormItem label="Maximum score" control={<MaxScoreControl {...props} />} />
       )}
       <FormItem label="Cards per person" control={<CardsPerPersonControl {...props} />} />
+      <FormItem label="New cards first" control={<NewCardsFirstControl {...props} />} />
     </div>
   );
 }
@@ -84,6 +86,16 @@ function CardsPerPersonControl({ lobby, readOnly }: Props) {
     value={lobby.settings.cards_per_person}
     onChange={async (newValue) => {
       lobby.settings.cards_per_person = newValue;
+      await updateLobby(lobby);
+    }}
+  />;
+}
+
+function NewCardsFirstControl({ lobby, readOnly }: Props) {
+  return <ToggleInput disabled={readOnly}
+    value={lobby.settings.new_cards_first}
+    onChange={async (newValue) => {
+      lobby.settings.new_cards_first = newValue;
       await updateLobby(lobby);
     }}
   />;

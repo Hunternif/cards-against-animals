@@ -1,4 +1,5 @@
 import { CSSProperties, ChangeEvent, useContext } from "react";
+import { Checkbox } from "./Checkbox";
 import { ErrorContext } from "./ErrorContext";
 
 const controlStyle: CSSProperties = {
@@ -55,7 +56,34 @@ export function SelectInput<T extends string>(
   return (
     <select style={controlStyle} disabled={disabled}
       value={value} onChange={handleSelect}>
-      {options.map((op) => <option value={op[0]}>{op[1]}</option>)}
+      {options.map((op) => <option key={op[0]} value={op[0]}>{op[1]}</option>)}
     </select>
+  );
+}
+
+
+interface ToggleInputProps {
+  value: boolean,
+  disabled?: boolean,
+  onChange: (newValue: boolean) => Promise<void>,
+}
+
+/** Form input: toggle */
+export function ToggleInput(
+  { value, disabled, onChange }: ToggleInputProps
+) {
+  const { setError } = useContext(ErrorContext);
+
+  async function handleChange(checked: boolean) {
+    await onChange(checked).catch((e) => setError(e));
+  }
+
+  // TODO: make a fancier on/off toggle
+  return (
+    <Checkbox
+      checked={value}
+      disabled={disabled}
+      onToggle={handleChange}
+    />
   );
 }

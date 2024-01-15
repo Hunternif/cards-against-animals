@@ -20,7 +20,7 @@ import {
   ResponseDeckCard,
   defaultLobbySettings
 } from "./types";
-import { copyFields, copyFields2 } from "./utils";
+import { copyFields, copyFields2, removeUndefined } from "./utils";
 
 export const lobbyConverter: FConverter<GameLobby> = {
   toFirestore: (lobby: GameLobby) => {
@@ -48,12 +48,13 @@ export const lobbyConverter: FConverter<GameLobby> = {
 };
 
 function mapSettings(data: any): LobbySettings {
-  const readSettings: LobbySettings = {
+  const readSettings: LobbySettings = removeUndefined({
     play_until: data.play_until,
     max_turns: data.max_turns,
     max_score: data.max_score,
     cards_per_person: data.cards_per_person,
-  };
+    new_cards_first: data.new_cards_first,
+  });
   return copyFields2(defaultLobbySettings, readSettings);
 }
 

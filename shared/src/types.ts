@@ -47,6 +47,7 @@ export interface LobbySettings {
   max_turns: number;
   max_score: number;
   cards_per_person: number;
+  new_cards_first: boolean;
 }
 
 export const defaultLobbySettings: LobbySettings = {
@@ -54,6 +55,7 @@ export const defaultLobbySettings: LobbySettings = {
   max_turns: 10,
   max_score: 5,
   cards_per_person: 10,
+  new_cards_first: true,
 };
 
 export type PlayUntil = "forever" | "max_turns" | "max_score";
