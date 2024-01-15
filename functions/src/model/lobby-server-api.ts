@@ -2,6 +2,11 @@ import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
 import { db, lobbiesRef } from "../firebase-server";
 import {
+  playerConverter,
+  promptCardInGameConverter,
+  responseCardInGameConverter
+} from "../shared/firestore-converters";
+import {
   GameLobby,
   PlayerInLobby,
   PlayerRole,
@@ -14,17 +19,12 @@ import {
   getAllPromptsForGame,
   getAllResponsesForGame
 } from "./deck-server-api";
-import {
-  playerConverter,
-  promptCardInGameConverter,
-  responseCardInGameConverter
-} from "../shared/firestore-converters";
+import { dealCardsToPlayer, getLastTurn } from "./turn-server-api";
 import {
   getCAAUser,
   setUsersCurrentLobby,
   updateCAAUser
 } from "./user-server-api";
-import { dealCardsToPlayer, getLastTurn } from "./turn-server-api";
 
 export function getPlayersRef(lobbyID: string) {
   return db.collection(`lobbies/${lobbyID}/players`)
@@ -153,9 +153,9 @@ export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
   // (sorry I failed to do parallel...)
   // See https://stackoverflow.com/a/37576787/1093712
   for (const deckID of lobby.deck_ids) {
-    const prompts = await getAllPromptsForGame(deckID);
+    const prompts = await getAllPromptsForGame(deckID, lobby.settings);
     newPrompts.push(...prompts);
-    const responses = await getAllResponsesForGame(deckID);
+    const responses = await getAllResponsesForGame(deckID, lobby.settings);
     newResponses.push(...responses);
     logger.info(`Fetched ${prompts.length} prompts and ${responses.length} responses from deck ${deckID}`);
   }

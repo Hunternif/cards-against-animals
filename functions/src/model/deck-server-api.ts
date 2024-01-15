@@ -7,6 +7,7 @@ import {
 import { RNG } from "../shared/rng";
 import {
   DeckCard,
+  LobbySettings,
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
@@ -23,28 +24,32 @@ function getDeckResponsesRef(deckID: string) {
 }
 
 /** Converts Prompt cards from a deck to a in-game Prompt cards. */
-export async function getAllPromptsForGame(deckID: string):
-  Promise<Array<PromptCardInGame>> {
+export async function getAllPromptsForGame(
+  deckID: string, settings: LobbySettings,
+): Promise<Array<PromptCardInGame>> {
   const rng = RNG.fromStrSeedWithTimestamp("prompts");
   return (await getDeckPromptsRef(deckID).get()).docs.map((p) => {
     const card = p.data();
     const cardInLobby = new PromptCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
-      getCardIndex(card, rng), card.content, card.pick, card.rating, false);
+      getCardIndex(card, rng, settings),
+      card.content, card.pick, card.rating, false);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
 }
 
 /** Converts Response cards from a deck to a in-game Response cards. */
-export async function getAllResponsesForGame(deckID: string):
-  Promise<Array<ResponseCardInGame>> {
+export async function getAllResponsesForGame(
+  deckID: string, settings: LobbySettings,
+): Promise<Array<ResponseCardInGame>> {
   const rng = RNG.fromStrSeedWithTimestamp("responses");
   return (await getDeckResponsesRef(deckID).get()).docs.map((p) => {
     const card = p.data();
     const cardInLobby = new ResponseCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
-      getCardIndex(card, rng), card.content, card.rating, false);
+      getCardIndex(card, rng, settings),
+      card.content, card.rating, false);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
@@ -56,8 +61,13 @@ function prefixID(deckID: string, cardID: string): string {
 }
 
 /** Calculates card's shuffling index, adjusting based on win/discard statistics */
-function getCardIndex(card: DeckCard, rng: RNG): number {
+function getCardIndex(
+  card: DeckCard, rng: RNG, settings: LobbySettings,
+): number {
   const base = rng.randomInt();
+  let result = base;
+
+  // Adjust index based on rating:
   // TODO: enable this based on lobby settings.
   let factor = (100.0 + card.rating) / 100.0 *
     (card.plays + 1.0) *
@@ -66,7 +76,21 @@ function getCardIndex(card: DeckCard, rng: RNG): number {
     1.0 / (card.discards + 1.0);
   factor = Math.max(0.0001, factor);
   factor = Math.min(factor, 1.2);
-  const result = (base * factor) >>> 0;
+  result = (result * factor) >>> 0;
+
+  // Adjust index for unplayed cards
+  if (settings.new_cards_first) {
+    const half = 2147483648;
+    // unplayed cards will go in 2^32 ~ 2^31, played cards in 2^31 ~ 0.
+    if (card.plays > 0) {
+      result = Math.floor(result / half);
+    } else {
+      result = result % half + half;
+    }
+    // TODO: if all cards have been played by someone, then use cards that were
+    // added after the player's last game.
+  }
+
   // logger.debug(`Shuffle: base ${base} * factor ${factor} = ${result}`);
   return result;
 }

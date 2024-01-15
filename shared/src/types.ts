@@ -283,7 +283,8 @@ export interface CardInGame {
   deck_id: string;
   /** Card id within the deck */
   card_id_in_deck: string;
-  /** Used for selecting a random card */
+  /** Used for selecting a random card. Cards are sorted by random_index
+   * in descending order, so that card with index 0 will be drawn last. */
   random_index: number;
   content: string;
   rating: number;
