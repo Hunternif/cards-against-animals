@@ -1,8 +1,13 @@
+export interface IRNG {
+  /** Returns a random 32-bit integer. */
+  randomInt(): number;
+}
+
 /**
  * A seeded random number generator.
  * RNG functions copied from https://stackoverflow.com/a/47593316/1093712
  */
-export class RNG {
+export class RNG implements IRNG {
   /** RNG function, returns random 32-bit integers. */
   private rand: () => number;
 

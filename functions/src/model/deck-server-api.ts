@@ -4,7 +4,7 @@ import {
   promptDeckCardConverter,
   responseDeckCardConverter,
 } from "../shared/firestore-converters";
-import { RNG } from "../shared/rng";
+import { IRNG, RNG } from "../shared/rng";
 import {
   DeckCard,
   LobbySettings,
@@ -61,8 +61,8 @@ function prefixID(deckID: string, cardID: string): string {
 }
 
 /** Calculates card's shuffling index, adjusting based on win/discard statistics */
-function getCardIndex(
-  card: DeckCard, rng: RNG, settings: LobbySettings,
+export function getCardIndex(
+  card: DeckCard, rng: IRNG, settings: LobbySettings,
 ): number {
   const base = rng.randomInt();
   let result = base;
@@ -81,10 +81,10 @@ function getCardIndex(
 
   // Adjust index for unplayed cards
   if (settings.new_cards_first) {
-    const half = 2147483648;
+    const half = 2000000000;
     // unplayed cards will go in 2^32 ~ 2^31, played cards in 2^31 ~ 0.
     if (card.plays > 0) {
-      result = Math.floor(result / half);
+      result = result % half;
     } else {
       result = result % half + half;
     }

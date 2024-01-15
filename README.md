@@ -39,6 +39,7 @@ During deployment, `firebase-config.json` will be auto-updated to disable emulat
 
 ```sh
 npm --prefix client run test
+npm --prefix functions run test
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
