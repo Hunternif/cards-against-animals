@@ -51,6 +51,8 @@ export interface LobbySettings {
   new_cards_first: boolean;
   /** If true, card order will be affected by their rating. */
   sort_cards_by_rating: boolean;
+  /** If true, players can join after the game has started. */
+  allow_join_mid_game: boolean;
 }
 
 export function defaultLobbySettings(): LobbySettings {
@@ -61,6 +63,7 @@ export function defaultLobbySettings(): LobbySettings {
     cards_per_person: 10,
     new_cards_first: true,
     sort_cards_by_rating: true,
+    allow_join_mid_game: true,
   };
 }
 

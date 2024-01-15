@@ -121,11 +121,14 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
     logger.warn(`User ${userName} (${userID}) re-joined lobby ${lobby.id}`);
     return;
   }
+  let role: PlayerRole = "spectator";
   if (lobby.status == "ended") {
     throw new HttpsError("unavailable", `Lobby already ended: ${lobby.id}`);
+  } else if (lobby.status === "new") {
+    role = "player";
+  } else if (lobby.status === "in_progress" && lobby.settings.allow_join_mid_game) {
+    role = "player";
   }
-  // TODO: make it configurable in settings if new players can join.
-  const role = "player";
   const player = new PlayerInLobby(userID, userName, role, "online", 0);
   await playerRef.set(player);
   await setUsersCurrentLobby(userID, lobby.id);

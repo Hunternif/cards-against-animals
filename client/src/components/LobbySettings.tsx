@@ -43,6 +43,7 @@ export function LobbySettings(props: Props) {
       <FormItem label="Cards per person" control={<CardsPerPersonControl {...props} />} />
       <FormItem label="New cards first" control={<NewCardsFirstControl {...props} />} />
       <FormItem label="Sort cards by rating" control={<SortCardsByRatingControl {...props} />} />
+      <FormItem label="Allow join mid-game" control={<AllowJoinMidGameControl {...props} />} />
     </div>
   );
 }
@@ -107,6 +108,16 @@ function SortCardsByRatingControl({ lobby, readOnly }: Props) {
     value={lobby.settings.sort_cards_by_rating}
     onChange={async (newValue) => {
       lobby.settings.sort_cards_by_rating = newValue;
+      await updateLobby(lobby);
+    }}
+  />;
+}
+
+function AllowJoinMidGameControl({ lobby, readOnly }: Props) {
+  return <ToggleInput disabled={readOnly}
+    value={lobby.settings.allow_join_mid_game}
+    onChange={async (newValue) => {
+      lobby.settings.allow_join_mid_game = newValue;
       await updateLobby(lobby);
     }}
   />;
