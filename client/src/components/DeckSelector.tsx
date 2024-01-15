@@ -146,13 +146,15 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
               readOnly={readOnly}
             />
           )}
+        </tbody>
+        <tfoot>
           <tr className="deck-totals-row">
-            <td/>
+            <td />
             <td className="deck-total-label"></td>
             <td className="deck-total-value">{promptCount}</td>
             <td className="deck-total-value">{responseCount}</td>
           </tr>
-        </tbody>
+        </tfoot>
       </table>
     </div>
   </>;

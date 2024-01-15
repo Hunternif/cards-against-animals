@@ -209,6 +209,9 @@ button.start-button {
   /* border must be set on td due to border collapse behavior */
   border-bottom: 2px solid rgba(222, 226, 230, 0.25);
 }
+.deck-row:last-child td {
+  border-bottom: none;
+}
 .deck-row td:first-child {
   padding-left: 1em;
 }
@@ -226,6 +229,14 @@ button.start-button {
 }
 .deck-totals-row {
   height: 3rem;
+  position: sticky;
+  background-attachment: fixed;
+  background-image: linear-gradient(to bottom, #494f5c, #858792);
+  z-index: 1;
+  bottom: 0;
+}
+.deck-totals-row td {
+  border-top: 2px solid rgba(222, 226, 230, 0.25);
 }
 .deck-total-label {
   color: rgba(222, 226, 230, 0.6);
