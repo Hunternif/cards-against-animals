@@ -53,14 +53,16 @@ export interface LobbySettings {
   sort_cards_by_rating: boolean;
 }
 
-export const defaultLobbySettings: LobbySettings = {
-  play_until: "forever",
-  max_turns: 10,
-  max_score: 5,
-  cards_per_person: 10,
-  new_cards_first: true,
-  sort_cards_by_rating: true,
-};
+export function defaultLobbySettings(): LobbySettings {
+  return {
+    play_until: "forever",
+    max_turns: 10,
+    max_score: 5,
+    cards_per_person: 10,
+    new_cards_first: true,
+    sort_cards_by_rating: true,
+  };
+}
 
 export type PlayUntil = "forever" | "max_turns" | "max_score";
 

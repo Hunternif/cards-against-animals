@@ -39,7 +39,7 @@ export const lobbyConverter: FConverter<GameLobby> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const settings: LobbySettings = data.settings ?
-      mapSettings(data.settings) : defaultLobbySettings;
+      mapSettings(data.settings) : defaultLobbySettings();
     const ret = new GameLobby(snapshot.id, data.creator_uid, settings, data.status);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     ret.deck_ids = new Set<string>(data.deck_ids || []);
@@ -56,7 +56,7 @@ function mapSettings(data: any): LobbySettings {
     new_cards_first: data.new_cards_first,
     sort_cards_by_rating: data.sort_cards_by_rating,
   };
-  return copyFields2(defaultLobbySettings, removeUndefined(readSettings));
+  return copyFields2(defaultLobbySettings(), removeUndefined(readSettings));
 }
 
 export const playerConverter: FConverter<PlayerInLobby> = {
