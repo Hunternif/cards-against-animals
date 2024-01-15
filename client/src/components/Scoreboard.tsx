@@ -15,7 +15,9 @@ const tableContainerStyle: CSSProperties = {
 
 /** Small component that is placed outside of the screen. */
 export function Scoreboard({ players }: Props) {
-  const playersByScore = players.sort((a, b) => b.score - a.score);
+  const playersByScore = players
+    .filter((p) => p.role === "player")
+    .sort((a, b) => b.score - a.score);
 
   return <>
     <div style={tableContainerStyle} className="miniscrollbar miniscrollbar-light">
