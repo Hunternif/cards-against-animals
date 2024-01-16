@@ -64,6 +64,8 @@ service cloud.firestore {
         // Don't allow creating or deleting, to preserve history.
         allow read, update: if isLoggedIn() && request.auth.uid == userID
                             && isScoreUnchanged(lobby, userID);
+        // Allow kicking players if you are creator:
+        allow delete: if isLoggedIn() && userIsCreator(lobby); 
       }
       match /deck_prompts/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);

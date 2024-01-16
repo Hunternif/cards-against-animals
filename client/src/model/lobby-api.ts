@@ -177,6 +177,10 @@ export function checkIfShouldEndGame(
   }
 }
 
+export async function kickPlayer(lobby: GameLobby, playerUid: string) {
+  await deleteDoc(doc(getPlayersRef(lobby.id), playerUid));
+}
+
 
 /**
  * Will find an active game or create a new one, and attempt to join.

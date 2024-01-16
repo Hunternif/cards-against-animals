@@ -1,7 +1,9 @@
 import { User } from "firebase/auth";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { Card } from "react-bootstrap";
 import { GameLobby, PlayerInLobby } from "../shared/types";
+import { ErrorContext } from "./ErrorContext";
+import { kickPlayer } from "../model/lobby-api";
 
 interface ListProps {
   lobby: GameLobby,
@@ -18,19 +20,25 @@ function EmptyCard() {
 }
 
 interface PlayerProps {
+  lobby: GameLobby,
   player: PlayerInLobby,
   isMe?: boolean,
   isCreator?: boolean,
   canKick?: boolean,
 }
 
-function PlayerCard({ player, isMe, isCreator, canKick }: PlayerProps) {
+function PlayerCard({ lobby, player, isMe, isCreator, canKick }: PlayerProps) {
+  const { setError } = useContext(ErrorContext);
+  async function handleKick() {
+    await kickPlayer(lobby, player.uid).catch((e) => setError(e));
+  }
   return (
     <Card className="player-card" bg={isMe ? "secondary" : "none"}>
       <Card.Body>
         <span className="player-name">{player.name}</span>
         {isCreator ? <span className="right-icon">👑</span> :
-          canKick && <span className="right-icon kick-button" title="Kick player" />}
+          canKick && <span className="right-icon kick-button"
+            title="Kick player" onClick={handleKick} />}
       </Card.Body>
     </Card>
   );
@@ -54,7 +62,7 @@ export function LobbyPlayerList({ lobby, user, players }: ListProps) {
     const newSlots = new Array<ReactNode>();
     for (let i = 0; i < newSlotCount; i++) {
       if (validPlayers[i]) {
-        newSlots.push(<PlayerCard player={validPlayers[i]}
+        newSlots.push(<PlayerCard lobby={lobby} player={validPlayers[i]}
           isMe={user.uid === validPlayers[i].uid}
           isCreator={lobby.creator_uid === validPlayers[i].uid}
           canKick={lobby.creator_uid === user.uid}
