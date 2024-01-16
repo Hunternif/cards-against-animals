@@ -83,7 +83,7 @@ export function IconStar(props: IconSvgProps) {
   return <Svg {...props} height={props.height ?? 24} width={props.width ?? 24} viewBox="0 0 24 24">
     <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z" />
   </Svg>;
-  
+
   // Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
   // License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.
   // return <Svg {...props} height={props.height ?? 16} width={props.width ?? 18} viewBox="0 0 576 512">
@@ -93,4 +93,18 @@ export function IconStar(props: IconSvgProps) {
 
 export function IconStarInline() {
   return <IconStar width={18} height={18} className="star-icon" />;
+}
+
+export function IconXCircle(props: IconSvgProps) {
+  // From Google Fonts, Material Icons: https://fonts.google.com/icons
+  return <Svg {...props} height={props.height ?? 24} width={props.width ?? 24} viewBox="0 -960 960 960">
+    <path d="m480-424 116 116q11 11 28 11t28-11q11-11 11-28t-11-28L536-480l116-116q11-11 11-28t-11-28q-11-11-28-11t-28 11L480-536 364-652q-11-11-28-11t-28 11q-11 11-11 28t11 28l116 116-116 116q-11 11-11 28t11 28q11 11 28 11t28-11l116-116Zm0 344q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
+  </Svg>;
+}
+
+export function IconXCircleFilled(props: IconSvgProps) {
+  // From Google Fonts, Material Icons: https://fonts.google.com/icons
+  return <Svg {...props} height={props.height ?? 24} width={props.width ?? 24} viewBox="0 -960 960 960">
+    <path d="m480-424 116 116q11 11 28 11t28-11q11-11 11-28t-11-28L536-480l116-116q11-11 11-28t-11-28q-11-11-28-11t-28 11L480-536 364-652q-11-11-28-11t-28 11q-11 11-11 28t11 28l116 116-116 116q-11 11-11 28t11 28q11 11 28 11t28-11l116-116Zm0 344q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/>
+  </Svg>;
 }

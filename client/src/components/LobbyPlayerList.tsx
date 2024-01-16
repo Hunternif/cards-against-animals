@@ -21,14 +21,16 @@ interface PlayerProps {
   player: PlayerInLobby,
   isMe?: boolean,
   isCreator?: boolean,
+  canKick?: boolean,
 }
 
-function PlayerCard({ player, isMe, isCreator }: PlayerProps) {
+function PlayerCard({ player, isMe, isCreator, canKick }: PlayerProps) {
   return (
     <Card className="player-card" bg={isMe ? "secondary" : "none"}>
       <Card.Body>
         <span className="player-name">{player.name}</span>
-        {isCreator && <span className="right-icon">👑</span>}
+        {isCreator ? <span className="right-icon">👑</span> :
+          canKick && <span className="right-icon kick-button" title="Kick player" />}
       </Card.Body>
     </Card>
   );
@@ -55,6 +57,7 @@ export function LobbyPlayerList({ lobby, user, players }: ListProps) {
         newSlots.push(<PlayerCard player={validPlayers[i]}
           isMe={user.uid === validPlayers[i].uid}
           isCreator={lobby.creator_uid === validPlayers[i].uid}
+          canKick={lobby.creator_uid === user.uid}
         />);
       } else {
         newSlots.push(<EmptyCard />);
