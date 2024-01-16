@@ -23,7 +23,7 @@ function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
     className={`deck-row${selectedClass}${readOnlyClass}`}
     onClick={handleClick}>
     <td style={{ width: "2em" }}>
-      <Checkbox checked={selected} onChange={handleClick} disabled={readOnly} />
+      <Checkbox checked={selected} disabled={readOnly} />
     </td>
     <td style={{ width: "50%" }}>
       <span className={`deck-row-title${selectedClass}`}>{deck.title}</span>

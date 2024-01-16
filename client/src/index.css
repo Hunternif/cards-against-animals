@@ -180,6 +180,9 @@ button.start-button {
 .deck-row.readonly {
   cursor: default;
 }
+.deck-row.unselected.editable:hover {
+  background-color: #11182755;
+}
 .deck-row.selected {
   color: #fff;
   background-color: #11182788;

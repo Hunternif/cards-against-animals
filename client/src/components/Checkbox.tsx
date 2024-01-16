@@ -18,7 +18,10 @@ export function Checkbox(props: Props) {
 
   return <div className={`checkbox ${props.className}`} style={props.style}>
     <input type="checkbox" name="check" {...props} id={id}
-      onChange={props.onChange ?? handleChange} />
-    <label htmlFor={id}></label>
+      onChange={props.onChange ?? handleChange}
+      // This prevents onClick propagating twice:
+      // https://github.com/Semantic-Org/Semantic-UI-React/issues/3433
+      onClick={(e) => e.stopPropagation()} />
+    <label htmlFor={id} ></label>
   </div>;
 }
