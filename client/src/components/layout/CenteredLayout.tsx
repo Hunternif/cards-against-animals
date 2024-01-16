@@ -13,7 +13,9 @@ export function CenteredLayout(
 ) {
   return (
     <div style={{
+      // TODO: figure out how to do this without height
       height: "100%",
+      flex: "1 1 auto",
       justifyContent: "center",
       display: "flex",
       ...outerStyle,

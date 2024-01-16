@@ -18,6 +18,11 @@ interface ScreenProps {
   players: PlayerInLobby[],
 }
 
+const gameContainerStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  overflowY: "auto",
+}
 const menuStyle: CSSProperties = {
   padding: "0.5rem",
 }
@@ -55,7 +60,7 @@ function TurnScreen(props: PreTurnProps) {
   }
   const newProps = { responses, playerDiscard, judge, ...props };
   return (
-    <FillLayout className={className} style={{ overflowY: "auto", }}>
+    <FillLayout className={className} style={gameContainerStyle}>
       <div className={`game-bg phase-${props.turn.phase}`} />
       <GameMenu style={menuStyle} {...newProps} />
       {isJudge ? <JudgeScreen {...newProps} /> :
