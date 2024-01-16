@@ -1,10 +1,19 @@
-import { User } from "firebase/auth";
+import { User, onAuthStateChanged } from "firebase/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnonymousLogin } from "../../components/AnonymousLogin";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { findOrCreateLobbyAndJoin, getPlayerInLobby, joinLobbyIfNeeded, setPlayerStatus, updatePlayer } from "../../model/lobby-api";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { useEffectOnce } from "../../components/utils";
+import { firebaseAuth } from "../../firebase";
+import {
+  findOrCreateLobbyAndJoin,
+  getPlayerInLobby,
+  joinLobbyIfNeeded,
+  updatePlayer
+} from "../../model/lobby-api";
+import { getCAAUser } from "../../model/users-api";
+import { CAAUser } from "../../shared/types";
 
 interface Props {
   existingLobbyID?: string,
@@ -13,12 +22,28 @@ interface Props {
 export function LoginScreen({ existingLobbyID }: Props) {
   const [error, setError] = useState<any>(null);
   const [joining, setJoining] = useState(false);
+  const [caaUser, setCaaUser] = useState<CAAUser | null>(null);
   const navigate = useNavigate();
+
   if (error) throw error;
-  const loadingNode = joining ? (existingLobbyID ?
-    <LoadingSpinner text="Joining..." /> :
-    <LoadingSpinner text="Starting new lobby..." />
-  ) : undefined;
+
+  // Check existing user and lobby
+  useEffectOnce(() => {
+    // Load user's name only once
+    return onAuthStateChanged(firebaseAuth, (newUser) => {
+      if (newUser) {
+        getCAAUser(newUser.uid).then((caaUser) => {
+          setCaaUser(caaUser);
+        });
+      }
+    });
+  });
+
+  const buttonText = caaUser?.current_lobby_id ? "Rejoin game" :
+    existingLobbyID ? "Join game" : "Start new game";
+  const loadingText = caaUser?.current_lobby_id ? "Rejoining..." :
+    existingLobbyID ? "Joining..." : "Starting new lobby...";
+  const loadingNode = joining ? <LoadingSpinner text={loadingText} /> : undefined;
 
   async function handleLogin(user: User) {
     try {
@@ -43,7 +68,9 @@ export function LoginScreen({ existingLobbyID }: Props) {
   }
   return <CenteredLayout outerClassName="welcome-screen">
     <h1>Cards Against Animals</h1>
-    <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode}
-      buttonText={existingLobbyID ? "Join" : "Start"} />
+    <CenteredLayout>
+      <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode}
+        buttonText={buttonText} />
+    </CenteredLayout>
   </CenteredLayout>;
 }

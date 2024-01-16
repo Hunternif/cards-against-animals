@@ -66,7 +66,7 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
     }
   }
 
-  return <CenteredLayout>
+  return (
     <div className="login-card">
       {delayedLoggingIn ? <LoadingSpinner text="Logging in..." /> :
         delayedLoading ? loadingNode : (
@@ -89,5 +89,5 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
           </Form>
         )}
     </div>
-  </CenteredLayout>;
+  );
 }
