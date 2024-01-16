@@ -121,7 +121,7 @@ function MainContent({ lobby, user }: Props) {
   return (
     <div style={contentStyle}>
       {isCreator ? <LobbyCreatorControls lobby={lobby} /> : (
-        <LobbyCreationReadOnly lobby={lobby}/>
+        <LobbyCreationReadOnly lobby={lobby} />
       )}
     </div>
   );
@@ -131,6 +131,11 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
   const [leaving, setLeaving] = useState(false);
   const { setError } = useContext(ErrorContext);
   const navigate = useNavigate();
+
+  // Count active players:
+  const activePlayers = players.filter((p) =>
+    p.role === "player" && p.status !== "left");
+  const playerCount = activePlayers.length;
 
   async function handleLeave() {
     setLeaving(true);
@@ -144,7 +149,7 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
 
   return (
     <div style={sidebarStyle} className="new-lobby-sidebar">
-      <h3 style={{ textAlign: "center" }}>Players</h3>
+      <h3 style={{ textAlign: "center" }}>Players {playerCount > 1 && playerCount}</h3>
       <FillLayout style={scrollableColumnStyle}
         className="miniscrollbar miniscrollbar-light">
         <LobbyPlayerList lobby={lobby} user={user} players={players} />
