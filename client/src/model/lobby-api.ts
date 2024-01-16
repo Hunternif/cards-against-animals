@@ -1,8 +1,27 @@
 import { User } from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
-import { endLobbyFun, findOrCreateLobbyAndJoinFun, findOrCreateLobbyFun, joinLobbyFun, lobbiesRef, startLobbyFun, usersRef } from "../firebase";
+import {
+  endLobbyFun,
+  findOrCreateLobbyAndJoinFun,
+  findOrCreateLobbyFun,
+  joinLobbyFun,
+  lobbiesRef,
+  startLobbyFun,
+  usersRef,
+} from "../firebase";
 import { playerConverter } from "../shared/firestore-converters";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerStatus } from "../shared/types";
 import { getLastTurn, setTurnJudge } from "./turn-api";
@@ -89,6 +108,9 @@ export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
   const caaUser = await getCAAUser(user.uid);
   if (caaUser?.is_admin) {
     delete caaUser.current_lobby_id;
+    await updateDoc(doc(usersRef, user.uid), {
+      current_lobby_id: deleteField(),
+    })
     await setDoc(doc(usersRef, user.uid), caaUser);
   } else {
     await deleteDoc(doc(usersRef, user.uid));
