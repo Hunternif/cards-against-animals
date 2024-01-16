@@ -79,16 +79,16 @@ export function getCardIndex(
     result = (result * factor) >>> 0;
   }
 
-  // Adjust index for unplayed cards
+  // Adjust index for unviewed cards
   if (settings.new_cards_first) {
     const half = 2000000000;
-    // unplayed cards will go in 2^32 ~ 2^31, played cards in 2^31 ~ 0.
-    if (card.plays > 0) {
+    // unviewed cards will go in 2^32 ~ 2^31, played cards in 2^31 ~ 0.
+    if (card.views > 0) {
       result = result % half;
     } else {
       result = result % half + half;
     }
-    // TODO: if all cards have been played by someone, then use cards that were
+    // TODO: if all cards have been viewed by someone, then use cards that were
     // added after the player's last game.
   }
 

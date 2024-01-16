@@ -47,7 +47,7 @@ export interface LobbySettings {
   max_turns: number;
   max_score: number;
   cards_per_person: number;
-  /** If ture, unplayed cards will be dealt first. */
+  /** If ture, unviewed cards will be dealt first. */
   new_cards_first: boolean;
   /** If true, card order will be affected by their rating. */
   sort_cards_by_rating: boolean;
