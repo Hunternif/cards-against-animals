@@ -133,3 +133,31 @@ input.control {
     flex-direction: column;
   }
 }
+
+/*--------------------------- Player list -- ------------------------*/
+.player-card {
+  margin: 0.5em 0;
+  .card-body {
+    padding: 0.5em 0.8em;
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+  }
+  &.empty {
+    border-style: dashed;
+    background-color: transparent;
+    .card-body {
+      opacity: 0.5;
+    }
+  }
+  span.player-name {
+    flex-grow: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .right-icon {
+    margin-left: auto;
+    margin-right: -0.2em;
+  }
+}

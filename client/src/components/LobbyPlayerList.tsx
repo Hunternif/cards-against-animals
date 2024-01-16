@@ -11,18 +11,8 @@ interface ListProps {
 
 function EmptyCard() {
   return (
-    <Card style={{
-      margin: "0.5em 0",
-      borderStyle: "dashed",
-      backgroundColor: "#00000000",
-    }}>
-      <Card.Body style={{
-        padding: "0.5em 0.8em",
-        opacity: "50%",
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        textOverflow: "ellipsis",
-      }}>Empty</Card.Body>
+    <Card className="player-card empty">
+      <Card.Body>Empty</Card.Body>
     </Card>
   );
 }
@@ -35,25 +25,10 @@ interface PlayerProps {
 
 function PlayerCard({ player, isMe, isCreator }: PlayerProps) {
   return (
-    <Card style={{ margin: "0.5em 0" }}
-      bg={isMe ? "secondary" : "none"}
-    >
-      <Card.Body style={{
-        padding: "0.5em 0.8em",
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        display: "flex",
-      }}>
-        <span style={{
-          flexGrow: 1,
-          textOverflow: "ellipsis",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-        }}>{player.name}</span>
-        {isCreator && <span style={{
-          marginLeft: "auto",
-          marginRight: "-0.2em",
-        }}>👑</span>}
+    <Card className="player-card" bg={isMe ? "secondary" : "none"}>
+      <Card.Body>
+        <span className="player-name">{player.name}</span>
+        {isCreator && <span className="right-icon">👑</span>}
       </Card.Body>
     </Card>
   );
