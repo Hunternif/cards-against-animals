@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Card } from "react-bootstrap";
 import { GameLobby, PlayerInLobby } from "../shared/types";
 
@@ -63,13 +63,17 @@ const initialSlotCount = 6;
 
 /** List of players in the lobby */
 export function LobbyPlayerList({ lobby, user, players }: ListProps) {
+  const [minSlotCount, setMinSlotCount] = useState(initialSlotCount);
   const [slotCount, setSlotCount] = useState(initialSlotCount);
   const [slots, setSlots] = useState<Array<ReactNode>>([]);
+  const ulRef = useRef<HTMLUListElement>(null);
+
   // Filter out people who left:
   const validPlayers = players.filter((p) => p.status !== "left");
 
+  // Update number of slots, so there is always more than players:
   useEffect(() => {
-    const newSlotCount = Math.max(slotCount, validPlayers.length + 2);
+    const newSlotCount = Math.max(minSlotCount, slotCount, validPlayers.length + 2);
     const newSlots = new Array<ReactNode>();
     for (let i = 0; i < newSlotCount; i++) {
       if (validPlayers[i]) {
@@ -83,10 +87,20 @@ export function LobbyPlayerList({ lobby, user, players }: ListProps) {
     }
     setSlots(newSlots);
     setSlotCount(newSlotCount);
-  }, [validPlayers.length]);
+  }, [validPlayers.length, minSlotCount]);
+
+  // Set initial number of slots to fill the entire screen:
+  useEffect(() => {
+    if (ulRef.current?.parentElement) {
+      const containerHeight = ulRef.current.parentElement.clientHeight;
+      const emSize = Math.max(12, parseFloat(getComputedStyle(ulRef.current).fontSize));
+      const slotHeight = 3 * emSize;
+      setMinSlotCount(Math.floor(containerHeight / slotHeight) - 1);
+    }
+  }, [ulRef]);
 
   return (
-    <ul style={{ padding: 0, margin: 0 }}>
+    <ul style={{ padding: 0, margin: 0 }} ref={ulRef}>
       {slots.map((slot, i) =>
         <li key={i} style={{ listStyleType: "none" }}>{slot}</li>
       )}
