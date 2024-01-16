@@ -16,7 +16,9 @@ const tableContainerStyle: CSSProperties = {
 /** Small component that is placed outside of the screen. */
 export function Scoreboard({ players }: Props) {
   const playersByScore = players
-    .filter((p) => p.role === "player")
+    .filter((p) => p.role === "player" &&
+      // Show people who left, but only if they have > 0 score:
+      p.status !== "left" || p.score > 0)
     .sort((a, b) => b.score - a.score);
 
   return <>
