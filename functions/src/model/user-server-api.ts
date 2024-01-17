@@ -1,3 +1,4 @@
+import { FieldValue } from "firebase-admin/firestore";
 import { usersRef } from "../firebase-server";
 import { CAAUser } from "../shared/types";
 import { getUserName } from "./auth-api";
@@ -14,12 +15,17 @@ export async function updateCAAUser(caaUser: CAAUser): Promise<void> {
 /**
  * Sets this lobby as the user's current lobby, so they can log back into it.
  * If user data doesn't exist, it will be created.
+ * If lobbyID is undefined, it will delete it.
  */
-export async function setUsersCurrentLobby(userID: string, lobbyID: string) {
+export async function setUsersCurrentLobby(userID: string, lobbyID?: string) {
   const caaUser = await getCAAUser(userID);
   if (caaUser) {
-    caaUser.current_lobby_id = lobbyID;
-    await usersRef.doc(userID).set(caaUser);
+    if (lobbyID) {
+      caaUser.current_lobby_id = lobbyID;
+      await usersRef.doc(userID).set(caaUser);
+    } else {
+      await usersRef.doc(userID).update({ current_lobby_id: FieldValue.delete() });
+    }
   } else {
     const userName = await getUserName(userID);
     const newUser = new CAAUser(userID, null, userName, false, lobbyID);

@@ -1,6 +1,7 @@
+import { FieldValue } from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
-import { db, lobbiesRef } from "../firebase-server";
+import { db, lobbiesRef, usersRef } from "../firebase-server";
 import {
   playerConverter,
   promptCardInGameConverter,
@@ -174,4 +175,23 @@ export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
       transaction.set(lobbyResponsesRef.doc(card.id), card));
   });
   logger.info(`Copied ${newPrompts.length} prompts and ${newResponses.length} responses to lobby ${lobby.id}`);
+}
+
+/** Sets lobby status to "ended", and performs any cleanup */
+export async function setLobbyEnded(lobby: GameLobby) {
+  lobby.status = "ended";
+  await updateLobby(lobby);
+  // Unset current_lobby_id for all players:
+  const players = await getPlayers(lobby.id);
+  for (const player of players) {
+    const caaUser = await getCAAUser(player.uid);
+    if (caaUser) {
+      if (caaUser.current_lobby_id === lobby.id) {
+        await usersRef.doc(player.uid).update(
+          { current_lobby_id: FieldValue.delete() }
+        );
+      }
+    }
+  }
+  logger.info(`Ended lobby ${lobby.id}`);
 }
