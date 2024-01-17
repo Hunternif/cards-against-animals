@@ -11,8 +11,10 @@ service cloud.firestore {
       return user != null && user.data.is_admin == true;
     }
 
+    // Current user is a player in the lobby, and is not kicked.
     function userIsPlayer(lobby) {
-      return exists(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid));
+      let player = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid));
+      return player != null && player.data.status != "kicked";
     }
     // Allows only "players", not "spectators".
     function userIsActivePlayer(lobby) {
@@ -43,6 +45,11 @@ service cloud.firestore {
       let doc = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
       return doc == null || doc.data['score'] == request.resource.data['score'];
     }
+    // Don't allow changing anything if you're kicked
+    function userIsNotKicked(lobby, userID) {
+      let doc = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
+      return doc == null || doc.data['status'] != "kicked";
+    }
 
   	match /decks/{document=**} {
     	allow read;
@@ -62,10 +69,11 @@ service cloud.firestore {
       match /players/{userID} {
         // Allow reading and updating your own info.
         // Don't allow creating or deleting, to preserve history.
-        allow read, update: if isLoggedIn() && request.auth.uid == userID
-                            && isScoreUnchanged(lobby, userID);
+        allow read: if isLoggedIn() && request.auth.uid == userID;
+        allow update: if isLoggedIn() && request.auth.uid == userID
+                      && isScoreUnchanged(lobby, userID) && userIsNotKicked(lobby, userID);
         // Allow kicking players if you are creator:
-        allow delete: if isLoggedIn() && userIsCreator(lobby); 
+        allow write: if isLoggedIn() && userIsCreator(lobby); 
       }
       match /deck_prompts/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);

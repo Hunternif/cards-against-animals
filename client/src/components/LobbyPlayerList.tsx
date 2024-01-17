@@ -30,15 +30,16 @@ interface PlayerProps {
 function PlayerCard({ lobby, player, isMe, isCreator, canKick }: PlayerProps) {
   const { setError } = useContext(ErrorContext);
   async function handleKick() {
-    await kickPlayer(lobby, player.uid).catch((e) => setError(e));
+    await kickPlayer(lobby, player).catch((e) => setError(e));
   }
   return (
     <Card className="player-card" bg={isMe ? "secondary" : "none"}>
       <Card.Body>
         <span className="player-name">{player.name}</span>
         {isCreator ? <span className="right-icon">👑</span> :
-          canKick && <span className="right-icon kick-button"
-            title="Kick player" onClick={handleKick} />}
+          player.status === "kicked" ? <span className="right-icon">💀</span> :
+            canKick && <span className="right-icon kick-button"
+              title="Kick player" onClick={handleKick} />}
       </Card.Body>
     </Card>
   );
@@ -54,7 +55,7 @@ export function LobbyPlayerList({ lobby, user, players }: ListProps) {
   const ulRef = useRef<HTMLUListElement>(null);
 
   // Filter out people who left:
-  const validPlayers = players.filter((p) => p.status !== "left");
+  const validPlayers = players.filter((p) => p.status === "online");
 
   // Update number of slots, so there is always more than players:
   useEffect(() => {

@@ -177,8 +177,14 @@ export function checkIfShouldEndGame(
   }
 }
 
-export async function kickPlayer(lobby: GameLobby, playerUid: string) {
-  await deleteDoc(doc(getPlayersRef(lobby.id), playerUid));
+/** Sets the given player's status as "kicked", so they can't re-join. */
+export async function kickPlayer(lobby: GameLobby, player: PlayerInLobby) {
+  if (player) {
+    player.status = "kicked";
+    player.role = "spectator";
+    await updatePlayer(lobby.id, player);
+    //TODO: clean up current_lobby_id
+  }
 }
 
 
@@ -192,8 +198,12 @@ export async function findOrCreateLobbyAndJoin(user: User): Promise<string> {
 }
 
 export async function isUserInLobby(lobbyID: string, user: User): Promise<boolean> {
-  const caaUser = await getCAAUser(user.uid);
-  return caaUser?.current_lobby_id === lobbyID;
+  try {
+    const player = await getPlayerInLobby(lobbyID, user.uid);
+    return player !== null;
+  } catch (e: any) {
+    return false;
+  }
 }
 
 /** If the user is not already in the lobby, joins it. */

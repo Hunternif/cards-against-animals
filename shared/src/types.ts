@@ -366,7 +366,7 @@ export class ResponseCardInGame implements CardInGame {
 
 export type PlayerRole = "player" | "spectator";
 
-export type PlayerStatus = "online" | "left";
+export type PlayerStatus = "online" | "left" | "kicked";
 
 export type TurnPhase = "new" | "answering" | "reading" | "complete";
 
