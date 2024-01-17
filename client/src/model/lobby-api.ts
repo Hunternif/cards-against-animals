@@ -183,7 +183,7 @@ export async function kickPlayer(lobby: GameLobby, player: PlayerInLobby) {
     player.status = "kicked";
     player.role = "spectator";
     await updatePlayer(lobby.id, player);
-    //TODO: clean up current_lobby_id
+    // TODO: do the same cleanup as in leaveLobby(), if kicked during game
   }
 }
 

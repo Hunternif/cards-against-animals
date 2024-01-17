@@ -1,8 +1,8 @@
-import { doc, getDoc } from "firebase/firestore";
+import { deleteField, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firebaseAuth, usersRef } from "../firebase";
 import { CAAUser } from "../shared/types";
 import { User } from "firebase/auth";
-import { getLobby, leaveLobby } from "./lobby-api";
+import { getLobby, getPlayerInLobby, leaveLobby } from "./lobby-api";
 import { useDocumentData, useDocumentDataOnce } from "react-firebase-hooks/firestore";
 
 /** Finds user data by ID */
@@ -28,6 +28,27 @@ export async function signOut(user: User) {
   }
   // Then actually sign out:
   await firebaseAuth.signOut();
+}
+
+/**
+ * If the user has a saved "current lobby", returns that lobby ID.
+ * If the user has been kicked from that lobby, or it ended, clears it.
+ */
+export async function findPastLobbyID(userID: string): Promise<string | null> {
+  const caaUser = await getCAAUser(userID);
+  if (caaUser?.current_lobby_id) {
+    const player = await getPlayerInLobby(caaUser.current_lobby_id, userID);
+    if (player?.status === "kicked") {
+      await updateDoc(doc(usersRef, userID), { current_lobby_id: deleteField() });
+      return null;
+    }
+    const lobby = await getLobby(caaUser.current_lobby_id);
+    if (lobby?.status === "ended") {
+      await updateDoc(doc(usersRef, userID), { current_lobby_id: deleteField() });
+      return null;
+    }
+  }
+  return null;
 }
 
 /** React hook to fetch user data and subscribe to it. */

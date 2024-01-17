@@ -12,8 +12,7 @@ import {
   joinLobbyIfNeeded,
   updatePlayer
 } from "../../model/lobby-api";
-import { getCAAUser } from "../../model/users-api";
-import { CAAUser } from "../../shared/types";
+import { findPastLobbyID } from "../../model/users-api";
 
 interface Props {
   existingLobbyID?: string,
@@ -22,26 +21,26 @@ interface Props {
 export function LoginScreen({ existingLobbyID }: Props) {
   const [error, setError] = useState<any>(null);
   const [joining, setJoining] = useState(false);
-  const [caaUser, setCaaUser] = useState<CAAUser | null>(null);
+  const [pastLobbyID, setPastLobbyID] = useState<string | null>(null);
   const navigate = useNavigate();
 
   if (error) throw error;
 
   // Check existing user and lobby
   useEffectOnce(() => {
-    // Load user's name only once
+    // Load past lobby
     return onAuthStateChanged(firebaseAuth, (newUser) => {
       if (newUser) {
-        getCAAUser(newUser.uid).then((caaUser) => {
-          setCaaUser(caaUser);
-        });
+        findPastLobbyID(newUser.uid).then((lobbyID) => {
+          setPastLobbyID(lobbyID);
+        })
       }
     });
   });
 
-  const buttonText = caaUser?.current_lobby_id ? "Rejoin game" :
+  const buttonText = pastLobbyID ? "Rejoin game" :
     existingLobbyID ? "Join game" : "Start new game";
-  const loadingText = caaUser?.current_lobby_id ? "Rejoining..." :
+  const loadingText = pastLobbyID ? "Rejoining..." :
     existingLobbyID ? "Joining..." : "Starting new lobby...";
   const loadingNode = joining ? <LoadingSpinner text={loadingText} /> : undefined;
 

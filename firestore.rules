@@ -50,6 +50,14 @@ service cloud.firestore {
       let doc = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
       return doc == null || doc.data['status'] != "kicked";
     }
+    // Allow changing user data, except admin-only fields
+    function isAdminInfoUnchanged(userID) {
+      let doc = get(/databases/$(database)/documents/users/$(userID));
+      return doc == null || (
+        request.resource.data['is_admin'] == doc.data['is_admin'] &&
+        request.resource.data['uid'] == doc.data['uid']
+      );
+    }
 
   	match /decks/{document=**} {
     	allow read;
@@ -67,13 +75,13 @@ service cloud.firestore {
       }
       
       match /players/{userID} {
+        // Allow kicking players if you are creator:
+        allow write: if isLoggedIn() && userIsCreator(lobby); 
         // Allow reading and updating your own info.
         // Don't allow creating or deleting, to preserve history.
         allow read: if isLoggedIn() && request.auth.uid == userID;
         allow update: if isLoggedIn() && request.auth.uid == userID
                       && isScoreUnchanged(lobby, userID) && userIsNotKicked(lobby, userID);
-        // Allow kicking players if you are creator:
-        allow write: if isLoggedIn() && userIsCreator(lobby); 
       }
       match /deck_prompts/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);
@@ -88,12 +96,12 @@ service cloud.firestore {
         allow update: if isLoggedIn() && userIsJudge(lobby, turn);
       }
       match /turns/{turn}/player_responses/{userID} {
+        // Judge can reveal:
+        allow update: if isLoggedIn() && userIsJudge(lobby, turn);
         // Allow players to submit as many times as needed:
         allow create, update: if isLoggedIn() && request.auth.uid == userID
                               && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
         allow delete: if isLoggedIn() && request.auth.uid == userID;
-        // Judge can reveal:
-        allow update: if isLoggedIn() && userIsJudge(lobby, turn);
       }
       match /turns/{turn}/player_data/{userID}/hand/{cardID} {
         // Allow players to update some fields:
@@ -106,10 +114,12 @@ service cloud.firestore {
       }
     }
     match /users/{userID} {
+      allow write: if userIsAdmin();
       // allow reading only your own info when you are logged in.
       // also allow deleting your own info:
       allow read, delete: if isLoggedIn() && request.auth.uid == userID;
-      allow write: if userIsAdmin();
+      // allow changing your data, except admin fields:
+      allow update: if isLoggedIn() && request.auth.uid == userID && isAdminInfoUnchanged(userID);
     }
     match /{document=**} {
       allow read, write: if false;
