@@ -52,7 +52,7 @@ export function WinnerScreen(
   const shouldEndNow = checkIfShouldEndGame(lobby, turn, players);
   const audienceAwardResponses = responses
     .filter((r) => turn.audience_award_uids.includes(r.player_uid));
-  const showAudienceAward = audienceAwardResponses.length > 0;
+  const showAudienceAward = lobby.settings.enable_likes && audienceAwardResponses.length > 0;
 
   async function handleNewTurn() {
     setStartingNewTurn(true);

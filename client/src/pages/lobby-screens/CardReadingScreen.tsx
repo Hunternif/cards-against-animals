@@ -114,7 +114,7 @@ export function CardReadingScreen({
     <div style={midRowStyle} className="reading-main-row">
       <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
       {shuffledResponses.map((r) =>
-        <ResponseReading showLikes
+        <ResponseReading
           key={r.player_uid}
           lobby={lobby}
           turn={turn}
@@ -123,7 +123,8 @@ export function CardReadingScreen({
           canSelect={isJudge && allRevealed}
           selected={winner?.player_uid === r.player_uid}
           onClick={(r) => handleClick(r)}
-          canLike={!isJudge && r.player_uid !== user.uid}
+          showLikes={lobby.settings.enable_likes}
+          canLike={!isJudge && r.player_uid !== user.uid && lobby.settings.enable_likes}
           onClickLike={(r) => handleLike(r)}
         />
       )}

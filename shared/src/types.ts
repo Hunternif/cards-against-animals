@@ -53,6 +53,8 @@ export interface LobbySettings {
   sort_cards_by_rating: boolean;
   /** If true, players can join after the game has started. */
   allow_join_mid_game: boolean;
+  /** If true, players can like responses. */
+  enable_likes: boolean;
 }
 
 export function defaultLobbySettings(): LobbySettings {
@@ -64,6 +66,7 @@ export function defaultLobbySettings(): LobbySettings {
     new_cards_first: true,
     sort_cards_by_rating: true,
     allow_join_mid_game: true,
+    enable_likes: false,
   };
 }
 
