@@ -71,6 +71,12 @@ function getResponseLikesRef(lobbyID: string, turnID: string, userID: string) {
     .withConverter(likeConverter);
 }
 
+/** How many likes this response has. */
+export async function getResponseLikeCount(
+  lobbyID: string, turnID: string, userID: string): Promise<number> {
+  return (await getCountFromServer(getResponseLikesRef(lobbyID, turnID, userID))).data().count;
+}
+
 /** Updates Firestore document with this turn data.
  * Doesn't update subcollections! */
 async function updateTurn(lobbyID: string, turn: GameTurn): Promise<void> {
@@ -183,11 +189,22 @@ export async function revealPlayerResponse(
   await updateDoc(responseRef, { revealed: true });
 }
 
-/** Set winner of the current turn and set it to "complete". */
+/** Fetches all responses in this turn. */
+export async function getAllPlayerResponses(lobbyID: string, turnID: string):
+  Promise<Array<PlayerResponse>> {
+  return (await getDocs(getPlayerResponsesRef(lobbyID, turnID)))
+    .docs.map((d) => d.data());
+}
+
+/**
+ * Set winner of the current turn and set it to "complete".
+ * Also awards "audience choice award" to responses with the most likes
+ */
 export async function chooseWinner(
   lobby: GameLobby, turn: GameTurn, winnerID: string,
 ) {
   turn.winner_uid = winnerID;
+  await selectAudienceAwardWinners(lobby.id, turn);
   turn.phase = "complete";
   await updateTurn(lobby.id, turn);
 }
@@ -239,6 +256,25 @@ export async function toggleLikeResponse(
   } else {
     await setDoc(userLikeRef, new Like(currentPlayer.uid, currentPlayer.name));
   }
+}
+
+/** Choose responses with the most likes and add them to audience_award_uids */
+async function selectAudienceAwardWinners(lobbyID: string, turn: GameTurn) {
+  // Played cards:
+  const responses = await getAllPlayerResponses(lobbyID, turn.id);
+  if (responses.length === 0) return;
+  let maxLikes = 0;
+  let audienceWinners = Array<string>();
+  for (const resp of responses) {
+    const likeCount = await getResponseLikeCount(lobbyID, turn.id, resp.player_uid);
+    if (likeCount == maxLikes) {
+      audienceWinners.push(resp.player_uid);
+    } else if (likeCount > maxLikes) {
+      audienceWinners = [resp.player_uid];
+      maxLikes = likeCount;
+    }
+  }
+  turn.audience_award_uids = audienceWinners;
 }
 
 

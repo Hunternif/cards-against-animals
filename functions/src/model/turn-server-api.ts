@@ -4,6 +4,7 @@ import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
 import {
+  likeConverter,
   playerDataConverter,
   playerResponseConverter,
   promptCardInGameConverter,
@@ -18,8 +19,14 @@ import {
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
-import { getLobby, getOnlinePlayers, getPlayer, getPlayers, updatePlayer } from "./lobby-server-api";
 import { logCardInteractions } from "./deck-server-api";
+import {
+  getLobby,
+  getOnlinePlayers,
+  getPlayer,
+  getPlayers,
+  updatePlayer
+} from "./lobby-server-api";
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
@@ -48,6 +55,12 @@ function getPlayerResponsesRef(lobbyID: string, turnID: string) {
 function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data/${userID}/discarded`)
     .withConverter(responseCardInGameConverter);
+}
+
+/** Returns Firestore subcollection reference. */
+function getResponseLikesRef(lobbyID: string, turnID: string, userID: string) {
+  return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_responses/${userID}/likes`)
+    .withConverter(likeConverter);
 }
 
 /** Returns all turns that occurred in this lobby. */
