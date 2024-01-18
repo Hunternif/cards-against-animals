@@ -5,7 +5,7 @@ import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { chooseWinner, revealPlayerResponse, startNewTurn } from "../../model/turn-api";
+import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
 
 interface TurnProps {
@@ -48,7 +48,9 @@ const botRowStyle: CSSProperties = {
 // const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard, dummyCard], 123, true);
 // const dummyResponses = new Array<PlayerResponse>(10).fill(dummyResponse, 0, 10);
 
-export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnProps) {
+export function CardReadingScreen({
+  lobby, turn, user, judge, responses, players,
+}: TurnProps) {
   // const responses = dummyResponses;
   const [winner, setWinner] = useState<PlayerResponse | null>(null);
   const [startingNewTurn, setStartingNewTurn] = useState(false);
@@ -57,6 +59,7 @@ export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnP
   const allRevealed = responses.every((r) => r.revealed) ?? false;
   const noResponses = responses.length === 0;
   const shuffledResponses = responses.sort((r1, r2) => r1.random_index - r2.random_index);
+  const currentPlayer = players.find((p) => p.uid === user.uid);
 
   async function handleClick(response: PlayerResponse) {
     if (allRevealed) {
@@ -89,6 +92,14 @@ export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnP
       });
   }
 
+  /** When a player toggles "like" on the response */
+  async function handleLike(response: PlayerResponse) {
+    if (currentPlayer) {
+      await toggleLikeResponse(lobby, turn, response, currentPlayer)
+        .catch((e) => setError(e));
+    }
+  }
+
   return <CenteredLayout innerClassName="reading-layout-container">
     <div style={topRowStyle} className="reading-control-row">
       {isJudge && <>
@@ -110,6 +121,8 @@ export function CardReadingScreen({ lobby, turn, user, judge, responses }: TurnP
           canSelect={isJudge && allRevealed}
           selected={winner?.player_uid === r.player_uid}
           onClick={(r) => handleClick(r)}
+          canLike={!isJudge}
+          onClickLike={(r) => handleLike(r)}
         />
       )}
     </div>

@@ -1,8 +1,10 @@
 // Client APIs for game turns, when the game is in progress.
 
 import {
+  addDoc,
   collection, deleteDoc, doc,
   getCountFromServer,
+  getDoc,
   getDocs, limit, orderBy,
   query, runTransaction, setDoc, updateDoc
 } from "firebase/firestore";
@@ -15,6 +17,7 @@ import {
 } from "react-firebase-hooks/firestore";
 import { db, lobbiesRef, newTurnFun } from "../firebase";
 import {
+  likeConverter,
   playerDataConverter,
   playerResponseConverter,
   promptCardInGameConverter,
@@ -25,11 +28,14 @@ import { RNG } from "../shared/rng";
 import {
   GameLobby,
   GameTurn,
+  Like,
   PlayerDataInTurn,
+  PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
+import { User } from "firebase/auth";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 function getTurnsRef(lobbyID: string) {
@@ -59,6 +65,12 @@ function getPlayerHandRef(lobbyID: string, turnID: string, userID: string) {
 function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
   return collection(lobbiesRef, lobbyID, "turns", turnID, "player_data", userID, "discarded")
     .withConverter(responseCardInGameConverter);
+}
+
+/** Returns Firestore subcollection reference of likes to a player response in turn. */
+function getResponseLikesRef(lobbyID: string, turnID: string, userID: string) {
+  return collection(lobbiesRef, lobbyID, "turns", turnID, "player_responses", userID, "likes")
+    .withConverter(likeConverter);
 }
 
 /** Updates Firestore document with this turn data.
@@ -214,6 +226,21 @@ export async function discardCards(
       transaction.set(doc(discardRef, card.id), card);
     }
   });
+}
+
+/** Create/delete a "like" for the given response from the current player */
+export async function toggleLikeResponse(
+  lobby: GameLobby, turn: GameTurn, response: PlayerResponse,
+  currentPlayer: PlayerInLobby,
+) {
+  const likesRef = getResponseLikesRef(lobby.id, turn.id, response.player_uid);
+  const userLikeRef = doc(likesRef, currentPlayer.uid);
+  const userLikeSnap = await getDoc(userLikeRef);
+  if (userLikeSnap.exists()) {
+    await deleteDoc(userLikeRef);
+  } else {
+    await setDoc(userLikeRef, new Like(currentPlayer.uid, currentPlayer.name));
+  }
 }
 
 

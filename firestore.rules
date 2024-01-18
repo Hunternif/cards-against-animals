@@ -102,6 +102,12 @@ service cloud.firestore {
         allow create, update: if isLoggedIn() && request.auth.uid == userID
                               && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
         allow delete: if isLoggedIn() && request.auth.uid == userID;
+
+        match /likes/{likerID} {
+          // Anyone can read likes, only yourself can add or remove likes.
+          allow read;
+          allow write: if isLoggedIn() && request.auth.uid == likerID;
+        }
       }
       match /turns/{turn}/player_data/{userID}/hand/{cardID} {
         // Allow players to update some fields:
