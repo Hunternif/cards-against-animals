@@ -62,11 +62,6 @@ pre {
   border-radius: 0.25em;
 }
 
-.star-icon {
-  color: #ffc90f;
-  margin-top: -0.2em;
-}
-
 .modal-backdrop {
   color: #000;
   opacity: 0.6;
@@ -659,6 +654,9 @@ button.start-button {
 }
 .score-menu-icon:hover {
   background-color: rgba(229, 231, 235, 0.2);
+}
+.likes-menu-icon {
+  margin-right: 0.5rem;
 }
 
 .menu-scoreboard .scoreboard-table {

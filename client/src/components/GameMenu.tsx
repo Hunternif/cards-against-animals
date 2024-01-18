@@ -4,11 +4,11 @@ import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { endLobby, leaveLobby } from "../model/lobby-api";
 import { GameLobby, GameTurn, PlayerInLobby } from "../shared/types";
+import { ConfirmModal } from "./ConfirmModal";
 import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
+import { IconHeartInline, IconStarInline } from "./Icons";
 import { Scoreboard } from "./Scoreboard";
-import { IconStar, IconStarInline } from "./Icons";
-import { ConfirmModal } from "./ConfirmModal";
 
 interface MenuProps {
   lobby: GameLobby,
@@ -91,18 +91,23 @@ export function GameMenu(
         <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
       </div>
       <div style={rightStyle}>
-        {(player) && <CustomDropdown className={className}
-          toggle={
-            <span className="score-menu-icon">
-              <IconStarInline /> {player.score}
-            </span>
-          }>
-          <Dropdown.Menu>
-            <div className="menu-scoreboard">
-              <Scoreboard lobby={lobby} players={players} />
-            </div>
-          </Dropdown.Menu>
-        </CustomDropdown>}
+        {(player) && <>
+          <CustomDropdown className={className}
+            toggle={
+              <span className="score-menu-icon">
+                <IconStarInline /> {player.score}
+              </span>
+            }>
+            <Dropdown.Menu>
+              <div className="menu-scoreboard">
+                <Scoreboard lobby={lobby} players={players} />
+              </div>
+            </Dropdown.Menu>
+          </CustomDropdown>
+          {player.likes > 0 && <span className="likes-menu-icon">
+            <IconHeartInline /> {player.likes}
+          </span>}
+        </>}
         <CustomDropdown className={className} showArrow
           toggle={
             <span className="light">
