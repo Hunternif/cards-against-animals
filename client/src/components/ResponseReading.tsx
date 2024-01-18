@@ -131,3 +131,18 @@ function CardResponseReading({
     </LargeCard>
   );
 }
+
+/** Same as ResponseReading, but also displays player's name */
+export function ResponseReadingWithName(props: Props) {
+  return <div className="game-card-placeholder" style={{ height: "auto" }}>
+    <div className="response-player-name" style={{
+      width: "100%",
+      whiteSpace: "nowrap",
+      textOverflow: "ellipsis",
+      overflow: "hidden",
+    }}>
+      {props.response.player_name}
+    </div>
+    <ResponseReading {...props} />
+  </div>;
+}

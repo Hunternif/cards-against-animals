@@ -15,6 +15,9 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 @import "bootstrap/scss/bootstrap";
 
 
+$accent-color: #ffc90f;
+$like-color: #fc81b0;
+
 /*------------------------ Checkbox component ------------------------*/
 // From https://codepen.io/alvarotrigo/pen/YzezaMR
 .checkbox {
@@ -210,7 +213,6 @@ input.control {
 /*=========================== Game screens ===========================*/
 
 /*----------------------------- Likes -----------------------------*/
-$like-color: #fc81b0;
 .card-response {
   &:hover .like-response-button {
     opacity: 0.2;

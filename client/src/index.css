@@ -427,17 +427,26 @@ button.start-button {
 .game-card.selectable {
   cursor: pointer;
 }
-.prompt-czar-name {
+.prompt-czar-name, .response-player-name {
   padding-left: 0.3rem;
   padding-right: 0.3rem;
-  padding-top: 0.75rem;
-  padding-bottom: 0;
   justify-content: center;
   align-items: center;
-  font-size: 9pt;
   /* font-size: small; */
   text-align: center;
   color: #fff;
+}
+.prompt-czar-name {
+  /* Appears below card */
+  padding-top: 0.75rem;
+  padding-bottom: 0;
+  font-size: 9pt;
+}
+.response-player-name {
+  /* Appears above card */
+  padding-bottom: 0.75rem;
+  padding-top: 0;
+  font-size: 10pt;
 }
 
 .hoverable-card {
@@ -552,6 +561,12 @@ button.start-button {
   box-shadow: 0 0px 16px rgba(0, 0, 0, 0.3);
   margin-top: -80%;
 }
+
+.audience-award-section {
+  padding-top: 3rem;
+  padding-bottom: 1rem;
+}
+
 
 /*---------------------------- Downvotes ---------------------------*/
 

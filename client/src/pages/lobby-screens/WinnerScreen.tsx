@@ -4,7 +4,7 @@ import { GameButton } from "../../components/Buttons";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
-import { ResponseReading } from "../../components/ResponseReading";
+import { ResponseReading, ResponseReadingWithName } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
@@ -36,11 +36,6 @@ const botRowStyle: CSSProperties = {
   alignItems: "center",
   gap: "1rem",
   marginBottom: "1rem",
-}
-
-const audienceAwardSectionStyle: CSSProperties = {
-  paddingTop: "2rem",
-  paddingBottom: "1rem",
 }
 
 /** Displays winner of the turn */
@@ -89,11 +84,12 @@ export function WinnerScreen(
     {/* TODO: animate audience choice winner transition */}
     {showAudienceAward && (
       <Delay delayMs={2000}>
-        <div style={audienceAwardSectionStyle}>
+        <div className="audience-award-section">
           <h2 style={{ textAlign: "center" }}>Audience Choice Award</h2>
           <div style={midRowStyle}>
             {audienceAwardResponses.map((r, i) => (
-              <ResponseReading key={i} showLikes lobby={lobby} turn={turn} response={r} />
+              <ResponseReadingWithName key={i} showLikes
+                lobby={lobby} turn={turn} response={r} />
             ))}
           </div>
         </div>
