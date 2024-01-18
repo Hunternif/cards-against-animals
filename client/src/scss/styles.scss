@@ -213,7 +213,7 @@ input.control {
 /*=========================== Game screens ===========================*/
 
 /*----------------------------- Likes -----------------------------*/
-.card-response {
+.card-response, .many-cards {
   &:hover .like-response-button {
     opacity: 0.2;
   }

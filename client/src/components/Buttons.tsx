@@ -15,7 +15,7 @@ export function GameButton(props: ButtonProps) {
   const lightClass = props.light ? "light-button " : "";
   const secondaryClass = props.secondary ? "secondary-button " : "";
   const smallClass = props.small ? "small-button " : "";
-  const className = `${lightClass}${secondaryClass}${accentClass}${smallClass}${props.className}`;
+  const className = `${lightClass}${secondaryClass}${accentClass}${smallClass}${props.className ?? ""}`;
   // Remove new fields when passing props to DOM:
   const propsCopy = copyFields(props, ['accent', 'icon', 'secondary', 'small', 'light']);
   return <button {...propsCopy}

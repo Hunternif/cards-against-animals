@@ -5,7 +5,7 @@ interface ComponentProps extends React.HTMLAttributes<HTMLElement> { }
 export function LargeCard(props: ComponentProps) {
   return (
     <div {...props}
-      className={`game-card ${props.className}`}
+      className={`game-card ${props.className ?? ""}`}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -18,17 +18,18 @@ export function LargeCard(props: ComponentProps) {
 
 export function CardCenterIcon(props: ComponentProps) {
   return <FillLayout {...props}
-    className={`card-center-icon ${props.className}`} />;
+    className={`card-center-icon ${props.className ?? ""}`} />;
 }
 
 export function CardContent(props: ComponentProps) {
-  return <span {...props} className={`card-content ${props.className}`} />;
+  return <span {...props}
+    className={`card-content ${props.className ?? ""}`} />;
 }
 
 export function CardBottomLeft(props: ComponentProps) {
-  return <div {...props} className={`card-bottom-left ${props.className}`} />;
+  return <div {...props} className={`card-bottom-left ${props.className ?? ""}`} />;
 }
 
 export function CardBottomRight(props: ComponentProps) {
-  return <div {...props} className={`card-bottom-right ${props.className}`} />;
+  return <div {...props} className={`card-bottom-right ${props.className ?? ""}`} />;
 }

@@ -1,8 +1,8 @@
 import { CSSProperties } from "react";
-import { GameLobby, GameTurn, Like, PlayerResponse, ResponseCardInGame } from "../shared/types";
-import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
-import { IconHeart } from "./Icons";
 import { useResponseLikes } from "../model/turn-api";
+import { GameLobby, GameTurn, Like, PlayerResponse, ResponseCardInGame } from "../shared/types";
+import { IconHeart } from "./Icons";
+import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 
 interface Props {
   lobby: GameLobby,
@@ -41,6 +41,7 @@ export function ResponseReading({
   const revealedClass = response.revealed ? "revealed" : "unrevealed";
   const featureClass = `${canRevealClass} ${revealedClass}`;
   const hasManyCards = response.cards.length > 1;
+
   function handleClick() {
     if (canReveal && onClick) {
       onClick(response);
@@ -53,41 +54,25 @@ export function ResponseReading({
   }
   if (response.revealed) {
     return <>{hasManyCards ? (
-      /* Overlay multiple cards on top of each other */
-      /* "Placeholder" component holds place the size of a card */
-      <div className="game-card-placeholder" style={{
-        // Add extra margin below for the overlaid cards:
-        marginBottom: `${response.cards.length}em`,
-        position: "relative",
-      }} onClick={handleClick}>
-        {/* Card combiner renders cards on top with absolute positioning,
-            without interfering with the flow of the rest of the page.*/}
-        <div style={cardCombinerStyle} className={`many-cards ${featureClass}`} >
-          {
-            response.cards.map((card, i) => {
-              const isLastCard = i === response.cards.length - 1;
-              return <CardResponseReading key={card.id} card={card} offset={i}
-                selectable={canSelect} selected={selected}
-                // Only enable likes on the last card of the stack:
-                likable={canLike && isLastCard}
-                onClickLike={handleClickLike}
-                likes={(isLastCard && showLikes) ? likes : []}
-              />
-              // TODO: insert a "like" button over many cards in fixed position
-            })
-          }
-        </div>
-      </div>
+      <ManyCardsStack
+        response={response}
+        canSelect={canSelect}
+        selected={selected}
+        onClick={handleClick}
+        canLike={canLike}
+        onClickLike={handleClickLike}
+        likes={showLikes ? likes : undefined}
+        className={featureClass}
+      />
     ) : (
       <div className={canSelect ? "hoverable-card" : ""} onClick={handleClick}>
         <CardResponseReading card={response.cards[0]}
           selectable={canSelect} selected={selected}
           likable={canLike} onClickLike={handleClickLike}
-          likes={showLikes ? likes : []}
+          likes={showLikes ? likes : undefined}
         />
-      </div>
-    )
-    }</>;
+      </div >
+    )}</>;
   } else {
     return (
       <LargeCard onClick={handleClick}
@@ -100,6 +85,51 @@ export function ResponseReading({
   }
 }
 
+
+interface CardStackProps {
+  response: PlayerResponse,
+  canSelect?: boolean,
+  selected?: boolean,
+  onClick?: () => void,
+  canLike?: boolean,
+  onClickLike?: () => void,
+  likes?: Like[],
+  className?: string,
+}
+
+function ManyCardsStack({
+  response, canSelect, selected, onClick, canLike, onClickLike, likes, className,
+}: CardStackProps) {
+  // Overlay multiple cards on top of each other.
+  // The "Placeholder" component holds place the size of a card:
+  return (
+    <div className="game-card-placeholder" style={{
+      // Add extra margin below for the overlaid cards:
+      marginBottom: `${response.cards.length}em`,
+      position: "relative",
+    }} onClick={onClick}>
+      {/* Card combiner renders cards on top with absolute positioning,
+          without interfering with the flow of the rest of the page. */}
+      <div style={cardCombinerStyle} className={`many-cards ${className}`} >
+        {
+          response.cards.map((card, i) => {
+            const isLastCard = i === response.cards.length - 1;
+            return <CardResponseReading
+              key={card.id} card={card} offset={i}
+              selectable={canSelect} selected={selected}
+              // Only enable likes on the last card of the stack:
+              likable={canLike && isLastCard}
+              onClickLike={onClickLike}
+              likes={isLastCard ? likes : []}
+            />
+          })
+        }
+      </div>
+    </div>
+  );
+}
+
+
 interface CardProps {
   card: ResponseCardInGame,
   selectable?: boolean,
@@ -110,6 +140,7 @@ interface CardProps {
   likes?: Like[],
 }
 
+/** Individual response card (not a stack of cards)  */
 function CardResponseReading({
   card, offset, selectable, selected, likable, onClickLike, likes
 }: CardProps) {

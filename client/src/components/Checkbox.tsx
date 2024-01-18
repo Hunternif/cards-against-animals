@@ -16,7 +16,7 @@ export function Checkbox(props: Props) {
     }
   }
 
-  return <div className={`checkbox ${props.className}`} style={props.style}>
+  return <div className={`checkbox ${props.className ?? ""}`} style={props.style}>
     <input type="checkbox" name="check" {...props} id={id}
       onChange={props.onChange ?? handleChange}
       // This prevents onClick propagating twice:
