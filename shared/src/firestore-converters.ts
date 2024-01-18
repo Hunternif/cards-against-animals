@@ -71,7 +71,7 @@ export const playerConverter: FConverter<PlayerInLobby> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PlayerInLobby(
-      data.uid, data.name, data.role, data.status, data.score);
+      data.uid, data.name, data.role, data.status, data.score ?? 0, data.likes ?? 0);
     ret.time_joined = (data.time_joined as FTimestamp | null)?.toDate();
     return ret;
   },
@@ -142,7 +142,7 @@ export const playerResponseConverter: FConverter<PlayerResponse> = {
     const player_uid = snapshot.id;
     const cards = (data.cards as Array<any>)?.map(mapResponseCardInGame) || [];
     return new PlayerResponse(player_uid, data.player_name, cards,
-      data.random_index, data.revealed);
+      data.random_index, data.revealed, data.like_count);
   },
 };
 

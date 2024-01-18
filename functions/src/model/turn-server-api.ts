@@ -143,6 +143,20 @@ export async function getAllPlayerResponses(lobbyID: string, turnID: string):
   return (await getPlayerResponsesRef(lobbyID, turnID).get()).docs.map((t) => t.data());
 }
 
+/** Update response state in Firestore. */
+export async function updatePlayerResponse(
+  lobbyID: string, turnID: string, response: PlayerResponse,
+) {
+  await getPlayerResponsesRef(lobbyID, turnID).doc(response.player_uid).set(response);
+}
+
+/** How many likes this response has. */
+export async function getResponseLikeCount(
+  lobbyID: string, turnID: string, userID: string,
+): Promise<number> {
+  return (await getResponseLikesRef(lobbyID, turnID, userID).count().get()).data().count;
+}
+
 /**
  * Creates a new turn without a prompt, and returns it.
  */
@@ -272,11 +286,12 @@ async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
   return uids.sort();
 }
 
-/** Updates all player's scores from this turn, if it has ended. */
+/** Updates all player's scores and likes from this turn, if it has ended. */
 export async function updatePlayerScoresFromTurn(
   lobbyID: string, turn: GameTurn,
 ) {
   const players = await getPlayers(lobbyID, "player");
+  const responses = await getAllPlayerResponses(lobbyID, turn.id);
   for (const player of players) {
     if (turn.winner_uid === player.uid) {
       player.score++;
@@ -285,6 +300,13 @@ export async function updatePlayerScoresFromTurn(
     const discardCount = (await discardRef.count().get()).data().count;
     if (discardCount > 0) {
       player.score--;
+    }
+    const response = responses.find((r) => r.player_uid === player.uid);
+    if (response) {
+      const likeCount = await getResponseLikeCount(lobbyID, turn.id, player.uid);
+      response.like_count = likeCount;
+      player.likes += likeCount;
+      await updatePlayerResponse(lobbyID, turn.id, response);
     }
     await updatePlayer(lobbyID, player);
   }

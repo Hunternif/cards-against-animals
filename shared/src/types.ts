@@ -82,19 +82,23 @@ export class PlayerInLobby {
   time_joined?: Date;
   /** Current score accumulated over the entire game. */
   score: number;
+  /** Current number of likes accumulated over the entire game. */
+  likes: number;
 
   constructor(
     uid: string,
     name: string,
     role: PlayerRole,
     status: PlayerStatus,
-    score: number
+    score: number,
+    likes: number,
   ) {
     this.uid = uid;
     this.name = name;
     this.role = role;
     this.status = status;
     this.score = score;
+    this.likes = likes;
   }
 }
 
@@ -167,19 +171,22 @@ export class PlayerResponse {
   cards: Array<ResponseCardInGame>;
   random_index: number;
   revealed: boolean;
+  /** Will be updated after the turn completes. */
+  like_count?: number;
   /** List of players who liked this response.
    * Must be fetched separately from a Firebase subcollection. */
   likes: Array<Like> = [];
 
   constructor(
     player_uid: string, player_name: string, cards: Array<ResponseCardInGame>,
-    random_index: number, revealed: boolean,
+    random_index: number, revealed: boolean, like_count: number | undefined,
   ) {
     this.player_uid = player_uid;
     this.player_name = player_name;
     this.cards = cards;
     this.random_index = random_index;
     this.revealed = revealed;
+    this.like_count = like_count;
   }
 }
 

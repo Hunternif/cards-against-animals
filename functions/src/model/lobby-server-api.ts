@@ -13,7 +13,7 @@ import {
   PlayerRole,
   PromptCardInGame,
   ResponseCardInGame,
-  defaultLobbySettings,
+  defaultLobbySettings
 } from "../shared/types";
 import { getUserName } from "./auth-api";
 import {
@@ -130,7 +130,7 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
   } else if (lobby.status === "in_progress" && lobby.settings.allow_join_mid_game) {
     role = "player";
   }
-  const player = new PlayerInLobby(userID, userName, role, "online", 0);
+  const player = new PlayerInLobby(userID, userName, role, "online", 0, 0);
   await playerRef.set(player);
   await setUsersCurrentLobby(userID, lobby.id);
   logger.info(`User ${userName} (${userID}) joined lobby ${lobby.id} as ${role}`);

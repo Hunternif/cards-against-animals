@@ -166,7 +166,7 @@ export async function submitPlayerResponse(
 ) {
   const rng = RNG.fromTimestamp();
   const response = new PlayerResponse(
-    data.player_uid, data.player_name, cards, rng.randomInt(), false);
+    data.player_uid, data.player_name, cards, rng.randomInt(), false, 0);
   await setDoc(
     doc(getPlayerResponsesRef(lobby.id, turn.id), data.player_uid), response);
 }
