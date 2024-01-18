@@ -336,7 +336,7 @@ button.start-button {
   background-color: #999;
   background-image: linear-gradient(to bottom,#111827cc,#374151cc);
   background-attachment: fixed;
-  z-index: 100;
+  z-index: 10;
   padding: 0.5em 0;
 }
 
@@ -662,7 +662,7 @@ button.start-button {
     position: sticky;
     margin-top: 0;
     top: 0;
-    z-index: 100;
+    z-index: 10;
     padding-top: 1em;
     background-attachment: fixed;
     background-image: linear-gradient(to bottom,

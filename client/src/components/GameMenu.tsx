@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { CSSProperties, useContext } from "react";
+import { CSSProperties, useContext, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { endLobby, leaveLobby } from "../model/lobby-api";
@@ -8,6 +8,7 @@ import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
 import { Scoreboard } from "./Scoreboard";
 import { IconStar, IconStarInline } from "./Icons";
+import { ConfirmModal } from "./ConfirmModal";
 
 interface MenuProps {
   lobby: GameLobby,
@@ -55,6 +56,8 @@ export function GameMenu(
   { lobby, turn, user, players, className, style }: MenuProps
 ) {
   const navigate = useNavigate();
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [showEndModal, setShowEndModal] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
   const player = players.find((p) => p.uid === user.uid);
@@ -70,7 +73,19 @@ export function GameMenu(
     await endLobby(lobby).catch((e) => setError(e));
   }
 
-  return (
+  return <>
+    <ConfirmModal
+      show={showLeaveModal}
+      text="Leave the game?"
+      onCancel={() => setShowLeaveModal(false)}
+      onConfirm={handleLeave}
+    />
+    <ConfirmModal
+      show={showEndModal}
+      text="End the game for everyone?"
+      onCancel={() => setShowEndModal(false)}
+      onConfirm={handleEnd}
+    />
     <div style={{ ...rowStyle, ...style }}>
       <div style={leftStyle}>
         <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
@@ -95,11 +110,11 @@ export function GameMenu(
             </span>
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>
-            <Dropdown.Item onClick={handleLeave}>Leave</Dropdown.Item>
-            {isJudge && <Dropdown.Item onClick={handleEnd}>End game</Dropdown.Item>}
+            <Dropdown.Item onClick={() => setShowLeaveModal(true)}>Leave</Dropdown.Item>
+            {isJudge && <Dropdown.Item onClick={() => setShowEndModal(true)}>End game</Dropdown.Item>}
           </Dropdown.Menu>
         </CustomDropdown>
       </div>
     </div>
-  );
+  </>;
 }
