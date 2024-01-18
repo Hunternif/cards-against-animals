@@ -58,6 +58,7 @@ export function GameMenu(
   const navigate = useNavigate();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
+  const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isJudge = turn.judge_uid === user.uid;
   const player = players.find((p) => p.uid === user.uid);
@@ -70,6 +71,7 @@ export function GameMenu(
   }
 
   async function handleEnd() {
+    setEnding(true);
     await endLobby(lobby).catch((e) => setError(e));
   }
 
@@ -85,6 +87,8 @@ export function GameMenu(
       text="End the game for everyone?"
       onCancel={() => setShowEndModal(false)}
       onConfirm={handleEnd}
+      loading={ending}
+      loadingText="Ending game..."
     />
     <div style={{ ...rowStyle, ...style }}>
       <div style={leftStyle}>
