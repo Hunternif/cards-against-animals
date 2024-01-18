@@ -22,10 +22,7 @@ export function CardCenterIcon(props: ComponentProps) {
 }
 
 export function CardContent(props: ComponentProps) {
-  return <span {...props} style={{
-    whiteSpace: "pre-line",
-    ...props.style,
-  }} />;
+  return <span {...props} className={`card-content ${props.className}`} />;
 }
 
 export function CardBottomLeft(props: ComponentProps) {

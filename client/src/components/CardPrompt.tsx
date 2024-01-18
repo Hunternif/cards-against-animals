@@ -72,6 +72,7 @@ function PromptCardPick({ pick }: PickProps) {
       height: "1rem",
       lineHeight: "1rem",
       marginLeft: "0.5em",
+      marginRight: "0.25em",
       backgroundColor: "#fff",
       color: "#000",
       fontWeight: "bold",
