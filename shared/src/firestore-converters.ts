@@ -10,6 +10,7 @@ import {
   DeckTag,
   GameLobby,
   GameTurn,
+  Like,
   LobbySettings,
   PlayerDataInTurn,
   PlayerInLobby,
@@ -133,13 +134,22 @@ export const playerDataConverter: FConverter<PlayerDataInTurn> = {
 export const playerResponseConverter: FConverter<PlayerResponse> = {
   toFirestore: (pdata: PlayerResponse) => copyFields2(pdata, {
     cards: pdata.cards.map((card) => copyFields(card, [])),
-  }),
+  }, ["likes"]),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const player_uid = snapshot.id;
     const cards = (data.cards as Array<any>)?.map(mapResponseCardInGame) || [];
     return new PlayerResponse(player_uid, data.player_name, cards,
       data.random_index, data.revealed);
+  },
+};
+
+export const likeConverter: FConverter<Like> = {
+  toFirestore: (like: Like) => copyFields(like),
+  fromFirestore: (snapshot: FDocSnapshot) => {
+    const data = snapshot.data();
+    const player_uid = snapshot.id;
+    return new Like(player_uid, data.player_name);
   },
 };
 

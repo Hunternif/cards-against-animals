@@ -162,6 +162,9 @@ export class PlayerResponse {
   cards: Array<ResponseCardInGame>;
   random_index: number;
   revealed: boolean;
+  /** List of players who liked this response.
+   * Must be fetched separately from a Firebase subcollection. */
+  likes: Array<Like> = [];
 
   constructor(
     player_uid: string, player_name: string, cards: Array<ResponseCardInGame>,
@@ -172,6 +175,16 @@ export class PlayerResponse {
     this.cards = cards;
     this.random_index = random_index;
     this.revealed = revealed;
+  }
+}
+
+/** Represents a player who liked a response. */
+export class Like {
+  player_uid: string;
+  player_name: string; // Copied from 'Players' for convenience.
+  constructor(player_uid: string, player_name: string) {
+    this.player_uid = player_uid;
+    this.player_name = player_name;
   }
 }
 
