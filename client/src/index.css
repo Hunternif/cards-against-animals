@@ -475,6 +475,9 @@ button.start-button {
   font-size: 3rem;
   user-select: none;
 }
+.game-minicard .ready-icon .tick {
+  margin-bottom: 0.5rem;
+}
 
 .response-count-container {
   flex: 1 1 auto;

@@ -1,3 +1,5 @@
+import { IconCheck } from "./Icons";
+
 interface Props {
   ready: boolean,
   /** How many cards were played */
@@ -19,7 +21,7 @@ export function MiniCardResponse({ ready, pick, playerName }: Props) {
         textAlign: "center",
       }}>
         <span className="ready-icon">
-          {ready ? "✔" : "···"}
+          {ready ? <IconCheck width={52} height={52} className="tick"/> : "···"}
         </span>
       </div>
       <div className="minicard-player-name" style={{
