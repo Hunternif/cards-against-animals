@@ -4,6 +4,7 @@ import { Card } from "react-bootstrap";
 import { GameLobby, PlayerInLobby } from "../shared/types";
 import { ErrorContext } from "./ErrorContext";
 import { kickPlayer } from "../model/lobby-api";
+import { ConfirmModal } from "./ConfirmModal";
 
 interface ListProps {
   lobby: GameLobby,
@@ -29,20 +30,28 @@ interface PlayerProps {
 
 function PlayerCard({ lobby, player, isMe, isCreator, canKick }: PlayerProps) {
   const { setError } = useContext(ErrorContext);
+  const [showKickModal, setShowKickModal] = useState(false);
   async function handleKick() {
     await kickPlayer(lobby, player).catch((e) => setError(e));
+    setShowKickModal(false);
   }
-  return (
+  return <>
+    <ConfirmModal
+      show={showKickModal}
+      text="Kick player out?"
+      onCancel={() => setShowKickModal(false)}
+      onConfirm={handleKick}
+    />
     <Card className="player-card" bg={isMe ? "secondary" : "none"}>
       <Card.Body>
         <span className="player-name">{player.name}</span>
         {isCreator ? <span className="right-icon">👑</span> :
           player.status === "kicked" ? <span className="right-icon">💀</span> :
             canKick && <span className="right-icon kick-button"
-              title="Kick player" onClick={handleKick} />}
+              title="Kick player" onClick={() => setShowKickModal(true)} />}
       </Card.Body>
     </Card>
-  );
+  </>;
 }
 
 const initialSlotCount = 6;
