@@ -1,5 +1,7 @@
-import { Modal } from "react-bootstrap";
+import { CSSProperties } from "react";
 import { GameButton } from "./Buttons";
+import { ModalBackdrop } from "./ModalBackdrop";
+import { CenteredLayout } from "./layout/CenteredLayout";
 
 interface Props {
   show: boolean,
@@ -11,23 +13,29 @@ interface Props {
   onCancel: () => void,
 }
 
+const containerStyle: CSSProperties = {
+  position: "fixed",
+  zIndex: 20,
+  width: "100vw",
+  height: "100vh",
+  top: 0,
+  left: 0,
+}
+
 export function ConfirmModal({
   show, text, okText, cancelText, onConfirm, onCancel,
 }: Props) {
-  return (
-    <Modal
-      show={show}
-      onHide={onCancel}
-      centered
-    >
-      {/* <Modal.Header>
-        <Modal.Title>{title}}</Modal.Title>
-      </Modal.Header> */}
-      <Modal.Body>{text}</Modal.Body>
-      <Modal.Footer>
-        <GameButton onClick={onConfirm}>{okText ?? "Yes"}</GameButton>
-        <GameButton onClick={onCancel}>{cancelText ?? "Cancel"}</GameButton>
-      </Modal.Footer>
-    </Modal>
-  );
+  if (!show) return null;
+  return <>
+    <ModalBackdrop style={{ zIndex: "19" }} />
+    <CenteredLayout outerStyle={containerStyle}>
+      <div className="modal-card">
+        <div className="modal-body">{text}</div>
+        <footer>
+          <GameButton onClick={onConfirm}>{okText ?? "Yes"}</GameButton>
+          <GameButton onClick={onCancel}>{cancelText ?? "Cancel"}</GameButton>
+        </footer>
+      </div>
+    </CenteredLayout>
+  </>;
 }

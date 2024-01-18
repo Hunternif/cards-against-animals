@@ -38,7 +38,7 @@ function PlayerCard({ lobby, player, isMe, isCreator, canKick }: PlayerProps) {
   return <>
     <ConfirmModal
       show={showKickModal}
-      text="Kick player out?"
+      text="Kick the player out?"
       onCancel={() => setShowKickModal(false)}
       onConfirm={handleKick}
     />

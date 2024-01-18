@@ -123,6 +123,38 @@ input.control {
 }
 
 
+/*------------------------- Modal component ------------------------*/
+/* Similar to login-card */
+.modal-card {
+  padding: 1em;
+  border-radius: 0.735rem;
+  background-color: #2f3542;
+  border-color: #374151;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  display: flex;
+  gap: 1em;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 18em;
+  max-width: 60vw;
+  min-height: 8em;
+  max-height: 80vh;
+  .modal-body {
+    text-align: center;
+    font-size: large;
+    font-weight: 600;
+  }
+  footer {
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+    button {
+      width: 6em;
+    }
+  }
+}
+
+
 /*=========================== Lobby screen ===========================*/
 
 .lobby-settings-container {
