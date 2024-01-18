@@ -40,7 +40,7 @@ export function parseDeck(
     .map((line, i) => {
       const id = String(i + 1).padStart(4, '0');
       const text = processCardText(line);
-      return new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, []);
+      return new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, []);
     });
   return deck;
 }
@@ -71,7 +71,7 @@ export function parseDeckTsv(
       deck.prompts.push(new PromptDeckCard(id, text, pick, 0, 0, 0, 0, tags));
     } else if (type === "Response") {
       const text = processCardText(items[1]);
-      deck.responses.push(new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, tags));
+      deck.responses.push(new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, tags));
     }
   });
   const tagLines = tagData.split("\n")

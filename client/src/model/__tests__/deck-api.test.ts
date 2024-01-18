@@ -53,7 +53,7 @@ wut\tSecond tag`);
     new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"]),
   ];
   expected.responses = [
-    new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, []),
+    new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, 0, []),
   ];
   expected.tags = [
     new DeckTag("lol", "First tag"),

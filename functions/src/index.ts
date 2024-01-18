@@ -24,6 +24,7 @@ import {
 } from "./model/lobby-server-api";
 import {
   createNewTurn,
+  getAllPlayerResponses,
   getLastTurn,
   logPlayedPrompt,
   logPlayerHandInteractions,
@@ -214,8 +215,9 @@ export const onTurnPhaseChange = onDocumentUpdated(
         await logPlayerHandInteractions(lobbyID, turnAfter);
       } else if (turnAfter.phase === "complete") {
         // Turn completed: update all scores.
-        await updatePlayerScoresFromTurn(lobbyID, turnAfter);
-        await logWinner(lobbyID, turnAfter);
+        const responses = await getAllPlayerResponses(lobbyID, turnAfter.id);
+        await updatePlayerScoresFromTurn(lobbyID, turnAfter, responses);
+        await logWinner(lobbyID, turnAfter, responses);
       }
     }
   });

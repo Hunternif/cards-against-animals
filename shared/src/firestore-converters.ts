@@ -197,7 +197,8 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating,
-      data.views, data.plays, data.discards, data.wins, data.tags || []);
+      data.views, data.plays, data.discards, data.wins, data.likes,
+      data.tags || []);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },

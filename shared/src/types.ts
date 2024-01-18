@@ -66,7 +66,7 @@ export function defaultLobbySettings(): LobbySettings {
     new_cards_first: true,
     sort_cards_by_rating: true,
     allow_join_mid_game: true,
-    enable_likes: false,
+    enable_likes: true,
   };
 }
 
@@ -287,10 +287,11 @@ export class ResponseDeckCard implements DeckCard {
   plays: number;
   discards: number;
   wins: number;
+  likes: number;
   tags: string[];
   constructor(
     id: string, content: string, rating: number,
-    views: number, plays: number, discards: number, wins: number,
+    views: number, plays: number, discards: number, wins: number, likes: number,
     tags: string[],
   ) {
     this.id = id;
@@ -300,6 +301,7 @@ export class ResponseDeckCard implements DeckCard {
     this.plays = plays || 0;
     this.discards = discards || 0;
     this.wins = wins || 0;
+    this.likes = likes || 0;
     this.tags = tags;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function

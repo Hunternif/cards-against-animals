@@ -288,10 +288,9 @@ async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
 
 /** Updates all player's scores and likes from this turn, if it has ended. */
 export async function updatePlayerScoresFromTurn(
-  lobbyID: string, turn: GameTurn,
+  lobbyID: string, turn: GameTurn, responses: PlayerResponse[],
 ) {
   const players = await getPlayers(lobbyID, "player");
-  const responses = await getAllPlayerResponses(lobbyID, turn.id);
   for (const player of players) {
     if (turn.winner_uid === player.uid) {
       player.score++;
@@ -352,9 +351,19 @@ export async function logPlayerHandInteractions(lobbyID: string, turn: GameTurn)
 }
 
 /** Log interaction for the winning response. */
-export async function logWinner(lobbyID: string, turn: GameTurn) {
-  if (!turn.winner_uid) return;
-  const winnerResponse = await getPlayerResponse(lobbyID, turn.id, turn.winner_uid);
-  if (!winnerResponse) return;
-  await logCardInteractions({ wonResponses: winnerResponse.cards });
+export async function logWinner(
+  lobbyID: string, turn: GameTurn, responses: PlayerResponse[],
+) {
+  const winnerResponse = responses.find((r) => r.player_uid === turn.winner_uid);
+  const wonResponses = winnerResponse?.cards;
+  // Cards that were liked multiple times will be added multiple times.
+  const likedResponses = new Array<ResponseCardInGame>();
+  for (const response of responses) {
+    if (response.like_count !== undefined) {
+      for (let i = 0; i < response.like_count; i++) {
+        likedResponses.push(...response.cards);
+      }
+    }
+  }
+  await logCardInteractions({ wonResponses, likedResponses });
 }

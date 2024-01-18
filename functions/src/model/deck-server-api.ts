@@ -104,6 +104,8 @@ export interface LogData {
   discardedPrompts?: PromptCardInGame[],
   discardedResponses?: ResponseCardInGame[],
   wonResponses?: ResponseCardInGame[],
+  // Cards that were liked multiple times will be added multiple times.
+  likedResponses?: ResponseCardInGame[],
 }
 
 /** Increments the "views" and "plays" counts on the given cards. */
@@ -136,6 +138,10 @@ export async function logCardInteractions(logData: LogData) {
     for (const response of logData.wonResponses || []) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { wins: FieldValue.increment(1) });
+    }
+    for (const response of logData.likedResponses || []) {
+      const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
+      transaction.update(cardRef, { likes: FieldValue.increment(1) });
     }
   });
 }

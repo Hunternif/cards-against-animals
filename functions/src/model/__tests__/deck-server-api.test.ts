@@ -9,7 +9,7 @@ test('update card index to put new cards first', () => {
     }
   };
   const unplayedCard = new PromptDeckCard("01", "Unviewed prompt", 1, 0, 0, 0, 0, []);
-  const playedCard = new ResponseDeckCard("02", "Played response", 0, 99, 0, 0, 0, []);
+  const playedCard = new ResponseDeckCard("02", "Played response", 0, 99, 0, 0, 0, 0, []);
 
   const settingsNoReorder = copyFields2(defaultLobbySettings(), {
     new_cards_first: false,
