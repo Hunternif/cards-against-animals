@@ -92,7 +92,7 @@ export function IconStar(props: IconSvgProps) {
 }
 
 export function IconStarInline() {
-  return <IconStar width={18} height={18} className="star-icon-inline" />;
+  return <IconStar width="1.15em" height="1.15em" className="star-icon-inline" />;
 }
 
 export function IconXCircle(props: IconSvgProps) {
@@ -124,5 +124,6 @@ export function IconHeart(props: IconSvgProps) {
 }
 
 export function IconHeartInline() {
+  return <IconHeart width="1.1em" height="1.1em" className="heart-icon-inline" />;
   return <IconHeart width={18} height={18} className="heart-icon-inline" />;
 }

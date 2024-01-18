@@ -9,6 +9,7 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
 import { checkIfShouldEndGame, endLobby } from "../../model/lobby-api";
+import { IconHeartInline, IconStarInline } from "../../components/Icons";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -24,7 +25,7 @@ const midRowStyle: CSSProperties = {
   flexFlow: "wrap",
   justifyContent: "center",
   // alignItems: "center",
-  gap: "1rem",
+  gap: "3rem",
 }
 
 const botRowStyle: CSSProperties = {
@@ -71,33 +72,37 @@ export function WinnerScreen(
   }
 
   return <CenteredLayout>
-    <h2 style={{ textAlign: "center" }}>
-      {winner ? <>Winner <i>{winner.name}</i></> :
-        <Delay>No winner</Delay>}
-    </h2>
     <div style={midRowStyle}>
-      <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
-      {winnerResponse && (
-        <ResponseReading lobby={lobby} turn={turn} response={winnerResponse} />
-      )}
-    </div>
-    {/* TODO: animate audience choice winner transition */}
-    {showAudienceAward && (
-      <Delay delayMs={2000}>
-        <div className="audience-award-section">
-          <h2 style={{ textAlign: "center" }}>Audience Choice Award</h2>
-          <div style={midRowStyle}>
+      <div className="winner-section">
+        <h2 style={{ textAlign: "center" }}>
+          {winner ? <>Winner <i>{winner.name}</i> <IconStarInline /></> :
+            <Delay>No winner</Delay>}
+        </h2>
+        <div className="winner-cards-row">
+          <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
+          {winnerResponse && (
+            <ResponseReading lobby={lobby} turn={turn} response={winnerResponse} />
+          )}
+        </div>
+      </div>
+      {showAudienceAward && (
+        // TODO: animate audience choice winner transition
+        <div className="winner-section audience-award-section">
+          <h2 style={{ textAlign: "center" }}>
+            Audience Choice <IconHeartInline />
+          </h2>
+          <div className="winner-cards-row">
             {audienceAwardResponses.map((r, i) => (
               <ResponseReadingWithName key={i} showLikes
                 lobby={lobby} turn={turn} response={r} />
             ))}
           </div>
         </div>
-      </Delay>
-    )}
+      )}
+    </div>
     <div style={botRowStyle} className="winner-control-row">
       {isJudge && (
-        <Delay delayMs={showAudienceAward ? 3000 : 1000}>
+        <Delay>
           {shouldEndNow ? (
             <GameButton onClick={handleEndGame} disabled={ending}>
               End game
@@ -111,5 +116,5 @@ export function WinnerScreen(
         </Delay>
       )}
     </div>
-  </CenteredLayout>
+  </CenteredLayout >;
 }
