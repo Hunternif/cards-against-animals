@@ -106,7 +106,8 @@ service cloud.firestore {
         match /likes/{likerID} {
           // Anyone can read likes, only yourself can add or remove likes.
           allow read;
-          allow write: if isLoggedIn() && request.auth.uid == likerID;
+          allow write: if isLoggedIn() && request.auth.uid == likerID
+                       && request.auth.uid != userID; // Cannot like yourself
         }
       }
       match /turns/{turn}/player_data/{userID}/hand/{cardID} {

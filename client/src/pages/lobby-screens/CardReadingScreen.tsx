@@ -121,7 +121,7 @@ export function CardReadingScreen({
           canSelect={isJudge && allRevealed}
           selected={winner?.player_uid === r.player_uid}
           onClick={(r) => handleClick(r)}
-          canLike={!isJudge}
+          canLike={!isJudge && r.player_uid !== user.uid}
           onClickLike={(r) => handleLike(r)}
         />
       )}
