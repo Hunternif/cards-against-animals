@@ -116,6 +116,8 @@ export function CardReadingScreen({
       {shuffledResponses.map((r) =>
         <ResponseReading
           key={r.player_uid}
+          lobby={lobby}
+          turn={turn}
           response={r}
           canReveal={isJudge}
           canSelect={isJudge && allRevealed}

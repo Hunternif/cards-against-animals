@@ -397,6 +397,19 @@ button.start-button {
   user-select: none;
   pointer-events: none;
 }
+.card-bottom-right, .card-bottom-left {
+  display: flex;
+  align-items: baseline;
+  flex-direction: row;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+.card-bottom-right {
+  margin-left: auto;
+}
+.card-bottom-left {
+  margin-right: auto;
+}
 
 /*--------------------- Screen for reading responses --------------------*/
 

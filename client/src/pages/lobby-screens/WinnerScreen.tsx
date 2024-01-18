@@ -73,7 +73,9 @@ export function WinnerScreen(
     </h2>
     <div style={midRowStyle}>
       <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
-      {winnerResponse && <ResponseReading response={winnerResponse} />}
+      {winnerResponse && (
+        <ResponseReading lobby={lobby} turn={turn} response={winnerResponse} />
+      )}
     </div>
     <div style={botRowStyle} className="winner-control-row">
       {isJudge && (

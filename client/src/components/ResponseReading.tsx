@@ -1,9 +1,12 @@
 import { CSSProperties } from "react";
-import { PlayerResponse, ResponseCardInGame } from "../shared/types";
-import { CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
+import { GameLobby, GameTurn, Like, PlayerResponse, ResponseCardInGame } from "../shared/types";
+import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 import { IconHeart } from "./Icons";
+import { useResponseLikes } from "../model/turn-api";
 
 interface Props {
+  lobby: GameLobby,
+  turn: GameTurn,
   response: PlayerResponse,
   /** Only the judge player can reveal */
   canReveal?: boolean,
@@ -29,8 +32,10 @@ const cardCombinerStyle: CSSProperties = {
  * one by one.
 */
 export function ResponseReading({
-  response, canReveal, canSelect, selected, onClick, canLike, onClickLike,
+  lobby, turn, response, canReveal, canSelect, selected, onClick,
+  canLike, onClickLike,
 }: Props) {
+  const [likes] = useResponseLikes(lobby, turn, response);
   const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
   const revealedClass = response.revealed ? "revealed" : "unrevealed";
   const featureClass = `${canRevealClass} ${revealedClass}`;
@@ -58,15 +63,17 @@ export function ResponseReading({
             without interfering with the flow of the rest of the page.*/}
         <div style={cardCombinerStyle} className={`many-cards ${featureClass}`} >
           {
-            response.cards.map((card, i) =>
-              <CardResponseReading key={card.id} card={card} offset={i}
+            response.cards.map((card, i) => {
+              const isLastCard = i === response.cards.length - 1;
+              return <CardResponseReading key={card.id} card={card} offset={i}
                 selectable={canSelect} selected={selected}
                 // Only enable likes on the last card of the stack:
-                likable={canLike && i === response.cards.length - 1}
+                likable={canLike && isLastCard}
                 onClickLike={handleClickLike}
+                likes={isLastCard ? likes : []}
               />
               // TODO: insert a "like" button over many cards in fixed position
-            )
+            })
           }
         </div>
       </div>
@@ -75,6 +82,7 @@ export function ResponseReading({
         <CardResponseReading card={response.cards[0]}
           selectable={canSelect} selected={selected}
           likable={canLike} onClickLike={handleClickLike}
+          likes={likes}
         />
       </div>
     )
@@ -98,10 +106,11 @@ interface CardProps {
   offset?: number,
   likable?: boolean,
   onClickLike?: () => void,
+  likes?: Like[],
 }
 
 function CardResponseReading({
-  card, offset, selectable, selected, likable, onClickLike,
+  card, offset, selectable, selected, likable, onClickLike, likes
 }: CardProps) {
   const overlayClass = (offset && offset > 0) ? "overlaid" : ""
   const selectedClass = `${selectable && "selectable"} ${selected && "selected"}`;
@@ -115,6 +124,9 @@ function CardResponseReading({
           </div>
         </CardCenterIcon>
       )}
+      {likes && <CardBottomLeft>
+        {likes.map((_, i) => <IconHeart key={i} className="like-count-icon" />)}
+      </CardBottomLeft>}
     </LargeCard>
   );
 }

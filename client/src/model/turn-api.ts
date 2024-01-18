@@ -1,7 +1,6 @@
 // Client APIs for game turns, when the game is in progress.
 
 import {
-  addDoc,
   collection, deleteDoc, doc,
   getCountFromServer,
   getDoc,
@@ -35,7 +34,6 @@ import {
   PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
-import { User } from "firebase/auth";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 function getTurnsRef(lobbyID: string) {
@@ -349,4 +347,12 @@ export function usePlayerDiscard(lobby: GameLobby, turn: GameTurn, userID: strin
   return useCollectionData(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID, "discarded")
       .withConverter(responseCardInGameConverter));
+}
+
+/** Returns and subscribes to the likes on the given player's response
+ * in the current turn in the lobby. */
+export function useResponseLikes(lobby: GameLobby, turn: GameTurn, response: PlayerResponse) {
+  return useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses", response.player_uid, "likes")
+      .withConverter(likeConverter));
 }

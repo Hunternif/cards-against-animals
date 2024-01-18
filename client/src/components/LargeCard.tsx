@@ -28,13 +28,10 @@ export function CardContent(props: ComponentProps) {
   }} />;
 }
 
+export function CardBottomLeft(props: ComponentProps) {
+  return <div {...props} className={`card-bottom-left ${props.className}`} />;
+}
+
 export function CardBottomRight(props: ComponentProps) {
-  return <div {...props} style={{
-    display: "flex",
-    alignItems: "baseline",
-    flexDirection: "row",
-    marginTop: "auto",
-    marginLeft: "auto",
-    ...props.style,
-  }} />;
+  return <div {...props} className={`card-bottom-right ${props.className}`} />;
 }
