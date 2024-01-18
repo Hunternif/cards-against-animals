@@ -99,7 +99,10 @@ export function GameMenu(
           <CustomDropdown className={className}
             toggle={
               <span className="score-menu-icon">
-                <IconStarInline /> {player.score}
+                <span><IconStarInline /> {player.score}</span>
+                {player.likes > 0 && <span>
+                  <IconHeartInline /> {player.likes}
+                </span>}
               </span>
             }>
             <Dropdown.Menu>
@@ -108,9 +111,6 @@ export function GameMenu(
               </div>
             </Dropdown.Menu>
           </CustomDropdown>
-          {player.likes > 0 && <span className="likes-menu-icon">
-            <IconHeartInline /> {player.likes}
-          </span>}
         </>}
         <CustomDropdown className={className} showArrow
           toggle={

@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import { GameLobby, PlayerInLobby } from "../shared/types";
-import { IconStarInline } from "./Icons";
+import { IconHeartInline, IconStarInline } from "./Icons";
 
 interface Props {
   lobby: GameLobby,
@@ -14,12 +14,13 @@ const tableContainerStyle: CSSProperties = {
 }
 
 /** Small component that is placed outside of the screen. */
-export function Scoreboard({ players }: Props) {
+export function Scoreboard({ lobby, players }: Props) {
   const playersByScore = players
     .filter((p) => p.role === "player" &&
       // Show people who left, but only if they have > 0 score:
       p.status !== "left" || p.score > 0)
     .sort((a, b) => b.score - a.score);
+  const showLikes = lobby.settings.enable_likes;
 
   return <>
     <div style={tableContainerStyle} className="miniscrollbar miniscrollbar-light">
@@ -31,6 +32,11 @@ export function Scoreboard({ players }: Props) {
               {/* {"⭐".repeat(score)} */}
             </td>
             <td className="sb-col-name">{player.name}</td>
+            {showLikes && (
+              <td className="sb-col-score">
+                {player.likes > 0 && <><IconHeartInline /> {player.likes}</>}
+              </td>
+            )}
           </tr>)}
         </tbody>
       </table>
