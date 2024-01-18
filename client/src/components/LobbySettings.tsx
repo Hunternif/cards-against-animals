@@ -45,6 +45,7 @@ export function LobbySettings(props: Props) {
       <FormItem label="Sort cards by rating" control={<SortCardsByRatingControl {...props} />} />
       <FormItem label="Allow join mid-game" control={<AllowJoinMidGameControl {...props} />} />
       <FormItem label="Enable likes" control={<EnableLikesControl {...props} />} />
+      <FormItem label="Freeze card stats" control={<FreezeStatsControl {...props} />} />
     </div>
   );
 }
@@ -129,6 +130,16 @@ function EnableLikesControl({ lobby, readOnly }: Props) {
     value={lobby.settings.enable_likes}
     onChange={async (newValue) => {
       lobby.settings.enable_likes = newValue;
+      await updateLobby(lobby);
+    }}
+  />;
+}
+
+function FreezeStatsControl({ lobby, readOnly }: Props) {
+  return <ToggleInput disabled={readOnly}
+    value={lobby.settings.freeze_stats}
+    onChange={async (newValue) => {
+      lobby.settings.freeze_stats = newValue;
       await updateLobby(lobby);
     }}
   />;

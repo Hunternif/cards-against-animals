@@ -181,7 +181,8 @@ export const logInteraction = onCall<
   async (event) => {
     assertLoggedIn(event);
     await assertPlayerInLobby(event, event.data.lobby_id);
-    await logCardInteractions({
+    const lobby = await getLobby(event.data.lobby_id);
+    await logCardInteractions(lobby, {
       viewedPrompts: event.data.viewed_prompts,
       viewedResponses: event.data.viewed_responses,
       playedPrompts: event.data.played_prompts,

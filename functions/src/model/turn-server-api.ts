@@ -317,7 +317,8 @@ export async function logPlayedPrompt(lobbyID: string, turn: GameTurn) {
     logger.warn(`Answering phase without a prompt. Lobby ${lobbyID} turn ${turn.id}`);
     return;
   }
-  await logCardInteractions({ viewedPrompts: [turn.prompt], playedPrompts: [turn.prompt] });
+  const lobby = await getLobby(lobbyID);
+  await logCardInteractions(lobby, { viewedPrompts: [turn.prompt], playedPrompts: [turn.prompt] });
 }
 
 /**
@@ -327,6 +328,7 @@ export async function logPlayedPrompt(lobbyID: string, turn: GameTurn) {
  * - discards
  */
 export async function logPlayerHandInteractions(lobbyID: string, turn: GameTurn) {
+  const lobby = await getLobby(lobbyID);
   // Played cards:
   const responses = await getAllPlayerResponses(lobbyID, turn.id);
   const playedResponses = responses.reduce((array, resp) => {
@@ -347,13 +349,14 @@ export async function logPlayerHandInteractions(lobbyID: string, turn: GameTurn)
     const discarded = await getPlayerDiscard(lobbyID, turn.id, pData.player_uid);
     discardedResponses.push(...discarded);
   }
-  await logCardInteractions({ viewedResponses, playedResponses, discardedResponses });
+  await logCardInteractions(lobby, { viewedResponses, playedResponses, discardedResponses });
 }
 
 /** Log interaction for the winning response. */
 export async function logWinner(
   lobbyID: string, turn: GameTurn, responses: PlayerResponse[],
 ) {
+  const lobby = await getLobby(lobbyID);
   const winnerResponse = responses.find((r) => r.player_uid === turn.winner_uid);
   const wonResponses = winnerResponse?.cards;
   // Cards that were liked multiple times will be added multiple times.
@@ -365,5 +368,5 @@ export async function logWinner(
       }
     }
   }
-  await logCardInteractions({ wonResponses, likedResponses });
+  await logCardInteractions(lobby, { wonResponses, likedResponses });
 }

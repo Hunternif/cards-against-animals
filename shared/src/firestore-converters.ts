@@ -58,6 +58,7 @@ function mapSettings(data: any): LobbySettings {
     sort_cards_by_rating: data.sort_cards_by_rating,
     allow_join_mid_game: data.allow_join_mid_game,
     enable_likes: data.enable_likes,
+    freeze_stats: data.freeze_stats,
   };
   return copyFields2(defaultLobbySettings(), removeUndefined(readSettings));
 }

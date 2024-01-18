@@ -7,6 +7,7 @@ import {
 import { IRNG, RNG } from "../shared/rng";
 import {
   DeckCard,
+  GameLobby,
   LobbySettings,
   PromptCardInGame,
   ResponseCardInGame
@@ -108,8 +109,12 @@ export interface LogData {
   likedResponses?: ResponseCardInGame[],
 }
 
-/** Increments the "views" and "plays" counts on the given cards. */
-export async function logCardInteractions(logData: LogData) {
+/**
+ * Increments the "views" and "plays" counts on the given cards.
+ * GameLobby is passed to validate settings: if it's a test game, don't log.
+*/
+export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
+  if (lobby.settings.freeze_stats) return;
   await db.runTransaction(async (transaction) => {
     for (const prompt of logData.viewedPrompts || []) {
       const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
