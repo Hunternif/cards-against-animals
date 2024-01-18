@@ -117,6 +117,7 @@ export const turnConverter: FConverter<GameTurn> = {
     ret.timer_ms = data.timer_ms || 0;
     ret.phase = data.phase || "new";
     ret.winner_uid = data.winner_uid;
+    ret.audience_award_uids = data.audience_award_uids ?? [];
     return ret;
   },
 };

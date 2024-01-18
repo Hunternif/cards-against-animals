@@ -35,6 +35,12 @@ const botRowStyle: CSSProperties = {
   justifyContent: "flex-start",
   alignItems: "center",
   gap: "1rem",
+  marginBottom: "1rem",
+}
+
+const audienceAwardSectionStyle: CSSProperties = {
+  paddingTop: "2rem",
+  paddingBottom: "1rem",
 }
 
 /** Displays winner of the turn */
@@ -49,6 +55,9 @@ export function WinnerScreen(
 
   const winnerResponse = responses.find((r) => r.player_uid === turn.winner_uid);
   const shouldEndNow = checkIfShouldEndGame(lobby, turn, players);
+  const audienceAwardResponses = responses
+    .filter((r) => turn.audience_award_uids.includes(r.player_uid));
+  const showAudienceAward = audienceAwardResponses.length > 0;
 
   async function handleNewTurn() {
     setStartingNewTurn(true);
@@ -77,22 +86,34 @@ export function WinnerScreen(
         <ResponseReading lobby={lobby} turn={turn} response={winnerResponse} />
       )}
     </div>
+    {/* TODO: animate audience choice winner transition */}
+    {showAudienceAward && (
+      <Delay delayMs={2000}>
+        <div style={audienceAwardSectionStyle}>
+          <h2 style={{ textAlign: "center" }}>Audience Choice Award</h2>
+          <div style={midRowStyle}>
+            {audienceAwardResponses.map((r, i) => (
+              <ResponseReading key={i} showLikes lobby={lobby} turn={turn} response={r} />
+            ))}
+          </div>
+        </div>
+      </Delay>
+    )}
     <div style={botRowStyle} className="winner-control-row">
       {isJudge && (
-        shouldEndNow ? (
-          <Delay>
+        <Delay delayMs={showAudienceAward ? 3000 : 1000}>
+          {shouldEndNow ? (
             <GameButton onClick={handleEndGame} disabled={ending}>
               End game
             </GameButton>
-          </Delay>
-        ) : (
-          <Delay>
+          ) : (
             <GameButton accent onClick={handleNewTurn}
               disabled={startingNewTurn}>
               Next turn
             </GameButton>
-          </Delay>
-        ))}
+          )}
+        </Delay>
+      )}
     </div>
   </CenteredLayout>
 }

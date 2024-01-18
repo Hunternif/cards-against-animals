@@ -17,6 +17,7 @@ interface Props {
   /** Players other than the judge can like the response. */
   canLike?: boolean,
   onClickLike?: (response: PlayerResponse) => void,
+  showLikes?: boolean,
 }
 
 const cardCombinerStyle: CSSProperties = {
@@ -33,7 +34,7 @@ const cardCombinerStyle: CSSProperties = {
 */
 export function ResponseReading({
   lobby, turn, response, canReveal, canSelect, selected, onClick,
-  canLike, onClickLike,
+  canLike, onClickLike, showLikes,
 }: Props) {
   const [likes] = useResponseLikes(lobby, turn, response);
   const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
@@ -70,7 +71,7 @@ export function ResponseReading({
                 // Only enable likes on the last card of the stack:
                 likable={canLike && isLastCard}
                 onClickLike={handleClickLike}
-                likes={isLastCard ? likes : []}
+                likes={(isLastCard && showLikes) ? likes : []}
               />
               // TODO: insert a "like" button over many cards in fixed position
             })
@@ -82,7 +83,7 @@ export function ResponseReading({
         <CardResponseReading card={response.cards[0]}
           selectable={canSelect} selected={selected}
           likable={canLike} onClickLike={handleClickLike}
-          likes={likes}
+          likes={showLikes ? likes : []}
         />
       </div>
     )

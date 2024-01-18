@@ -113,6 +113,8 @@ export class GameTurn {
   player_responses: Map<string, PlayerResponse> = new Map();
   /** UID of the user who won this round */
   winner_uid?: string;
+  /** UIDs of audience choice winners this round */
+  audience_award_uids: Array<string> = [];
 
   //================== Technical stuff ==================
   id: string;
