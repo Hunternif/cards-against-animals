@@ -386,6 +386,18 @@ button.start-button {
   font-size: 5rem;
 }
 
+.card-center-icon {
+  display: flex;
+  flex-wrap: wrap;
+  position: absolute;
+  top: 0;
+  left: 0;
+  align-content: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+}
+
 /*--------------------- Screen for reading responses --------------------*/
 
 .game-card.card-response.response-reading.can-reveal.unrevealed:hover {
@@ -527,6 +539,8 @@ button.start-button {
   box-shadow: 0 0px 16px rgba(0, 0, 0, 0.3);
   margin-top: -80%;
 }
+
+/*---------------------------- Downvotes ---------------------------*/
 
 .downvote-card-icon {
   color: rgb(185, 28, 28);

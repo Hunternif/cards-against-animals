@@ -18,19 +18,7 @@ export function LargeCard(props: ComponentProps) {
 
 export function CardCenterIcon(props: ComponentProps) {
   return <FillLayout {...props}
-    className={`card-center-icon ${props.className}`}
-    style={{
-      display: "flex",
-      flexWrap: "wrap",
-      position: "absolute",
-      top: 0,
-      left: 0,
-      alignContent: "center",
-      justifyContent: "center",
-      userSelect: "none",
-      pointerEvents: "none",
-      ...props.style,
-    }} />;
+    className={`card-center-icon ${props.className}`} />;
 }
 
 export function CardContent(props: ComponentProps) {

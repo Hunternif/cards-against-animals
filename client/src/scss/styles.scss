@@ -166,7 +166,7 @@ input.control {
   }
 }
 
-/*--------------------------- Player list -- ------------------------*/
+/*--------------------------- Player list ---------------------------*/
 .player-card {
   margin: 0.5em 0;
   .card-body {
@@ -202,6 +202,47 @@ input.control {
     cursor: pointer;
     &:hover {
       mask-image: url(../assets/x_circle_filled.svg);
+    }
+  }
+}
+
+
+/*=========================== Game screens ===========================*/
+
+/*----------------------------- Likes -----------------------------*/
+.card-response {
+  &:hover .like-response-button {
+    opacity: 0.2;
+  }
+  .like-response-container {
+    // Mobile: align right
+    @media (max-width: 25rem) {
+      justify-content: flex-end;
+      padding: 1em;
+    }
+  }
+  .like-response-button {
+    width: 50%;
+    height: 50%;
+    opacity: 0;
+    cursor: pointer;
+    pointer-events: all;
+    &:hover {
+      opacity: 0.5;
+    }
+    &:active {
+      opacity: 0.7;
+    }
+    .like-response-icon {
+      color: #fc81b0;
+      width: 100%;
+      height: 100%;
+    }
+    // Mobile:
+    @media (max-width: 25rem) {
+      opacity: 0.3;
+      height: 3em;
+      width: 3em;
     }
   }
 }
