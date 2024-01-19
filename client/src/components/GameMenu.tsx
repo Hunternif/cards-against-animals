@@ -7,7 +7,7 @@ import { GameLobby, GameTurn, PlayerInLobby } from "../shared/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
-import { IconHeartInline, IconStarInline } from "./Icons";
+import { IconHeartInline, IconPerson, IconStarInline } from "./Icons";
 import { Scoreboard } from "./Scoreboard";
 
 interface MenuProps {
@@ -34,6 +34,7 @@ const leftStyle: CSSProperties = {
   flexBasis: "0%",
   display: "flex",
   justifyContent: "flex-start",
+  gap: "1em",
 };
 const midStyle: CSSProperties = {
   flexGrow: 1,
@@ -52,6 +53,10 @@ const rightStyle: CSSProperties = {
   alignItems: "center",
 };
 
+const playerListStyle: CSSProperties = {
+  
+}
+
 export function GameMenu(
   { lobby, turn, user, players, className, style }: MenuProps
 ) {
@@ -63,6 +68,9 @@ export function GameMenu(
   const isJudge = turn.judge_uid === user.uid;
   const player = players.find((p) => p.uid === user.uid);
   const isSpectator = player?.role === "spectator";
+
+  // Filter out people who left:
+  const validPlayers = players.filter((p) => p.status === "online");
 
   async function handleLeave() {
     await leaveLobby(lobby, user)
@@ -93,6 +101,10 @@ export function GameMenu(
     <div style={{ ...rowStyle, ...style }}>
       <div style={leftStyle}>
         <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
+        <span style={playerListStyle} className="menu-player-count">
+          <IconPerson height={14}/>
+          <span className="small-player-count">{validPlayers.length} </span>
+        </span>
       </div>
       <div style={rightStyle}>
         {(player) && <>

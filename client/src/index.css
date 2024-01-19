@@ -685,6 +685,12 @@ button.start-button {
 .menu-turn-ordinal {
   opacity: 0.4;
 }
+.menu-player-count {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0.9;
+  opacity: 0.4;
+}
 
 /*======================= Mobile =======================*/
 
