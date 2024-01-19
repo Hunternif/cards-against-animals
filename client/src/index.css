@@ -540,17 +540,18 @@ button.start-button {
 }
 .many-cards > .game-card {
   box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
-}
-.game-card.overlaid {
-  margin-top: -114%;
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 100ms;
 }
-.many-cards:hover > .game-card.overlaid {
+.game-card.overlaid {
+  height: 13rem;
+}
+.many-cards {
+  position: relative;
+}
+.many-cards:hover {
   z-index: 10;
-  box-shadow: 0 0px 16px rgba(0, 0, 0, 0.3);
-  margin-top: -80%;
 }
 
 .winner-cards-row {
@@ -746,12 +747,6 @@ button.start-button {
     width: 100%;
     height: auto;
     min-height: 4em;
-  }
-  .reading-main-row .game-card.overlaid {
-    margin-top: -0.5rem;
-  }
-  .reading-main-row .many-cards:hover > .game-card.overlaid {
-    margin-top: -0.5rem;
   }
   .reading-main-row .reading-unrevealed-icon {
     font-size: 2.5rem;

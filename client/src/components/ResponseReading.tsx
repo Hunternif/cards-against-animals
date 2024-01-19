@@ -1,8 +1,8 @@
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useResponseLikes } from "../model/turn-api";
 import { GameLobby, GameTurn, Like, PlayerResponse, ResponseCardInGame } from "../shared/types";
 import { IconHeart } from "./Icons";
-import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
+import { CardBottomLeft, CardCenterIcon, CardContentWithRef, LargeCard } from "./LargeCard";
 
 interface Props {
   lobby: GameLobby,
@@ -18,14 +18,6 @@ interface Props {
   canLike?: boolean,
   onClickLike?: (response: PlayerResponse) => void,
   showLikes?: boolean,
-}
-
-const cardCombinerStyle: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  justifyItems: "flex-start",
-  alignItems: "space-between",
-  position: "absolute",
 }
 
 /**
@@ -100,29 +92,53 @@ interface CardStackProps {
 function ManyCardsStack({
   response, canSelect, selected, onClick, canLike, onClickLike, likes, className,
 }: CardStackProps) {
+  // Store height and offset value for each card:
+  const [heights] = useState(response.cards.map(() => 0));
+  const [offsets] = useState<Array<number>>(response.cards.map(() => 0));
+  const [finishedMeasuring, setFinishedMeasuring] = useState(false);
+
+  function updateOffsets() {
+    if (!finishedMeasuring) {
+      let totalOffset = 0;
+      heights.forEach((height, i) => {
+        totalOffset += height;
+        offsets[i] = totalOffset;
+      });
+      // All measurement will complete during the first render,
+      // so no need to do it again:
+      setFinishedMeasuring(true);
+    }
+  }
+
   // Overlay multiple cards on top of each other.
   // The "Placeholder" component holds place the size of a card:
   return (
     <div className="game-card-placeholder" style={{
       // Add extra margin below for the overlaid cards:
-      marginBottom: `${response.cards.length}em`,
-      position: "relative",
+      // TODO: figure out where the extra margin "18" is coming from
+      marginBottom: offsets[offsets.length - 2] - 18,
     }} onClick={onClick}>
-      {/* Card combiner renders cards on top with absolute positioning,
+      {/* Cards on top have absolute positioning,
           without interfering with the flow of the rest of the page. */}
-      <div style={cardCombinerStyle} className={`many-cards ${className}`} >
-        {
-          response.cards.map((card, i) => {
-            const isLastCard = i === response.cards.length - 1;
-            return <CardResponseReading
-              key={card.id} card={card} offset={i}
-              selectable={canSelect} selected={selected}
-              // Only enable likes on the last card of the stack:
-              likable={canLike && isLastCard}
-              onClickLike={onClickLike}
-              likes={isLastCard ? likes : []}
-            />
-          })
+      <div className={`many-cards ${className}`} >
+        {response.cards.map((card, i) => {
+          const isLastCard = i === response.cards.length - 1;
+          return <CardResponseReading
+            key={card.id} card={card}
+            isOverlaid={i > 0}
+            index={i}
+            offset={offsets[i - 1]}
+            selectable={canSelect} selected={selected}
+            // Only enable likes on the last card of the stack:
+            likable={canLike && isLastCard}
+            onClickLike={onClickLike}
+            likes={isLastCard ? likes : []}
+            setContentHeight={(height) => {
+              heights[i] = height;
+              updateOffsets();
+            }}
+          />
+        })
         }
       </div>
     </div>
@@ -134,21 +150,45 @@ interface CardProps {
   card: ResponseCardInGame,
   selectable?: boolean,
   selected?: boolean,
-  offset?: number,
   likable?: boolean,
   onClickLike?: () => void,
   likes?: Like[],
+  setContentHeight?: (height: number) => void,
+  // Overlaid card data:
+  isOverlaid?: boolean,
+  index?: number,
+  offset?: number,
 }
 
 /** Individual response card (not a stack of cards)  */
 function CardResponseReading({
-  card, offset, selectable, selected, likable, onClickLike, likes
+  card, selectable, selected, likable, onClickLike, likes,
+  isOverlaid, index, offset,
+  setContentHeight,
 }: CardProps) {
-  const overlayClass = (offset && offset > 0) ? "overlaid" : ""
+  const overlayClass = isOverlaid ? "overlaid" : "";
   const selectedClass = `${selectable && "selectable"} ${selected && "selected"}`;
+  const overlayStyle: CSSProperties | undefined = isOverlaid ? {
+    position: "absolute",
+    top: (offset ?? 0) + (selected ? 10 * (index ?? 0) : 0),
+  } : undefined;
+
+  // Measure content height:
+  const contentRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (setContentHeight && contentRef.current) {
+      // Guessing padding size:
+      const cardPadding = 12;
+      const height = contentRef.current.clientHeight;
+      setContentHeight(height + cardPadding);
+    }
+  }, [setContentHeight, contentRef]);
+
   return (
-    <LargeCard className={`card-response response-reading ${selectedClass} ${overlayClass}`}>
-      <CardContent>{card.content}</CardContent>
+    <LargeCard className={`card-response response-reading ${selectedClass} ${overlayClass}`}
+      style={overlayStyle}
+    >
+      <CardContentWithRef ref={contentRef}>{card.content}</CardContentWithRef>
       {likable && (
         <CardCenterIcon className="like-response-container">
           <div className="like-response-button">
