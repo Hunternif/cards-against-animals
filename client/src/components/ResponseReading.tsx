@@ -89,6 +89,7 @@ interface CardStackProps {
   className?: string,
 }
 
+/** A single response rendered as a stack of multiple cards. */
 function ManyCardsStack({
   response, canSelect, selected, onClick, canLike, onClickLike, likes, className,
 }: CardStackProps) {
@@ -113,34 +114,31 @@ function ManyCardsStack({
   // Overlay multiple cards on top of each other.
   // The "Placeholder" component holds place the size of a card:
   return (
-    <div className="game-card-placeholder" style={{
+    <div className={`game-card-placeholder many-cards ${className}`} style={{
       // Add extra margin below for the overlaid cards:
-      // TODO: figure out where the extra margin "18" is coming from
+      // (-18 come from .game-card.overlaid being 2em shorter)
       marginBottom: offsets[offsets.length - 2] - 18,
     }} onClick={onClick}>
       {/* Cards on top have absolute positioning,
           without interfering with the flow of the rest of the page. */}
-      <div className={`many-cards ${className}`} >
-        {response.cards.map((card, i) => {
-          const isLastCard = i === response.cards.length - 1;
-          return <CardResponseReading
-            key={card.id} card={card}
-            isOverlaid={i > 0}
-            index={i}
-            offset={offsets[i - 1]}
-            selectable={canSelect} selected={selected}
-            // Only enable likes on the last card of the stack:
-            likable={canLike && isLastCard}
-            onClickLike={onClickLike}
-            likes={isLastCard ? likes : []}
-            setContentHeight={(height) => {
-              heights[i] = height;
-              updateOffsets();
-            }}
-          />
-        })
-        }
-      </div>
+      {response.cards.map((card, i) => {
+        const isLastCard = i === response.cards.length - 1;
+        return <CardResponseReading
+          key={card.id} card={card}
+          isOverlaid={i > 0}
+          index={i}
+          offset={offsets[i - 1]}
+          selectable={canSelect} selected={selected}
+          // Only enable likes on the last card of the stack:
+          likable={canLike && isLastCard}
+          onClickLike={onClickLike}
+          likes={isLastCard ? likes : []}
+          setContentHeight={(height) => {
+            heights[i] = height;
+            updateOffsets();
+          }}
+        />
+      })}
     </div>
   );
 }
