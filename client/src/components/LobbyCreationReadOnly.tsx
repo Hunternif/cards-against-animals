@@ -8,10 +8,6 @@ interface Props {
   lobby: GameLobby,
 }
 
-const headerStyle: CSSProperties = {
-  textAlign: "center",
-}
-
 const midStyle: CSSProperties = {
   flexGrow: 1,
   maxWidth: "50em",
@@ -23,32 +19,18 @@ const midStyle: CSSProperties = {
   flexDirection: "column",
   overflowY: "auto",
 }
-const compactSectionStyle: CSSProperties = {
-  minHeight: "15em",
-  width: "100%",
-}
-
-const footerStyle: CSSProperties = {
-  margin: "2em 0",
-  width: "100%",
-  display: "flex",
-  justifyContent: "center",
-};
 
 /** Read-only view of the current lobby settings, for non-creator players */
 export function LobbyCreationReadOnly({ lobby }: Props) {
   return <>
-    <h3 style={headerStyle}>Decks</h3>
+    <header><h3>Decks</h3></header>
     <Container style={midStyle}
       className="miniscrollbar miniscrollbar-auto miniscrollbar-light">
-      {/* The section div keeps minimum height and prevents overflow */}
-      <div style={compactSectionStyle}>
-        <DeckSelector lobby={lobby} readOnly />
-      </div>
+      <DeckSelector lobby={lobby} readOnly />
       <LobbySettings lobby={lobby} readOnly />
     </Container>
-    <div style={footerStyle}>
+    <footer>
       Please wait for the game to start
-    </div>
+    </footer>
   </>;
 }

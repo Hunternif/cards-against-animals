@@ -1,10 +1,10 @@
-import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { DeckWithCount, getDecksWithCount } from "../model/deck-api";
 import { addDeck, removeDeck } from "../model/lobby-api";
 import { GameLobby } from "../shared/types";
+import { Checkbox } from "./Checkbox";
 import { ErrorContext } from "./ErrorContext";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { Checkbox } from "./Checkbox";
 
 interface DeckProps {
   deck: DeckWithCount,
@@ -26,28 +26,16 @@ function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
       <Checkbox checked={selected} disabled={readOnly} />
     </td>
     <td style={{ width: "50%" }}>
-      <span className={`deck-row-title${selectedClass}`}>{deck.title}</span>
+      <div className={`deck-row-title${selectedClass}`}>{deck.title}</div>
     </td>
     <td>
-      <span className="deck-prompt-count">{deck.promptCount}</span>
+      <div className="count-column deck-prompt-count">{deck.promptCount}</div>
     </td>
     <td>
-      <span className="deck-response-count">{deck.responseCount}</span>
+      <div className="count-column deck-response-count">{deck.responseCount}</div>
     </td>
   </tr>;
 }
-
-const containerStyle: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
-}
-
-const scrollableColumnStyle: CSSProperties = {
-  overflowY: "auto",
-  marginTop: "1em",
-  marginBottom: "1em",
-};
 
 // const dummyDecks = Array<DeckWithCount>(20)
 //   .fill({ id: "dummy", title: "Dummy Deck", promptCount: 10, responseCount: 20 }, 0, 20);
@@ -57,8 +45,8 @@ interface SelectorProps {
   readOnly?: boolean,
 }
 
+/** Component for selecting decks in the lobby. */
 export function DeckSelector({ lobby, readOnly }: SelectorProps) {
-  // const [decks, loading] = [dummyDecks, false]; // for testing UI
   const [loading, setLoading] = useState(true);
   const [decks, setDecks] = useState<Array<DeckWithCount>>([]);
   const { setError } = useContext(ErrorContext);
@@ -76,7 +64,7 @@ export function DeckSelector({ lobby, readOnly }: SelectorProps) {
   useEffect(() => { loadDecks(); }, []);
 
   return (
-    <div style={containerStyle}>
+    <div className="deck-selector">
       {loading ? <LoadingSpinner delay text="Loading decks..." /> :
         <Decks lobby={lobby} decks={decks} readOnly={readOnly} />}
     </div>
@@ -122,40 +110,41 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
   useEffect(() => updateCounts(), [lobby.id]);
 
   return <>
-    <div style={scrollableColumnStyle}
-      className="miniscrollbar miniscrollbar-auto miniscrollbar-light deck-selector">
-      <table style={{ width: "100%" }}>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Deck</th>
-            <th>Prompts</th>
-            <th>Responses</th>
-          </tr>
-        </thead>
-        <tbody>
-          {decks?.map((deck, i) =>
-            <DeckRow
-              key={deck.id}
-              deck={deck}
-              selected={lobby.deck_ids.has(deck.id)}
-              onToggle={(selected) => {
-                if (selected) selectDeck(deck);
-                else deselectDeck(deck);
-              }}
-              readOnly={readOnly}
-            />
-          )}
-        </tbody>
-        <tfoot>
-          <tr className="deck-totals-row">
-            <td />
-            <td className="deck-total-label"></td>
-            <td className="deck-total-value">{promptCount}</td>
-            <td className="deck-total-value">{responseCount}</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
+    <table style={{ width: "100%" }}>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Deck</th>
+          <th><div className="count-column">Prompts</div></th>
+          <th><div className="count-column">Responses</div></th>
+        </tr>
+      </thead>
+      <tbody>
+        {decks?.map((deck, i) =>
+          <DeckRow
+            key={deck.id}
+            deck={deck}
+            selected={lobby.deck_ids.has(deck.id)}
+            onToggle={(selected) => {
+              if (selected) selectDeck(deck);
+              else deselectDeck(deck);
+            }}
+            readOnly={readOnly}
+          />
+        )}
+      </tbody>
+      <tfoot>
+        <tr className="deck-totals-row">
+          <td />
+          <td className="deck-total-label"></td>
+          <td className="deck-total-value">
+            <div className="count-column">{promptCount}</div>
+          </td>
+          <td className="deck-total-value">
+            <div className="count-column">{responseCount}</div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
   </>;
 }

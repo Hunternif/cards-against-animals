@@ -14,10 +14,6 @@ interface Props {
   lobby: GameLobby,
 }
 
-const headerStyle: CSSProperties = {
-  textAlign: "center",
-}
-
 const midStyle: CSSProperties = {
   flexGrow: 1,
   maxWidth: "50em",
@@ -30,19 +26,6 @@ const midStyle: CSSProperties = {
   gap: "1em",
   overflowY: "auto",
 }
-const compactSectionStyle: CSSProperties = {
-  minHeight: "15em",
-  width: "100%",
-}
-
-const footerStyle: CSSProperties = {
-  margin: "2em 0",
-  width: "100%",
-  display: "flex",
-  flexWrap: "wrap",
-  justifyContent: "center",
-  gap: "1em",
-};
 
 const startButtonStyle: CSSProperties = {
   width: "10rem",
@@ -81,16 +64,13 @@ export function LobbyCreatorControls({ lobby }: Props) {
 
   if (starting) return <LoadingSpinner text="Starting..." delay />;
   return <>
-    <h3 style={headerStyle}>Select decks</h3>
+    <header><h3>Select decks</h3></header>
     <Container style={midStyle}
       className="miniscrollbar miniscrollbar-auto miniscrollbar-light">
-      {/* The section div keeps minimum height and prevents overflow */}
-      <div style={compactSectionStyle}>
-        <DeckSelector lobby={lobby} />
-      </div>
+      <DeckSelector lobby={lobby} />
       <LobbySettings lobby={lobby} />
     </Container>
-    <div style={footerStyle}>
+    <footer>
       <GameButton light style={startButtonStyle} className="start-button"
         onClick={handleInvite} icon={<IconLink />}>
         Invite
@@ -104,6 +84,6 @@ export function LobbyCreatorControls({ lobby }: Props) {
         icon={<IconPlay />}>
         Start
       </GameButton>
-    </div>
+    </footer>
   </>;
 }

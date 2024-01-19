@@ -1,36 +1,21 @@
-import { CSSProperties, ReactNode } from "react";
+import { ReactNode } from "react";
 import { updateLobby } from "../model/lobby-api";
 import { GameLobby } from "../shared/types";
 import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
+import { useDelay } from "./Delay";
 
 interface Props {
   lobby: GameLobby,
   readOnly?: boolean,
 }
 
-const formStyle: CSSProperties = {
-  width: "100%",
-  padding: "1em 2em",
-  // Display style is controlled in CSS with media query
-  // display: "flex",
-  // flexDirection: "column",
-  gap: "0.25em",
-}
-
-const formRowStyle: CSSProperties = {
-  // flex: "1 1 auto",
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "0.75em",
-  alignItems: "center",
-  minHeight: "2.5em",
-}
-
-
 export function LobbySettings(props: Props) {
   const playUntil = props.lobby.settings.play_until;
-  return (
-    <div style={formStyle} className="lobby-settings-container">
+  // Delay header class to prevent background flickering bug in Chrome :(
+  const headerClass = useDelay("lobby-settings", 1000) ?? "";
+  return <>
+    <header className={headerClass}><h3>Game Settings</h3></header>
+    <div className="lobby-settings-container">
       <FormItem label="Play until" control={<EndControl {...props} />} />
       {/* Prevent another item appearing next to "play until": */}
       {playUntil === "forever" && <div style={{ width: "100%", marginTop: "-0.25em" }} />}
@@ -47,7 +32,7 @@ export function LobbySettings(props: Props) {
       <FormItem label="Enable likes" control={<EnableLikesControl {...props} />} />
       <FormItem label="Freeze card stats" control={<FreezeStatsControl {...props} />} />
     </div>
-  );
+  </>;
 }
 
 function EndControl({ lobby, readOnly }: Props) {
@@ -152,7 +137,7 @@ interface ItemProps {
 }
 
 function FormItem({ label, control }: ItemProps) {
-  return <div style={formRowStyle}>
+  return <div className="lobby-settings-form-item">
     <span style={{ textAlign: "end" }}>{label}</span>
     {control}
   </div>;
