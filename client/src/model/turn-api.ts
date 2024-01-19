@@ -263,13 +263,13 @@ async function selectAudienceAwardWinners(lobbyID: string, turn: GameTurn) {
   // Played cards:
   const responses = await getAllPlayerResponses(lobbyID, turn.id);
   if (responses.length === 0) return;
-  let maxLikes = 0;
+  let maxLikes = -1;
   let audienceWinners = Array<string>();
   for (const resp of responses) {
     const likeCount = await getResponseLikeCount(lobbyID, turn.id, resp.player_uid);
     if (likeCount == maxLikes) {
       audienceWinners.push(resp.player_uid);
-    } else if (likeCount > maxLikes) {
+    } else if (likeCount > 0 && likeCount > maxLikes) {
       audienceWinners = [resp.player_uid];
       maxLikes = likeCount;
     }
