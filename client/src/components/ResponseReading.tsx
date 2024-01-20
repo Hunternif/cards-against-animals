@@ -1,9 +1,9 @@
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
+import { detectDeer, detectLenich } from "../model/deck-api";
 import { useResponseLikes } from "../model/turn-api";
 import { GameLobby, GameTurn, Like, PlayerResponse, ResponseCardInGame } from "../shared/types";
 import { IconHeart } from "./Icons";
-import { CardBottomLeft, CardCenterIcon, CardContentWithRef, LargeCard } from "./LargeCard";
-import { detectDeer, detectLenich } from "../model/deck-api";
+import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 import { Twemoji } from "./Twemoji";
 
 interface Props {
@@ -173,7 +173,7 @@ function CardResponseReading({
   setContentHeight,
 }: CardProps) {
   const overlayClass = isOverlaid ? "overlaid" : "";
-  const selectedClass = `${selectable && "selectable"} ${selected && "selected"}`;
+  const selectedClass = `${selectable ? "selectable" : ""} ${selected && "selected"}`;
   const overlayStyle: CSSProperties | undefined = isOverlaid ? {
     position: "absolute",
     top: (offset ?? 0) + (selected ? 10 * (index ?? 0) : 0),
@@ -183,18 +183,36 @@ function CardResponseReading({
   const contentRef = useRef<HTMLElement>(null);
   useEffect(() => {
     if (setContentHeight && contentRef.current) {
-      // Guessing padding size:
-      const cardPadding = 12;
-      const height = contentRef.current.clientHeight;
-      setContentHeight(height + cardPadding);
+      measure(contentRef.current);
     }
   }, [setContentHeight, contentRef]);
+
+  // Detect resize, e.g. after running Twemoji:
+  useEffect(() => {
+    if (contentRef.current) {
+      const elem = contentRef.current;
+      const resizeObserver = new ResizeObserver(() => {
+        measure(elem);
+      });
+      resizeObserver.observe(elem);
+      return () => resizeObserver.disconnect(); // clean up 
+    }
+  }, [contentRef]);
+
+  function measure(elem: HTMLElement) {
+    if (setContentHeight) {
+      // Guessing padding size:
+      const cardPadding = 12;
+      setContentHeight(elem.clientHeight + cardPadding);
+      // console.log(`Measured "${card.content}": ${elem.clientHeight}`);
+    }
+  }
 
   return (
     <LargeCard className={`card-response response-reading ${selectedClass} ${overlayClass}`}
       style={overlayStyle}
     >
-      <CardContentWithRef ref={contentRef}>{card.content}</CardContentWithRef>
+      <span ref={contentRef}><CardContent>{card.content}</CardContent></span>
       {likable && (
         <CardCenterIcon className="like-response-container">
           <div className="like-response-button">

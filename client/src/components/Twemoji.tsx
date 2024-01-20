@@ -1,10 +1,7 @@
 import twemoji from 'twemoji';
 import { copyFields } from '../shared/utils';
-import { forwardRef } from 'react';
 
-interface Props extends React.HTMLAttributes<HTMLSpanElement> {
-  // emoji: string,
-}
+interface Props extends React.HTMLAttributes<HTMLSpanElement> { }
 
 /**
  * Renders twemoji (twitter emoji) as SVG image.
@@ -23,19 +20,3 @@ export function Twemoji(props: Props) {
     }}
   />;
 }
-
-export const TwemojiWithRef = forwardRef(
-  (props: Props, ref: React.Ref<HTMLSpanElement>) => {
-    const children = props.children?.toString() ?? "";
-    const newProps = copyFields(props, ["children"]);
-    return <span ref={ref} {...newProps}
-      dangerouslySetInnerHTML={{
-        __html: twemoji.parse(children ?? "", {
-          folder: "svg",
-          ext: ".svg",
-          className: "twemoji emoji",
-        })
-      }}
-    />;
-  }
-)
