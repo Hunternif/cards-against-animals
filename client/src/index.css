@@ -67,6 +67,13 @@ pre {
   opacity: 0.6;
 }
 
+.twemoji {
+  display: inline-block;
+  width: auto;
+  height: 1em;
+  vertical-align: -0.2em;
+}
+
 
 /*------------------------- Button component ------------------------*/
 

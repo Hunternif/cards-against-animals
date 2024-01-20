@@ -4,6 +4,7 @@ import { GameLobby, GameTurn, Like, PlayerResponse, ResponseCardInGame } from ".
 import { IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContentWithRef, LargeCard } from "./LargeCard";
 import { detectDeer, detectLenich } from "../model/deck-api";
+import { Twemoji } from "./Twemoji";
 
 interface Props {
   lobby: GameLobby,
@@ -230,9 +231,9 @@ interface LikeProps {
 /** Returns a custom icon for likes */
 function LikeIcon({ response }: LikeProps) {
   if (response.cards.find((c) => detectDeer(c.content))) {
-    return <span className="emoji-like">🦌</span>;
+    return <Twemoji className="emoji-like">🦌</Twemoji>;
   } else if (response.cards.find((c) => detectLenich(c.content))) {
-    return <span className="emoji-like">👑</span>;
+    return <Twemoji className="emoji-like">👑</Twemoji>;
   } else {
     return <IconHeart className="heart-icon" />;
   }

@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { FillLayout } from "./layout/FillLayout";
+import { Twemoji, TwemojiWithRef } from "./Twemoji";
 
 interface ComponentProps extends React.HTMLAttributes<HTMLElement> { }
 
@@ -23,13 +24,13 @@ export function CardCenterIcon(props: ComponentProps) {
 }
 
 export function CardContent(props: ComponentProps) {
-  return <span {...props}
+  return <Twemoji {...props}
     className={`card-content ${props.className ?? ""}`} />;
 }
 
 export const CardContentWithRef = forwardRef(
   (props: ComponentProps, ref: React.Ref<HTMLSpanElement>) =>
-    <span ref={ref} {...props}
+    <TwemojiWithRef ref={ref} {...props}
       className={`card-content ${props.className ?? ""}`} />
 );
 

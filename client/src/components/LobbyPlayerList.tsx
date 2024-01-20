@@ -5,6 +5,7 @@ import { GameLobby, PlayerInLobby } from "../shared/types";
 import { ErrorContext } from "./ErrorContext";
 import { kickPlayer } from "../model/lobby-api";
 import { ConfirmModal } from "./ConfirmModal";
+import { Twemoji } from "./Twemoji";
 
 interface ListProps {
   lobby: GameLobby,
@@ -45,7 +46,7 @@ function PlayerCard({ lobby, player, isMe, isCreator, canKick }: PlayerProps) {
     <Card className="player-card" bg={isMe ? "secondary" : "none"}>
       <Card.Body>
         <span className="player-name">{player.name}</span>
-        {isCreator ? <span className="right-icon">👑</span> :
+        {isCreator ? <Twemoji className="right-icon">👑</Twemoji> :
           player.status === "kicked" ? <span className="right-icon">💀</span> :
             canKick && <span className="right-icon kick-button"
               title="Kick player" onClick={() => setShowKickModal(true)} />}

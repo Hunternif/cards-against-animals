@@ -125,5 +125,4 @@ export function IconHeart(props: IconSvgProps) {
 
 export function IconHeartInline() {
   return <IconHeart width="1.1em" height="1.1em" className="heart-icon-inline" />;
-  return <IconHeart width={18} height={18} className="heart-icon-inline" />;
 }
