@@ -20,11 +20,12 @@ function getResponsesRef(deckID: string) {
  * each line is a new entry.
  */
 export function parseDeck(
+  id: string,
   title: string,
   promptList: string,
   responseList: string,
 ): Deck {
-  const deck = new Deck(title, title);
+  const deck = new Deck(id, title);
   deck.prompts = promptList.split("\n")
     .map((line) => line.trim())
     .filter((line) => line != "")
@@ -49,11 +50,12 @@ export function parseDeck(
  * Parses deck TSV data
  */
 export function parseDeckTsv(
+  id: string,
   title: string,
   cardData: string,
   tagData: string,
 ): Deck {
-  const deck = new Deck(title, title);
+  const deck = new Deck(id, title);
   const cardLines = cardData.split("\n")
     .map((line) => line.trim())
     .filter((line) => line != "");

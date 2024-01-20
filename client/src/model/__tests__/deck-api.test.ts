@@ -39,7 +39,7 @@ test('process prompt text', () => {
 });
 
 test('parse TSV deck', () => {
-  const deck = parseDeckTsv("My deck",
+  const deck = parseDeckTsv("my_deck", "My deck",
     `Type\tText\tTags...
 Prompt\tHello, __\tlol\t\t\t
 Prompt\tBye __ and _\t\twut
@@ -47,7 +47,7 @@ Response\tPoop`,
     `Tag\tDescription
 lol\tFirst tag
 wut\tSecond tag`);
-  const expected = new Deck("My deck", "My deck");
+  const expected = new Deck("my_deck", "My deck");
   expected.prompts = [
     new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"]),
     new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"]),

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button } from "react-bootstrap";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { parseDeckTsv, uploadDeck } from "../../model/deck-api";
 
@@ -16,6 +16,7 @@ export function UploadDeckTsv() {
       const form = event.currentTarget as HTMLFormElement;
       const data = new FormData(form);
       const deck = parseDeckTsv(
+        data.get('id') as string,
         data.get('title') as string,
         data.get('cardData') as string,
         data.get('tagData') as string,
@@ -34,10 +35,16 @@ export function UploadDeckTsv() {
     {info && <Alert variant="light">{info}</Alert>}
     {error && <Alert variant="danger">{error.message}</Alert>}
     <Form onSubmit={handleSubmit}>
-      <Form.Group className="mb-3">
-        <Form.Label>Title</Form.Label>
-        <Form.Control type="text" name="title" disabled={isUploading} />
-      </Form.Group>
+      <Row className="mb-3">
+        <Form.Group as={Col}>
+          <Form.Label>Title</Form.Label>
+          <Form.Control type="text" name="title" disabled={isUploading} />
+        </Form.Group>
+        <Form.Group as={Col}>
+          <Form.Label>ID</Form.Label>
+          <Form.Control type="text" name="id" disabled={isUploading} />
+        </Form.Group>
+      </Row>
       <Form.Group className="mb-3">
         <Form.Label>Card data, tab-separated</Form.Label>
         <Form.Control as="textarea" name="cardData" rows={12} disabled={isUploading}
@@ -50,12 +57,12 @@ Response World            tag2     "
       <Form.Group className="mb-3">
         <Form.Label>Tag data, tab-separated</Form.Label>
         <Form.Control as="textarea" name="tagData" rows={6} disabled={isUploading}
-        style={{ fontFamily: "monospace" }}
-        placeholder="Tag     Description
+          style={{ fontFamily: "monospace" }}
+          placeholder="Tag     Description
 tag1    My favorite tag
 tag2    ...
 ..."
-/>
+        />
       </Form.Group>
       <Button type="submit" disabled={isUploading}>
         {isUploading ? "Submitting..." : "Submit"}
