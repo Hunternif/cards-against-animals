@@ -59,6 +59,7 @@ export function parseDeckTsv(
   const cardLines = cardData.split("\n")
     .map((line) => line.trim())
     .filter((line) => line != "");
+  const tagsInCards = new Array<string>();
   // Skip row of headers
   if (cardLines[0].startsWith("Type")) cardLines.splice(0, 1);
   cardLines.forEach((line, i) => {
@@ -67,6 +68,7 @@ export function parseDeckTsv(
     const type = items[0];
     const rawText = items[1];
     const tags = items.splice(2).filter((c) => c != "");
+    tagsInCards.push(...tags);
     if (type === "Prompt") {
       const text = processPromptText(processCardText(rawText));
       const pick = parsePromptPick(text);
@@ -76,15 +78,28 @@ export function parseDeckTsv(
       deck.responses.push(new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, tags));
     }
   });
+
+  // Tags accumulated so far:
+  const tagMap = new Map<string, DeckTag>();
+  for (const tag of tagsInCards) {
+    tagMap.set(tag, new DeckTag(tag));
+  }
+
+  // Update tag descriptions:
   const tagLines = tagData.split("\n")
     .map((line) => line.trim())
     .filter((line) => line != "");
-  // Skip row of headers
-  if (tagLines[0].startsWith("Tag")) tagLines.splice(0, 1);
-  deck.tags = tagLines.map((line) => {
-    const items = line.split("\t");
-    return new DeckTag(items[0], items[1]);
-  });
+  if (tagLines.length > 0) {
+    // Skip row of headers
+    if (tagLines[0].startsWith("Tag")) tagLines.splice(0, 1);
+    for (const line of tagLines) {
+      const items = line.split("\t");
+      const knownTag = tagMap.get(items[0]);
+      if (knownTag) knownTag.description = items[1];
+      else tagMap.set(items[0], new DeckTag(items[0], items[1]));
+    }
+  }
+  deck.tags = Array.from(tagMap.values());
   return deck;
 }
 

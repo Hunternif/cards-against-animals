@@ -67,6 +67,50 @@ wut\tSecond tag`);
   );
 });
 
+test('parse TSV deck without tag descriptions', () => {
+  const deck = parseDeckTsv("my_deck", "My deck",
+    `Type\tText\tTags...
+Prompt\tHello, __\tlol\t\t\t
+Prompt\tBye __ and _\t\twut
+Response\tPoop`, "");
+  const expected = new Deck("my_deck", "My deck");
+  expected.prompts = [
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"]),
+    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"]),
+  ];
+  expected.responses = [
+    new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, 0, []),
+  ];
+  expected.tags = [
+    new DeckTag("lol"),
+    new DeckTag("wut"),
+  ];
+  expect(deck).toEqual(expected);
+});
+
+test('parse TSV deck without mixed tags', () => {
+  const deck = parseDeckTsv("my_deck", "My deck",
+    `Type\tText\tTags...
+Prompt\tHello, __\tlol\t\t\t
+Prompt\tBye __ and _\t\twut
+Response\tPoop`,
+    `lol\tFirst tag
+lol\tDuplicate tag`);
+  const expected = new Deck("my_deck", "My deck");
+  expected.prompts = [
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"]),
+    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"]),
+  ];
+  expected.responses = [
+    new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, 0, []),
+  ];
+  expected.tags = [
+    new DeckTag("lol", "Duplicate tag"),
+    new DeckTag("wut"),
+  ];
+  expect(deck).toEqual(expected);
+});
+
 test('detect special words', () => {
   expect(detectDeer("кот это не олн")).toBe(false);
   expect(detectDeer("🦌🦌🦌")).toBe(true);
