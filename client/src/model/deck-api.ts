@@ -130,16 +130,25 @@ export function processPromptText(text: string): string {
 /** 🦌 */
 export function detectDeer(text: string): boolean {
   const lowText = text.toLowerCase();
-  return lowText.match(/(^|\s)олен/) != null ||
-    lowText.match(/(^|\s)арви/) != null ||
+  return /(^|\s)олен/.test(lowText) ||
+    /(^|\s)арви/.test(lowText) ||
     lowText.includes("🦌");
 }
 
 /** 👑 */
 export function detectLenich(text: string): boolean {
   const lowText = text.toLowerCase();
-  return lowText.match(/(^|\s)ленич/) != null ||
-    lowText.includes("👑");
+  return /(^|\s)ленич/.test(lowText) || lowText.includes("👑");
+}
+
+/**
+ * Returns true if the string contains only emojis and whitespace.
+ * From https://stackoverflow.com/a/73634247/1093712
+ */
+export function isOnlyEmojis(str: string): boolean {
+  const stringToTest = str.replace(/\s/g, '');
+  const emojiRegex = /^(?:(?:\p{RI}\p{RI}|\p{Emoji}(?:\p{Emoji_Modifier}|\u{FE0F}\u{20E3}?|[\u{E0020}-\u{E007E}]+\u{E007F})?(?:\u{200D}\p{Emoji}(?:\p{Emoji_Modifier}|\u{FE0F}\u{20E3}?|[\u{E0020}-\u{E007E}]+\u{E007F})?)*)|[\u{1f900}-\u{1f9ff}\u{2600}-\u{26ff}\u{2700}-\u{27bf}])+$/u;
+  return emojiRegex.test(stringToTest) && Number.isNaN(Number(stringToTest));
 }
 
 export async function uploadDeck(deck: Deck) {

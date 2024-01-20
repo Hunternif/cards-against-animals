@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
-import { FillLayout } from "./layout/FillLayout";
+import { isOnlyEmojis } from "../model/deck-api";
 import { Twemoji, TwemojiWithRef } from "./Twemoji";
+import { FillLayout } from "./layout/FillLayout";
 
 interface ComponentProps extends React.HTMLAttributes<HTMLElement> { }
 
@@ -24,14 +25,19 @@ export function CardCenterIcon(props: ComponentProps) {
 }
 
 export function CardContent(props: ComponentProps) {
+  const content = props.children?.toString() ?? "";
+  const emojiClass = isOnlyEmojis(content) ? "emoji-only " : "";
   return <Twemoji {...props}
-    className={`card-content ${props.className ?? ""}`} />;
+    className={`card-content ${emojiClass}${props.className ?? ""}`} />;
 }
 
 export const CardContentWithRef = forwardRef(
-  (props: ComponentProps, ref: React.Ref<HTMLSpanElement>) =>
-    <TwemojiWithRef ref={ref} {...props}
-      className={`card-content ${props.className ?? ""}`} />
+  (props: ComponentProps, ref: React.Ref<HTMLSpanElement>) => {
+    const content = props.children?.toString() ?? "";
+    const emojiClass = isOnlyEmojis(content) ? "emoji-only " : "";
+    return <TwemojiWithRef ref={ref} {...props}
+      className={`card-content ${emojiClass}${props.className ?? ""}`} />;
+  }
 );
 
 export function CardBottomLeft(props: ComponentProps) {

@@ -384,6 +384,13 @@ button.start-button {
 .card-content .emoji {
   height: 18px;
 }
+.card-content.emoji-only {
+  padding-top: 0.2em;
+}
+.card-content.emoji-only .emoji {
+  /* Fits exactly 3 emojis in a row: */
+  height: 44px;
+}
 .game-card.hoverable-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -802,5 +809,8 @@ button.start-button {
   .reading-main-row .reading-unrevealed-icon {
     font-size: 2.5rem;
     font-weight: 700;
+  }
+  .card-content.emoji-only .emoji {
+    height: 32px;
   }
 }

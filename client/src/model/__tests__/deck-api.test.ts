@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { detectDeer, detectLenich, parseDeckTsv, parsePromptPick, processCardText, processPromptText } from '../deck-api';
+import { detectDeer, detectLenich, isOnlyEmojis, parseDeckTsv, parsePromptPick, processCardText, processPromptText } from '../deck-api';
 import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from '../../shared/types';
 
 test('parse pick from prompt text', () => {
@@ -121,4 +121,11 @@ test('detect special words', () => {
   expect(detectLenich("денис")).toBe(false);
   expect(detectLenich("ленич")).toBe(true);
   expect(detectLenich("брат ленича")).toBe(true);
+});
+
+test('detect only-emoji strings', () => {
+  expect(isOnlyEmojis("abc🙂")).toBe(false);
+  expect(isOnlyEmojis("🙂")).toBe(true);
+  expect(isOnlyEmojis("🙂🙂🙂 🙂\n 🙂")).toBe(true);
+  expect(isOnlyEmojis("🦌")).toBe(true);
 });
