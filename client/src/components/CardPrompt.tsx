@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import { PlayerInLobby, PromptCardInGame } from "../shared/types";
-import { LargeCard, CardContent, CardBottomRight, CardCenterIcon } from "./LargeCard";
+import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
@@ -18,8 +18,9 @@ export function CardPrompt({ card }: PromptCardProps) {
       {card ? (<>
         <CardContent>{formatPrompt(card.content)}</CardContent>
         {card.pick > 1 && (
-          <CardBottomRight>
-            <PromptCardPick pick={card.pick} />
+          <CardBottomRight className="prompt-pick">
+            PICK
+            <div className="prompt-pick-number">{card.pick}</div>
           </CardBottomRight>
         )}
       </>) : (
@@ -56,28 +57,4 @@ export function CardPromptWithCzar({ card, judge }: PromptWithCzarProps) {
       </div>
     }
   </div>;
-}
-
-interface PickProps {
-  pick: number,
-}
-
-function PromptCardPick({ pick }: PickProps) {
-  return <>
-    PICK
-    <div className="prompt-pick-number" style={{
-      textAlign: "center",
-      borderRadius: "50%",
-      width: "1rem",
-      height: "1rem",
-      lineHeight: "1rem",
-      marginLeft: "0.5em",
-      marginRight: "0.25em",
-      backgroundColor: "#fff",
-      color: "#000",
-      fontWeight: "bold",
-    }}>
-      {pick}
-    </div>
-  </>;
 }

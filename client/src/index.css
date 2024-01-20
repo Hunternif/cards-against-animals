@@ -374,12 +374,15 @@ button.start-button {
   padding: 0.75em;
   width: 10rem;
   height: 14rem;
-  font-size: 0.8rem;
+  font-size: 13px;
   font-weight: 600;
 }
 .game-card .card-content {
   padding: 0 0.25em;
   white-space: pre-line;
+}
+.card-content .emoji {
+  height: 18px;
 }
 .game-card.hoverable-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -413,6 +416,18 @@ button.start-button {
 .prompt-unknown-icon {
   color: rgba(229, 231, 235, 0.4);
   font-size: 5rem;
+}
+.prompt-pick-number {
+  text-align: center;
+  border-radius: 50%;
+  width: 1.2em;
+  height: 1.2em;
+  line-height: 1.2em;
+  margin-left: 0.5em;
+  margin-right: 0.2em;
+  background-color: #fff;
+  color: #000;
+  font-weight: bold;
 }
 
 .card-center-icon {
