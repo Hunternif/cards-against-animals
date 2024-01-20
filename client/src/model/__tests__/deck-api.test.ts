@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { parseDeckTsv, parsePromptPick, processCardText, processPromptText } from '../deck-api';
+import { detectDeer, detectLenich, parseDeckTsv, parsePromptPick, processCardText, processPromptText } from '../deck-api';
 import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from '../../shared/types';
 
 test('parse pick from prompt text', () => {
@@ -65,4 +65,16 @@ wut\tSecond tag`);
   expect(deck.prompts[0]).toEqual(
     new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"])
   );
+});
+
+test('detect special words', () => {
+  expect(detectDeer("кот это не олн")).toBe(false);
+  expect(detectDeer("🦌🦌🦌")).toBe(true);
+  expect(detectDeer("олень пришел")).toBe(true);
+  expect(detectDeer("кто-то оленеподобный")).toBe(true);
+  expect(detectDeer("арви пришел")).toBe(true);
+  expect(detectDeer("похож на арвинуса")).toBe(true);
+  expect(detectLenich("денис")).toBe(false);
+  expect(detectLenich("ленич")).toBe(true);
+  expect(detectLenich("брат ленича")).toBe(true);
 });

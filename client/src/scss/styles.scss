@@ -283,12 +283,11 @@ input.control {
       width: 3em;
     }
   }
-
-  .like-count-icon {
-    color: $like-color;
-  }
 }
 
+.heart-icon {
+  color: $like-color;
+}
 .star-icon-inline {
   color: $accent-color;
   margin-top: -0.2em;

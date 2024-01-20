@@ -1,8 +1,9 @@
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import { useResponseLikes } from "../model/turn-api";
 import { GameLobby, GameTurn, Like, PlayerResponse, ResponseCardInGame } from "../shared/types";
 import { IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContentWithRef, LargeCard } from "./LargeCard";
+import { detectDeer, detectLenich } from "../model/deck-api";
 
 interface Props {
   lobby: GameLobby,
@@ -29,6 +30,7 @@ export function ResponseReading({
   canLike, onClickLike, showLikes,
 }: Props) {
   const [likes] = useResponseLikes(lobby, turn, response);
+  const likeIcon = showLikes ? <LikeIcon response={response} /> : null;
   const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
   const revealedClass = response.revealed ? "revealed" : "unrevealed";
   const featureClass = `${canRevealClass} ${revealedClass}`;
@@ -55,6 +57,7 @@ export function ResponseReading({
         onClickLike={handleClickLike}
         likes={showLikes ? likes : undefined}
         className={featureClass}
+        likeIcon={likeIcon}
       />
     ) : (
       <div className={canSelect ? "hoverable-card" : ""} onClick={handleClick}>
@@ -62,6 +65,7 @@ export function ResponseReading({
           selectable={canSelect} selected={selected}
           likable={canLike} onClickLike={handleClickLike}
           likes={showLikes ? likes : undefined}
+          likeIcon={likeIcon}
         />
       </div >
     )}</>;
@@ -86,12 +90,13 @@ interface CardStackProps {
   canLike?: boolean,
   onClickLike?: () => void,
   likes?: Like[],
+  likeIcon?: ReactNode,
   className?: string,
 }
 
 /** A single response rendered as a stack of multiple cards. */
 function ManyCardsStack({
-  response, canSelect, selected, onClick, canLike, onClickLike, likes, className,
+  response, canSelect, selected, onClick, canLike, onClickLike, likes, likeIcon, className,
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(response.cards.map(() => 0));
@@ -133,6 +138,7 @@ function ManyCardsStack({
           likable={canLike && isLastCard}
           onClickLike={onClickLike}
           likes={isLastCard ? likes : []}
+          likeIcon={likeIcon}
           setContentHeight={(height) => {
             heights[i] = height;
             updateOffsets();
@@ -151,16 +157,17 @@ interface CardProps {
   likable?: boolean,
   onClickLike?: () => void,
   likes?: Like[],
-  setContentHeight?: (height: number) => void,
+  likeIcon?: ReactNode,
   // Overlaid card data:
   isOverlaid?: boolean,
   index?: number,
   offset?: number,
+  setContentHeight?: (height: number) => void,
 }
 
 /** Individual response card (not a stack of cards)  */
 function CardResponseReading({
-  card, selectable, selected, likable, onClickLike, likes,
+  card, selectable, selected, likable, onClickLike, likes, likeIcon,
   isOverlaid, index, offset,
   setContentHeight,
 }: CardProps) {
@@ -195,7 +202,7 @@ function CardResponseReading({
         </CardCenterIcon>
       )}
       {likes && <CardBottomLeft>
-        {likes.map((_, i) => <IconHeart key={i} className="like-count-icon" />)}
+        {likes.map((_, i) => <span key={i}>{likeIcon}</span>)}
       </CardBottomLeft>}
     </LargeCard>
   );
@@ -214,4 +221,19 @@ export function ResponseReadingWithName(props: Props) {
       {props.response.player_name}
     </div>
   </div>;
+}
+
+interface LikeProps {
+  response: PlayerResponse
+}
+
+/** Returns a custom icon for likes */
+function LikeIcon({ response }: LikeProps) {
+  if (response.cards.find((c) => detectDeer(c.content))) {
+    return <span className="emoji-like">🦌</span>;
+  } else if (response.cards.find((c) => detectLenich(c.content))) {
+    return <span className="emoji-like">👑</span>;
+  } else {
+    return <IconHeart className="heart-icon" />;
+  }
 }

@@ -110,6 +110,21 @@ export function processPromptText(text: string): string {
   return text;
 }
 
+/** 🦌 */
+export function detectDeer(text: string): boolean {
+  const lowText = text.toLowerCase();
+  return lowText.match(/(^|\s)олен/) != null ||
+    lowText.match(/(^|\s)арви/) != null ||
+    lowText.includes("🦌");
+}
+
+/** 👑 */
+export function detectLenich(text: string): boolean {
+  const lowText = text.toLowerCase();
+  return lowText.match(/(^|\s)ленич/) != null ||
+    lowText.includes("👑");
+}
+
 export async function uploadDeck(deck: Deck) {
   await runTransaction(db, async (transaction) => {
     const docRef = doc(decksRef, deck.title);
