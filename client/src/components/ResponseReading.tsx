@@ -1,7 +1,7 @@
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import { detectDeer, detectLenich } from "../model/deck-api";
 import { useResponseLikes } from "../model/turn-api";
-import { GameLobby, GameTurn, Like, PlayerResponse, ResponseCardInGame } from "../shared/types";
+import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
 import { IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 import { Twemoji } from "./Twemoji";
@@ -91,7 +91,7 @@ interface CardStackProps {
   onClick?: () => void,
   canLike?: boolean,
   onClickLike?: () => void,
-  likes?: Like[],
+  likes?: Vote[],
   likeIcon?: ReactNode,
   className?: string,
 }
@@ -161,7 +161,7 @@ interface CardProps {
   selected?: boolean,
   likable?: boolean,
   onClickLike?: () => void,
-  likes?: Like[],
+  likes?: Vote[],
   likeIcon?: ReactNode,
   // Overlaid card data:
   isOverlaid?: boolean,

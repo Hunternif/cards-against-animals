@@ -18,23 +18,23 @@ import {
 } from "react-firebase-hooks/firestore";
 import { db, lobbiesRef, newTurnFun } from "../firebase";
 import {
-  likeConverter,
   playerDataConverter,
   playerResponseConverter,
   promptCardInGameConverter,
   responseCardInGameConverter,
-  turnConverter
+  turnConverter,
+  voteConverter
 } from "../shared/firestore-converters";
 import { RNG } from "../shared/rng";
 import {
   GameLobby,
   GameTurn,
-  Like,
   PlayerDataInTurn,
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
-  ResponseCardInGame
+  ResponseCardInGame,
+  Vote
 } from "../shared/types";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
@@ -76,7 +76,7 @@ function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
 /** Returns Firestore subcollection reference of likes to a player response in turn. */
 function getResponseLikesRef(lobbyID: string, turnID: string, userID: string) {
   return collection(lobbiesRef, lobbyID, "turns", turnID, "player_responses", userID, "likes")
-    .withConverter(likeConverter);
+    .withConverter(voteConverter);
 }
 
 /** How many likes this response has. */
@@ -273,7 +273,7 @@ export async function toggleLikeResponse(
   if (userLikeSnap.exists()) {
     await deleteDoc(userLikeRef);
   } else {
-    await setDoc(userLikeRef, new Like(currentPlayer.uid, currentPlayer.name));
+    await setDoc(userLikeRef, new Vote(currentPlayer.uid, currentPlayer.name));
   }
 }
 
@@ -416,12 +416,12 @@ export function usePlayerDiscard(lobby: GameLobby, turn: GameTurn, userID: strin
 export function useResponseLikes(lobby: GameLobby, turn: GameTurn, response: PlayerResponse) {
   return useCollectionData(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses", response.player_uid, "likes")
-      .withConverter(likeConverter));
+      .withConverter(voteConverter));
 }
 
 /** Returns and subscribes to the prompt in the current turn in the lobby. */
 export function useAllTurnPrompts(lobby: GameLobby, turn: GameTurn):
-FirestoreCollectionDataHook<PromptCardInGame> {
+  FirestoreCollectionDataHook<PromptCardInGame> {
   const promptsHook = useCollectionData(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "prompts")
       .withConverter(promptCardInGameConverter));

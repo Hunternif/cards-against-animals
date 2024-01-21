@@ -185,7 +185,7 @@ export class PlayerResponse {
   like_count?: number;
   /** List of players who liked this response.
    * Must be fetched separately from a Firebase subcollection. */
-  likes: Array<Like> = [];
+  likes: Array<Vote> = [];
 
   constructor(
     player_uid: string, player_name: string, cards: Array<ResponseCardInGame>,
@@ -200,8 +200,8 @@ export class PlayerResponse {
   }
 }
 
-/** Represents a player who liked a response. */
-export class Like {
+/** Represents a player who voted on a card, e.g. like or dislike. */
+export class Vote {
   player_uid: string;
   player_name: string; // Copied from 'Players' for convenience.
   constructor(player_uid: string, player_name: string) {

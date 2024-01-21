@@ -4,7 +4,7 @@ import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
 import {
-  likeConverter,
+  voteConverter,
   playerDataConverter,
   playerResponseConverter,
   promptCardInGameConverter,
@@ -69,7 +69,7 @@ function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
 /** Returns Firestore subcollection reference. */
 function getResponseLikesRef(lobbyID: string, turnID: string, userID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_responses/${userID}/likes`)
-    .withConverter(likeConverter);
+    .withConverter(voteConverter);
 }
 
 /** Returns all turns that occurred in this lobby. */
@@ -111,12 +111,12 @@ export async function countTurns(lobbyID: string): Promise<number> {
 /** Get the played prompt for the current turn. */
 export async function getTurnPrompt(lobbyID: string, turn: GameTurn):
   Promise<PromptCardInGame | null> {
-    // Check legacy prompt:
-    if (turn.legacy_prompt) return turn.legacy_prompt;
-    // Get the first prompt from the subcollection:
-    const promptDocs = (await getTurnPromptsRef(lobbyID, turn.id).get()).docs;
-    if (promptDocs.length === 0) return null;
-    return promptDocs[0].data();
+  // Check legacy prompt:
+  if (turn.legacy_prompt) return turn.legacy_prompt;
+  // Get the first prompt from the subcollection:
+  const promptDocs = (await getTurnPromptsRef(lobbyID, turn.id).get()).docs;
+  if (promptDocs.length === 0) return null;
+  return promptDocs[0].data();
 }
 
 /** Data from a specific player, from a specific turn. */

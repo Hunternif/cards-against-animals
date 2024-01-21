@@ -10,7 +10,6 @@ import {
   DeckTag,
   GameLobby,
   GameTurn,
-  Like,
   LobbySettings,
   PlayerDataInTurn,
   PlayerInLobby,
@@ -19,6 +18,7 @@ import {
   PromptDeckCard,
   ResponseCardInGame,
   ResponseDeckCard,
+  Vote,
   defaultLobbySettings
 } from "./types";
 import { copyFields, copyFields2, removeUndefined } from "./utils";
@@ -148,12 +148,12 @@ export const playerResponseConverter: FConverter<PlayerResponse> = {
   },
 };
 
-export const likeConverter: FConverter<Like> = {
-  toFirestore: (like: Like) => copyFields(like),
+export const voteConverter: FConverter<Vote> = {
+  toFirestore: (like: Vote) => copyFields(like),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const player_uid = snapshot.id;
-    return new Like(player_uid, data.player_name);
+    return new Vote(player_uid, data.player_name);
   },
 };
 
