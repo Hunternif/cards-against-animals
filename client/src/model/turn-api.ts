@@ -273,7 +273,7 @@ export async function toggleLikeResponse(
   if (userLikeSnap.exists()) {
     await deleteDoc(userLikeRef);
   } else {
-    await setDoc(userLikeRef, new Vote(currentPlayer.uid, currentPlayer.name));
+    await setDoc(userLikeRef, new Vote(currentPlayer.uid, currentPlayer.name, "yes"));
   }
 }
 

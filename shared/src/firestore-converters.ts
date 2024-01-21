@@ -153,7 +153,7 @@ export const voteConverter: FConverter<Vote> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const player_uid = snapshot.id;
-    return new Vote(player_uid, data.player_name);
+    return new Vote(player_uid, data.player_name, data.choice ?? "yes");
   },
 };
 

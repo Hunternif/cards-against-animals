@@ -204,11 +204,15 @@ export class PlayerResponse {
 export class Vote {
   player_uid: string;
   player_name: string; // Copied from 'Players' for convenience.
-  constructor(player_uid: string, player_name: string) {
+  choice: VoteChoice;
+  constructor(player_uid: string, player_name: string, choice: VoteChoice) {
     this.player_uid = player_uid;
     this.player_name = player_name;
+    this.choice = choice;
   }
 }
+
+export type VoteChoice = "yes" | "no";
 
 /** Deck as an immutable collection that can be loaded into a game lobby. */
 export class Deck {
