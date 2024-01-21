@@ -380,6 +380,7 @@ button.start-button {
 .game-card .card-content {
   padding: 0 0.25em;
   white-space: pre-line;
+  display: inline-block;
 }
 .card-content .emoji {
   height: 18px;
