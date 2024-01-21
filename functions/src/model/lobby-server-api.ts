@@ -21,7 +21,7 @@ import {
   getAllPromptsForGame,
   getAllResponsesForGame
 } from "./deck-server-api";
-import { dealCardsToPlayer, getLastTurn } from "./turn-server-api";
+import { dealCardsToPlayer, getLastTurn, updateTurn } from "./turn-server-api";
 import {
   getCAAUser,
   setUsersCurrentLobby,
@@ -219,4 +219,39 @@ export function findNextPlayer(
   let nextIndex = lastIndex + 1;
   if (nextIndex >= sequence.length) nextIndex = 0;
   return sequence[nextIndex];
+}
+
+/** Cleanup logic to run if the player becomes unavailable. */
+export async function cleanUpPlayer(lobbyID: string, player: PlayerInLobby) {
+  const lobby = await getLobby(lobbyID);
+  const sequence = (await getPlayerSequence(lobbyID));
+
+  // If player is already not "online", re-insert them back in the sequence:
+  if (sequence.findIndex((p) => p.uid === player.uid) === -1) {
+    sequence.push(player);
+    sequence.sort((a, b) => a.random_index - b.random_index);
+  }
+  const nextPlayer = findNextPlayer(sequence, player.uid);
+
+  if (!nextPlayer || nextPlayer.uid === player.uid) {
+    // No more players, end game:
+    await setLobbyEnded(lobby);
+  } else {
+    // Re-assign lobby creator:
+    if (lobby.creator_uid === player.uid) {
+      lobby.creator_uid = nextPlayer.uid;
+      await updateLobby(lobby);
+    }
+
+    if (lobby.status === "in_progress") {
+      // If you're the current judge, reassign this role to the next user:
+      const lastTurn = await getLastTurn(lobbyID);
+      if (lastTurn?.judge_uid === player.uid && lastTurn.phase !== "complete") {
+        lastTurn.judge_uid = nextPlayer.uid;
+        await updateTurn(lobbyID, lastTurn);
+      }
+    }
+  }
+  // Unset 'current lobby':
+  await setUsersCurrentLobby(player.uid, undefined);
 }

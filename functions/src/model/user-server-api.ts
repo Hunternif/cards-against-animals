@@ -19,16 +19,20 @@ export async function updateCAAUser(caaUser: CAAUser): Promise<void> {
  */
 export async function setUsersCurrentLobby(userID: string, lobbyID?: string) {
   const caaUser = await getCAAUser(userID);
-  if (caaUser) {
-    if (lobbyID) {
+  if (lobbyID) {
+    // Set current lobby:
+    if (caaUser) {
       caaUser.current_lobby_id = lobbyID;
       await usersRef.doc(userID).set(caaUser);
     } else {
-      await usersRef.doc(userID).update({ current_lobby_id: FieldValue.delete() });
+      const userName = await getUserName(userID);
+      const newUser = new CAAUser(userID, null, userName, false, lobbyID);
+      await usersRef.doc(userID).set(newUser);
     }
   } else {
-    const userName = await getUserName(userID);
-    const newUser = new CAAUser(userID, null, userName, false, lobbyID);
-    await usersRef.doc(userID).set(newUser);
+    // Delete current lobby:
+    if (caaUser) {
+      await usersRef.doc(userID).update({ current_lobby_id: FieldValue.delete() });
+    }
   }
 }

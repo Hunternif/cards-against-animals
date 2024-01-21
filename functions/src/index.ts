@@ -15,6 +15,7 @@ import {
 import { logCardInteractions, logDownvotes } from "./model/deck-server-api";
 import {
   addPlayer,
+  cleanUpPlayer,
   copyDecksToLobby,
   createLobby,
   findActiveLobbyWithPlayer,
@@ -32,7 +33,7 @@ import {
   updatePlayerScoresFromTurn,
   updateTurn
 } from "./model/turn-server-api";
-import { turnConverter } from "./shared/firestore-converters";
+import { playerConverter, turnConverter } from "./shared/firestore-converters";
 import { PromptCardInGame, ResponseCardInGame } from "./shared/types";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -200,6 +201,7 @@ export const logInteraction = onCall<
   }
 );
 
+/** Logic to run after each turn phase. */
 export const onTurnPhaseChange = onDocumentUpdated(
   "lobbies/{lobbyID}/turns/{turnID}",
   async (event) => {
@@ -221,4 +223,21 @@ export const onTurnPhaseChange = onDocumentUpdated(
         await logWinner(lobbyID, turnAfter, responses);
       }
     }
-  });
+  }
+);
+
+/** Clean-up logic to run when a player changes their status. */
+export const onPlayerStatusChange = onDocumentUpdated(
+  "lobbies/{lobbyID}/players/{userID}",
+  async (event) => {
+    if (!event.data) return;
+    const lobbyID = event.params.lobbyID;
+    const playerBefore = playerConverter.fromFirestore(event.data.before);
+    const playerAfter = playerConverter.fromFirestore(event.data.after);
+    if (playerBefore.status !== playerAfter.status) {
+      if (playerAfter.status === "left" || playerAfter.status === "kicked") {
+        await cleanUpPlayer(lobbyID, playerAfter);
+      }
+    }
+  }
+);

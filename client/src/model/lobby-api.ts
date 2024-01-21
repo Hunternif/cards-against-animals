@@ -1,15 +1,12 @@
 import { User } from "firebase/auth";
 import {
   collection,
-  deleteDoc,
-  deleteField,
   doc,
   getDoc,
   getDocs,
   orderBy,
   query,
-  setDoc,
-  updateDoc,
+  setDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
@@ -19,13 +16,10 @@ import {
   findOrCreateLobbyFun,
   joinLobbyFun,
   lobbiesRef,
-  startLobbyFun,
-  usersRef,
+  startLobbyFun
 } from "../firebase";
 import { playerConverter } from "../shared/firestore-converters";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerStatus } from "../shared/types";
-import { getLastTurn, setTurnJudge } from "./turn-api";
-import { getCAAUser } from "./users-api";
 
 function getPlayersRef(lobbyID: string) {
   return collection(lobbiesRef, lobbyID, 'players')
@@ -83,41 +77,6 @@ export async function joinLobby(lobbyID: string, user: User): Promise<void> {
 
 /** Remove yourself from this lobby */
 export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
-  const players = await getAllOnlinePlayersInLobby(lobby.id);
-  // If you're creator, reassign this role to the next user:
-  if (lobby.creator_uid === user.uid) {
-    const nextPlayer = players.find((p) => p.uid !== user.uid);
-    if (nextPlayer) {
-      await setLobbyCreator(lobby, nextPlayer.uid);
-    } else {
-      // You're the last player! Close the lobby:
-      await endLobby(lobby);
-    }
-  }
-  // If you're the current judge, reassign this role to the next user:
-  const lastTurn = await getLastTurn(lobby.id);
-  if (lastTurn && lastTurn.phase != "complete" && lastTurn.judge_uid === user.uid) {
-    const nextPlayer = players.find((p) => p.uid !== user.uid);
-    if (nextPlayer) {
-      await setTurnJudge(lobby, lastTurn, nextPlayer.uid);
-    } // else should not happen
-  }
-
-  // Delete your user info which contains 'current lobby':
-  // - unless you're admin. In that case, remove the field.
-  const caaUser = await getCAAUser(user.uid);
-  if (caaUser?.is_admin) {
-    delete caaUser.current_lobby_id;
-    await updateDoc(doc(usersRef, user.uid), {
-      current_lobby_id: deleteField(),
-    })
-    await setDoc(doc(usersRef, user.uid), caaUser);
-  } else {
-    await deleteDoc(doc(usersRef, user.uid));
-  }
-
-  // Lastly, set player status in lobby as "left":
-  // (do it last, so you won't see the error due to failing to load lobby)
   await setPlayerStatus(lobby.id, user.uid, "left");
 }
 
@@ -183,7 +142,6 @@ export async function kickPlayer(lobby: GameLobby, player: PlayerInLobby) {
     player.status = "kicked";
     player.role = "spectator";
     await updatePlayer(lobby.id, player);
-    // TODO: do the same cleanup as in leaveLobby(), if kicked during game
   }
 }
 
