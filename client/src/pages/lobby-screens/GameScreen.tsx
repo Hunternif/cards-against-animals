@@ -23,9 +23,6 @@ const gameContainerStyle: CSSProperties = {
   flexDirection: "column",
   overflowY: "auto",
 }
-const menuStyle: CSSProperties = {
-  padding: "0.5rem",
-}
 
 export function GameScreen({ lobby, user, players }: ScreenProps) {
   const [turn, loading, error] = useLastTurn(lobby.id);
@@ -62,7 +59,7 @@ function TurnScreen(props: PreTurnProps) {
   return (
     <FillLayout className={className} style={gameContainerStyle}>
       <div className={`game-bg phase-${props.turn.phase}`} />
-      <GameMenu style={menuStyle} {...newProps} />
+      <GameMenu {...newProps} />
       {isJudge ? <JudgeScreen {...newProps} /> :
         isSpectator ? <SpectatorScreen {...newProps} /> :
           <PlayerScreen {...newProps} />}

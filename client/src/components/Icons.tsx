@@ -78,6 +78,14 @@ export function IconPerson(props: IconSvgProps) {
   </Svg>;
 }
 
+export function IconPersonInline() {
+  return <IconPerson className="person-icon-inline" />;
+}
+
+export function IconPersonInlineSmall() {
+  return <IconPerson width="0.9em" height="0.9em" className="person-icon-inline-small" />;
+}
+
 export function IconStar(props: IconSvgProps) {
   // From Google Fonts, Material Icons: https://fonts.google.com/icons
   return <Svg {...props} height={props.height ?? 24} width={props.width ?? 24} viewBox="0 0 24 24">

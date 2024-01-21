@@ -285,9 +285,10 @@ button.start-button {
   background-image: linear-gradient(to bottom, #2c3037, #505157);
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.4);
 }
-.small-player-count {
+.lobby-player-counter .count,
+.menu-player-counter .count {
   font-weight: 600;
-  margin: 0.3em;
+  margin: 0 0.2em;
 }
 
 /*=========================== Game screens ===========================*/
@@ -696,18 +697,24 @@ button.start-button {
 
 /*--------------------- Scoreboard in game menu -----------------*/
 
-.score-menu-icon {
+.menu-inline-button {
   padding-top: 0.2rem;
   padding-bottom: 0.3rem;
   padding-left: 0.2rem;
-  padding-right: 0.5rem;
+  padding-right: 0.2rem;
   border-radius: 0.2rem;
 }
-.score-menu-icon:hover {
+.menu-inline-button {
+  cursor: pointer;
+}
+.menu-inline-button:hover {
   background-color: rgba(229, 231, 235, 0.2);
 }
-.score-menu-icon .heart-icon-inline {
-  margin-left: 1em;
+.menu-inline-button .heart-icon-inline {
+  margin-left: 0.5em;
+}
+.icon-counter .count {
+  margin: 0 0.2em;
 }
 
 .menu-scoreboard .scoreboard-table {
@@ -741,10 +748,7 @@ button.start-button {
 .menu-turn-ordinal {
   opacity: 0.4;
 }
-.menu-player-count {
-  display: inline-flex;
-  align-items: center;
-  line-height: 0.9;
+.menu-player-counter {
   opacity: 0.4;
 }
 

@@ -4,7 +4,8 @@ import { Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
-import { IconArowLeft, IconHamburger, IconPerson } from "../../components/Icons";
+import { IconCounter } from "../../components/IconCounter";
+import { IconArowLeft, IconHamburger, IconPersonInline } from "../../components/Icons";
 import { LobbyCreationReadOnly } from "../../components/LobbyCreationReadOnly";
 import { LobbyCreatorControls } from "../../components/LobbyCreatorControls";
 import { LobbyPlayerList } from "../../components/LobbyPlayerList";
@@ -108,8 +109,8 @@ function SmallScreenLobby(props: Props) {
         <div style={menuButtonStyle} onClick={openMenu}>
           <IconHamburger width={20} height={20} />
         </div>
-        <IconPerson className="dim" />
-        <span className="dim small-player-count">{props.players.length} </span>
+        <IconCounter className="dim lobby-player-counter"
+          icon={<IconPersonInline />} count={props.players.length} />
       </div>
     )}
     <MainContent {...props} />

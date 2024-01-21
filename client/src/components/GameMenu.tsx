@@ -7,7 +7,8 @@ import { GameLobby, GameTurn, PlayerInLobby } from "../shared/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
-import { IconHeartInline, IconPerson, IconStarInline } from "./Icons";
+import { IconCounter } from "./IconCounter";
+import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "./Icons";
 import { Scoreboard } from "./Scoreboard";
 
 interface MenuProps {
@@ -16,13 +17,12 @@ interface MenuProps {
   turn: GameTurn,
   players: PlayerInLobby[],
   className?: string,
-  style?: CSSProperties,
 }
 
 const rowStyle: CSSProperties = {
+  padding: "0.5rem",
   display: "flex",
   flexDirection: "row",
-  justifyContent: "flex-end",
   alignItems: "center",
   gap: "0.5rem",
   zIndex: 99,
@@ -34,7 +34,8 @@ const leftStyle: CSSProperties = {
   flexBasis: "0%",
   display: "flex",
   justifyContent: "flex-start",
-  gap: "1em",
+  alignItems: "center",
+  gap: "0.5em",
 };
 const midStyle: CSSProperties = {
   flexGrow: 1,
@@ -53,12 +54,9 @@ const rightStyle: CSSProperties = {
   alignItems: "center",
 };
 
-const playerListStyle: CSSProperties = {
-
-}
 
 export function GameMenu(
-  { lobby, turn, user, players, className, style }: MenuProps
+  { lobby, turn, user, players, className }: MenuProps
 ) {
   const navigate = useNavigate();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
@@ -98,24 +96,23 @@ export function GameMenu(
       loading={ending}
       loadingText="Ending game..."
     />
-    <div style={{ ...rowStyle, ...style }}>
+    <div style={rowStyle}>
       <div style={leftStyle}>
+        <div className="menu-player-counter">
+          <IconCounter icon={<IconPersonInlineSmall />} count={validPlayers.length} />
+        </div>
         <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
-        <span style={playerListStyle} className="menu-player-count">
-          <IconPerson height={14} />
-          <span className="small-player-count">{validPlayers.length} </span>
-        </span>
       </div>
       <div style={rightStyle}>
         {(player) && <>
           <CustomDropdown className={className}
             toggle={
-              <span className="score-menu-icon">
-                <span><IconStarInline />{player.score > 1 && ` ${player.score}`}</span>
-                {player.likes > 0 && <span>
-                  <IconHeartInline />{player.likes > 1 && ` ${player.likes}`}
-                </span>}
-              </span>
+              <InlineButton>
+                <IconCounter icon={<IconStarInline />} count={player.score} />
+                {player.likes > 0 && (
+                  <IconCounter icon={<IconHeartInline />} count={player.likes} />
+                )}
+              </InlineButton>
             }>
             <Dropdown.Menu>
               <div className="menu-scoreboard">
@@ -138,4 +135,10 @@ export function GameMenu(
       </div>
     </div>
   </>;
+}
+
+function InlineButton(props: React.HTMLProps<HTMLSpanElement>) {
+  return <div className="menu-inline-button-block">
+    <span {...props} className={`menu-inline-button ${props.className ?? ""}`} />
+  </div>;
 }
