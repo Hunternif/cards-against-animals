@@ -334,8 +334,6 @@ export interface CardInGame {
   random_index: number;
   content: string;
   rating: number;
-  /** Can be downvoted once per lobby. Downvoting decreases rating. */
-  downvoted: boolean;
 }
 
 /** An instance of a Prompt card in a game */
@@ -347,7 +345,6 @@ export class PromptCardInGame implements CardInGame {
   content: string;
   pick: number;
   rating: number;
-  downvoted: boolean;
   constructor(
     id: string,
     deck_id: string,
@@ -356,7 +353,6 @@ export class PromptCardInGame implements CardInGame {
     content: string,
     pick: number,
     rating: number,
-    downvoted: boolean,
   ) {
     this.id = id;
     this.deck_id = deck_id;
@@ -365,7 +361,6 @@ export class PromptCardInGame implements CardInGame {
     this.content = content;
     this.pick = pick;
     this.rating = rating;
-    this.downvoted = downvoted;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
@@ -379,6 +374,8 @@ export class ResponseCardInGame implements CardInGame {
   random_index: number;
   content: string;
   rating: number;
+  /** Can be downvoted once per lobby. Downvoting decreases rating.
+   * TODO: maybe convert this downvote to a subcollection of Votes. */
   downvoted: boolean;
   constructor(
     id: string,

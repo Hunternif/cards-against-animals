@@ -1,9 +1,9 @@
-import { CardInGame } from "../shared/types";
+import { ResponseCardInGame } from "../shared/types";
 import { IconThumbsDown, IconTrash } from "./Icons";
 import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 
 interface ResponseCardProps {
-  card: CardInGame,
+  card: ResponseCardInGame,
   selectable?: boolean,
   /** Which card it is in your submission: #1, #2 etc. Starts from 0. */
   selectedIndex?: number,

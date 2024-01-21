@@ -159,7 +159,7 @@ export const voteConverter: FConverter<Vote> = {
 
 function mapPromptCardInGame(data: any): PromptCardInGame {
   return new PromptCardInGame(data.id, data.deck_id, data.card_id_in_deck,
-    data.random_index, data.content, data.pick, data.rating, data.downvoted);
+    data.random_index, data.content, data.pick, data.rating);
 }
 function mapResponseCardInGame(data: any): ResponseCardInGame {
   return new ResponseCardInGame(data.id, data.deck_id, data.card_id_in_deck,
@@ -211,7 +211,7 @@ export const promptCardInGameConverter: FConverter<PromptCardInGame> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
-      data.random_index, data.content, data.pick, data.rating, data.downvoted);
+      data.random_index, data.content, data.pick, data.rating);
   },
 };
 
