@@ -72,7 +72,8 @@ export const playerConverter: FConverter<PlayerInLobby> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PlayerInLobby(
-      data.uid, data.name, data.role, data.status, data.score ?? 0, data.likes ?? 0);
+      data.uid, data.name, data.random_index ?? 0, data.role, data.status,
+      data.score ?? 0, data.likes ?? 0);
     ret.time_joined = (data.time_joined as FTimestamp | null)?.toDate();
     return ret;
   },

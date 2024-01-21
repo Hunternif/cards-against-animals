@@ -87,10 +87,13 @@ export class PlayerInLobby {
   score: number;
   /** Current number of likes accumulated over the entire game. */
   likes: number;
+  /** Used for ordering players to select the next judge. */
+  random_index: number;
 
   constructor(
     uid: string,
     name: string,
+    random_index: number,
     role: PlayerRole,
     status: PlayerStatus,
     score: number,
@@ -98,6 +101,7 @@ export class PlayerInLobby {
   ) {
     this.uid = uid;
     this.name = name;
+    this.random_index = random_index;
     this.role = role;
     this.status = status;
     this.score = score;

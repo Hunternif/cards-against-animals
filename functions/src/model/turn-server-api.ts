@@ -15,6 +15,7 @@ import {
   GameLobby,
   GameTurn,
   PlayerDataInTurn,
+  PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame
@@ -170,7 +171,7 @@ export async function createNewTurn(lobbyID: string): Promise<GameTurn> {
   const judge = await selectJudge(lobbyID, lastTurn);
   const newOrdinal = lastTurn ? (lastTurn.ordinal + 1) : 1;
   const id = String(newOrdinal).padStart(2, '0');
-  const newTurn = new GameTurn(id, newOrdinal, judge);
+  const newTurn = new GameTurn(id, newOrdinal, judge.uid);
   await getTurnsRef(lobbyID).doc(id).set(newTurn);
   await dealCards(lobbyID, lastTurn, newTurn);
   return newTurn; // timestamp may not have reloaded but that's ok.
@@ -188,9 +189,10 @@ export async function startTurn(lobbyID: string, turnID: string): Promise<GameTu
 
 /** Returns UID of the player who will judge the next turn. */
 async function selectJudge(lobbyID: string, lastTurn: GameTurn | null):
-  Promise<string> {
+  Promise<PlayerInLobby> {
   const sequence = await getPlayerSequence(lobbyID);
-  const lastIndex = lastTurn ? sequence.indexOf(lastTurn.judge_uid) : -1;
+  const lastIndex = lastTurn ?
+    sequence.findIndex((p) => p.uid === lastTurn.judge_uid) : -1;
   if (lastIndex === -1) return sequence[0];
   let nextIndex = lastIndex + 1;
   if (nextIndex >= sequence.length) nextIndex = 0;
@@ -279,11 +281,10 @@ export async function dealCardsToPlayer(
  * Next judge is selected by rotating it.
  * The sequence must be stable!
  */
-async function getPlayerSequence(lobbyID: string): Promise<Array<string>> {
+async function getPlayerSequence(lobbyID: string): Promise<Array<PlayerInLobby>> {
   const players = await getOnlinePlayers(lobbyID);
-  // Simply sort players by UIDs:
-  const uids = players.map((p) => p.uid);
-  return uids.sort();
+  // Sort players by random_index:
+  return players.sort((a, b) => a.random_index - b.random_index);
 }
 
 /** Updates all player's scores and likes from this turn, if it has ended. */
