@@ -63,8 +63,12 @@ export function CardReadingScreen({
 
   async function handleClick(response: PlayerResponse) {
     if (allRevealed) {
-      // clicking to select winner
-      setWinner(response);
+      // clicking to toggle winner
+      if (winner?.player_uid === response.player_uid) {
+        setWinner(null);
+      } else {
+        setWinner(response);
+      }
     } else {
       // clicking to reveal:
       await revealPlayerResponse(lobby, turn, response.player_uid)
