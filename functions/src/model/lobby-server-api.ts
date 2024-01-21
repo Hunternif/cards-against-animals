@@ -7,6 +7,7 @@ import {
   promptCardInGameConverter,
   responseCardInGameConverter
 } from "../shared/firestore-converters";
+import { RNG } from "../shared/rng";
 import {
   GameLobby,
   PlayerInLobby,
@@ -26,7 +27,6 @@ import {
   setUsersCurrentLobby,
   updateCAAUser
 } from "./user-server-api";
-import { RNG } from "../shared/rng";
 
 export function getPlayersRef(lobbyID: string) {
   return db.collection(`lobbies/${lobbyID}/players`)
@@ -196,4 +196,27 @@ export async function setLobbyEnded(lobby: GameLobby) {
     }
   }
   logger.info(`Ended lobby ${lobby.id}`);
+}
+
+/**
+ * Returns a sequence of player UIDs.
+ * Next judge is selected by rotating it.
+ * The sequence must be stable!
+ */
+export async function getPlayerSequence(lobbyID: string): Promise<Array<PlayerInLobby>> {
+  const players = await getOnlinePlayers(lobbyID);
+  // Sort players by random_index:
+  return players.sort((a, b) => a.random_index - b.random_index);
+}
+
+/** Returns the next player in the sequence after the given userID. */
+export function findNextPlayer(
+  sequence: Array<PlayerInLobby>, userID?: string,
+): PlayerInLobby | null {
+  if (sequence.length === 0) return null;
+  const lastIndex = sequence.findIndex((p) => p.uid === userID);
+  if (lastIndex === -1) return sequence[0];
+  let nextIndex = lastIndex + 1;
+  if (nextIndex >= sequence.length) nextIndex = 0;
+  return sequence[nextIndex];
 }

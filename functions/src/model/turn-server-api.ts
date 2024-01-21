@@ -22,9 +22,11 @@ import {
 } from "../shared/types";
 import { logCardInteractions } from "./deck-server-api";
 import {
+  findNextPlayer,
   getLobby,
   getOnlinePlayers,
   getPlayer,
+  getPlayerSequence,
   getPlayers,
   updatePlayer
 } from "./lobby-server-api";
@@ -171,6 +173,10 @@ export async function createNewTurn(lobbyID: string): Promise<GameTurn> {
   const judge = await selectJudge(lobbyID, lastTurn);
   const newOrdinal = lastTurn ? (lastTurn.ordinal + 1) : 1;
   const id = String(newOrdinal).padStart(2, '0');
+  if (!judge) {
+    throw new HttpsError(
+      "failed-precondition", `No more players in lobby ${lobbyID}`);
+  }
   const newTurn = new GameTurn(id, newOrdinal, judge.uid);
   await getTurnsRef(lobbyID).doc(id).set(newTurn);
   await dealCards(lobbyID, lastTurn, newTurn);
@@ -187,16 +193,11 @@ export async function startTurn(lobbyID: string, turnID: string): Promise<GameTu
   return turn;
 }
 
-/** Returns UID of the player who will judge the next turn. */
+/** Returns the player who will judge the next turn. */
 async function selectJudge(lobbyID: string, lastTurn: GameTurn | null):
-  Promise<PlayerInLobby> {
+  Promise<PlayerInLobby | null> {
   const sequence = await getPlayerSequence(lobbyID);
-  const lastIndex = lastTurn ?
-    sequence.findIndex((p) => p.uid === lastTurn.judge_uid) : -1;
-  if (lastIndex === -1) return sequence[0];
-  let nextIndex = lastIndex + 1;
-  if (nextIndex >= sequence.length) nextIndex = 0;
-  return sequence[nextIndex];
+  return findNextPlayer(sequence, lastTurn?.judge_uid);
 }
 
 /** Selects a new prompt card from the remaining deck. */
@@ -274,17 +275,6 @@ export async function dealCardsToPlayer(
     }
   });
   logger.info(`Dealt ${newCards.length} cards to player ${userID}`);
-}
-
-/**
- * Returns a sequence of player UIDs.
- * Next judge is selected by rotating it.
- * The sequence must be stable!
- */
-async function getPlayerSequence(lobbyID: string): Promise<Array<PlayerInLobby>> {
-  const players = await getOnlinePlayers(lobbyID);
-  // Sort players by random_index:
-  return players.sort((a, b) => a.random_index - b.random_index);
 }
 
 /** Updates all player's scores and likes from this turn, if it has ended. */
