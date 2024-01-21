@@ -1,58 +1,12 @@
 import { User } from "firebase/auth";
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { Card } from "react-bootstrap";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { GameLobby, PlayerInLobby } from "../shared/types";
-import { ErrorContext } from "./ErrorContext";
-import { kickPlayer } from "../model/lobby-api";
-import { ConfirmModal } from "./ConfirmModal";
-import { Twemoji } from "./Twemoji";
+import { EmptyPlayerCard, PlayerCard } from "./PlayerCard";
 
 interface ListProps {
   lobby: GameLobby,
   user: User,
   players: PlayerInLobby[],
-}
-
-function EmptyCard() {
-  return (
-    <Card className="player-card empty">
-      <Card.Body>Empty</Card.Body>
-    </Card>
-  );
-}
-
-interface PlayerProps {
-  lobby: GameLobby,
-  player: PlayerInLobby,
-  isMe?: boolean,
-  isCreator?: boolean,
-  canKick?: boolean,
-}
-
-function PlayerCard({ lobby, player, isMe, isCreator, canKick }: PlayerProps) {
-  const { setError } = useContext(ErrorContext);
-  const [showKickModal, setShowKickModal] = useState(false);
-  async function handleKick() {
-    await kickPlayer(lobby, player).catch((e) => setError(e));
-    setShowKickModal(false);
-  }
-  return <>
-    <ConfirmModal
-      show={showKickModal}
-      text="Kick the player out?"
-      onCancel={() => setShowKickModal(false)}
-      onConfirm={handleKick}
-    />
-    <Card className="player-card" bg={isMe ? "secondary" : "none"}>
-      <Card.Body>
-        <span className="player-name">{player.name}</span>
-        {isCreator ? <Twemoji className="right-icon">👑</Twemoji> :
-          player.status === "kicked" ? <span className="right-icon">💀</span> :
-            canKick && <span className="right-icon kick-button"
-              title="Kick player" onClick={() => setShowKickModal(true)} />}
-      </Card.Body>
-    </Card>
-  </>;
 }
 
 const initialSlotCount = 6;
@@ -79,7 +33,7 @@ export function LobbyPlayerList({ lobby, user, players }: ListProps) {
           canKick={lobby.creator_uid === user.uid}
         />);
       } else {
-        newSlots.push(<EmptyCard />);
+        newSlots.push(<EmptyPlayerCard />);
       }
     }
     setSlots(newSlots);

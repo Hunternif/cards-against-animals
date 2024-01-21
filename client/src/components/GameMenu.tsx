@@ -7,6 +7,7 @@ import { GameLobby, GameTurn, PlayerInLobby } from "../shared/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
+import { GamePlayerList } from "./GamePlayerList";
 import { IconCounter } from "./IconCounter";
 import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "./Icons";
 import { Scoreboard } from "./Scoreboard";
@@ -16,7 +17,6 @@ interface MenuProps {
   user: User,
   turn: GameTurn,
   players: PlayerInLobby[],
-  className?: string,
 }
 
 const rowStyle: CSSProperties = {
@@ -55,14 +55,20 @@ const rightStyle: CSSProperties = {
 };
 
 
+/** Menu header on top of the game page */
 export function GameMenu(
-  { lobby, turn, user, players, className }: MenuProps
+  { lobby, turn, user, players }: MenuProps
 ) {
   const navigate = useNavigate();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
+
+  const [playerListOpen, setPlayerListOpen] = useState(false);
+  function openPlayerList() { setPlayerListOpen(true); }
+  function closePlayerList() { setPlayerListOpen(false); }
+
   const isJudge = turn.judge_uid === user.uid;
   const player = players.find((p) => p.uid === user.uid);
   const isSpectator = player?.role === "spectator";
@@ -96,24 +102,31 @@ export function GameMenu(
       loading={ending}
       loadingText="Ending game..."
     />
+
     <div style={rowStyle}>
       <div style={leftStyle}>
-        <div className="menu-player-counter">
-          <IconCounter icon={<IconPersonInlineSmall />} count={validPlayers.length} />
-        </div>
+        <CustomDropdown toggle={
+          <InlineButton className="menu-player-counter" title="Players">
+            <IconCounter icon={<IconPersonInlineSmall />} count={validPlayers.length} />
+          </InlineButton>
+        }>
+          <Dropdown.Menu>
+            <GamePlayerList lobby={lobby} turn={turn} user={user} players={players} />
+          </Dropdown.Menu>
+        </CustomDropdown>
         <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
       </div>
+
       <div style={rightStyle}>
         {(player) && <>
-          <CustomDropdown className={className}
-            toggle={
-              <InlineButton>
-                <IconCounter icon={<IconStarInline />} count={player.score} />
-                {player.likes > 0 && (
-                  <IconCounter icon={<IconHeartInline />} count={player.likes} />
-                )}
-              </InlineButton>
-            }>
+          <CustomDropdown toggle={
+            <InlineButton title="Scores">
+              <IconCounter icon={<IconStarInline />} count={player.score} />
+              {player.likes > 0 && (
+                <IconCounter icon={<IconHeartInline />} count={player.likes} />
+              )}
+            </InlineButton>
+          }>
             <Dropdown.Menu>
               <div className="menu-scoreboard">
                 <Scoreboard lobby={lobby} players={players} />
@@ -121,7 +134,7 @@ export function GameMenu(
             </Dropdown.Menu>
           </CustomDropdown>
         </>}
-        <CustomDropdown className={className} showArrow
+        <CustomDropdown showArrow
           toggle={
             <span className="light">
               {user.displayName}{isSpectator && " (spectator)"}

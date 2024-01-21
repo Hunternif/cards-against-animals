@@ -204,7 +204,7 @@ input.control {
   min-height: 2.5em;
 }
 
-/*--------------------------- Player list ---------------------------*/
+/*------------------------- Player list in lobby -------------------------*/
 .player-card {
   margin: 0.5em 0;
   .card-body {
@@ -246,6 +246,36 @@ input.control {
 
 
 /*=========================== Game screens ===========================*/
+
+/*----------------=------- Player list in game -----------------------*/
+/* "Player card" rendered as a simpler list */
+.game-player-list {
+  width: 14em;
+  .title {
+    text-align: center;
+    padding: 0.1em;
+  }
+  .player-card {
+    border-style: none;
+    border-bottom-style: solid;
+    border-radius: 0;
+    margin: 0;
+    // padding: 0.1em 0.15em;
+    opacity: 0.8;
+    &.me-card {
+      /* From bootstrap: */
+      background-color: #6c757d33;
+    }
+    &.judge-card {
+      font-weight: 700;
+      color: #fff;
+      opacity: 1;
+    }
+  }
+  li:last-child .player-card {
+    border-bottom-style: none;
+  }
+}
 
 /*----------------------------- Likes -----------------------------*/
 .card-response, .many-cards {
