@@ -412,7 +412,6 @@ button.start-button {
   color: #d45f00;
   background-image: linear-gradient(to bottom,#ffc90f66,#fff);
   box-shadow: 0px 0px 20px 4px #d45f00cc;
-  transform: scaleX(1.05) scaleY(1.05);
 }
 .selected-response-index {
   color: #ffc90fcc;
@@ -500,6 +499,9 @@ button.start-button {
 }
 .hoverable-card:hover {
   transform: scaleX(1.03) scaleY(1.03);
+}
+.hoverable-card.selected {
+  transform: scaleX(1.05) scaleY(1.05);
 }
 
 .dim {
@@ -603,6 +605,7 @@ button.start-button {
 .many-cards {
   position: relative;
 }
+.many-cards.selected,
 .many-cards:hover {
   z-index: 10;
 }

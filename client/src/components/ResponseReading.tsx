@@ -34,7 +34,8 @@ export function ResponseReading({
   const likeIcon = showLikes ? <LikeIcon response={response} /> : null;
   const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
   const revealedClass = response.revealed ? "revealed" : "unrevealed";
-  const featureClass = `${canRevealClass} ${revealedClass}`;
+  const canSelectClass = canSelect ? "hoverable-card" : "";
+  const selectedClass = selected ? "selected" : "unselected";
   const hasManyCards = response.cards.length > 1;
 
   function handleClick() {
@@ -57,11 +58,11 @@ export function ResponseReading({
         canLike={canLike}
         onClickLike={handleClickLike}
         likes={showLikes ? likes : undefined}
-        className={featureClass}
+        className={canSelectClass}
         likeIcon={likeIcon}
       />
     ) : (
-      <div className={canSelect ? "hoverable-card" : ""} onClick={handleClick}>
+      <div className={`${canSelectClass} ${selectedClass}`} onClick={handleClick}>
         <CardResponseReading card={response.cards[0]}
           selectable={canSelect} selected={selected}
           likable={canLike} onClickLike={handleClickLike}
@@ -73,7 +74,7 @@ export function ResponseReading({
   } else {
     return (
       <LargeCard onClick={handleClick}
-        className={`card-response response-reading ${featureClass}`}>
+        className={`card-response response-reading ${canRevealClass} ${revealedClass}`}>
         <CardCenterIcon className="reading-unrevealed-icon">
           ?
         </CardCenterIcon>
@@ -103,6 +104,9 @@ function ManyCardsStack({
   const [heights] = useState(response.cards.map(() => 0));
   const [offsets] = useState<Array<number>>(response.cards.map(() => 0));
   const [finishedMeasuring, setFinishedMeasuring] = useState(false);
+  // If selected, the 1.05 scale is already applied to child cards:
+  const canSelectClass = canSelect ? "hoverable-card" : "";
+  const selectedClass = selected ? "selected" : "unselected";
 
   function updateOffsets() {
     if (!finishedMeasuring) {
@@ -120,7 +124,7 @@ function ManyCardsStack({
   // Overlay multiple cards on top of each other.
   // The "Placeholder" component holds place the size of a card:
   return (
-    <div className={`game-card-placeholder many-cards ${className}`} style={{
+    <div className={`game-card-placeholder many-cards ${canSelectClass} ${selectedClass}`} style={{
       // Add extra margin below for the overlaid cards:
       // (-18 come from .game-card.overlaid being 2em shorter)
       marginBottom: offsets[offsets.length - 2] - 18,
@@ -173,10 +177,10 @@ function CardResponseReading({
   setContentHeight,
 }: CardProps) {
   const overlayClass = isOverlaid ? "overlaid" : "";
-  const selectedClass = `${selectable ? "selectable" : ""} ${selected && "selected"}`;
+  const selectedClass = `${selectable ? "selectable" : ""} ${selected ? "selected" : ""}`;
   const overlayStyle: CSSProperties | undefined = isOverlaid ? {
     position: "absolute",
-    top: (offset ?? 0) + (selected ? 10 * (index ?? 0) : 0),
+    top: (offset ?? 0) + (selected ? 4 * (index ?? 0) : 0),
   } : undefined;
 
   // Measure content height:
