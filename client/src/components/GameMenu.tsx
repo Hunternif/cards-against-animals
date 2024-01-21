@@ -54,7 +54,7 @@ const rightStyle: CSSProperties = {
 };
 
 const playerListStyle: CSSProperties = {
-  
+
 }
 
 export function GameMenu(
@@ -102,7 +102,7 @@ export function GameMenu(
       <div style={leftStyle}>
         <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
         <span style={playerListStyle} className="menu-player-count">
-          <IconPerson height={14}/>
+          <IconPerson height={14} />
           <span className="small-player-count">{validPlayers.length} </span>
         </span>
       </div>
@@ -111,9 +111,9 @@ export function GameMenu(
           <CustomDropdown className={className}
             toggle={
               <span className="score-menu-icon">
-                <span><IconStarInline /> {player.score}</span>
+                <span><IconStarInline />{player.score > 1 && ` ${player.score}`}</span>
                 {player.likes > 0 && <span>
-                  <IconHeartInline /> {player.likes}
+                  <IconHeartInline />{player.likes > 1 && ` ${player.likes}`}
                 </span>}
               </span>
             }>
