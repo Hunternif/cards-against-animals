@@ -4,8 +4,8 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { GameMenu } from "../../components/GameMenu";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { FillLayout } from "../../components/layout/FillLayout";
-import { useAllPlayerResponses, useLastTurn, usePlayerDiscard } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, ResponseCardInGame } from "../../shared/types";
+import { useAllPlayerResponses, useAllTurnPrompts, useLastTurn, usePlayerDiscard } from "../../model/turn-api";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../../shared/types";
 import { CardReadingScreen } from "./CardReadingScreen";
 import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
 import { JudgePickPromptScreen } from "./JudgePickPromptScreen";
@@ -41,11 +41,12 @@ interface PreTurnProps {
 }
 
 function TurnScreen(props: PreTurnProps) {
-  const [responses, loadingResponses, error] = useAllPlayerResponses(props.lobby, props.turn);
-  const [playerDiscard, loadingDiscard, error2] = usePlayerDiscard(props.lobby, props.turn, props.user.uid);
+  const [prompts, loadingPrompts, error] = useAllTurnPrompts(props.lobby, props.turn);
+  const [responses, loadingResponses, error2] = useAllPlayerResponses(props.lobby, props.turn);
+  const [playerDiscard, loadingDiscard, error3] = usePlayerDiscard(props.lobby, props.turn, props.user.uid);
   const { setError } = useContext(ErrorContext);
   useEffect(() => {
-    if (error || error2) setError(error || error2);
+    if (error || error2 || error3) setError(error || error2 || error3);
   }, [error, setError]);
   const judge = props.players.find((p) => p.uid === props.turn.judge_uid);
   const isJudge = judge?.uid === props.user.uid;
@@ -55,7 +56,7 @@ function TurnScreen(props: PreTurnProps) {
   if (!responses || loadingResponses || !playerDiscard || loadingDiscard) {
     return <LoadingSpinner delay text="Loading turn data..." />;
   }
-  const newProps = { responses, playerDiscard, judge, ...props };
+  const newProps = { responses, playerDiscard, judge, prompt: prompts?.at(0), ...props };
   return (
     <FillLayout className={className} style={gameContainerStyle}>
       <div className={`game-bg phase-${props.turn.phase}`} />
@@ -71,6 +72,7 @@ interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  prompt?: PromptCardInGame,
   judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],

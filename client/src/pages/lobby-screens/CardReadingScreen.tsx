@@ -6,12 +6,13 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame } from "../../shared/types";
 
 interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  prompt?: PromptCardInGame,
   judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
@@ -49,7 +50,7 @@ const botRowStyle: CSSProperties = {
 // const dummyResponses = new Array<PlayerResponse>(10).fill(dummyResponse, 0, 10);
 
 export function CardReadingScreen({
-  lobby, turn, user, judge, responses, players,
+  lobby, turn, user, prompt, judge, responses, players,
 }: TurnProps) {
   // const responses = dummyResponses;
   const [winner, setWinner] = useState<PlayerResponse | null>(null);
@@ -116,7 +117,7 @@ export function CardReadingScreen({
       </>}
     </div>
     <div style={midRowStyle} className="reading-main-row">
-      <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
+      <CardPromptWithCzar card={prompt} judge={isJudge ? null : judge} />
       {shuffledResponses.map((r) =>
         <ResponseReading
           key={r.player_uid}

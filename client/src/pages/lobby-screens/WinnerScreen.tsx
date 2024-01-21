@@ -7,7 +7,7 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading, ResponseReadingWithName } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { startNewTurn } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame } from "../../shared/types";
 import { checkIfShouldEndGame, endLobby } from "../../model/lobby-api";
 import { IconHeartInline, IconStarInline } from "../../components/Icons";
 
@@ -15,6 +15,7 @@ interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  prompt?: PromptCardInGame,
   judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
@@ -41,7 +42,7 @@ const botRowStyle: CSSProperties = {
 
 /** Displays winner of the turn */
 export function WinnerScreen(
-  { lobby, turn, user, judge, players, responses }: TurnProps
+  { lobby, turn, user, prompt, judge, players, responses }: TurnProps
 ) {
   const [startingNewTurn, setStartingNewTurn] = useState(false);
   const [ending, setEnding] = useState(false);
@@ -79,7 +80,7 @@ export function WinnerScreen(
             <Delay>No winner</Delay>}
         </h2>
         <div className="winner-cards-row">
-          <CardPromptWithCzar card={turn.prompt} judge={isJudge ? null : judge} />
+          <CardPromptWithCzar card={prompt} judge={isJudge ? null : judge} />
           {winnerResponse && (
             <ResponseReading lobby={lobby} turn={turn} response={winnerResponse} />
           )}

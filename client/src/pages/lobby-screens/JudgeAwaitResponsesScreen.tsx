@@ -6,7 +6,7 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { MiniCardResponse } from "../../components/MiniCardResponse";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { startReadingPhase } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame } from "../../shared/types";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import { ResponseCount } from "../../components/ResponseCount";
 
@@ -14,6 +14,7 @@ interface TurnProps {
   lobby: GameLobby,
   turn: GameTurn,
   user: User,
+  prompt?: PromptCardInGame,
   judge?: PlayerInLobby,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
@@ -48,7 +49,7 @@ const botRowStyle: CSSProperties = {
 
 /** Similar to GameMiniResponses, but slightly different */
 export function JudgeAwaitResponsesScreen(
-  { lobby, turn, user, judge, players, responses }: TurnProps
+  { lobby, turn, user, prompt, judge, players, responses }: TurnProps
 ) {
   // const players = dummyPlayers;
   const { setError } = useContext(ErrorContext);
@@ -73,7 +74,7 @@ export function JudgeAwaitResponsesScreen(
   return <CenteredLayout>
     <h2 style={{ textAlign: "center" }} className="dim">Wait for responses:</h2>
     <div style={midRowStyle}>
-      <CardPromptWithCzar card={turn.prompt}
+      <CardPromptWithCzar card={prompt}
         judge={isJudge ? null : judge} />
       <ScreenSizeSwitch
         widthBreakpoint={500}
@@ -82,7 +83,7 @@ export function JudgeAwaitResponsesScreen(
         }
         bigScreen={
           <DetailedResponses players={validPlayers} responses={responses}
-            pick={turn.prompt?.pick ?? 0} />
+            pick={prompt?.pick ?? 0} />
         }
       />
     </div>

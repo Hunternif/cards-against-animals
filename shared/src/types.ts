@@ -114,9 +114,8 @@ export class GameTurn {
   //================= Main game stuff ===================
   /** UID of the player who will judge the winner. */
   judge_uid: string;
-  /** The prompt that everyone is answering. Will be null during phase "new",
-   * when the judge picks a new prompt. */
-  prompt?: PromptCardInGame;
+  /** DEPRECATED. Use subcollection 'prompts' instead. */
+  legacy_prompt?: PromptCardInGame;
   /** Maps player UID to what cards they have on hand in this turn.
    * Must be fetched separately from a Firebase subcollection. */
   player_data: Map<string, PlayerDataInTurn> = new Map();
@@ -129,6 +128,12 @@ export class GameTurn {
   winner_uid?: string;
   /** UIDs of audience choice winners this round */
   audience_award_uids: Array<string> = [];
+  /**
+   * The prompt that everyone is answering. Usually there is only one,
+   * but new game modes could include multiple prompts.
+   * Must be fetched separately from a Firebase subcollection.
+   */
+  prompts: Array<PromptCardInGame> = [];
 
   //================== Technical stuff ==================
   id: string;
@@ -143,13 +148,11 @@ export class GameTurn {
     id: string,
     ordinal: number,
     judge_uid: string,
-    prompt?: PromptCardInGame,
     time_created: Date = new Date(),
   ) {
     this.id = id;
     this.ordinal = ordinal;
     this.judge_uid = judge_uid;
-    this.prompt = prompt;
     this.time_created = time_created;
   }
 }

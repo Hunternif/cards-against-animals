@@ -1,9 +1,10 @@
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse } from "../shared/types";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame } from "../shared/types";
 import { MiniCardResponse } from "./MiniCardResponse";
 
 interface Props {
   lobby: GameLobby,
   turn: GameTurn,
+  prompt?: PromptCardInGame,
   players: PlayerInLobby[],
   responses: PlayerResponse[],
 }
@@ -12,7 +13,7 @@ interface Props {
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
 
 /** Indicates which players responded */
-export function GameMiniResponses({ turn, players, responses }: Props) {
+export function GameMiniResponses({ prompt, players, responses }: Props) {
   // const players = dummyPlayers;
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
@@ -34,7 +35,7 @@ export function GameMiniResponses({ turn, players, responses }: Props) {
         key={player.uid}
         playerName={player.name}
         ready={response != null}
-        pick={turn.prompt?.pick ?? 0} />
+        pick={prompt?.pick ?? 0} />
     })}
   </div>;
 }

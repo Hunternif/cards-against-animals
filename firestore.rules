@@ -83,42 +83,50 @@ service cloud.firestore {
         allow update: if isLoggedIn() && request.auth.uid == userID
                       && isScoreUnchanged(lobby, userID) && userIsNotKicked(lobby, userID);
       }
+
       match /deck_prompts/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);
         // Players can remove prompt cards from deck:
         allow delete: if isLoggedIn() && userIsActivePlayer(lobby);
       }
+
       match /deck_responses/{document=**} {
         allow write: if isLoggedIn() && userIsCreator(lobby);
       }
+
       match /turns/{turn} {
         // Judge can update turn data, e.g. prompt:
         allow update: if isLoggedIn() && userIsJudge(lobby, turn);
-      }
-      match /turns/{turn}/player_responses/{userID} {
-        // Judge can reveal:
-        allow update: if isLoggedIn() && userIsJudge(lobby, turn);
-        // Allow players to submit as many times as needed:
-        allow create, update: if isLoggedIn() && request.auth.uid == userID
-                              && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
-                              // Should also forbid changing like count, but who cares.
-        allow delete: if isLoggedIn() && request.auth.uid == userID;
 
-        match /likes/{likerID} {
-          // Anyone can read likes, only yourself can add or remove likes.
-          allow read;
-          allow write: if isLoggedIn() && request.auth.uid == likerID;
-                        // Liking yourself is allowed
+        match /prompts/{document=**} {
+          allow write: if isLoggedIn() && userIsJudge(lobby, turn);
         }
-      }
-      match /turns/{turn}/player_data/{userID}/hand/{cardID} {
-        // Allow players to update some fields:
-        allow update: if isLoggedIn() && request.auth.uid == userID
-                      && isCardContentUnmodified(lobby, turn, userID, cardID);
-      }
-      match /turns/{turn}/player_data/{userID}/discarded/{cardID} {
-        // Allow players to read & write their own discard:
-        allow read, write: if isLoggedIn() && request.auth.uid == userID;
+
+        match /player_data/{userID}/hand/{cardID} {
+          // Allow players to update some fields:
+          allow update: if isLoggedIn() && request.auth.uid == userID
+                        && isCardContentUnmodified(lobby, turn, userID, cardID);
+        }
+        match /player_data/{userID}/discarded/{cardID} {
+          // Allow players to read & write their own discard:
+          allow read, write: if isLoggedIn() && request.auth.uid == userID;
+        }
+        match /player_responses/{userID} {
+          // Judge can reveal:
+          allow update: if isLoggedIn() && userIsJudge(lobby, turn);
+          // Allow players to submit as many times as needed:
+          allow create, update: if isLoggedIn() && request.auth.uid == userID
+                                && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
+                                // Should also forbid changing like count, but who cares.
+          allow delete: if isLoggedIn() && request.auth.uid == userID;
+
+          match /likes/{likerID} {
+            // Anyone can read likes, only yourself can add or remove likes.
+            allow read;
+            allow write: if isLoggedIn() && request.auth.uid == likerID;
+                          // Liking yourself is allowed
+          }
+        }
       }
     }
     match /users/{userID} {

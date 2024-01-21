@@ -2,12 +2,14 @@ import { CSSProperties } from "react";
 import {
   GameTurn,
   PlayerDataInTurn,
+  PromptCardInGame,
   ResponseCardInGame
 } from "../shared/types";
 import { GameButton } from "./Buttons";
 
 interface ControlProps {
   turn: GameTurn,
+  prompt?: PromptCardInGame,
   data?: PlayerDataInTurn,
   selection: ResponseCardInGame[],
   submitted: boolean,
@@ -64,12 +66,12 @@ const discardCountStyle: CSSProperties = {
 
 export function GameControlRow(
   {
-    turn, data, selection, submitted,
+    prompt, data, selection, submitted,
     discarding, onToggleDiscard, discardedCards,
   }: ControlProps
 ) {
   const picked = selection.length;
-  const total = turn.prompt?.pick ?? 1;
+  const total = prompt?.pick ?? 1;
   const discardCount = discardedCards.length;
 
   return (
@@ -83,7 +85,7 @@ export function GameControlRow(
             // Assume we just joined the game in the middle of it:
             "Wait for next turn"
           ) : (
-            submitted ? "Submitted!" : turn.prompt ? (
+            submitted ? "Submitted!" : prompt ? (
               `Picked ${picked} out of ${total}`
             ) : "Waiting for prompt..."
           )}

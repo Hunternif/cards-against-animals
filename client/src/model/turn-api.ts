@@ -1,6 +1,8 @@
 // Client APIs for game turns, when the game is in progress.
 
 import {
+  FirestoreError,
+  QuerySnapshot,
   collection, deleteDoc, doc,
   getCountFromServer,
   getDoc,
@@ -41,8 +43,14 @@ function getTurnsRef(lobbyID: string) {
     .withConverter(turnConverter);
 }
 
+/** Returns Firestore subcollection reference. */
+function getTurnPromptsRef(lobbyID: string, turnID: string) {
+  return collection(lobbiesRef, lobbyID, "turns", turnID, "prompts")
+    .withConverter(promptCardInGameConverter);
+}
+
 /** Returns Firestore subcollection reference of remaining prompts in deck. */
-function getPromptsRef(lobbyID: string) {
+function getDeckPromptsRef(lobbyID: string) {
   return collection(lobbiesRef, lobbyID, "deck_prompts")
     .withConverter(promptCardInGameConverter);
 }
@@ -110,11 +118,22 @@ export async function getLastTurn(lobbyID: string): Promise<GameTurn | null> {
   return turns[0];
 }
 
+/** Get the played prompt for the current turn. */
+export async function getTurnPrompt(lobbyID: string, turn: GameTurn):
+  Promise<PromptCardInGame | null> {
+  // Check legacy prompt:
+  if (turn.legacy_prompt) return turn.legacy_prompt;
+  // Get the first prompt from the subcollection:
+  const promptDocs = (await getDocs(getTurnPromptsRef(lobbyID, turn.id))).docs;
+  if (promptDocs.length === 0) return null;
+  return promptDocs[0].data();
+}
+
 /** Selects a new random prompt from the remaining deck.
  * If no more prompts in deck, returns null. */
 export async function pickNewPrompt(lobby: GameLobby): Promise<PromptCardInGame | null> {
   const prompts = (await getDocs(query(
-    getPromptsRef(lobby.id), orderBy("random_index", "desc"), limit(1)))
+    getDeckPromptsRef(lobby.id), orderBy("random_index", "desc"), limit(1)))
   ).docs.map((d) => d.data());
   if (prompts.length === 0) return null;
   return prompts[0];
@@ -122,7 +141,7 @@ export async function pickNewPrompt(lobby: GameLobby): Promise<PromptCardInGame 
 
 /** Removes this prompt card from the deck without playing it. */
 export async function discardPrompt(lobby: GameLobby, card: PromptCardInGame) {
-  await deleteDoc(doc(getPromptsRef(lobby.id), card.id));
+  await deleteDoc(doc(getDeckPromptsRef(lobby.id), card.id));
 }
 
 /** Sets the given card as the prompt of the turn.
@@ -133,7 +152,7 @@ export async function playPrompt(
     throw new Error(`Invalid turn phase to play prompt: ${turn.phase}`);
   }
   await discardPrompt(lobby, card);
-  turn.prompt = card;
+  await setDoc(doc(getTurnPromptsRef(lobby.id, turn.id), card.id), card);
   turn.phase = "answering";
   await updateTurn(lobby.id, turn);
 }
@@ -154,7 +173,7 @@ export async function startNewTurn(lobby: GameLobby) {
 
 /** How many prompts remain in the deck */
 export async function getPromptCount(lobby: GameLobby): Promise<number> {
-  return (await getCountFromServer(getPromptsRef(lobby.id))).data().count;
+  return (await getCountFromServer(getDeckPromptsRef(lobby.id))).data().count;
 }
 
 /** Submit player's response */
@@ -303,6 +322,13 @@ export function useLastTurn(lobbyID: string): LastTurnHook {
   return [lastTurn, loading, error];
 }
 
+type FirestoreCollectionDataHook<T> = [
+  value: T[] | undefined,
+  loading: boolean,
+  error?: FirestoreError,
+  snapshot?: QuerySnapshot<T>,
+];
+
 /** Returns and subscribes to all turns in the lobby. */
 export function useAllTurns(lobby: GameLobby) {
   return useCollectionData(collection(lobbiesRef, lobby.id, "turns")
@@ -392,3 +418,15 @@ export function useResponseLikes(lobby: GameLobby, turn: GameTurn, response: Pla
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses", response.player_uid, "likes")
       .withConverter(likeConverter));
 }
+
+/** Returns and subscribes to the prompt in the current turn in the lobby. */
+export function useAllTurnPrompts(lobby: GameLobby, turn: GameTurn):
+FirestoreCollectionDataHook<PromptCardInGame> {
+  const promptsHook = useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "prompts")
+      .withConverter(promptCardInGameConverter));
+  // Check legacy prompt:
+  if (turn.legacy_prompt) return [[turn.legacy_prompt], false];
+  else return promptsHook;
+}
+

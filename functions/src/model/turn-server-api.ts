@@ -37,6 +37,12 @@ export function getTurnsRef(lobbyID: string) {
 }
 
 /** Returns Firestore subcollection reference. */
+function getTurnPromptsRef(lobbyID: string, turnID: string) {
+  return db.collection(`lobbies/${lobbyID}/turns/${turnID}/prompts`)
+    .withConverter(promptCardInGameConverter);
+}
+
+/** Returns Firestore subcollection reference. */
 export function getPlayerDataRef(lobbyID: string, turnID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data`)
     .withConverter(playerDataConverter);
@@ -100,6 +106,17 @@ export async function updateTurn(lobbyID: string, turn: GameTurn): Promise<void>
 /** Counts how many turns have occurred in this lobby. */
 export async function countTurns(lobbyID: string): Promise<number> {
   return (await getTurnsRef(lobbyID).count().get()).data().count;
+}
+
+/** Get the played prompt for the current turn. */
+export async function getTurnPrompt(lobbyID: string, turn: GameTurn):
+  Promise<PromptCardInGame | null> {
+    // Check legacy prompt:
+    if (turn.legacy_prompt) return turn.legacy_prompt;
+    // Get the first prompt from the subcollection:
+    const promptDocs = (await getTurnPromptsRef(lobbyID, turn.id).get()).docs;
+    if (promptDocs.length === 0) return null;
+    return promptDocs[0].data();
 }
 
 /** Data from a specific player, from a specific turn. */
@@ -304,12 +321,13 @@ export async function updatePlayerScoresFromTurn(
 
 /** Log interaction for the played prompt. */
 export async function logPlayedPrompt(lobbyID: string, turn: GameTurn) {
-  if (!turn.prompt) {
+  const prompt = await getTurnPrompt(lobbyID, turn);
+  if (!prompt) {
     logger.warn(`Answering phase without a prompt. Lobby ${lobbyID} turn ${turn.id}`);
     return;
   }
   const lobby = await getLobby(lobbyID);
-  await logCardInteractions(lobby, { viewedPrompts: [turn.prompt], playedPrompts: [turn.prompt] });
+  await logCardInteractions(lobby, { viewedPrompts: [prompt], playedPrompts: [prompt] });
 }
 
 /**

@@ -2,7 +2,7 @@ import { Accordion } from "react-bootstrap";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { lobbiesRef } from "../../firebase";
 import { usePlayers } from "../../model/lobby-api";
-import { useAllPlayerDataOnce, useAllPlayerResponsesOnce, useAllTurnsOnce, usePlayerHandOnce } from "../../model/turn-api";
+import { useAllPlayerDataOnce, useAllPlayerResponsesOnce, useAllTurnPrompts, useAllTurnsOnce, usePlayerHandOnce } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerDataInTurn, PlayerResponse } from "../../shared/types";
 
 interface LobbyProps {
@@ -56,8 +56,9 @@ function TurnsData({ lobby }: LobbyProps) {
 function TurnData({ lobby, turn }: TurnProps) {
   const [playerData] = useAllPlayerDataOnce(lobby, turn);
   const [playerResponses] = useAllPlayerResponsesOnce(lobby, turn);
+  const [prompts] = useAllTurnPrompts(lobby, turn);
   return <div>
-    <div>{turn.id}: {turn.prompt?.content}</div>
+    <div>{turn.id}: {prompts?.at(0)?.content}</div>
     <ul>
       {playerData && playerData.map((pdata, i) =>
         <PlayerInTurnData key={i} lobby={lobby} turn={turn} data={pdata}
