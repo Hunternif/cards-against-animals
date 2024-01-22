@@ -15,6 +15,7 @@ import {
 import { logCardInteractions, logDownvotes } from "./model/deck-server-api";
 import {
   addPlayer,
+  cleanUpEndedLobby,
   cleanUpPlayer,
   copyDecksToLobby,
   createLobby,
@@ -32,7 +33,7 @@ import {
   logPlayedPrompt,
   updatePlayerScoresFromTurn
 } from "./model/turn-server-api";
-import { playerConverter, turnConverter } from "./shared/firestore-converters";
+import { lobbyConverter, playerConverter, turnConverter } from "./shared/firestore-converters";
 import { PromptCardInGame, ResponseCardInGame } from "./shared/types";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -131,7 +132,10 @@ export const newTurn = onCall<
   }
 );
 
-/** Ends current turn and sets lobby status to "ended". */
+/**
+ * Ends current turn and sets lobby status to "ended".
+ * This needs to be a cloud function to perform additional permission checks.
+ */
 export const endLobby = onCall<
   { lobby_id: string }, Promise<void>
 >(
@@ -146,10 +150,7 @@ export const endLobby = onCall<
       if (lastTurn.judge_uid !== event.auth?.uid) {
         throw new HttpsError("unauthenticated", "Must be lobby judge");
       }
-      // Apply downvotes to the deck:
-      await logDownvotes(lobby.id);
     }
-    // End lobby:
     await setLobbyEnded(lobby);
   }
 );
@@ -233,6 +234,24 @@ export const onPlayerStatusChange = onDocumentUpdated(
     if (playerBefore.status !== playerAfter.status) {
       if (playerAfter.status === "left" || playerAfter.status === "kicked") {
         await cleanUpPlayer(lobbyID, playerAfter);
+      }
+    }
+  }
+);
+
+/** Logic to run after lobby status changes. */
+export const onLobbyStatusChange = onDocumentUpdated(
+  "lobbies/{lobbyID}",
+  async (event) => {
+    if (!event.data) return;
+    const lobbyBefore = lobbyConverter.fromFirestore(event.data.before);
+    const lobbyAfter = lobbyConverter.fromFirestore(event.data.after);
+    if (lobbyBefore.status !== lobbyAfter.status) {
+      if (lobbyAfter.status === "ended") {
+        // Cleanup after a lobby ends:
+        await cleanUpEndedLobby(lobbyAfter.id);
+        // Apply downvotes to the deck:
+        await logDownvotes(lobbyAfter.id);
       }
     }
   }

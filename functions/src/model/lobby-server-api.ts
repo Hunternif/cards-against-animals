@@ -183,19 +183,23 @@ export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
 export async function setLobbyEnded(lobby: GameLobby) {
   lobby.status = "ended";
   await updateLobby(lobby);
-  // Unset current_lobby_id for all players:
-  const players = await getPlayers(lobby.id);
+  logger.info(`Ended lobby ${lobby.id}`);
+}
+
+/** Unsets current_lobby_id for all players */
+export async function cleanUpEndedLobby(lobbyID: string) {
+  const players = await getPlayers(lobbyID);
   for (const player of players) {
     const caaUser = await getCAAUser(player.uid);
     if (caaUser) {
-      if (caaUser.current_lobby_id === lobby.id) {
+      if (caaUser.current_lobby_id === lobbyID) {
         await usersRef.doc(player.uid).update(
           { current_lobby_id: FieldValue.delete() }
         );
       }
     }
   }
-  logger.info(`Ended lobby ${lobby.id}`);
+  logger.info(`Cleaned up lobby ${lobbyID}`);
 }
 
 /**

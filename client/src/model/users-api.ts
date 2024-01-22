@@ -16,7 +16,7 @@ export async function getCAAUser(userID: string): Promise<CAAUser | null> {
  * because there will be no way to log back in to the same user.
  */
 export async function signOut(user: User) {
-  // If anonymouse, leave current lobby:
+  // If anonymous, leave current lobby:
   if (user.isAnonymous) {
     const caaUser = await getCAAUser(user.uid);
     if (caaUser && caaUser.current_lobby_id) {
