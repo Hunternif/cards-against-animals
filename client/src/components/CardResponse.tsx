@@ -1,5 +1,6 @@
 import { ResponseCardInGame } from "../shared/types";
-import { IconThumbsDown, IconTrash } from "./Icons";
+import { Downvote } from "./CardVotes";
+import { IconTrash } from "./Icons";
 import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 
 interface ResponseCardProps {
@@ -59,19 +60,4 @@ export function CardResponse(
       </CardBottomRight>
     </LargeCard>
   );
-}
-
-interface DownvoteProps {
-  onClick?: () => void,
-}
-
-function Downvote({ onClick }: DownvoteProps) {
-  return <div className="downvote-card-icon"
-    title="Downvote card"
-    onClick={(e) => {
-      e.stopPropagation();
-      if (onClick) onClick();
-    }}>
-    <IconThumbsDown width={24} height={24} />
-  </div>;
 }

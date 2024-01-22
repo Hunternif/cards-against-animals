@@ -619,27 +619,34 @@ button.start-button {
 }
 
 
-/*---------------------------- Downvotes ---------------------------*/
+/*----------------------- Card Upvotes / Downvotes ----------------------*/
 
-.downvote-card-icon {
+.card-response .downvote-card-icon {
   color: rgb(185, 28, 28);
-  opacity: 0.1;
 }
+.vote-card-icon {
+  opacity: 0.1;
+  cursor: pointer;
+}
+.vote-card-icon:hover {
+  opacity: 0.5;
+}
+.game-card.upvoted .upvote-card-icon,
 .game-card.downvoted .downvote-card-icon {
   opacity: 0.9;
 }
-.downvote-card-icon:hover {
-  opacity: 0.5;
-}
+.game-card.upvoted .upvote-card-icon:hover,
 .game-card.downvoted .downvote-card-icon:hover {
   opacity: 1;
 }
-.game-card.locked-card .downvote-card-icon {
+.game-card.locked-card .vote-card-icon {
   opacity: 0.1;
 }
+.game-card.locked-card.upvoted .upvote-card-icon,
 .game-card.locked-card.downvoted .downvote-card-icon {
   opacity: 1;
 }
+
 
 /*--------------------- Discarding response cards -----------------*/
 
