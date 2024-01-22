@@ -11,6 +11,7 @@ import {
   GameLobby,
   LobbySettings,
   PromptCardInGame,
+  PromptDeckCard,
   ResponseCardInGame
 } from "../shared/types";
 import { getPlayerDataRef, getPlayerHand, getTurnsRef } from "./turn-server-api";
@@ -76,9 +77,16 @@ export function getCardIndex(
       10.0 / (card.views + 10.0) *
       (2 * card.wins + 1.0) *
       1.0 / (card.discards + 1.0);
+    // Adjust prompt cards based on votes:
+    if (card instanceof PromptDeckCard) {
+      factor = factor *
+        (2 * card.upvotes + 1.0) *
+        1.0 / (card.downvotes * 2.0 + 1.0);
+    }
     factor = Math.max(0.0001, factor);
     factor = Math.min(factor, 1.2);
     result = (result * factor) >>> 0;
+
   }
 
   // Adjust index for unviewed cards
