@@ -34,7 +34,8 @@ import {
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame,
-  Vote
+  Vote,
+  VoteChoice
 } from "../shared/types";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
@@ -73,9 +74,15 @@ function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
     .withConverter(responseCardInGameConverter);
 }
 
-/** Returns Firestore subcollection reference of likes to a player response in turn. */
+/** Returns Firestore subcollection reference of likes for a player response in turn. */
 function getResponseLikesRef(lobbyID: string, turnID: string, userID: string) {
   return collection(lobbiesRef, lobbyID, "turns", turnID, "player_responses", userID, "likes")
+    .withConverter(voteConverter);
+}
+
+/** Returns Firestore subcollection reference of votes for a prompt in turn. */
+function getPromptVotesRef(lobbyID: string, turnID: string, promptCardID: string) {
+  return collection(lobbiesRef, lobbyID, "turns", turnID, "prompts", promptCardID, "votes")
     .withConverter(voteConverter);
 }
 
@@ -262,6 +269,24 @@ export async function discardCards(
   });
 }
 
+/** Create/delete a "yes"/"no" vote for the given prompt from the current player.
+ * "Yes" means like, "no" means dislike, null removes vote. */
+export async function votePrompt(
+  lobby: GameLobby, turn: GameTurn, prompt: PromptCardInGame,
+  currentPlayer: PlayerInLobby, choice?: VoteChoice,
+) {
+  const votesRef = getPromptVotesRef(lobby.id, turn.id, prompt.id);
+  const userVoteRef = doc(votesRef, currentPlayer.uid);
+  const userVoteSnap = await getDoc(userVoteRef);
+  if (choice) {
+    await setDoc(userVoteRef, new Vote(currentPlayer.uid, currentPlayer.name, choice));
+  } else {
+    if (userVoteSnap.exists()) {
+      await deleteDoc(userVoteRef);
+    }
+  }
+}
+
 /** Create/delete a "like" for the given response from the current player */
 export async function toggleLikeResponse(
   lobby: GameLobby, turn: GameTurn, response: PlayerResponse,
@@ -430,3 +455,10 @@ export function useAllTurnPrompts(lobby: GameLobby, turn: GameTurn):
   else return promptsHook;
 }
 
+/** Returns and subscribes to the votes on the given prompt card
+ * in the current turn in the lobby. */
+export function usePromptVotes(lobby: GameLobby, turn: GameTurn, prompt: PromptCardInGame) {
+  return useCollectionData(
+    collection(lobbiesRef, lobby.id, "turns", turn.id, "prompts", prompt.id, "votes")
+      .withConverter(voteConverter));
+}

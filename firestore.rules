@@ -98,8 +98,15 @@ service cloud.firestore {
         // Judge can update turn data, e.g. prompt:
         allow update: if isLoggedIn() && userIsJudge(lobby, turn);
 
-        match /prompts/{document=**} {
+        match /prompts/{cardID} {
+          // Judge can set the prompt:
           allow write: if isLoggedIn() && userIsJudge(lobby, turn);
+
+          match /votes/{voterID} {
+            // Anyone can read votes, only yourself can add or remove votes.
+            allow read;
+            allow write: if isLoggedIn() && request.auth.uid == voterID;
+          }
         }
 
         match /player_data/{userID}/hand/{cardID} {

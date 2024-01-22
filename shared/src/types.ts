@@ -349,6 +349,9 @@ export class PromptCardInGame implements CardInGame {
   content: string;
   pick: number;
   rating: number;
+  /** List of player votes who liked or disliked this prompt.
+   * Must be fetched separately from a Firebase subcollection. */
+  votes: Array<Vote> = [];
   constructor(
     id: string,
     deck_id: string,
