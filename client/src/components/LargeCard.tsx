@@ -30,6 +30,10 @@ export function CardContent(props: ComponentProps) {
     className={`card-content ${emojiClass}${props.className ?? ""}`} />;
 }
 
+export function CardBottom(props: ComponentProps) {
+  return <div {...props} className={`card-bottom ${props.className ?? ""}`} />;
+}
+
 export function CardBottomLeft(props: ComponentProps) {
   return <div {...props} className={`card-bottom-left ${props.className ?? ""}`} />;
 }

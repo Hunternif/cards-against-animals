@@ -449,6 +449,10 @@ button.start-button {
   user-select: none;
   pointer-events: none;
 }
+.card-bottom {
+  display: flex;
+  margin-top: auto;
+}
 .card-bottom-right, .card-bottom-left {
   display: flex;
   align-items: baseline;

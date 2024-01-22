@@ -11,6 +11,7 @@ import {
 import { copyFields2 } from "../shared/utils";
 import { Downvote, Upvote } from "./CardVotes";
 import {
+  CardBottom,
   CardBottomLeft,
   CardBottomRight,
   CardCenterIcon,
@@ -83,17 +84,21 @@ function KnownPrompt({
   return (
     <LargeCard className={`card-prompt ${voteClass}`}>
       <CardContent>{formatPrompt(card.content)}</CardContent>
-      {card.pick > 1 && (
-        <CardBottomRight className="prompt-pick">
-          PICK
-          <div className="prompt-pick-number">{card.pick}</div>
-        </CardBottomRight>
-      )}
-      {canVote && (
-        <CardBottomLeft className="prompt-voting">
-          <Upvote onClick={handleUpvote} />
-          <Downvote onClick={handleDownvote} />
-        </CardBottomLeft>
+      {(canVote || card.pick > 1) && (
+        <CardBottom>
+          {canVote && (
+            <CardBottomLeft className="prompt-voting">
+              <Upvote onClick={handleUpvote} />
+              <Downvote onClick={handleDownvote} />
+            </CardBottomLeft>
+          )}
+          {card.pick > 1 && (
+            <CardBottomRight className="prompt-pick">
+              PICK
+              <div className="prompt-pick-number">{card.pick}</div>
+            </CardBottomRight>
+          )}
+        </CardBottom>
       )}
     </LargeCard>
   );
