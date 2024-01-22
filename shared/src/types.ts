@@ -272,10 +272,12 @@ export class PromptDeckCard implements DeckCard {
   discards: number;
   wins: number;
   tags: string[];
+  upvotes: number;
+  downvotes: number;
   constructor(
     id: string, content: string, pick: number, rating: number,
     views: number, plays: number, discards: number,
-    tags: string[],
+    tags: string[], upvotes: number, downvotes: number,
   ) {
     this.id = id;
     this.content = content;
@@ -286,6 +288,8 @@ export class PromptDeckCard implements DeckCard {
     this.discards = discards || 0;
     this.wins = 0;
     this.tags = tags;
+    this.upvotes = upvotes || 0;
+    this.downvotes = downvotes || 0;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing

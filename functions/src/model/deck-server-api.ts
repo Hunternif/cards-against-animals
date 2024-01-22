@@ -6,6 +6,7 @@ import {
 } from "../shared/firestore-converters";
 import { IRNG, RNG } from "../shared/rng";
 import {
+  CardInGame,
   DeckCard,
   GameLobby,
   LobbySettings,
@@ -107,6 +108,13 @@ export interface LogData {
   wonResponses?: ResponseCardInGame[],
   // Cards that were liked multiple times will be added multiple times.
   likedResponses?: ResponseCardInGame[],
+  promptVotes?: CardVoteData[],
+}
+
+export interface CardVoteData {
+  card: CardInGame,
+  upvotes: number,
+  downvotes: number,
 }
 
 /**
@@ -147,6 +155,12 @@ export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
     for (const response of logData.likedResponses || []) {
       const cardRef = getDeckResponsesRef(response.deck_id).doc(response.card_id_in_deck);
       transaction.update(cardRef, { likes: FieldValue.increment(1) });
+    }
+    for (const promptVotes of logData.promptVotes || []) {
+      const prompt = promptVotes.card;
+      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
+      transaction.update(cardRef, { upvotes: FieldValue.increment(promptVotes.upvotes) })
+      transaction.update(cardRef, { downvotes: FieldValue.increment(promptVotes.downvotes) })
     }
   });
 }

@@ -33,7 +33,7 @@ export function parseDeck(
       const id = String(i + 1).padStart(4, '0');
       const pick = parsePromptPick(line);
       const text = processPromptText(processCardText(line));
-      return new PromptDeckCard(id, text, pick, 0, 0, 0, 0, []);
+      return new PromptDeckCard(id, text, pick, 0, 0, 0, 0, [], 0, 0);
     });
   deck.responses = responseList.split("\n")
     .map((line) => line.trim())
@@ -72,7 +72,7 @@ export function parseDeckTsv(
     if (type === "Prompt") {
       const text = processPromptText(processCardText(rawText));
       const pick = parsePromptPick(text);
-      deck.prompts.push(new PromptDeckCard(id, text, pick, 0, 0, 0, 0, tags));
+      deck.prompts.push(new PromptDeckCard(id, text, pick, 0, 0, 0, 0, tags, 0, 0));
     } else if (type === "Response") {
       const text = processCardText(items[1]);
       deck.responses.push(new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, tags));

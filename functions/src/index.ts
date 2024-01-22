@@ -27,9 +27,9 @@ import {
   createNewTurn,
   getAllPlayerResponses,
   getLastTurn,
+  logInteractionsInCompletePhase,
+  logInteractionsInReadingPhase,
   logPlayedPrompt,
-  logPlayerHandInteractions,
-  logWinner,
   updatePlayerScoresFromTurn,
   updateTurn
 } from "./model/turn-server-api";
@@ -215,12 +215,12 @@ export const onTurnPhaseChange = onDocumentUpdated(
         await logPlayedPrompt(lobbyID, turnAfter);
       } else if (turnAfter.phase === "reading") {
         // All responses submitted: log interactions.
-        await logPlayerHandInteractions(lobbyID, turnAfter);
+        await logInteractionsInReadingPhase(lobbyID, turnAfter);
       } else if (turnAfter.phase === "complete") {
         // Turn completed: update all scores.
         const responses = await getAllPlayerResponses(lobbyID, turnAfter.id);
         await updatePlayerScoresFromTurn(lobbyID, turnAfter, responses);
-        await logWinner(lobbyID, turnAfter, responses);
+        await logInteractionsInCompletePhase(lobbyID, turnAfter, responses);
       }
     }
   }

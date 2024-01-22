@@ -184,7 +184,8 @@ export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PromptDeckCard(snapshot.id, data.content, data.pick,
-      data.rating, data.views, data.plays, data.discards, data.tags || []);
+      data.rating, data.views, data.plays, data.discards, data.tags || [],
+      data.upvotes, data.downvotes);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },

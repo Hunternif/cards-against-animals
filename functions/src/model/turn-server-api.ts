@@ -18,7 +18,8 @@ import {
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
-  ResponseCardInGame
+  ResponseCardInGame,
+  Vote
 } from "../shared/types";
 import { logCardInteractions } from "./deck-server-api";
 import {
@@ -69,6 +70,12 @@ function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
 /** Returns Firestore subcollection reference. */
 function getResponseLikesRef(lobbyID: string, turnID: string, userID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_responses/${userID}/likes`)
+    .withConverter(voteConverter);
+}
+
+/** Returns Firestore subcollection reference of votes for a prompt in turn. */
+function getPromptVotesRef(lobbyID: string, turnID: string, promptCardID: string) {
+  return db.collection(`lobbies/${lobbyID}/turns/${turnID}/prompts/${promptCardID}/votes`)
     .withConverter(voteConverter);
 }
 
@@ -175,6 +182,13 @@ export async function getResponseLikeCount(
   lobbyID: string, turnID: string, userID: string,
 ): Promise<number> {
   return (await getResponseLikesRef(lobbyID, turnID, userID).count().get()).data().count;
+}
+
+/** Get players' votes on this prompt. */
+export async function getPromptVotes(
+  lobbyID: string, turnID: string, cardID: string,
+): Promise<Array<Vote>> {
+  return (await getPromptVotesRef(lobbyID, turnID, cardID).get()).docs.map((t) => t.data());
 }
 
 /**
@@ -331,12 +345,14 @@ export async function logPlayedPrompt(lobbyID: string, turn: GameTurn) {
 }
 
 /**
- * Log interactions from the completed turn:
+ * Log interactions from the turn in the "reading" phase:
  * - viewed hand
  * - played responses
  * - discards
  */
-export async function logPlayerHandInteractions(lobbyID: string, turn: GameTurn) {
+export async function logInteractionsInReadingPhase(
+  lobbyID: string, turn: GameTurn,
+) {
   const lobby = await getLobby(lobbyID);
   // Played cards:
   const responses = await getAllPlayerResponses(lobbyID, turn.id);
@@ -361,8 +377,13 @@ export async function logPlayerHandInteractions(lobbyID: string, turn: GameTurn)
   await logCardInteractions(lobby, { viewedResponses, playedResponses, discardedResponses });
 }
 
-/** Log interaction for the winning response. */
-export async function logWinner(
+/**
+ * Log interactions from the turn in the "complete" phase:
+ * - winning response
+ * - liked responses
+ * - upvoted / downvoted prompt
+ */
+export async function logInteractionsInCompletePhase(
   lobbyID: string, turn: GameTurn, responses: PlayerResponse[],
 ) {
   const lobby = await getLobby(lobbyID);
@@ -377,5 +398,17 @@ export async function logWinner(
       }
     }
   }
-  await logCardInteractions(lobby, { wonResponses, likedResponses });
+  // Prompt votes:
+  const promptVotes = [];
+  const prompt = await getTurnPrompt(lobbyID, turn);
+  if (prompt) {
+    const voteData = { card: prompt, upvotes: 0, downvotes: 0 };
+    const votes = await getPromptVotes(lobbyID, turn.id, prompt.id);
+    for (const vote of votes) {
+      if (vote.choice === "yes") voteData.upvotes++;
+      if (vote.choice === "no") voteData.downvotes++;
+    }
+    promptVotes.push(voteData);
+  }
+  await logCardInteractions(lobby, { wonResponses, likedResponses, promptVotes });
 }
