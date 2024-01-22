@@ -10,6 +10,7 @@ import { GamePlayerList } from "./GamePlayerList";
 import { IconCounter } from "./IconCounter";
 import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "./Icons";
 import { Scoreboard } from "./Scoreboard";
+import { Twemoji } from "./Twemoji";
 
 const rowStyle: CSSProperties = {
   padding: "0.5rem",
@@ -50,8 +51,7 @@ const rightStyle: CSSProperties = {
 /** Menu header on top of the game page */
 export function GameMenu() {
   const navigate = useNavigate();
-  const { lobby, turn, player, players, activePlayers,
-    isSpectator, isJudge } = useGameContext();
+  const { lobby, turn, player, players, activePlayers, isSpectator } = useGameContext();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
   const [ending, setEnding] = useState(false);
@@ -65,7 +65,10 @@ export function GameMenu() {
 
   async function handleEnd() {
     setEnding(true);
-    await endLobby(lobby).catch((e) => setError(e));
+    await endLobby(lobby).catch((e) => {
+      setError(e);
+      setEnding(false);
+    });
   }
 
   return <>
@@ -99,22 +102,20 @@ export function GameMenu() {
       </div>
 
       <div style={rightStyle}>
-        {(player) && <>
-          <CustomDropdown toggle={
-            <InlineButton title="Scores">
-              <IconCounter icon={<IconStarInline />} count={player.score} />
-              {player.likes > 0 && (
-                <IconCounter icon={<IconHeartInline />} count={player.likes} />
-              )}
-            </InlineButton>
-          }>
-            <Dropdown.Menu>
-              <div className="menu-scoreboard">
-                <Scoreboard lobby={lobby} players={players} />
-              </div>
-            </Dropdown.Menu>
-          </CustomDropdown>
-        </>}
+        <CustomDropdown toggle={
+          <InlineButton title="Scores">
+            <IconCounter icon={<IconStarInline />} count={player.score} />
+            {player.likes > 0 && (
+              <IconCounter icon={<IconHeartInline />} count={player.likes} />
+            )}
+          </InlineButton>
+        }>
+          <Dropdown.Menu>
+            <div className="menu-scoreboard">
+              <Scoreboard lobby={lobby} players={players} />
+            </div>
+          </Dropdown.Menu>
+        </CustomDropdown>
         <CustomDropdown showArrow
           toggle={
             <span className="light">
@@ -122,8 +123,8 @@ export function GameMenu() {
             </span>
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>
-            <Dropdown.Item onClick={() => setShowLeaveModal(true)}>Leave</Dropdown.Item>
-            {isJudge && <Dropdown.Item onClick={() => setShowEndModal(true)}>End game</Dropdown.Item>}
+            <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
+            <MenuItem label="End game" onClick={() => setShowEndModal(true)} judgeOnly />
           </Dropdown.Menu>
         </CustomDropdown>
       </div>
@@ -135,4 +136,26 @@ function InlineButton(props: React.HTMLProps<HTMLSpanElement>) {
   return <div className="menu-inline-button-block">
     <span {...props} className={`menu-inline-button ${props.className ?? ""}`} />
   </div>;
+}
+
+
+interface MenuItemProps {
+  label: string,
+  judgeOnly?: boolean,
+  onClick?: () => void,
+}
+
+function MenuItem({ label, onClick, judgeOnly }: MenuItemProps) {
+  const { isJudge } = useGameContext();
+  return (
+    <Dropdown.Item
+      onClick={onClick}
+      disabled={judgeOnly && !isJudge}>
+      {judgeOnly && !isJudge ? (
+        // Only current judge can click this. Show an icon on the right.
+        <span className="menu-item-locked" >{label}
+          <Twemoji className="lock-icon" >👑</Twemoji></span>
+      ) : label}
+    </Dropdown.Item>
+  );
 }

@@ -759,6 +759,13 @@ button.start-button {
 .menu-scoreboard tr:last-child td {
   border-style: none;
 }
+.menu-item-locked {
+  display: flex;
+  justify-content: space-between;
+}
+.menu-item-locked .lock-icon {
+  opacity: 0.6;
+}
 
 /*------------------------------- Game menu ----------------------------*/
 
