@@ -56,7 +56,7 @@ const miniResponsesContainerStyle: CSSProperties = {
 }
 
 export function PlayerAnsweringScreen() {
-  const { lobby, turn, player, activePlayers, prompt, judge, responses,
+  const { lobby, turn, player, prompt, responses,
     playerDiscard } = useGameContext();
   const response = responses.find((r) => r.player_uid === player.uid);
   const submitted = response !== undefined;
@@ -66,9 +66,6 @@ export function PlayerAnsweringScreen() {
     useState<ResponseCardInGame[]>(playerDiscard.slice());
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
-
-  // Filter out the judge:
-  const validPlayers = activePlayers.filter((p) => p.uid !== judge.uid);
 
   /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {
@@ -108,13 +105,10 @@ export function PlayerAnsweringScreen() {
         {prompt &&
           <ScreenSizeSwitch
             widthBreakpoint={480}
-            smallScreen={
-              <ResponseCount players={validPlayers} responses={responses} />
-            }
+            smallScreen={<ResponseCount />}
             bigScreen={
               <div style={miniResponsesContainerStyle}>
-                <GameMiniResponses players={validPlayers}
-                />
+                <GameMiniResponses />
               </div>
             }
           />

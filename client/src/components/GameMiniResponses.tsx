@@ -2,17 +2,15 @@ import { PlayerInLobby, PlayerResponse } from "../shared/types";
 import { useGameContext } from "./GameContext";
 import { MiniCardResponse } from "./MiniCardResponse";
 
-interface Props {
-  players: PlayerInLobby[],
-}
-
 // const dummyPlayer = new PlayerInLobby("01", "Dummy");
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
 
 /** Indicates which players responded */
-export function GameMiniResponses({ players }: Props) {
+export function GameMiniResponses() {
   // const players = dummyPlayers;
-  const { prompt, responses } = useGameContext();
+  const { prompt, responses, activePlayers, judge } = useGameContext();
+  // Filter out the judge:
+  const validPlayers = activePlayers.filter((p) => p.uid !== judge.uid);
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
     return responses.find((res) => res.player_uid === player.uid) ?? null;
@@ -27,7 +25,7 @@ export function GameMiniResponses({ players }: Props) {
     overflow: "hidden",
     maxWidth: "100vw",
   }}>
-    {players && players.map((player) => {
+    {validPlayers.map((player) => {
       const response = findResponse(player);
       return <MiniCardResponse
         key={player.uid}

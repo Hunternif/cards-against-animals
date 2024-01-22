@@ -50,7 +50,7 @@ const rightStyle: CSSProperties = {
 /** Menu header on top of the game page */
 export function GameMenu() {
   const navigate = useNavigate();
-  const { lobby, turn, user, player, players, activePlayers,
+  const { lobby, turn, player, players, activePlayers,
     isSpectator, isJudge } = useGameContext();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
@@ -58,7 +58,7 @@ export function GameMenu() {
   const { setError } = useContext(ErrorContext);
 
   async function handleLeave() {
-    await leaveLobby(lobby, user)
+    await leaveLobby(lobby, player.uid)
       .then(() => navigate("/"))
       .catch((e) => setError(e));
   }
@@ -118,7 +118,7 @@ export function GameMenu() {
         <CustomDropdown showArrow
           toggle={
             <span className="light">
-              {user.displayName}{isSpectator && " (spectator)"}
+              {player.name}{isSpectator && " (spectator)"}
             </span>
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>

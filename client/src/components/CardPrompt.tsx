@@ -51,10 +51,8 @@ function KnownPrompt({ card, canVote }: KnownPromptCardProps) {
     (currentVote.choice === "yes" ? "upvoted" : "downvoted") : "";
 
   async function vote(choice?: VoteChoice) {
-    if (player) {
-      await votePrompt(lobby, turn, card, player, choice)
-        .catch((e) => setError(e));
-    }
+    await votePrompt(lobby, turn, card, player, choice)
+      .catch((e) => setError(e));
   }
 
   async function handleUpvote() {

@@ -71,13 +71,13 @@ export async function findOrCreateLobby(user: User): Promise<GameLobby> {
  * Will attempt to join as player. If the lobby is already in progress,
  * will join as spectator.
  */
-export async function joinLobby(lobbyID: string, user: User): Promise<void> {
-  await joinLobbyFun({ lobby_id: lobbyID, user_id: user.uid });
+export async function joinLobby(lobbyID: string, userID: string): Promise<void> {
+  await joinLobbyFun({ lobby_id: lobbyID, user_id: userID });
 }
 
 /** Remove yourself from this lobby */
-export async function leaveLobby(lobby: GameLobby, user: User): Promise<void> {
-  await setPlayerStatus(lobby.id, user.uid, "left");
+export async function leaveLobby(lobby: GameLobby, userID: string): Promise<void> {
+  await setPlayerStatus(lobby.id, userID, "left");
 }
 
 /** Updates player status in the current game. */
@@ -167,7 +167,7 @@ export async function isUserInLobby(lobbyID: string, user: User): Promise<boolea
 /** If the user is not already in the lobby, joins it. */
 export async function joinLobbyIfNeeded(lobbyID: string, user: User) {
   if (!await isUserInLobby(lobbyID, user)) {
-    await joinLobby(lobbyID, user);
+    await joinLobby(lobbyID, user.uid);
   }
 }
 

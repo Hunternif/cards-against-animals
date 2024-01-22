@@ -62,7 +62,7 @@ export function JudgeAwaitResponsesScreen() {
       <ScreenSizeSwitch
         widthBreakpoint={500}
         smallScreen={
-          <ResponseCount players={validPlayers} responses={responses} />
+          <ResponseCount />
         }
         bigScreen={
           <DetailedResponses players={validPlayers} responses={responses}

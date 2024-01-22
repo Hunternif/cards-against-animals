@@ -22,7 +22,7 @@ export async function signOut(user: User) {
     if (caaUser && caaUser.current_lobby_id) {
       const activeLobby = await getLobby(caaUser.current_lobby_id);
       if (activeLobby) {
-        await leaveLobby(activeLobby, user);
+        await leaveLobby(activeLobby, user.uid);
       }
     }
   }
