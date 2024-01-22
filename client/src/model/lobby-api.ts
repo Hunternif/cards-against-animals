@@ -123,6 +123,8 @@ export function checkIfShouldEndGame(
 ): boolean {
   switch (lobby.settings.play_until) {
     case "forever": return false;
+    case "max_turns_per_person":
+      // With turns per person, we set max_turns at the start of the game.
     case "max_turns":
       return turn.ordinal >= lobby.settings.max_turns;
     case "max_score": {

@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 import { updateLobby } from "../model/lobby-api";
 import { GameLobby } from "../shared/types";
-import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
 import { useDelay } from "./Delay";
+import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
 
 interface Props {
   lobby: GameLobby,
@@ -20,7 +20,10 @@ export function LobbySettings(props: Props) {
       {/* Prevent another item appearing next to "play until": */}
       {playUntil === "forever" && <div style={{ width: "100%", marginTop: "-0.25em" }} />}
       {playUntil === "max_turns" && (
-        <FormItem label="Number of turns" control={<MaxTurnsControl {...props} />} />
+        <FormItem label="Total turns" control={<MaxTurnsControl {...props} />} />
+      )}
+      {playUntil === "max_turns_per_person" && (
+        <FormItem label="Turns per person" control={<TurnsPerPersonControl {...props} />} />
       )}
       {playUntil === "max_score" && (
         <FormItem label="Maximum score" control={<MaxScoreControl {...props} />} />
@@ -45,6 +48,7 @@ function EndControl({ lobby, readOnly }: Props) {
     options={[
       ["forever", "Forever"],
       ["max_turns", "X turns"],
+      ["max_turns_per_person", "X turns each"],
       ["max_score", "X score"],
     ]}
   />;
@@ -65,6 +69,16 @@ function MaxScoreControl({ lobby, readOnly }: Props) {
     value={lobby.settings.max_score}
     onChange={async (newValue) => {
       lobby.settings.max_score = newValue;
+      await updateLobby(lobby);
+    }}
+  />;
+}
+
+function TurnsPerPersonControl({ lobby, readOnly }: Props) {
+  return <NumberInput min={1} max={99} disabled={readOnly}
+    value={lobby.settings.turns_per_person}
+    onChange={async (newValue) => {
+      lobby.settings.turns_per_person = newValue;
       await updateLobby(lobby);
     }}
   />;

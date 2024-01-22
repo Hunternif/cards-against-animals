@@ -17,12 +17,11 @@ import {
   addPlayer,
   cleanUpEndedLobby,
   cleanUpPlayer,
-  copyDecksToLobby,
   createLobby,
   findActiveLobbyWithPlayer,
   getLobby,
   setLobbyEnded,
-  updateLobby
+  startLobbyInternal
 } from "./model/lobby-server-api";
 import {
   createNewTurn,
@@ -103,13 +102,7 @@ export const startLobby = onCall<
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
     assertLobbyCreator(event, lobby);
-    // Copy cards from all added decks into the lobby:
-    await copyDecksToLobby(lobby);
-    await createNewTurn(lobby.id);
-    // Start the game:
-    lobby.status = "in_progress";
-    await updateLobby(lobby);
-    logger.info(`Started lobby ${lobby.id}`);
+    await startLobbyInternal(lobby);
   }
 );
 

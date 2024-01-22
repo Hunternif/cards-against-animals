@@ -46,6 +46,7 @@ export interface LobbySettings {
   play_until: PlayUntil;
   max_turns: number;
   max_score: number;
+  turns_per_person: number;
   cards_per_person: number;
   /** If ture, unviewed cards will be dealt first. */
   new_cards_first: boolean;
@@ -61,9 +62,10 @@ export interface LobbySettings {
 
 export function defaultLobbySettings(): LobbySettings {
   return {
-    play_until: "forever",
+    play_until: "max_turns_per_person",
     max_turns: 10,
     max_score: 5,
+    turns_per_person: 3,
     cards_per_person: 10,
     new_cards_first: true,
     sort_cards_by_rating: true,
@@ -73,7 +75,7 @@ export function defaultLobbySettings(): LobbySettings {
   };
 }
 
-export type PlayUntil = "forever" | "max_turns" | "max_score";
+export type PlayUntil = "forever" | "max_turns" | "max_turns_per_person" | "max_score";
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {

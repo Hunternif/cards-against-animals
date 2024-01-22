@@ -53,6 +53,7 @@ function mapSettings(data: any): LobbySettings {
     play_until: data.play_until,
     max_turns: data.max_turns,
     max_score: data.max_score,
+    turns_per_person: data.turns_per_person,
     cards_per_person: data.cards_per_person,
     new_cards_first: data.new_cards_first,
     sort_cards_by_rating: data.sort_cards_by_rating,

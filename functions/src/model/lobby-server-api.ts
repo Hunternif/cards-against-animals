@@ -21,7 +21,7 @@ import {
   getAllPromptsForGame,
   getAllResponsesForGame
 } from "./deck-server-api";
-import { dealCardsToPlayer, getLastTurn, updateTurn } from "./turn-server-api";
+import { createNewTurn, dealCardsToPlayer, getLastTurn, updateTurn } from "./turn-server-api";
 import {
   getCAAUser,
   setUsersCurrentLobby,
@@ -103,6 +103,18 @@ export async function getPlayers(lobbyID: string, role?: PlayerRole):
   }
 }
 
+/** Counts players in this lobby with this role. */
+export async function countPlayers(lobbyID: string, role?: PlayerRole): Promise<number> {
+  if (!role) {
+    // Fetch all players
+    return (await getPlayersRef(lobbyID).count().get()).data().count;
+  } else {
+    return (await getPlayersRef(lobbyID)
+      .where("role", "==", role).count().get()
+    ).data().count;
+  }
+}
+
 /** Get active "online" players, usable for game functions. */
 export async function getOnlinePlayers(lobbyID: string):
   Promise<Array<PlayerInLobby>> {
@@ -148,11 +160,49 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
   }
 }
 
+/** Starts the game */
+export async function startLobbyInternal(lobby: GameLobby) {
+  await validateGameSettings(lobby);
+  // Copy cards from all added decks into the lobby:
+  await copyDecksToLobby(lobby);
+  await createNewTurn(lobby.id);
+  // Start the game:
+  lobby.status = "in_progress";
+  await updateLobby(lobby);
+  logger.info(`Started lobby ${lobby.id}`);
+}
+
+/** Check and correct any settings before starting the game */
+async function validateGameSettings(lobby: GameLobby) {
+  const settings = lobby.settings;
+  const defaults = defaultLobbySettings();
+  // 1. Fix any invalid numbers:
+  if (isNaN(settings.max_turns) || settings.max_turns < 1) {
+    settings.max_turns = defaults.max_turns;
+  }
+  if (isNaN(settings.max_score) || settings.max_score < 1) {
+    settings.max_score = defaults.max_score;
+  }
+  if (isNaN(settings.cards_per_person) ||
+    settings.cards_per_person < 2 || settings.cards_per_person > 99) {
+    settings.cards_per_person = defaults.cards_per_person;
+  }
+  if (isNaN(settings.turns_per_person) || settings.turns_per_person < 1) {
+    settings.turns_per_person = defaults.turns_per_person;
+  }
+  // 2. Adjust max_turns for turns_per_person
+  if (settings.play_until === "max_turns_per_person") {
+    const playerCount = await countPlayers(lobby.id, "player");
+    settings.max_turns = playerCount * settings.turns_per_person;
+  }
+  await updateLobby(lobby);
+}
+
 /**
  * Copy cards from all added decks into the lobby.
  * Copy the content because the deck could be edited or deleted in the future.
  */
-export async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
+async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
   const newPrompts = new Array<PromptCardInGame>();
   const newResponses = new Array<ResponseCardInGame>();
   // Copy all decks in sequence:
