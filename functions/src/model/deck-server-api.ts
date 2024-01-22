@@ -184,7 +184,9 @@ export async function logDownvotes(lobbyID: string) {
     for (const playerDataSnap of playerDataSnaps) {
       const hand = await getPlayerHand(lobbyID, turnSnap.id, playerDataSnap.id);
       for (const card of hand) {
-        if (card.downvoted) downvotedCards.push(card);
+        if (card.downvoted && !downvotedCards.find((c) => c.id === card.id)) {
+          downvotedCards.push(card);
+        }
       }
     }
   }
