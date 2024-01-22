@@ -12,7 +12,8 @@ import {
   LobbySettings,
   PromptCardInGame,
   PromptDeckCard,
-  ResponseCardInGame
+  ResponseCardInGame,
+  ResponseDeckCard
 } from "../shared/types";
 import { getPlayerDataRef, getPlayerHand, getTurnsRef } from "./turn-server-api";
 
@@ -72,21 +73,24 @@ export function getCardIndex(
 
   // Adjust index based on rating:
   if (settings.sort_cards_by_rating) {
-    let factor = (100.0 + card.rating) / 100.0 *
-      (card.plays + 1.0) *
+    let factor = (100.0 + card.rating * 40.0) / 100.0 *
+      (card.plays / 2.0 + 1.0) *
       10.0 / (card.views + 10.0) *
       (2 * card.wins + 1.0) *
-      1.0 / (card.discards + 1.0);
+      1.0 / (card.discards * 10.0 + 1.0);
     // Adjust prompt cards based on votes:
     if (card instanceof PromptDeckCard) {
       factor = factor *
         (2 * card.upvotes + 1.0) *
-        1.0 / (card.downvotes * 2.0 + 1.0);
+        1.0 / (card.downvotes * 10.0 + 1.0);
+    }
+    // Adjust response cards based on likes:
+    if (card instanceof ResponseDeckCard) {
+      factor = factor * (1.0 + card.likes / 2.0);
     }
     factor = Math.max(0.0001, factor);
     factor = Math.min(factor, 1.2);
     result = (result * factor) >>> 0;
-
   }
 
   // Adjust index for unviewed cards
@@ -167,8 +171,8 @@ export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
     for (const promptVotes of logData.promptVotes || []) {
       const prompt = promptVotes.card;
       const cardRef = getDeckPromptsRef(prompt.deck_id).doc(prompt.card_id_in_deck);
-      transaction.update(cardRef, { upvotes: FieldValue.increment(promptVotes.upvotes) })
-      transaction.update(cardRef, { downvotes: FieldValue.increment(promptVotes.downvotes) })
+      transaction.update(cardRef, { upvotes: FieldValue.increment(promptVotes.upvotes) });
+      transaction.update(cardRef, { downvotes: FieldValue.increment(promptVotes.downvotes) });
     }
   });
 }
