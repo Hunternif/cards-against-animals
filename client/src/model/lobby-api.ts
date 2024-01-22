@@ -125,6 +125,7 @@ export function checkIfShouldEndGame(
     case "forever": return false;
     case "max_turns_per_person":
       // With turns per person, we set max_turns at the start of the game.
+      // If a player joins during the game, we will add only 1 more turn.
     case "max_turns":
       return turn.ordinal >= lobby.settings.max_turns;
     case "max_score": {

@@ -149,14 +149,20 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
   await setUsersCurrentLobby(userID, lobby.id);
   logger.info(`User ${userName} (${userID}) joined lobby ${lobby.id} as ${role}`);
 
-  // deal cards to new player
+  // If the game has started, onboard the player:
   if (lobby.status == "in_progress") {
+    // Deal cards to the new player:
     const turn = await getLastTurn(lobby.id);
-    if (!turn) {
-      throw new HttpsError("failed-precondition",
-        `Can't deal cards. Lobby ${lobby.id} is in progess but has no turns.`);
+    if (turn) {
+      await dealCardsToPlayer(lobby, null, turn, userID);
+    } else {
+      logger.warn(`Could not deal cards. Lobby ${lobby.id} is in progess but has no turns.`);
     }
-    await dealCardsToPlayer(lobby, null, turn, userID);
+    // If using turns_per_person, add more turns:
+    if (lobby.settings.play_until === "max_turns_per_person") {
+      lobby.settings.max_turns += 1;
+      await updateLobby(lobby);
+    }
   }
 }
 
