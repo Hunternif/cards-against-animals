@@ -30,8 +30,7 @@ import {
   logInteractionsInCompletePhase,
   logInteractionsInReadingPhase,
   logPlayedPrompt,
-  updatePlayerScoresFromTurn,
-  updateTurn
+  updatePlayerScoresFromTurn
 } from "./model/turn-server-api";
 import { playerConverter, turnConverter } from "./shared/firestore-converters";
 import { PromptCardInGame, ResponseCardInGame } from "./shared/types";
@@ -147,9 +146,6 @@ export const endLobby = onCall<
       if (lastTurn.judge_uid !== event.auth?.uid) {
         throw new HttpsError("unauthenticated", "Must be lobby judge");
       }
-      // End last turn:
-      lastTurn.phase = "complete";
-      await updateTurn(lobby.id, lastTurn);
       // Apply downvotes to the deck:
       await logDownvotes(lobby.id);
     }
