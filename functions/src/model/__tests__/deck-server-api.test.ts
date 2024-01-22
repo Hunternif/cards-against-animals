@@ -182,6 +182,15 @@ test('sort cards based on rating', () => {
   prompt.plays = 2;
   prompt.downvotes = 5;
   expect(getCardIndex(prompt, fakeRng, settings)).toBe(3);
+
+  // Prompt upvotes and downvotes cancel each other out:
+  prompt.views = 1;
+  prompt.plays = 1;
+  prompt.upvotes = 10;
+  prompt.downvotes = 10;
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(120);
+  prompt.downvotes = 11;
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(12);
 });
 
 function newPromptCard() {

@@ -75,14 +75,14 @@ export function getCardIndex(
   if (settings.sort_cards_by_rating) {
     let factor = (100.0 + card.rating * 40.0) / 100.0 *
       (card.plays / 2.0 + 1.0) *
-      10.0 / (card.views + 10.0) *
-      (2 * card.wins + 1.0) *
+      1.0 / (card.views / 10.0 + 1.0) *
+      (card.wins * 2.0 + 1.0) *
       1.0 / (card.discards * 10.0 + 1.0);
     // Adjust prompt cards based on votes:
     if (card instanceof PromptDeckCard) {
       factor = factor *
-        (2 * card.upvotes + 1.0) *
-        1.0 / (card.downvotes * 10.0 + 1.0);
+        (2 * Math.max(0, card.upvotes - card.downvotes) + 1.0) *
+        1.0 / (Math.max(0, card.downvotes - card.upvotes) * 10.0 + 1.0);
     }
     // Adjust response cards based on likes:
     if (card instanceof ResponseDeckCard) {
