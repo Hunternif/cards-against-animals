@@ -1,16 +1,11 @@
 import { useContext } from "react";
-import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame } from "../shared/types";
+import { toggleDownvoteCard } from "../model/turn-api";
+import { PlayerResponse, ResponseCardInGame } from "../shared/types";
 import { CardResponse } from "./CardResponse";
 import { ErrorContext } from "./ErrorContext";
-import { toggleDownvoteCard } from "../model/turn-api";
-import { User } from "firebase/auth";
+import { useGameContext } from "./GameContext";
 
 interface HandProps {
-  lobby: GameLobby,
-  turn: GameTurn,
-  user: User,
-  pick: number,
-  hand: ResponseCardInGame[],
   response?: PlayerResponse,
   selectedCards: ResponseCardInGame[],
   setSelectedCards: (cards: ResponseCardInGame[]) => void,
@@ -20,12 +15,13 @@ interface HandProps {
 }
 
 /** Displays cards that the player has on hand */
-export function GameHand(
-  { lobby, turn, user, pick, hand, response,
-    selectedCards, setSelectedCards,
-    discarding, discardedCards, setDiscardedCards,
-  }: HandProps
-) {
+export function GameHand({
+  response,
+  selectedCards, setSelectedCards,
+  discarding, discardedCards, setDiscardedCards,
+}: HandProps) {
+  const { lobby, turn, player, hand, prompt } = useGameContext();
+  const pick = prompt?.pick ?? 0;
   const isHandSelectable = pick > 0;
   const { setError } = useContext(ErrorContext);
 
@@ -58,7 +54,7 @@ export function GameHand(
   }
 
   async function handleDownvote(card: ResponseCardInGame, downvoted: boolean) {
-    await toggleDownvoteCard(lobby, turn, user.uid, card, downvoted)
+    await toggleDownvoteCard(lobby, turn, player.uid, card, downvoted)
       .catch((e) => setError(e));
   }
 

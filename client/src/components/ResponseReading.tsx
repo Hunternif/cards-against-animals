@@ -1,14 +1,13 @@
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import { detectDeer, detectLenich } from "../model/deck-api";
 import { useResponseLikes } from "../model/turn-api";
-import { GameLobby, GameTurn, PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
+import { PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
+import { useGameContext } from "./GameContext";
 import { IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 import { Twemoji } from "./Twemoji";
 
 interface Props {
-  lobby: GameLobby,
-  turn: GameTurn,
   response: PlayerResponse,
   /** Only the judge player can reveal */
   canReveal?: boolean,
@@ -27,9 +26,10 @@ interface Props {
  * one by one.
 */
 export function ResponseReading({
-  lobby, turn, response, canReveal, canSelect, selected, onClick,
+  response, canReveal, canSelect, selected, onClick,
   canLike, onClickLike, showLikes,
 }: Props) {
+  const { lobby, turn } = useGameContext();
   const [likes] = useResponseLikes(lobby, turn, response);
   const likeIcon = showLikes ? <LikeIcon response={response} /> : null;
   const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";

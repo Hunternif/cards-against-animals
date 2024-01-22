@@ -1,40 +1,21 @@
-import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
+import { useGameContext } from "../../components/GameContext";
 import { GameControlRow } from "../../components/GameControlRow";
 import { GameHand } from "../../components/GameHand";
 import { GameMiniResponses } from "../../components/GameMiniResponses";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ResponseCount } from "../../components/ResponseCount";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import {
   cancelPlayerResponse,
   discardCards,
-  submitPlayerResponse,
-  usePlayerData,
-  usePlayerHand
+  submitPlayerResponse
 } from "../../model/turn-api";
 import {
-  GameLobby,
-  GameTurn,
-  PlayerInLobby,
-  PlayerResponse,
-  PromptCardInGame,
   ResponseCardInGame
 } from "../../shared/types";
-
-interface TurnProps {
-  lobby: GameLobby,
-  turn: GameTurn,
-  user: User,
-  prompt?: PromptCardInGame,
-  judge?: PlayerInLobby,
-  players: PlayerInLobby[],
-  responses: PlayerResponse[],
-  playerDiscard: ResponseCardInGame[],
-}
 
 const containerStyle: CSSProperties = {
   display: "flex",
@@ -74,12 +55,10 @@ const miniResponsesContainerStyle: CSSProperties = {
   marginTop: "1em",
 }
 
-export function PlayerAnsweringScreen(
-  { lobby, turn, user, prompt, judge, players, responses, playerDiscard }: TurnProps
-) {
-  const [data] = usePlayerData(lobby, turn, user.uid);
-  const [hand] = usePlayerHand(lobby, turn, user.uid);
-  const response = responses.find((r) => r.player_uid === user.uid);
+export function PlayerAnsweringScreen() {
+  const { lobby, turn, player, activePlayers, prompt, judge, responses,
+    playerDiscard } = useGameContext();
+  const response = responses.find((r) => r.player_uid === player.uid);
   const submitted = response !== undefined;
   const [selectedCards, setSelectedCards] =
     useState<ResponseCardInGame[]>(response?.cards?.slice() ?? []);
@@ -88,21 +67,17 @@ export function PlayerAnsweringScreen(
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
-  // Filter out spectators and the judge:
-  const validPlayers = players.filter((p) =>
-    p.role === "player" && p.status !== "left" && p.uid !== turn.judge_uid
-  );
-  const currentPlayer = players.find((p) => p.uid === user.uid);
+  // Filter out the judge:
+  const validPlayers = activePlayers.filter((p) => p.uid !== judge.uid);
 
   /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {
     setSelectedCards(cards);
-    if (!data) return;
     if (cards.length === prompt?.pick) {
-      await submitPlayerResponse(lobby, turn, data, cards)
+      await submitPlayerResponse(lobby, turn, player, cards)
         .catch((e) => setError(e));
     } else {
-      await cancelPlayerResponse(lobby, turn, data)
+      await cancelPlayerResponse(lobby, turn, player)
         .catch((e) => setError(e));
     }
   }
@@ -120,19 +95,16 @@ export function PlayerAnsweringScreen(
   /** When new discarded cards are clicked, automatically update firestore. */
   async function handleDiscard(cards: ResponseCardInGame[]) {
     setDiscardedCards(cards);
-    await discardCards(lobby, turn, user.uid, cards)
+    await discardCards(lobby, turn, player.uid, cards)
       .catch((e) => setError(e));
   }
 
-  return <>
-    {hand ? <CenteredLayout innerStyle={containerStyle}
+  return (
+    <CenteredLayout innerStyle={containerStyle}
       outerClassName="player-answering-screen"
       innerClassName="player-answering-container">
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
-        <CardPromptWithCzar
-          lobby={lobby} turn={turn}
-          currentPlayer={currentPlayer}
-          card={prompt} judge={judge} canVote />
+        <CardPromptWithCzar card={prompt} canVote />
         {prompt &&
           <ScreenSizeSwitch
             widthBreakpoint={480}
@@ -141,12 +113,7 @@ export function PlayerAnsweringScreen(
             }
             bigScreen={
               <div style={miniResponsesContainerStyle}>
-                <GameMiniResponses
-                  lobby={lobby}
-                  turn={turn}
-                  prompt={prompt}
-                  players={validPlayers}
-                  responses={responses}
+                <GameMiniResponses players={validPlayers}
                 />
               </div>
             }
@@ -155,9 +122,6 @@ export function PlayerAnsweringScreen(
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
         <GameControlRow
-          turn={turn}
-          prompt={prompt}
-          data={data}
           selection={selectedCards}
           submitted={submitted}
           discarding={discarding}
@@ -167,11 +131,6 @@ export function PlayerAnsweringScreen(
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
         <GameHand
-          lobby={lobby}
-          turn={turn}
-          user={user}
-          pick={prompt?.pick ?? 0}
-          hand={hand}
           response={response}
           selectedCards={selectedCards}
           setSelectedCards={handleSelect}
@@ -180,7 +139,6 @@ export function PlayerAnsweringScreen(
           setDiscardedCards={handleDiscard}
         />
       </div>
-    </CenteredLayout> :
-      <LoadingSpinner delay text="Loading player data..." />}
-  </>;
+    </CenteredLayout>
+  );
 }

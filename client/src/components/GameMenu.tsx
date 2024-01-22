@@ -1,23 +1,15 @@
-import { User } from "firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { endLobby, leaveLobby } from "../model/lobby-api";
-import { GameLobby, GameTurn, PlayerInLobby } from "../shared/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
+import { useGameContext } from "./GameContext";
 import { GamePlayerList } from "./GamePlayerList";
 import { IconCounter } from "./IconCounter";
 import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "./Icons";
 import { Scoreboard } from "./Scoreboard";
-
-interface MenuProps {
-  lobby: GameLobby,
-  user: User,
-  turn: GameTurn,
-  players: PlayerInLobby[],
-}
 
 const rowStyle: CSSProperties = {
   padding: "0.5rem",
@@ -56,25 +48,14 @@ const rightStyle: CSSProperties = {
 
 
 /** Menu header on top of the game page */
-export function GameMenu(
-  { lobby, turn, user, players }: MenuProps
-) {
+export function GameMenu() {
   const navigate = useNavigate();
+  const { lobby, turn, user, player, players, activePlayers,
+    isSpectator, isJudge } = useGameContext();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
-
-  const [playerListOpen, setPlayerListOpen] = useState(false);
-  function openPlayerList() { setPlayerListOpen(true); }
-  function closePlayerList() { setPlayerListOpen(false); }
-
-  const isJudge = turn.judge_uid === user.uid;
-  const player = players.find((p) => p.uid === user.uid);
-  const isSpectator = player?.role === "spectator";
-
-  // Filter out people who left:
-  const validPlayers = players.filter((p) => p.status === "online");
 
   async function handleLeave() {
     await leaveLobby(lobby, user)
@@ -107,11 +88,11 @@ export function GameMenu(
       <div style={leftStyle}>
         <CustomDropdown toggle={
           <InlineButton className="menu-player-counter" title="Players">
-            <IconCounter icon={<IconPersonInlineSmall />} count={validPlayers.length} />
+            <IconCounter icon={<IconPersonInlineSmall />} count={activePlayers.length} />
           </InlineButton>
         }>
           <Dropdown.Menu>
-            <GamePlayerList lobby={lobby} turn={turn} user={user} players={players} />
+            <GamePlayerList />
           </Dropdown.Menu>
         </CustomDropdown>
         <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>

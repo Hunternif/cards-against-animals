@@ -1,13 +1,5 @@
-import { User } from "firebase/auth";
-import { GameLobby, GameTurn, PlayerInLobby } from "../shared/types";
+import { useGameContext } from "./GameContext";
 import { PlayerCard } from "./PlayerCard";
-
-interface PlayerListProps {
-  lobby: GameLobby,
-  turn: GameTurn,
-  user: User,
-  players: PlayerInLobby[],
-}
 
 /**
  * List of players in the game.
@@ -16,13 +8,14 @@ interface PlayerListProps {
  * - no empty slots
  * - highlights current judge
  */
-export function GamePlayerList({ lobby, turn, user, players }: PlayerListProps) {
+export function GamePlayerList() {
+  const { lobby, user, players, judge } = useGameContext();
   // Filter out people who left, order by play sequence:
   const playerSequence = players
     .filter((p) => p.role === "player" && p.status !== "left")
     .sort((a, b) => a.random_index - b.random_index);
   const judgeIndex = playerSequence
-    .findIndex((p) => turn.judge_uid === p.uid) + 1;
+    .findIndex((p) => judge.uid === p.uid) + 1;
 
   return (
     <div className="game-player-list">
@@ -34,8 +27,8 @@ export function GamePlayerList({ lobby, turn, user, players }: PlayerListProps) 
               lobby={lobby}
               player={player}
               isMe={user.uid === player.uid}
-              isJudge={turn.judge_uid === player.uid}
-              canKick={turn.judge_uid === user.uid}
+              isJudge={judge.uid === player.uid}
+              canKick={judge.uid === user.uid}
             />
           </li>
         )}

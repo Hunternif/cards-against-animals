@@ -1,24 +1,14 @@
-import { User } from "firebase/auth";
 import { CSSProperties, useContext } from "react";
 import { GameButton } from "../../components/Buttons";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
+import { useGameContext } from "../../components/GameContext";
 import { MiniCardResponse } from "../../components/MiniCardResponse";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { startReadingPhase } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame } from "../../shared/types";
-import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import { ResponseCount } from "../../components/ResponseCount";
-
-interface TurnProps {
-  lobby: GameLobby,
-  turn: GameTurn,
-  user: User,
-  prompt?: PromptCardInGame,
-  judge?: PlayerInLobby,
-  players: PlayerInLobby[],
-  responses: PlayerResponse[],
-}
+import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
+import { startReadingPhase } from "../../model/turn-api";
+import { PlayerInLobby, PlayerResponse } from "../../shared/types";
 
 const topRowStyle: CSSProperties = {
   display: "flex",
@@ -48,12 +38,10 @@ const botRowStyle: CSSProperties = {
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
 
 /** Similar to GameMiniResponses, but slightly different */
-export function JudgeAwaitResponsesScreen(
-  { lobby, turn, user, prompt, judge, players, responses }: TurnProps
-) {
+export function JudgeAwaitResponsesScreen() {
   // const players = dummyPlayers;
+  const { lobby, turn, activePlayers, isJudge, prompt, judge, responses } = useGameContext();
   const { setError } = useContext(ErrorContext);
-  const isJudge = turn.judge_uid === user.uid;
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
     return responses.find((res) => res.player_uid === player.uid) ?? null;
@@ -63,23 +51,14 @@ export function JudgeAwaitResponsesScreen(
     await startReadingPhase(lobby, turn).catch((e) => setError(e));
   }
 
-  // Filter out spectators and the judge:
-  const validPlayers = players.filter((p) =>
-    p.role === "player" && p.status !== "left" && p.uid !== turn.judge_uid
-  );
-  const allResponded = validPlayers && validPlayers.every((p) =>
-    findResponse(p)
-  );
-  const currentPlayer = players.find((p) => p.uid === user.uid);
+  // Filter out the judge:
+  const validPlayers = activePlayers.filter((p) => p.uid !== judge.uid);
+  const allResponded = validPlayers.every((p) => findResponse(p));
 
   return <CenteredLayout>
     <h2 style={{ textAlign: "center" }} className="dim">Wait for responses:</h2>
     <div style={midRowStyle}>
-      <CardPromptWithCzar
-        lobby={lobby} turn={turn}
-        currentPlayer={currentPlayer}
-        card={prompt}
-        judge={isJudge ? null : judge} />
+      <CardPromptWithCzar card={prompt} />
       <ScreenSizeSwitch
         widthBreakpoint={500}
         smallScreen={

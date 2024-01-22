@@ -1,25 +1,14 @@
-import { User } from "@firebase/auth";
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
+import { useGameContext } from "../../components/GameContext";
 import { IconHeartInline, IconStarInline } from "../../components/Icons";
 import { ResponseReading, ResponseReadingWithName } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { checkIfShouldEndGame, endLobby } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame } from "../../shared/types";
-
-interface TurnProps {
-  lobby: GameLobby,
-  turn: GameTurn,
-  user: User,
-  prompt?: PromptCardInGame,
-  judge?: PlayerInLobby,
-  players: PlayerInLobby[],
-  responses: PlayerResponse[],
-}
 
 const midRowStyle: CSSProperties = {
   display: "flex",
@@ -41,13 +30,11 @@ const botRowStyle: CSSProperties = {
 }
 
 /** Displays winner of the turn */
-export function WinnerScreen(
-  { lobby, turn, user, prompt, judge, players, responses }: TurnProps
-) {
+export function WinnerScreen() {
+  const { lobby, turn, players, isJudge, prompt, responses } = useGameContext();
   const [startingNewTurn, setStartingNewTurn] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
-  const isJudge = turn.judge_uid === user.uid;
   const winner = players.find((p) => p.uid === turn.winner_uid);
 
   const winnerResponse = responses.find((r) => r.player_uid === turn.winner_uid);
@@ -80,12 +67,9 @@ export function WinnerScreen(
             <Delay>No winner</Delay>}
         </h2>
         <div className="winner-cards-row">
-          <CardPromptWithCzar
-            lobby={lobby} turn={turn}
-            card={prompt}
-            judge={isJudge ? null : judge} />
+          <CardPromptWithCzar card={prompt} />
           {winnerResponse && (
-            <ResponseReading lobby={lobby} turn={turn} response={winnerResponse} />
+            <ResponseReading response={winnerResponse} />
           )}
         </div>
       </div>
@@ -97,8 +81,7 @@ export function WinnerScreen(
           </h2>
           <div className="winner-cards-row">
             {audienceAwardResponses.map((r, i) => (
-              <ResponseReadingWithName key={i} showLikes
-                lobby={lobby} turn={turn} response={r} />
+              <ResponseReadingWithName key={i} showLikes response={r} />
             ))}
           </div>
         </div>

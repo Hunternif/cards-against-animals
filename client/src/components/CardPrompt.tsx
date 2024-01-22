@@ -1,15 +1,13 @@
-import { User } from "firebase/auth";
 import { CSSProperties, useContext } from "react";
 import { usePromptVotes, votePrompt } from "../model/turn-api";
 import {
-  GameLobby,
-  GameTurn,
-  PlayerInLobby,
   PromptCardInGame,
   VoteChoice
 } from "../shared/types";
 import { copyFields2 } from "../shared/utils";
 import { Downvote, Upvote } from "./CardVotes";
+import { ErrorContext } from "./ErrorContext";
+import { useGameContext } from "./GameContext";
 import {
   CardBottom,
   CardBottomLeft,
@@ -18,13 +16,8 @@ import {
   CardContent,
   LargeCard
 } from "./LargeCard";
-import { ErrorContext } from "./ErrorContext";
 
 interface PromptCardProps {
-  lobby: GameLobby,
-  turn: GameTurn,
-  // TODO: current player must be non-null
-  currentPlayer?: PlayerInLobby,
   /** Undefined while the judge hasn't picked a prompt yet */
   card: PromptCardInGame | undefined | null,
   canVote?: boolean,
@@ -49,18 +42,17 @@ interface KnownPromptCardProps extends PromptCardProps {
 }
 
 /** Prompt that exists (has been chosen and loaded). */
-function KnownPrompt({
-  lobby, turn, currentPlayer, card, canVote,
-}: KnownPromptCardProps) {
+function KnownPrompt({ card, canVote }: KnownPromptCardProps) {
+  const { lobby, turn, player } = useGameContext();
   const { setError } = useContext(ErrorContext);
   const [promptVotes] = usePromptVotes(lobby, turn, card);
-  const currentVote = promptVotes?.find((v) => v.player_uid === currentPlayer?.uid);
+  const currentVote = promptVotes?.find((v) => v.player_uid === player.uid);
   const voteClass = currentVote ?
     (currentVote.choice === "yes" ? "upvoted" : "downvoted") : "";
 
   async function vote(choice?: VoteChoice) {
-    if (currentPlayer) {
-      await votePrompt(lobby, turn, card, currentPlayer, choice)
+    if (player) {
+      await votePrompt(lobby, turn, card, player, choice)
         .catch((e) => setError(e));
     }
   }
@@ -119,22 +111,19 @@ const containerStyle: CSSProperties = {
   height: "auto",
 }
 
-interface PromptWithCzarProps extends PromptCardProps {
-  judge?: PlayerInLobby | null,
-}
-
 /** Displays the prompt card and the current judge name below it. */
-export function CardPromptWithCzar(props: PromptWithCzarProps) {
+export function CardPromptWithCzar(props: PromptCardProps) {
+  const { judge, isJudge } = useGameContext();
   return <div className="game-card-placeholder" style={containerStyle}>
     <CardPrompt {...props} />
-    {props.judge &&
+    {(judge && !isJudge) &&
       <div className="prompt-czar-name" style={{
         width: "100%",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
         overflow: "hidden",
       }}>
-        <span className="dimmer">Card Czar:</span> {props.judge.name}
+        <span className="dimmer">Card Czar:</span> {judge.name}
       </div>
     }
   </div>;

@@ -1,20 +1,14 @@
-import { User } from "firebase/auth";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { CardPrompt } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
+import { useGameContext } from "../../components/GameContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { logInteraction } from "../../components/utils";
 import { endLobby } from "../../model/lobby-api";
 import { discardPrompt, getPromptCount, pickNewPrompt, playPrompt } from "../../model/turn-api";
-import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
-
-interface TurnProps {
-  lobby: GameLobby,
-  turn: GameTurn,
-  user: User,
-}
+import { PromptCardInGame } from "../../shared/types";
 
 const containerStyle: CSSProperties = {
   height: "20rem",
@@ -52,7 +46,8 @@ const countStyle: CSSProperties = {
   top: "3.5rem",
 }
 
-export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
+export function JudgePickPromptScreen() {
+  const { lobby, turn } = useGameContext();
   const [prompt, setPrompt] = useState<PromptCardInGame | null>(null);
   const [cardCount, setCardCount] = useState(-1);
   const [initialLoaded, setInitialLoaded] = useState(false);
@@ -124,7 +119,7 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
         <div style={midRowStyle}>
           {prompt ? (
             <>
-              <CardPrompt lobby={lobby} turn={turn} card={prompt} />
+              <CardPrompt card={prompt} />
               <div style={sideSectionStyle}>
                 {cardCount > 1 ? (<>
                   <GameButton secondary small onClick={handleChange}>

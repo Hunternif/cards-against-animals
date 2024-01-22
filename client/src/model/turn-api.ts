@@ -29,7 +29,6 @@ import { RNG } from "../shared/rng";
 import {
   GameLobby,
   GameTurn,
-  PlayerDataInTurn,
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
@@ -187,24 +186,24 @@ export async function getPromptCount(lobby: GameLobby): Promise<number> {
 export async function submitPlayerResponse(
   lobby: GameLobby,
   turn: GameTurn,
-  data: PlayerDataInTurn,
+  player: PlayerInLobby,
   cards: ResponseCardInGame[],
 ) {
   const rng = RNG.fromTimestamp();
   const response = new PlayerResponse(
-    data.player_uid, data.player_name, cards, rng.randomInt(), false, 0);
+    player.uid, player.name, cards, rng.randomInt(), false, 0);
   await setDoc(
-    doc(getPlayerResponsesRef(lobby.id, turn.id), data.player_uid), response);
+    doc(getPlayerResponsesRef(lobby.id, turn.id), player.uid), response);
 }
 
 /** Retract player's response */
 export async function cancelPlayerResponse(
   lobby: GameLobby,
   turn: GameTurn,
-  data: PlayerDataInTurn,
+  player: PlayerInLobby,
 ) {
   await deleteDoc(
-    doc(getPlayerResponsesRef(lobby.id, turn.id), data.player_uid));
+    doc(getPlayerResponsesRef(lobby.id, turn.id), player.uid));
 }
 
 /** Called by the judge when revealing a response. */
