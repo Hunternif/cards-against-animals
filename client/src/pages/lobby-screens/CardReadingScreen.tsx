@@ -5,7 +5,7 @@ import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse } from "../../model/turn-api";
+import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse, usePromptVotes } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame } from "../../shared/types";
 
 interface TurnProps {
@@ -61,6 +61,7 @@ export function CardReadingScreen({
   const noResponses = responses.length === 0;
   const shuffledResponses = responses.sort((r1, r2) => r1.random_index - r2.random_index);
   const currentPlayer = players.find((p) => p.uid === user.uid);
+  const isActivePlayer = currentPlayer?.role === "player";
 
   async function handleClick(response: PlayerResponse) {
     if (allRevealed) {
@@ -117,7 +118,12 @@ export function CardReadingScreen({
       </>}
     </div>
     <div style={midRowStyle} className="reading-main-row">
-      <CardPromptWithCzar card={prompt} judge={isJudge ? null : judge} />
+      <CardPromptWithCzar
+        lobby={lobby} turn={turn}
+        currentPlayer={currentPlayer}
+        card={prompt}
+        judge={isJudge ? null : judge}
+        canVote={isActivePlayer && !isJudge} />
       {shuffledResponses.map((r) =>
         <ResponseReading
           key={r.player_uid}

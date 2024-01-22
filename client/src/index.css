@@ -646,6 +646,18 @@ button.start-button {
 .game-card.locked-card.downvoted .downvote-card-icon {
   opacity: 1;
 }
+.prompt-voting {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+}
+.prompt-voting .upvote-card-icon {
+  color: #63865c;
+}
+.prompt-voting .downvote-card-icon {
+  color: #975757;
+  margin-bottom: -0.5em;
+}
 
 
 /*--------------------- Discarding response cards -----------------*/

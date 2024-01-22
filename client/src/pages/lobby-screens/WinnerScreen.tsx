@@ -4,12 +4,12 @@ import { GameButton } from "../../components/Buttons";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
+import { IconHeartInline, IconStarInline } from "../../components/Icons";
 import { ResponseReading, ResponseReadingWithName } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { checkIfShouldEndGame, endLobby } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame } from "../../shared/types";
-import { checkIfShouldEndGame, endLobby } from "../../model/lobby-api";
-import { IconHeartInline, IconStarInline } from "../../components/Icons";
 
 interface TurnProps {
   lobby: GameLobby,
@@ -80,7 +80,10 @@ export function WinnerScreen(
             <Delay>No winner</Delay>}
         </h2>
         <div className="winner-cards-row">
-          <CardPromptWithCzar card={prompt} judge={isJudge ? null : judge} />
+          <CardPromptWithCzar
+            lobby={lobby} turn={turn}
+            card={prompt}
+            judge={isJudge ? null : judge} />
           {winnerResponse && (
             <ResponseReading lobby={lobby} turn={turn} response={winnerResponse} />
           )}

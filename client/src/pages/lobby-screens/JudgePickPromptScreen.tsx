@@ -124,7 +124,7 @@ export function JudgePickPromptScreen({ lobby, turn }: TurnProps) {
         <div style={midRowStyle}>
           {prompt ? (
             <>
-              <CardPrompt card={prompt} />
+              <CardPrompt lobby={lobby} turn={turn} card={prompt} />
               <div style={sideSectionStyle}>
                 {cardCount > 1 ? (<>
                   <GameButton secondary small onClick={handleChange}>

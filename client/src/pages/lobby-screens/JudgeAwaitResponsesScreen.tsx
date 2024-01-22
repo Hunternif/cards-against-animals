@@ -70,11 +70,15 @@ export function JudgeAwaitResponsesScreen(
   const allResponded = validPlayers && validPlayers.every((p) =>
     findResponse(p)
   );
+  const currentPlayer = players.find((p) => p.uid === user.uid);
 
   return <CenteredLayout>
     <h2 style={{ textAlign: "center" }} className="dim">Wait for responses:</h2>
     <div style={midRowStyle}>
-      <CardPromptWithCzar card={prompt}
+      <CardPromptWithCzar
+        lobby={lobby} turn={turn}
+        currentPlayer={currentPlayer}
+        card={prompt}
         judge={isJudge ? null : judge} />
       <ScreenSizeSwitch
         widthBreakpoint={500}

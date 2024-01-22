@@ -92,6 +92,7 @@ export function PlayerAnsweringScreen(
   const validPlayers = players.filter((p) =>
     p.role === "player" && p.status !== "left" && p.uid !== turn.judge_uid
   );
+  const currentPlayer = players.find((p) => p.uid === user.uid);
 
   /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {
@@ -128,7 +129,10 @@ export function PlayerAnsweringScreen(
       outerClassName="player-answering-screen"
       innerClassName="player-answering-container">
       <div className="game-top-row" style={{ ...rowStyle, ...topRowStyle }}>
-        <CardPromptWithCzar card={prompt} judge={judge} />
+        <CardPromptWithCzar
+          lobby={lobby} turn={turn}
+          currentPlayer={currentPlayer}
+          card={prompt} judge={judge} canVote />
         {prompt &&
           <ScreenSizeSwitch
             widthBreakpoint={480}
