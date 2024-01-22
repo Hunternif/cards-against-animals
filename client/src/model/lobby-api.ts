@@ -159,7 +159,7 @@ export async function isUserInLobby(lobbyID: string, user: User): Promise<boolea
   try {
     const player = await getPlayerInLobby(lobbyID, user.uid);
     return player !== null;
-  } catch (e: any) {
+  } catch (e) {
     return false;
   }
 }

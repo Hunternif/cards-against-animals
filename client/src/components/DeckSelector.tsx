@@ -61,7 +61,7 @@ export function DeckSelector({ lobby, readOnly }: SelectorProps) {
     });
   }
 
-  useEffect(() => { loadDecks(); }, []);
+  useEffect(() => { loadDecks(); }, [loadDecks]);
 
   return (
     <div className="deck-selector">
@@ -120,7 +120,7 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
         </tr>
       </thead>
       <tbody>
-        {decks?.map((deck, i) =>
+        {decks?.map((deck) =>
           <DeckRow
             key={deck.id}
             deck={deck}

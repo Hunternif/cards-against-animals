@@ -97,7 +97,7 @@ export function JudgePickPromptScreen() {
 
   useEffect(() => {
     getInitialPrompt().catch((e) => setError(e));
-  }, [lobby]);
+  }, [lobby, getInitialPrompt, setError]);
 
   useEffect(() => {
     getPromptCount(lobby).then((c) => setCardCount(c));

@@ -70,7 +70,7 @@ export function CardReadingScreen() {
     if (winner) {
       try {
         await chooseWinner(lobby, turn, winner.player_uid);
-      } catch (e: any) {
+      } catch (e) {
         setError(e);
       }
     }

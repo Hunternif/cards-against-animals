@@ -27,23 +27,25 @@ export function useDelay<T>(
   value: T, delayMs: number = 1000, onClear?: () => void,
 ): T | null {
   const [show, setShow] = useState(false);
-  let timeout: NodeJS.Timeout | null = null;
 
-  function reset() {
-    if (timeout) {
-      setShow(false);
-      clearTimeout(timeout);
-      timeout = null;
-    }
-  }
   useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null;
+
+    function reset() {
+      if (timeout) {
+        setShow(false);
+        clearTimeout(timeout);
+        timeout = null;
+      }
+    }
+
     reset();
     timeout = setTimeout(() => {
       setShow(true);
       if (onClear) onClear();
     }, delayMs)
     return reset;
-  }, [timeout, delayMs, value, onClear]);
+  }, [delayMs, value, onClear]);
 
   if (!show) return null;
   else return value;

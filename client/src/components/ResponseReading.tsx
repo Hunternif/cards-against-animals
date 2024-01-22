@@ -58,7 +58,6 @@ export function ResponseReading({
         canLike={canLike}
         onClickLike={handleClickLike}
         likes={showLikes ? likes : undefined}
-        className={canSelectClass}
         likeIcon={likeIcon}
       />
     ) : (
@@ -93,12 +92,11 @@ interface CardStackProps {
   onClickLike?: () => void,
   likes?: Vote[],
   likeIcon?: ReactNode,
-  className?: string,
 }
 
 /** A single response rendered as a stack of multiple cards. */
 function ManyCardsStack({
-  response, canSelect, selected, onClick, canLike, onClickLike, likes, likeIcon, className,
+  response, canSelect, selected, onClick, canLike, onClickLike, likes, likeIcon,
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(response.cards.map(() => 0));
@@ -189,7 +187,7 @@ function CardResponseReading({
     if (setContentHeight && contentRef.current) {
       measure(contentRef.current);
     }
-  }, [setContentHeight, contentRef]);
+  }, [setContentHeight, contentRef, measure]);
 
   // Detect resize, e.g. after running Twemoji:
   useEffect(() => {
@@ -201,7 +199,7 @@ function CardResponseReading({
       resizeObserver.observe(elem);
       return () => resizeObserver.disconnect(); // clean up 
     }
-  }, [contentRef]);
+  }, [contentRef, measure]);
 
   function measure(elem: HTMLElement) {
     if (setContentHeight) {

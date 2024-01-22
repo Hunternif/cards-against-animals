@@ -22,11 +22,6 @@ const containerStyle: CSSProperties = {
   padding: "0 1em",
   gap: "1em",
 };
-const equalSizeStyle: CSSProperties = {
-  flexGrow: 1,
-  flexShrink: 1,
-  flexBasis: "0%",
-};
 const leftStyle: CSSProperties = {
   flexGrow: 1,
   flexShrink: 1,

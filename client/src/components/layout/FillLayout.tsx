@@ -1,5 +1,3 @@
-import { CSSProperties, ReactNode } from "react";
-
 interface LayoutProps extends React.HTMLAttributes<HTMLElement> { }
 
 /** Fills all available space */

@@ -87,7 +87,7 @@ function AdminContent({ user }: UserProps) {
 }
 
 export function AdminPage() {
-  const [error, setError] = useState<any | null>(null);
+  const [error, setError] = useState(null);
   return <>
     <ErrorModal error={error} setError={setError} />
     <ErrorContext.Provider value={{ error, setError }}>

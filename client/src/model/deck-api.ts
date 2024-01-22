@@ -1,7 +1,7 @@
-import { collection, doc, getCountFromServer, getDoc, getDocs, runTransaction, setDoc, writeBatch } from "firebase/firestore";
-import { db, decksRef, lobbiesRef } from "../firebase";
-import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from "../shared/types";
+import { collection, doc, getCountFromServer, getDocs, runTransaction } from "firebase/firestore";
+import { db, decksRef } from "../firebase";
 import { deckTagConverter, promptDeckCardConverter, responseDeckCardConverter } from "../shared/firestore-converters";
+import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from "../shared/types";
 
 /** Returns Firestore subcollection reference of prompt cards in deck. */
 function getPromptsRef(deckID: string) {
@@ -123,7 +123,7 @@ export function processCardText(text: string): string {
 /** Re-formats specifically the gaps in prompt cards, to be '_' */
 export function processPromptText(text: string): string {
   text = text.replace(/_+/g, "_");
-  text = text.replace(/(^|\s)_([\s\.,:;!?\-~]|$)/g, "$1_$2");
+  text = text.replace(/(^|\s)_([\s.,:;!?\-~]|$)/g, "$1_$2");
   return text;
 }
 
