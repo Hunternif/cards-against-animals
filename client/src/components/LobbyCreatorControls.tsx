@@ -1,6 +1,6 @@
 import { CSSProperties, useContext, useState } from "react";
 import { Container } from "react-bootstrap";
-import { startLobby } from "../model/lobby-api";
+import { startLobby, updateLobby } from "../model/lobby-api";
 import { GameLobby } from "../shared/types";
 import { GameButton } from "./Buttons";
 import { DeckSelector } from "./DeckSelector";
@@ -8,7 +8,7 @@ import { Timed } from "./Delay";
 import { ErrorContext } from "./ErrorContext";
 import { IconLink, IconPlay } from "./Icons";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { LobbySettings } from "./LobbySettings";
+import { LobbySettingsPanel } from "./LobbySettingsPanel";
 
 interface Props {
   lobby: GameLobby,
@@ -62,13 +62,18 @@ export function LobbyCreatorControls({ lobby }: Props) {
     setShowLink(true);
   }
 
+  async function handleSettingsChange() {
+    // Creator can change settings directly.
+    await updateLobby(lobby).catch(e => setError(e));
+  }
+
   if (starting) return <LoadingSpinner text="Starting..." delay />;
   return <>
     <header><h3>Select decks</h3></header>
     <Container style={midStyle}
       className="miniscrollbar miniscrollbar-auto miniscrollbar-light">
       <DeckSelector lobby={lobby} />
-      <LobbySettings lobby={lobby} />
+      <LobbySettingsPanel settings={lobby.settings} onChange={handleSettingsChange} />
     </Container>
     <footer>
       <GameButton light style={startButtonStyle} className="start-button"

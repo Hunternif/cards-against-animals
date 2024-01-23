@@ -1,8 +1,8 @@
+import { CSSProperties } from "react";
 import { Container } from "react-bootstrap";
 import { GameLobby } from "../shared/types";
-import { CSSProperties } from "react";
 import { DeckSelector } from "./DeckSelector";
-import { LobbySettings } from "./LobbySettings";
+import { LobbySettingsPanel } from "./LobbySettingsPanel";
 
 interface Props {
   lobby: GameLobby,
@@ -27,7 +27,7 @@ export function LobbyCreationReadOnly({ lobby }: Props) {
     <Container style={midStyle}
       className="miniscrollbar miniscrollbar-auto miniscrollbar-light">
       <DeckSelector lobby={lobby} readOnly />
-      <LobbySettings lobby={lobby} readOnly />
+      <LobbySettingsPanel settings={lobby.settings} readOnly />
     </Container>
     <footer>
       Please wait for the game to start

@@ -1,19 +1,19 @@
 import { ReactNode } from "react";
-import { getAllOnlinePlayersInLobby, updateLobby } from "../model/lobby-api";
-import { GameLobby } from "../shared/types";
+import { LobbySettings } from "../shared/types";
 import { useDelay } from "./Delay";
 import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
 
 interface Props {
-  lobby: GameLobby,
+  settings: LobbySettings,
   readOnly?: boolean,
   /** During a game some settings no longer take effect, and are disabled. */
   inGame?: boolean,
+  /** Called after any setting is changed */
+  onChange?: (settings: LobbySettings) => Promise<void>,
 }
 
-export function LobbySettings(props: Props) {
-  const settings = props.lobby.settings;
-  const playUntil = settings.play_until;
+export function LobbySettingsPanel(props: Props) {
+  const playUntil = props.settings.play_until;
   // Delay header class to prevent background flickering bug in Chrome :(
   const headerClass = useDelay("lobby-settings", 1000) ?? "";
   return <>
@@ -36,7 +36,7 @@ export function LobbySettings(props: Props) {
       <FormItem label="Sort cards by rating" disabled={props.inGame} control={<SortCardsByRatingControl {...props} />} />
       <FormItem label="Allow join mid-game" control={<AllowJoinMidGameControl {...props} />} />
       <FormItem label="Enable likes" control={<EnableLikesControl {...props} />} />
-      {settings.enable_likes && (
+      {props.settings.enable_likes && (
         <FormItem label="Who can see likes" control={<ShowLikesToControl {...props} />} />
       )}
       <FormItem label="Freeze card stats" control={<FreezeStatsControl {...props} />} />
@@ -44,12 +44,12 @@ export function LobbySettings(props: Props) {
   </>;
 }
 
-function EndControl({ lobby, readOnly }: Props) {
+function EndControl({ settings, readOnly, onChange }: Props) {
   return <SelectInput disabled={readOnly}
-    value={lobby.settings.play_until}
+    value={settings.play_until}
     onChange={async (newValue) => {
-      lobby.settings.play_until = newValue;
-      await updateLobby(lobby);
+      settings.play_until = newValue;
+      if (onChange) await onChange(settings);
     }}
     options={[
       ["forever", "Forever"],
@@ -60,97 +60,97 @@ function EndControl({ lobby, readOnly }: Props) {
   />;
 }
 
-function MaxTurnsControl({ lobby, readOnly }: Props) {
+function MaxTurnsControl({ settings, readOnly, onChange }: Props) {
   return <NumberInput min={1} max={99} disabled={readOnly}
-    value={lobby.settings.max_turns}
+    value={settings.max_turns}
     onChange={async (newValue) => {
-      lobby.settings.max_turns = newValue;
-      await updateLobby(lobby);
+      settings.max_turns = newValue;
+      if (onChange) await onChange(settings);
     }}
   />;
 }
 
-function MaxScoreControl({ lobby, readOnly }: Props) {
+function MaxScoreControl({ settings, readOnly, onChange }: Props) {
   return <NumberInput min={1} max={99} disabled={readOnly}
-    value={lobby.settings.max_score}
+    value={settings.max_score}
     onChange={async (newValue) => {
-      lobby.settings.max_score = newValue;
-      await updateLobby(lobby);
+      settings.max_score = newValue;
+      if (onChange) await onChange(settings);
     }}
   />;
 }
 
-function TurnsPerPersonControl({ lobby, readOnly, inGame }: Props) {
+function TurnsPerPersonControl({ settings, readOnly, onChange }: Props) {
   return <NumberInput min={1} max={99} disabled={readOnly}
-    value={lobby.settings.turns_per_person}
+    value={settings.turns_per_person}
     onChange={async (newValue) => {
-      lobby.settings.turns_per_person = newValue;
-      if (inGame && !isNaN(newValue) && newValue > 0) {
-        // Update total turns for terns per person:
-        const players = await getAllOnlinePlayersInLobby(lobby.id);
-        lobby.settings.max_turns = players.length * newValue;
-      }
-      await updateLobby(lobby);
+      settings.turns_per_person = newValue;
+      // if (inGame && !isNaN(newValue) && newValue > 0) {
+      //   // Update total turns for terns per person:
+      //   const players = await getAllOnlinePlayersInLobby(lobby.id);
+      //   settings.max_turns = players.length * newValue;
+      // }
+      if (onChange) await onChange(settings);
     }}
   />;
 }
 
-function CardsPerPersonControl({ lobby, readOnly }: Props) {
+function CardsPerPersonControl({ settings, readOnly, onChange }: Props) {
   return <NumberInput min={2} max={99} disabled={readOnly}
-    value={lobby.settings.cards_per_person}
+    value={settings.cards_per_person}
     onChange={async (newValue) => {
-      lobby.settings.cards_per_person = newValue;
-      await updateLobby(lobby);
+      settings.cards_per_person = newValue;
+      if (onChange) await onChange(settings);
     }}
   />;
 }
 
-function NewCardsFirstControl({ lobby, readOnly, inGame }: Props) {
+function NewCardsFirstControl({ settings, readOnly, onChange, inGame, }: Props) {
   return <ToggleInput disabled={readOnly || inGame}
-    value={lobby.settings.new_cards_first}
+    value={settings.new_cards_first}
     onChange={async (newValue) => {
-      lobby.settings.new_cards_first = newValue;
-      await updateLobby(lobby);
+      settings.new_cards_first = newValue;
+      if (onChange) await onChange(settings);
     }}
   />;
 }
 
-function SortCardsByRatingControl({ lobby, readOnly, inGame }: Props) {
+function SortCardsByRatingControl({ settings, readOnly, onChange, inGame }: Props) {
   return <ToggleInput disabled={readOnly || inGame}
-    value={lobby.settings.sort_cards_by_rating}
+    value={settings.sort_cards_by_rating}
     onChange={async (newValue) => {
-      lobby.settings.sort_cards_by_rating = newValue;
-      await updateLobby(lobby);
+      settings.sort_cards_by_rating = newValue;
+      if (onChange) await onChange(settings);
     }}
   />;
 }
 
-function AllowJoinMidGameControl({ lobby, readOnly }: Props) {
+function AllowJoinMidGameControl({ settings, readOnly, onChange }: Props) {
   return <ToggleInput disabled={readOnly}
-    value={lobby.settings.allow_join_mid_game}
+    value={settings.allow_join_mid_game}
     onChange={async (newValue) => {
-      lobby.settings.allow_join_mid_game = newValue;
-      await updateLobby(lobby);
+      settings.allow_join_mid_game = newValue;
+      if (onChange) await onChange(settings);
     }}
   />;
 }
 
-function EnableLikesControl({ lobby, readOnly }: Props) {
+function EnableLikesControl({ settings, readOnly, onChange }: Props) {
   return <ToggleInput disabled={readOnly}
-    value={lobby.settings.enable_likes}
+    value={settings.enable_likes}
     onChange={async (newValue) => {
-      lobby.settings.enable_likes = newValue;
-      await updateLobby(lobby);
+      settings.enable_likes = newValue;
+      if (onChange) await onChange(settings);
     }}
   />;
 }
 
-function ShowLikesToControl({ lobby, readOnly }: Props) {
+function ShowLikesToControl({ settings, readOnly, onChange }: Props) {
   return <SelectInput disabled={readOnly}
-    value={lobby.settings.show_likes_to}
+    value={settings.show_likes_to}
     onChange={async (newValue) => {
-      lobby.settings.show_likes_to = newValue;
-      await updateLobby(lobby);
+      settings.show_likes_to = newValue;
+      if (onChange) await onChange(settings);
     }}
     options={[
       ["all", "Everyone"],
@@ -159,12 +159,12 @@ function ShowLikesToControl({ lobby, readOnly }: Props) {
   />;
 }
 
-function FreezeStatsControl({ lobby, readOnly }: Props) {
+function FreezeStatsControl({ settings, readOnly, onChange }: Props) {
   return <ToggleInput disabled={readOnly}
-    value={lobby.settings.freeze_stats}
+    value={settings.freeze_stats}
     onChange={async (newValue) => {
-      lobby.settings.freeze_stats = newValue;
-      await updateLobby(lobby);
+      settings.freeze_stats = newValue;
+      if (onChange) await onChange(settings);
     }}
   />;
 }

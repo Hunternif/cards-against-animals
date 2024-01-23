@@ -1,7 +1,9 @@
 import { CSSProperties, useContext, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { endLobby, leaveLobby } from "../model/lobby-api";
+import { endLobby, leaveLobby, updateLobby } from "../model/lobby-api";
+import { LobbySettings } from "../shared/types";
+import { copyFields } from "../shared/utils";
 import { ConfirmModal } from "./ConfirmModal";
 import { CustomDropdown } from "./CustomDropdown";
 import { ErrorContext } from "./ErrorContext";
@@ -9,11 +11,9 @@ import { useGameContext } from "./GameContext";
 import { GamePlayerList } from "./GamePlayerList";
 import { IconCounter } from "./IconCounter";
 import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "./Icons";
+import { LobbySettingsPanel } from "./LobbySettingsPanel";
 import { Scoreboard } from "./Scoreboard";
 import { Twemoji } from "./Twemoji";
-import { Modal } from "./Modal";
-import { GameButton } from "./Buttons";
-import { LobbySettings } from "./LobbySettings";
 
 const rowStyle: CSSProperties = {
   padding: "0.5rem",
@@ -60,6 +60,8 @@ export function GameMenu() {
   const [showEndModal, setShowEndModal] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
+  // Make a local copy of settings to make changes:
+  const [settings, setSettings] = useState(lobby.settings);
 
   async function handleLeave() {
     await leaveLobby(lobby, player.uid)
@@ -75,27 +77,45 @@ export function GameMenu() {
     });
   }
 
+  function openSettings() {
+    // Make a local copy of settings to make changes:
+    setSettings(copyFields(lobby.settings));
+    setShowSettingsModal(true);
+  }
+
+  async function handleSaveSettings() {
+    //TODO: We might not be the creator, so need to update via cloud function:
+    lobby.settings = settings;
+    await updateLobby(lobby).catch((e) => setError(e));
+  }
+  /** Causes the settings panel to rerender. */
+  async function refreshSettings(newSettings: LobbySettings) {
+    setSettings(copyFields(newSettings));
+  }
+
   return <>
     <ConfirmModal
       show={showLeaveModal}
-      text="Leave the game?"
       onCancel={() => setShowLeaveModal(false)}
-      onConfirm={handleLeave}
-    />
+      onConfirm={handleLeave}>
+      Leave the game?
+    </ConfirmModal>
     <ConfirmModal
       show={showEndModal}
-      text="End the game for everyone?"
       onCancel={() => setShowEndModal(false)}
       onConfirm={handleEnd}
       loading={ending}
-      loadingText="Ending game..."
-    />
-    <Modal show={showSettingsModal} className="game-settings-modal">
-      <LobbySettings inGame lobby={lobby} />
-      <footer>
-        <GameButton onClick={() => setShowSettingsModal(false)}>Done</GameButton>
-      </footer>
-    </Modal>
+      loadingText="Ending game...">
+      End the game for everyone?
+    </ConfirmModal>
+    <ConfirmModal
+      className="game-settings-modal"
+      show={showSettingsModal}
+      onCancel={() => setShowSettingsModal(false)}
+      onConfirm={handleSaveSettings}
+      okText="Save">
+      <LobbySettingsPanel inGame settings={settings} onChange={refreshSettings} />
+    </ConfirmModal>
 
     <div style={rowStyle}>
       <div style={leftStyle}>
@@ -134,7 +154,7 @@ export function GameMenu() {
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>
             <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
-            <MenuItem label="Settings" onClick={() => setShowSettingsModal(true)} judgeOnly />
+            <MenuItem label="Settings" onClick={openSettings} judgeOnly />
             <MenuItem label="End game" onClick={() => setShowEndModal(true)} judgeOnly />
           </Dropdown.Menu>
         </CustomDropdown>

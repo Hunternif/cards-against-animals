@@ -33,10 +33,10 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
   return <>
     <ConfirmModal
       show={showKickModal}
-      text="Kick the player out?"
       onCancel={() => setShowKickModal(false)}
-      onConfirm={handleKick}
-    />
+      onConfirm={handleKick}>
+      Kick the player out?
+    </ConfirmModal>
     <Card className={`player-card ${meStyle} ${judgeStyle}`}>
       <Card.Body>
         <span className="player-name">{player.name}</span>
