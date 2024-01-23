@@ -95,9 +95,12 @@ export function JudgePickPromptScreen() {
     });
   }
 
+  // Load the initial prompt when the screen loads:
   useEffect(() => {
-    getInitialPrompt().catch((e) => setError(e));
-  }, [lobby, getInitialPrompt, setError]);
+    if (!prompt) {
+      getInitialPrompt().catch((e) => setError(e));
+    }
+  }, [lobby, prompt, getInitialPrompt, setError]);
 
   useEffect(() => {
     getPromptCount(lobby).then((c) => setCardCount(c));
