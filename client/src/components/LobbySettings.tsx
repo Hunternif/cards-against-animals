@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { updateLobby } from "../model/lobby-api";
+import { getAllOnlinePlayersInLobby, updateLobby } from "../model/lobby-api";
 import { GameLobby } from "../shared/types";
 import { useDelay } from "./Delay";
 import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
@@ -7,6 +7,8 @@ import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
 interface Props {
   lobby: GameLobby,
   readOnly?: boolean,
+  /** During a game some settings no longer take effect, and are disabled. */
+  inGame?: boolean,
 }
 
 export function LobbySettings(props: Props) {
@@ -29,8 +31,8 @@ export function LobbySettings(props: Props) {
         <FormItem label="Maximum score" control={<MaxScoreControl {...props} />} />
       )}
       <FormItem label="Cards per person" control={<CardsPerPersonControl {...props} />} />
-      <FormItem label="New cards first" control={<NewCardsFirstControl {...props} />} />
-      <FormItem label="Sort cards by rating" control={<SortCardsByRatingControl {...props} />} />
+      <FormItem label="New cards first" disabled={props.inGame} control={<NewCardsFirstControl {...props} />} />
+      <FormItem label="Sort cards by rating" disabled={props.inGame} control={<SortCardsByRatingControl {...props} />} />
       <FormItem label="Allow join mid-game" control={<AllowJoinMidGameControl {...props} />} />
       <FormItem label="Enable likes" control={<EnableLikesControl {...props} />} />
       <FormItem label="Freeze card stats" control={<FreezeStatsControl {...props} />} />
@@ -74,11 +76,16 @@ function MaxScoreControl({ lobby, readOnly }: Props) {
   />;
 }
 
-function TurnsPerPersonControl({ lobby, readOnly }: Props) {
+function TurnsPerPersonControl({ lobby, readOnly, inGame }: Props) {
   return <NumberInput min={1} max={99} disabled={readOnly}
     value={lobby.settings.turns_per_person}
     onChange={async (newValue) => {
       lobby.settings.turns_per_person = newValue;
+      if (inGame && !isNaN(newValue) && newValue > 0) {
+        // Update total turns for terns per person:
+        const players = await getAllOnlinePlayersInLobby(lobby.id);
+        lobby.settings.max_turns = players.length * newValue;
+      }
       await updateLobby(lobby);
     }}
   />;
@@ -94,8 +101,8 @@ function CardsPerPersonControl({ lobby, readOnly }: Props) {
   />;
 }
 
-function NewCardsFirstControl({ lobby, readOnly }: Props) {
-  return <ToggleInput disabled={readOnly}
+function NewCardsFirstControl({ lobby, readOnly, inGame }: Props) {
+  return <ToggleInput disabled={readOnly || inGame}
     value={lobby.settings.new_cards_first}
     onChange={async (newValue) => {
       lobby.settings.new_cards_first = newValue;
@@ -104,8 +111,8 @@ function NewCardsFirstControl({ lobby, readOnly }: Props) {
   />;
 }
 
-function SortCardsByRatingControl({ lobby, readOnly }: Props) {
-  return <ToggleInput disabled={readOnly}
+function SortCardsByRatingControl({ lobby, readOnly, inGame }: Props) {
+  return <ToggleInput disabled={readOnly || inGame}
     value={lobby.settings.sort_cards_by_rating}
     onChange={async (newValue) => {
       lobby.settings.sort_cards_by_rating = newValue;
@@ -148,10 +155,12 @@ function FreezeStatsControl({ lobby, readOnly }: Props) {
 interface ItemProps {
   label: string,
   control: ReactNode,
+  disabled?: boolean,
 }
 
-function FormItem({ label, control }: ItemProps) {
-  return <div className="lobby-settings-form-item">
+function FormItem({ label, control, disabled }: ItemProps) {
+  const disabledClass = disabled ? "disabled" : "";
+  return <div className={`lobby-settings-form-item ${disabledClass}`}>
     <span style={{ textAlign: "end" }}>{label}</span>
     {control}
   </div>;

@@ -146,33 +146,6 @@ button.start-button {
 }
 
 
-/*------------------------ Scrollbar component -----------------------*/
-
-.miniscrollbar {
-  scrollbar-gutter: stable;
-}
-.miniscrollbar-auto {
-  scrollbar-gutter: auto;
-}
-
-.miniscrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-.miniscrollbar::-webkit-scrollbar-track {
-  background: 0 0;
-}
-.miniscrollbar::-webkit-scrollbar-thumb {
-  background: #111827;
-  border-radius: 4px;
-}
-.miniscrollbar-dark::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.6);
-}
-.miniscrollbar-light::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-
 /*=========================== Lobby screen ===========================*/
 
 /*-------------------------- Deck selector --------------------------*/

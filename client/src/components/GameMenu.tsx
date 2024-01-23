@@ -11,6 +11,9 @@ import { IconCounter } from "./IconCounter";
 import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "./Icons";
 import { Scoreboard } from "./Scoreboard";
 import { Twemoji } from "./Twemoji";
+import { Modal } from "./Modal";
+import { GameButton } from "./Buttons";
+import { LobbySettings } from "./LobbySettings";
 
 const rowStyle: CSSProperties = {
   padding: "0.5rem",
@@ -53,6 +56,7 @@ export function GameMenu() {
   const navigate = useNavigate();
   const { lobby, turn, player, players, activePlayers, isSpectator } = useGameContext();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
@@ -86,6 +90,12 @@ export function GameMenu() {
       loading={ending}
       loadingText="Ending game..."
     />
+    <Modal show={showSettingsModal} className="game-settings-modal">
+      <LobbySettings inGame lobby={lobby} />
+      <footer>
+        <GameButton onClick={() => setShowSettingsModal(false)}>Done</GameButton>
+      </footer>
+    </Modal>
 
     <div style={rowStyle}>
       <div style={leftStyle}>
@@ -124,6 +134,7 @@ export function GameMenu() {
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>
             <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
+            <MenuItem label="Settings" onClick={() => setShowSettingsModal(true)} judgeOnly />
             <MenuItem label="End game" onClick={() => setShowEndModal(true)} judgeOnly />
           </Dropdown.Menu>
         </CustomDropdown>

@@ -18,6 +18,32 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 $accent-color: #ffc90f;
 $like-color: #fc8181;
 
+/*------------------------ Scrollbar component -----------------------*/
+
+.miniscrollbar {
+  scrollbar-gutter: stable;
+  &.miniscrollbar-auto {
+    scrollbar-gutter: auto;
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: 0 0;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #111827;
+    border-radius: 4px;
+  }
+  &.miniscrollbar-dark::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.6);
+  }
+  &.miniscrollbar-light::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+  }
+}
+
+
 /*------------------------ Checkbox component ------------------------*/
 // From https://codepen.io/alvarotrigo/pen/YzezaMR
 .checkbox {
@@ -54,7 +80,7 @@ $like-color: #fc8181;
       box-sizing: content-box;
     }
     &:hover::after {
-      opacity: 0.4;
+      opacity: 0.3;
     }
   }
   input[type=checkbox] {
@@ -155,6 +181,26 @@ input.control {
       width: 6em;
     }
   }
+
+  &.game-settings-modal {
+    min-width: 25rem;
+    max-width: 90vw;
+    width: 60rem;
+    @media (max-width: 50rem) {
+      min-width: 20rem;
+      width: 30rem;
+      max-width: 95vw;
+    }
+    .lobby-settings-container {
+      // Add vertical scrolling:
+      @extend .miniscrollbar;
+      @extend .miniscrollbar-light;
+      overflow-y: auto;
+    }
+    header {
+      text-align: center;
+    }
+  }
 }
 
 
@@ -189,7 +235,8 @@ input.control {
 .lobby-settings-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.25em;
+  gap: 1em;
+  row-gap: 0.25em;
   padding: 0.5em 2em;
   @media (max-width: 50rem) {
     display: flex;
@@ -202,6 +249,9 @@ input.control {
   gap: 0.75em;
   align-items: center;
   min-height: 2.5em;
+  &.disabled {
+    opacity: 0.5;
+  }
 }
 
 /*------------------------- Player list in lobby -------------------------*/
