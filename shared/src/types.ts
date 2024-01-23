@@ -58,6 +58,7 @@ export interface LobbySettings {
   enable_likes: boolean;
   /** If true, card statistics will not be updated. */
   freeze_stats: boolean;
+  show_likes_to: ShowLikes;
 }
 
 export function defaultLobbySettings(): LobbySettings {
@@ -72,10 +73,12 @@ export function defaultLobbySettings(): LobbySettings {
     allow_join_mid_game: true,
     enable_likes: true,
     freeze_stats: false,
+    show_likes_to: "all_except_czar",
   };
 }
 
 export type PlayUntil = "forever" | "max_turns" | "max_turns_per_person" | "max_score";
+export type ShowLikes = "all" | "all_except_czar";
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {

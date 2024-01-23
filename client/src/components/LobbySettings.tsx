@@ -12,7 +12,8 @@ interface Props {
 }
 
 export function LobbySettings(props: Props) {
-  const playUntil = props.lobby.settings.play_until;
+  const settings = props.lobby.settings;
+  const playUntil = settings.play_until;
   // Delay header class to prevent background flickering bug in Chrome :(
   const headerClass = useDelay("lobby-settings", 1000) ?? "";
   return <>
@@ -35,6 +36,9 @@ export function LobbySettings(props: Props) {
       <FormItem label="Sort cards by rating" disabled={props.inGame} control={<SortCardsByRatingControl {...props} />} />
       <FormItem label="Allow join mid-game" control={<AllowJoinMidGameControl {...props} />} />
       <FormItem label="Enable likes" control={<EnableLikesControl {...props} />} />
+      {settings.enable_likes && (
+        <FormItem label="Who can see likes" control={<ShowLikesToControl {...props} />} />
+      )}
       <FormItem label="Freeze card stats" control={<FreezeStatsControl {...props} />} />
     </div>
   </>;
@@ -138,6 +142,20 @@ function EnableLikesControl({ lobby, readOnly }: Props) {
       lobby.settings.enable_likes = newValue;
       await updateLobby(lobby);
     }}
+  />;
+}
+
+function ShowLikesToControl({ lobby, readOnly }: Props) {
+  return <SelectInput disabled={readOnly}
+    value={lobby.settings.show_likes_to}
+    onChange={async (newValue) => {
+      lobby.settings.show_likes_to = newValue;
+      await updateLobby(lobby);
+    }}
+    options={[
+      ["all", "Everyone"],
+      ["all_except_czar", "Except czar"],
+    ]}
   />;
 }
 

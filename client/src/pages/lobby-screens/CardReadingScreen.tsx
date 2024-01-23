@@ -50,6 +50,10 @@ export function CardReadingScreen() {
   const shuffledResponses = responses.sort((r1, r2) => r1.random_index - r2.random_index);
   const isActivePlayer = player.role === "player";
 
+  const settings = lobby.settings;
+  const showLikes = settings.enable_likes &&
+    (!isJudge || settings.show_likes_to !== "all_except_czar");
+
   async function handleClick(response: PlayerResponse) {
     if (allRevealed) {
       // clicking to toggle winner
@@ -113,7 +117,7 @@ export function CardReadingScreen() {
           canSelect={isJudge && allRevealed}
           selected={winner?.player_uid === r.player_uid}
           onClick={(r) => handleClick(r)}
-          showLikes={lobby.settings.enable_likes}
+          showLikes={showLikes}
           canLike={!isJudge && r.player_uid !== player.uid && lobby.settings.enable_likes}
           onClickLike={(r) => handleLike(r)}
         />
