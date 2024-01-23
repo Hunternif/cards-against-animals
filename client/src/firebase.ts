@@ -4,7 +4,7 @@ import { collection, collectionGroup, connectFirestoreEmulator, getFirestore } f
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 import firebaseConfig from '../../firebase-config.json';
 import { deckConverter, lobbyConverter, playerConverter, userConverter } from './shared/firestore-converters';
-import { PromptCardInGame, ResponseCardInGame } from './shared/types';
+import { LobbySettings, PromptCardInGame, ResponseCardInGame } from './shared/types';
 
 export const firebaseApp = initializeApp(firebaseConfig)
 
@@ -44,6 +44,10 @@ export const findOrCreateLobbyAndJoinFun = httpsCallable<
 export const startLobbyFun = httpsCallable<
     { lobby_id: string }, void
 >(functions, 'startLobby');
+
+export const updateLobbySettingsFun = httpsCallable<
+    { lobby_id: string, settings: LobbySettings }, void
+>(functions, 'updateLobbySettings');
 
 export const newTurnFun = httpsCallable<
     { lobby_id: string }, void

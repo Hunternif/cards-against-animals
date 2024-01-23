@@ -16,10 +16,11 @@ import {
   findOrCreateLobbyFun,
   joinLobbyFun,
   lobbiesRef,
-  startLobbyFun
+  startLobbyFun,
+  updateLobbySettingsFun
 } from "../firebase";
 import { playerConverter } from "../shared/firestore-converters";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerStatus } from "../shared/types";
+import { GameLobby, GameTurn, LobbySettings, PlayerInLobby, PlayerStatus } from "../shared/types";
 
 function getPlayersRef(lobbyID: string) {
   return collection(lobbiesRef, lobbyID, 'players')
@@ -103,6 +104,11 @@ export async function startLobby(lobby: GameLobby): Promise<void> {
 
 export async function endLobby(lobby: GameLobby): Promise<void> {
   await endLobbyFun({ lobby_id: lobby.id });
+}
+
+export async function updateLobbySettings(
+  lobbyID: string, settings: LobbySettings): Promise<void> {
+  await updateLobbySettingsFun({ lobby_id: lobbyID, settings });
 }
 
 /** Should be used only during lobby setup */

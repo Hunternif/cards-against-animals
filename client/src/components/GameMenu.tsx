@@ -1,7 +1,7 @@
 import { CSSProperties, useContext, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { endLobby, leaveLobby, updateLobby } from "../model/lobby-api";
+import { endLobby, leaveLobby, updateLobbySettings } from "../model/lobby-api";
 import { LobbySettings } from "../shared/types";
 import { copyFields } from "../shared/utils";
 import { ConfirmModal } from "./ConfirmModal";
@@ -60,8 +60,10 @@ export function GameMenu() {
   const [showEndModal, setShowEndModal] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
+
   // Make a local copy of settings to make changes:
   const [settings, setSettings] = useState(lobby.settings);
+  const [savingSettings, setSavingSettings] = useState(false);
 
   async function handleLeave() {
     await leaveLobby(lobby, player.uid)
@@ -84,9 +86,15 @@ export function GameMenu() {
   }
 
   async function handleSaveSettings() {
-    //TODO: We might not be the creator, so need to update via cloud function:
-    lobby.settings = settings;
-    await updateLobby(lobby).catch((e) => setError(e));
+    setSavingSettings(true);
+    try {
+      await updateLobbySettings(lobby.id, settings);
+      setShowSettingsModal(false);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setSavingSettings(false);
+    }
   }
   /** Causes the settings panel to rerender. */
   async function refreshSettings(newSettings: LobbySettings) {
@@ -113,7 +121,7 @@ export function GameMenu() {
       show={showSettingsModal}
       onCancel={() => setShowSettingsModal(false)}
       onConfirm={handleSaveSettings}
-      okText="Save">
+      okText="Save" loadingText="Saving..." loading={savingSettings}>
       <LobbySettingsPanel inGame settings={settings} onChange={refreshSettings} />
     </ConfirmModal>
 

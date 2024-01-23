@@ -23,7 +23,7 @@ export async function assertPlayerInLobby(
   }
 }
 
-/** Asserts that current user is a judge in the current turn. */
+/** Asserts that current user is a judge in the current turn, or lobby creator. */
 export async function assertCurrentJudge(
   event: CallableRequest, lobby: GameLobby) {
   assertLoggedIn(event);

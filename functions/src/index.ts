@@ -2,12 +2,13 @@ import * as logger from "firebase-functions/logger";
 import {
   onDocumentUpdated
 } from "firebase-functions/v2/firestore";
-import { HttpsError, onCall } from "firebase-functions/v2/https";
+import { onCall } from "firebase-functions/v2/https";
 import { setGlobalOptions } from "firebase-functions/v2/options";
 
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
 import {
+  assertCurrentJudge,
   assertLobbyCreator,
   assertLoggedIn,
   assertPlayerInLobby
@@ -21,19 +22,19 @@ import {
   findActiveLobbyWithPlayer,
   getLobby,
   setLobbyEnded,
-  startLobbyInternal
+  startLobbyInternal,
+  updateLobby
 } from "./model/lobby-server-api";
 import {
   createNewTurn,
   getAllPlayerResponses,
-  getLastTurn,
   logInteractionsInCompletePhase,
   logInteractionsInReadingPhase,
   logPlayedPrompt,
   updatePlayerScoresFromTurn
 } from "./model/turn-server-api";
 import { lobbyConverter, playerConverter, turnConverter } from "./shared/firestore-converters";
-import { PromptCardInGame, ResponseCardInGame } from "./shared/types";
+import { LobbySettings, PromptCardInGame, ResponseCardInGame } from "./shared/types";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -106,6 +107,21 @@ export const startLobby = onCall<
   }
 );
 
+/** Updates lobby settings. Allowed for creator and current judge. */
+export const updateLobbySettings = onCall<
+  { lobby_id: string, settings: LobbySettings }, Promise<void>
+>(
+  { maxInstances: 2 },
+  async (event) => {
+    assertLoggedIn(event);
+    const lobby = await getLobby(event.data.lobby_id);
+    await assertCurrentJudge(event, lobby);
+    lobby.settings = event.data.settings;
+    await updateLobby(lobby);
+    logger.info(`Updated settings for lobby ${lobby.id}`);
+  }
+);
+
 /** Begins new turn. */
 export const newTurn = onCall<
   { lobby_id: string }, Promise<void>
@@ -136,14 +152,7 @@ export const endLobby = onCall<
   async (event) => {
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
-    const lastTurn = await getLastTurn(lobby.id);
-    if (!lastTurn) {
-      assertLobbyCreator(event, lobby);
-    } else {
-      if (lastTurn.judge_uid !== event.auth?.uid) {
-        throw new HttpsError("unauthenticated", "Must be lobby judge");
-      }
-    }
+    await assertCurrentJudge(event, lobby);
     await setLobbyEnded(lobby);
   }
 );
