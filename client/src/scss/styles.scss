@@ -365,11 +365,14 @@ input.control {
   }
   .emoji-like .emoji {
     height: 16px;
+    margin: 0 0.1em;
   }
 }
 
 .heart-icon {
   color: $like-color;
+  margin-bottom: -0.15em;
+  margin-right: -0.15em;
 }
 .star-icon-inline {
   color: $accent-color;
