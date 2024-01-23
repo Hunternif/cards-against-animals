@@ -19,13 +19,36 @@ interface Props {
   canLike?: boolean,
   onClickLike?: (response: PlayerResponse) => void,
   showLikes?: boolean,
+  showName?: boolean,
 }
 
+
 /**
- * From the "reading" phase, when the judge reveals player responses
- * one by one.
-*/
-export function ResponseReading({
+ * From the "reading" phase, when the judge reveals player responses one by one.
+ * Optionally displays player's name.
+ */
+export function ResponseReading(props: Props) {
+  return <>{
+    props.showName ? (
+      <div className="game-card-placeholder" style={{ height: "auto" }}>
+        <ResponseReadingWithoutName {...props} />
+        <div className="response-player-name" style={{
+          width: "100%",
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        }}>
+          {props.response.player_name}
+        </div>
+      </div>
+    ) : (
+      <ResponseReadingWithoutName {...props} />
+    )
+  }</>;
+}
+
+/** The response itself, without player name */
+function ResponseReadingWithoutName({
   response, canReveal, canSelect, selected, onClick,
   canLike, onClickLike, showLikes,
 }: Props) {
@@ -229,20 +252,6 @@ function CardResponseReading({
   );
 }
 
-/** Same as ResponseReading, but also displays player's name */
-export function ResponseReadingWithName(props: Props) {
-  return <div className="game-card-placeholder" style={{ height: "auto" }}>
-    <ResponseReading {...props} />
-    <div className="response-player-name" style={{
-      width: "100%",
-      whiteSpace: "nowrap",
-      textOverflow: "ellipsis",
-      overflow: "hidden",
-    }}>
-      {props.response.player_name}
-    </div>
-  </div>;
-}
 
 interface LikeProps {
   response: PlayerResponse

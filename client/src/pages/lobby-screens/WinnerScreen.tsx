@@ -5,7 +5,7 @@ import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
 import { useGameContext } from "../../components/GameContext";
 import { IconHeartInline, IconStarInline } from "../../components/Icons";
-import { ResponseReading, ResponseReadingWithName } from "../../components/ResponseReading";
+import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { checkIfShouldEndGame, endLobby } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
@@ -69,7 +69,9 @@ export function WinnerScreen() {
         <div className="winner-cards-row">
           <CardPromptWithCzar card={prompt} />
           {winnerResponse && (
-            <ResponseReading response={winnerResponse} />
+            <ResponseReading
+              showName={showAudienceAward}
+              response={winnerResponse} />
           )}
         </div>
       </div>
@@ -81,7 +83,7 @@ export function WinnerScreen() {
           </h2>
           <div className="winner-cards-row">
             {audienceAwardResponses.map((r, i) => (
-              <ResponseReadingWithName key={i} showLikes response={r} />
+              <ResponseReading key={i} showName showLikes response={r} />
             ))}
           </div>
         </div>
