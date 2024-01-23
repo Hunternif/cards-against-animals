@@ -36,9 +36,10 @@ export function LobbySettingsPanel(props: Props) {
       <FormItem label="Sort cards by rating" disabled={props.inGame} control={<SortCardsByRatingControl {...props} />} />
       <FormItem label="Allow join mid-game" control={<AllowJoinMidGameControl {...props} />} />
       <FormItem label="Enable likes" control={<EnableLikesControl {...props} />} />
-      {props.settings.enable_likes && (
+      {props.settings.enable_likes && <>
         <FormItem label="Who can see likes" control={<ShowLikesToControl {...props} />} />
-      )}
+        <FormItem label="Limit likes" control={<LimitLikesControl {...props} />} />
+      </>}
       <FormItem label="Freeze card stats" control={<FreezeStatsControl {...props} />} />
     </div>
   </>;
@@ -155,6 +156,20 @@ function ShowLikesToControl({ settings, readOnly, onChange }: Props) {
     options={[
       ["all", "Everyone"],
       ["all_except_czar", "Except czar"],
+    ]}
+  />;
+}
+
+function LimitLikesControl({ settings, readOnly, onChange }: Props) {
+  return <SelectInput disabled={readOnly}
+    value={settings.likes_limit}
+    onChange={async (newValue) => {
+      settings.likes_limit = newValue;
+      if (onChange) await onChange(settings);
+    }}
+    options={[
+      ["none", "–"],
+      ["1_pp_per_turn", "1 per turn"],
     ]}
   />;
 }

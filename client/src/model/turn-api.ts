@@ -85,6 +85,13 @@ function getPromptVotesRef(lobbyID: string, turnID: string, promptCardID: string
     .withConverter(voteConverter);
 }
 
+/** Get all likes on this response. */
+export async function getResponseLikes(
+  lobbyID: string, turnID: string, userID: string): Promise<Vote[]> {
+  return (await getDocs(getResponseLikesRef(lobbyID, turnID, userID)))
+    .docs.map((d) => d.data());
+}
+
 /** How many likes this response has. */
 export async function getResponseLikeCount(
   lobbyID: string, turnID: string, userID: string): Promise<number> {
@@ -289,15 +296,34 @@ export async function votePrompt(
 /** Create/delete a "like" for the given response from the current player */
 export async function toggleLikeResponse(
   lobby: GameLobby, turn: GameTurn, response: PlayerResponse,
-  currentPlayer: PlayerInLobby,
+  allResponses: PlayerResponse[], currentPlayer: PlayerInLobby,
 ) {
   const likesRef = getResponseLikesRef(lobby.id, turn.id, response.player_uid);
   const userLikeRef = doc(likesRef, currentPlayer.uid);
-  const userLikeSnap = await getDoc(userLikeRef);
-  if (userLikeSnap.exists()) {
+  const userLikeExists = (await getDoc(userLikeRef)).exists();
+
+  if (lobby.settings.likes_limit === "1_pp_per_turn") {
+    // Ensure only 1 like per person, delete all other likes:
+    await deleteAllUserLikes(lobby, turn, allResponses, currentPlayer.uid);
+  } else if (userLikeExists) {
     await deleteDoc(userLikeRef);
-  } else {
+  }
+
+  if (!userLikeExists) {
     await setDoc(userLikeRef, new Vote(currentPlayer.uid, currentPlayer.name, "yes"));
+  }
+}
+
+/** Delete all likes this user gave to other responses */
+async function deleteAllUserLikes(
+  lobby: GameLobby, turn: GameTurn, responses: PlayerResponse[], userID: string,
+) {
+  for (const r of responses) {
+    const likesRef = getResponseLikesRef(lobby.id, turn.id, r.player_uid);
+    const userLikeRef = doc(likesRef, userID);
+    if ((await getDoc(userLikeRef)).exists()) {
+      await deleteDoc(userLikeRef);
+    }
   }
 }
 

@@ -91,7 +91,7 @@ export function CardReadingScreen() {
 
   /** When a player toggles "like" on the response */
   async function handleLike(response: PlayerResponse) {
-    await toggleLikeResponse(lobby, turn, response, player)
+    await toggleLikeResponse(lobby, turn, response, responses, player)
       .catch((e) => setError(e));
   }
 
