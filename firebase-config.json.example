@@ -2,6 +2,7 @@
   "apiKey": "abcd",
   "authDomain": "my-app.firebaseapp.com",
   "databaseURL": "https://my-app-default-rtdb.europe-west1.firebasedatabase.app",
+  "webUrl": "https://my-app.web.app",
   "projectId": "my-app",
   "storageBucket": "my-app.appspot.com",
   "messagingSenderId": "123456",
