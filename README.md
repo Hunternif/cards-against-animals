@@ -1,3 +1,5 @@
+![banner](https://raw.githubusercontent.com/Hunternif/cards-against-animals/main/client/public/banner.jpg)
+
 ## Project Setup
 
 ```sh
