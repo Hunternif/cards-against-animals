@@ -74,7 +74,7 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   useEffect(() => {
     if (error || error2 || error3 || error4)
       setError(error || error2 || error3 || error4);
-  }, [error, setError]);
+  }, [error, error2, error3, error4, setError]);
 
   if (!responses || loadingResponses ||
     !playerDiscard || loadingDiscard ||

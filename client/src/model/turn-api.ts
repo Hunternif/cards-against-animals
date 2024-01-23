@@ -342,7 +342,7 @@ export function useLastTurn(lobbyID: string): LastTurnHook {
       setError(e);
       setLoading(false);
     });
-  }, [turnsSnap]);
+  }, [lobbyID, turnsSnap]);
   return [lastTurn, loading, error];
 }
 
