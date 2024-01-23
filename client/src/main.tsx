@@ -15,6 +15,7 @@ import { DecksAdmin } from './pages/admin-screens/DecksAdmin.tsx'
 import { LobbiesAdmin } from './pages/admin-screens/LobbiesAdmin.tsx'
 import { UploadDeck } from './pages/admin-screens/UploadDeck.tsx'
 import { UploadDeckTsv } from './pages/admin-screens/UploadDeckTsv.tsx'
+import { HelmetProvider } from 'react-helmet-async'
 
 
 const router = createBrowserRouter([
@@ -56,6 +57,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <HelmetProvider>
+      <RouterProvider router={router} />
+    </HelmetProvider>
   </React.StrictMode>,
 )

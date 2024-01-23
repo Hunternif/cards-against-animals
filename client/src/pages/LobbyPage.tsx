@@ -7,6 +7,7 @@ import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { firebaseAuth } from "../firebase";
 import { useLobby, usePlayerInLobby, usePlayers } from "../model/lobby-api";
+import { SEO } from "./SEO";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
@@ -24,6 +25,7 @@ export function lobbyLoader({ params }: LoaderParams): string {
 export function LobbyPage() {
   const [error, setError] = useState(null);
   return <>
+    <SEO />
     <ErrorModal error={error} setError={setError} />
     <ErrorContext.Provider value={{ error, setError }}>
       <LobbyPageThrows />
