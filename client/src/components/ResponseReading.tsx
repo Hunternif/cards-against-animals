@@ -3,7 +3,7 @@ import { detectDeer, detectLenich } from "../model/deck-api";
 import { useResponseLikes } from "../model/turn-api";
 import { PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
 import { useGameContext } from "./GameContext";
-import { IconHeart } from "./Icons";
+import { IconCat, IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 import { Twemoji } from "./Twemoji";
 
@@ -262,7 +262,11 @@ function LikeIcon({ response }: LikeProps) {
   if (response.cards.find((c) => detectDeer(c.content))) {
     return <Twemoji className="emoji-like">🦌</Twemoji>;
   } else if (response.cards.find((c) => detectLenich(c.content))) {
-    return <Twemoji className="emoji-like">👑</Twemoji>;
+    if (response.cards[0].random_index % 2 == 0) {
+      return <Twemoji className="emoji-like">👑</Twemoji>;
+    } else {
+      return <IconCat className="cat-icon" />;
+    }
   } else {
     return <IconHeart className="heart-icon" />;
   }
