@@ -7,6 +7,7 @@ import { useGameContext } from "./GameContext";
 import { IconCat, IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 import { Twemoji } from "./Twemoji";
+import { useScreenWiderThan } from "./layout/ScreenSizeSwitch";
 
 interface Props {
   response: PlayerResponse,
@@ -132,6 +133,7 @@ function ManyCardsStack({
 
   // Context to communicate offsets between multiple responses:
   const offsetContext = useContext(CardOffsetContext);
+  const shouldAlignGlobalOffsets = useScreenWiderThan(400);
 
   /** Updates local offests based on measured heights. */
   function measureOffsets() {
@@ -142,7 +144,7 @@ function ManyCardsStack({
         totalOffset += height;
         offsets[i + 1] = totalOffset; // set offset for the next card
       });
-      if (offsetContext) {
+      if (shouldAlignGlobalOffsets && offsetContext) {
         // Increase offsets to match globals:
         const maxOffsets = getMaxOffsets(offsets, offsetContext.offsets);
         setOffsets(maxOffsets);
@@ -162,7 +164,7 @@ function ManyCardsStack({
 
   // Whenever another card updates global offsets:
   useEffect(() => {
-    if (offsetContext) {
+    if (shouldAlignGlobalOffsets && offsetContext) {
       const maxOffsets = getMaxOffsets(offsets, offsetContext.offsets);
       setOffsets(maxOffsets);
     }

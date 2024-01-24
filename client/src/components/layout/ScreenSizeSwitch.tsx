@@ -26,3 +26,19 @@ export function ScreenSizeSwitch({
   }
   return smallScreen;
 }
+
+/** Returns true if the screen is wider than the breakpoint. */
+export function useScreenWiderThan<T>(widthBreakpoint: number): boolean {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResizeWindow = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResizeWindow);
+    return () => {
+      window.removeEventListener("resize", handleResizeWindow);
+    };
+  }, []);
+  if (width > widthBreakpoint) {
+    return true;
+  }
+  return false;
+}
