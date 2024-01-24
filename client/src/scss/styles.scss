@@ -191,7 +191,7 @@ input.control {
       width: 30rem;
       max-width: 95vw;
     }
-    .lobby-settings-container {
+    .modal-body {
       // Add vertical scrolling:
       @extend .miniscrollbar;
       @extend .miniscrollbar-light;
