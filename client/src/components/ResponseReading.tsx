@@ -1,7 +1,8 @@
-import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { detectDeer, detectLenich } from "../model/deck-api";
 import { useResponseLikes } from "../model/turn-api";
 import { PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
+import { CardOffsetContext } from "./CardOffsetContext";
 import { useGameContext } from "./GameContext";
 import { IconCat, IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
@@ -123,24 +124,49 @@ function ManyCardsStack({
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(response.cards.map(() => 0));
-  const [offsets] = useState<Array<number>>(response.cards.map(() => 0));
+  const [offsets, setOffsets] = useState<Array<number>>(response.cards.map(() => 0));
   const [finishedMeasuring, setFinishedMeasuring] = useState(false);
   // If selected, the 1.05 scale is already applied to child cards:
   const canSelectClass = canSelect ? "hoverable-card" : "";
   const selectedClass = selected ? "selected" : "unselected";
 
-  function updateOffsets() {
+  // Context to communicate offsets between multiple responses:
+  const offsetContext = useContext(CardOffsetContext);
+
+  /** Updates local offests based on measured heights. */
+  function measureOffsets() {
     if (!finishedMeasuring) {
       let totalOffset = 0;
+      offsets[0] = 0;
       heights.forEach((height, i) => {
         totalOffset += height;
-        offsets[i] = totalOffset;
+        offsets[i + 1] = totalOffset; // set offset for the next card
       });
+      if (offsetContext) {
+        // Increase offsets to match globals:
+        const maxOffsets = getMaxOffsets(offsets, offsetContext.offsets);
+        setOffsets(maxOffsets);
+        // Update global offsets manually to communicate with other responses
+        // during the same render:
+        maxOffsets.forEach((off, i) => {
+          offsetContext.offsets[i] = off;
+        });
+        // Trigger rerender in other responses:
+        offsetContext.setOffsets(maxOffsets);
+      }
       // All measurement will complete during the first render,
       // so no need to do it again:
       setFinishedMeasuring(true);
     }
   }
+
+  // Whenever another card updates global offsets:
+  useEffect(() => {
+    if (offsetContext) {
+      const maxOffsets = getMaxOffsets(offsets, offsetContext.offsets);
+      setOffsets(maxOffsets);
+    }
+  }, [offsetContext]); // only update when global offsets change
 
   // Overlay multiple cards on top of each other.
   // The "Placeholder" component holds place the size of a card:
@@ -148,7 +174,7 @@ function ManyCardsStack({
     <div className={`game-card-placeholder many-cards ${canSelectClass} ${selectedClass}`} style={{
       // Add extra margin below for the overlaid cards:
       // (-18 come from .game-card.overlaid being 2em shorter)
-      marginBottom: offsets[offsets.length - 2] - 18,
+      marginBottom: (offsets.at(-2) ?? 0) - 18,
     }} onClick={onClick}>
       {/* Cards on top have absolute positioning,
           without interfering with the flow of the rest of the page. */}
@@ -158,7 +184,7 @@ function ManyCardsStack({
           key={card.id} card={card}
           isOverlaid={i > 0}
           index={i}
-          offset={offsets[i - 1]}
+          offset={offsets[i]}
           selectable={canSelect} selected={selected}
           // Only enable likes on the last card of the stack:
           likable={canLike && isLastCard}
@@ -167,7 +193,7 @@ function ManyCardsStack({
           likeIcon={likeIcon}
           setContentHeight={(height) => {
             heights[i] = height;
-            updateOffsets();
+            measureOffsets();
           }}
         />
       })}
@@ -227,7 +253,7 @@ function CardResponseReading({
   function measure(elem: HTMLElement) {
     if (setContentHeight) {
       // Guessing padding size:
-      const cardPadding = 12;
+      const cardPadding = 16;
       setContentHeight(elem.clientHeight + cardPadding);
       // console.log(`Measured "${card.content}": ${elem.clientHeight}`);
     }
@@ -270,4 +296,15 @@ function LikeIcon({ response }: LikeProps) {
   } else {
     return <IconHeart className="heart-icon" />;
   }
+}
+
+/** Returns an array with the biggest of the 2 offsets. */
+function getMaxOffsets(localOffsets: number[], globalOffsets: number[]): number[] {
+  const result = new Array<number>();
+  const length = Math.max(localOffsets.length, globalOffsets.length);
+  for (let i = 0; i < length; i++) {
+    const maxOffset = Math.max(localOffsets[i] ?? 0, globalOffsets[i] ?? 0);
+    result[i] = maxOffset;
+  }
+  return result;
 }

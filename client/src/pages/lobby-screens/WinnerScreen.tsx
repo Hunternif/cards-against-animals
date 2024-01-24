@@ -1,5 +1,6 @@
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
+import { CardOffsetContextProvider } from "../../components/CardOffsetContext";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
@@ -59,51 +60,56 @@ export function WinnerScreen() {
     });
   }
 
-  return <CenteredLayout>
-    <div style={midRowStyle}>
-      <div className="winner-section">
-        <h2 style={{ textAlign: "center" }}>
-          {winner ? <>Winner <i>{winner.name}</i> <IconStarInline /></> :
-            <Delay>No winner</Delay>}
-        </h2>
-        <div className="winner-cards-row">
-          <CardPromptWithCzar card={prompt} />
-          {winnerResponse && (
-            <ResponseReading
-              showName={showAudienceAward}
-              response={winnerResponse} />
-          )}
-        </div>
-      </div>
-      {showAudienceAward && (
-        // TODO: animate audience choice winner transition
-        <div className="winner-section audience-award-section">
-          <h2 style={{ textAlign: "center" }}>
-            Audience Choice <IconHeartInline />
-          </h2>
-          <div className="winner-cards-row">
-            {audienceAwardResponses.map((r, i) => (
-              <ResponseReading key={i} showName showLikes response={r} />
-            ))}
+  return (
+    // Add context to share offsets between responses
+    <CardOffsetContextProvider>
+      <CenteredLayout>
+        <div style={midRowStyle}>
+          <div className="winner-section">
+            <h2 style={{ textAlign: "center" }}>
+              {winner ? <>Winner <i>{winner.name}</i> <IconStarInline /></> :
+                <Delay>No winner</Delay>}
+            </h2>
+            <div className="winner-cards-row">
+              <CardPromptWithCzar card={prompt} />
+              {winnerResponse && (
+                <ResponseReading
+                  showName={showAudienceAward}
+                  response={winnerResponse} />
+              )}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-    <div style={botRowStyle} className="winner-control-row">
-      {isJudge && (
-        <Delay>
-          {shouldEndNow ? (
-            <GameButton onClick={handleEndGame} disabled={ending}>
-              End game
-            </GameButton>
-          ) : (
-            <GameButton accent onClick={handleNewTurn}
-              disabled={startingNewTurn}>
-              Next turn
-            </GameButton>
+          {showAudienceAward && (
+            // TODO: animate audience choice winner transition
+            <div className="winner-section audience-award-section">
+              <h2 style={{ textAlign: "center" }}>
+                Audience Choice <IconHeartInline />
+              </h2>
+              <div className="winner-cards-row">
+                {audienceAwardResponses.map((r, i) => (
+                  <ResponseReading key={i} showName showLikes response={r} />
+                ))}
+              </div>
+            </div>
           )}
-        </Delay>
-      )}
-    </div>
-  </CenteredLayout >;
+        </div>
+        <div style={botRowStyle} className="winner-control-row">
+          {isJudge && (
+            <Delay>
+              {shouldEndNow ? (
+                <GameButton onClick={handleEndGame} disabled={ending}>
+                  End game
+                </GameButton>
+              ) : (
+                <GameButton accent onClick={handleNewTurn}
+                  disabled={startingNewTurn}>
+                  Next turn
+                </GameButton>
+              )}
+            </Delay>
+          )}
+        </div>
+      </CenteredLayout >
+    </CardOffsetContextProvider>
+  );
 }

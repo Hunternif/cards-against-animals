@@ -1,5 +1,6 @@
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
+import { CardOffsetContextProvider } from "../../components/CardOffsetContext";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { useGameContext } from "../../components/GameContext";
@@ -109,19 +110,22 @@ export function CardReadingScreen() {
     <div style={midRowStyle} className="reading-main-row">
       <CardPromptWithCzar card={prompt}
         canVote={isActivePlayer && !isJudge} />
-      {shuffledResponses.map((r) =>
-        <ResponseReading
-          key={r.player_uid}
-          response={r}
-          canReveal={isJudge}
-          canSelect={isJudge && allRevealed}
-          selected={winner?.player_uid === r.player_uid}
-          onClick={(r) => handleClick(r)}
-          showLikes={showLikes}
-          canLike={!isJudge && r.player_uid !== player.uid && lobby.settings.enable_likes}
-          onClickLike={(r) => handleLike(r)}
-        />
-      )}
+      {/* Add context to share offsets between responses */}
+      <CardOffsetContextProvider>
+        {shuffledResponses.map((r) =>
+          <ResponseReading
+            key={r.player_uid}
+            response={r}
+            canReveal={isJudge}
+            canSelect={isJudge && allRevealed}
+            selected={winner?.player_uid === r.player_uid}
+            onClick={(r) => handleClick(r)}
+            showLikes={showLikes}
+            canLike={!isJudge && r.player_uid !== player.uid && lobby.settings.enable_likes}
+            onClickLike={(r) => handleLike(r)}
+          />
+        )}
+      </CardOffsetContextProvider>
     </div>
     <div style={botRowStyle}>
       {noResponses && <>

@@ -582,6 +582,10 @@ button.start-button {
 }
 .many-cards {
   position: relative;
+  /* Transition needed when child card stacks are revealed with extra margins: */
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 100ms;
 }
 .many-cards.selected,
 .many-cards:hover {
