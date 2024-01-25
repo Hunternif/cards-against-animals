@@ -144,7 +144,7 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
     role = "player";
   }
   const rng = RNG.fromStrSeedWithTimestamp(lobby.id + userName);
-  const player = new PlayerInLobby(userID, userName, rng.randomInt(), role, "online", 0, 0);
+  const player = new PlayerInLobby(userID, userName, rng.randomInt(), role, "online", 0, 0, 0);
   await playerRef.set(player);
   await setUsersCurrentLobby(userID, lobby.id);
   logger.info(`User ${userName} (${userID}) joined lobby ${lobby.id} as ${role}`);

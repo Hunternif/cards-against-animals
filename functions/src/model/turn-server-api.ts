@@ -320,6 +320,7 @@ export async function updatePlayerScoresFromTurn(
     const discardRef = getPlayerDiscardRef(lobbyID, turn.id, player.uid);
     const discardCount = (await discardRef.count().get()).data().count;
     if (discardCount > 0) {
+      player.discards_used++;
       player.score--;
     }
     const response = responses.find((r) => r.player_uid === player.uid);

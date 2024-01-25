@@ -43,7 +43,11 @@ service cloud.firestore {
     // Don't allow changing a player's score
     function isScoreUnchanged(lobby, userID) {
       let doc = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
-      return doc == null || doc.data['score'] == request.resource.data['score'];
+      return doc == null || (
+        doc.data['score'] == request.resource.data['score'] &&
+        doc.data['likes'] == request.resource.data['likes'] &&
+        doc.data['discards_used'] == request.resource.data['discards_used']
+      );
     }
     // Don't allow changing anything if you're kicked
     function userIsNotKicked(lobby, userID) {

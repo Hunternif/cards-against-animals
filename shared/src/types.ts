@@ -96,6 +96,8 @@ export class PlayerInLobby {
   score: number;
   /** Current number of likes accumulated over the entire game. */
   likes: number;
+  /** Number of turns where the user used discards. */
+  discards_used: number;
   /** Used for ordering players to select the next judge. */
   random_index: number;
 
@@ -107,6 +109,7 @@ export class PlayerInLobby {
     status: PlayerStatus,
     score: number,
     likes: number,
+    discards_used: number,
   ) {
     this.uid = uid;
     this.name = name;
@@ -115,6 +118,7 @@ export class PlayerInLobby {
     this.status = status;
     this.score = score;
     this.likes = likes;
+    this.discards_used = discards_used;
   }
 }
 
