@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { LobbySettings } from "../shared/types";
 import { useDelay } from "./Delay";
 import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
+import { IconChevronDownInline, IconQuestionInline } from "./Icons";
 
 interface Props {
   settings: LobbySettings,
@@ -16,33 +17,66 @@ export function LobbySettingsPanel(props: Props) {
   const playUntil = props.settings.play_until;
   // Delay header class to prevent background flickering bug in Chrome :(
   const headerClass = useDelay("lobby-settings", 1000) ?? "";
-  return <>
+  return <div className="lobby-settings-container">
     <header className={headerClass}><h3>Game Settings</h3></header>
-    <div className="lobby-settings-container">
-      <FormItem label="Play until" control={<EndControl {...props} />} />
+    <div className="lobby-settings-form">
+      <FormItem label="Play until"
+        hint="The game will end when this condition is met."
+        control={<EndControl {...props} />}
+      />
       {/* Prevent another item appearing next to "play until": */}
       {playUntil === "forever" && <div style={{ width: "100%", marginTop: "-0.25em" }} />}
       {playUntil === "max_turns" && (
         <FormItem label="Total turns" control={<MaxTurnsControl {...props} />} />
       )}
       {playUntil === "max_turns_per_person" && (
-        <FormItem label="Turns per person" control={<TurnsPerPersonControl {...props} />} />
+        <FormItem label="Turns per person"
+          hint="Each player will get this many turns."
+          control={<TurnsPerPersonControl {...props} />}
+        />
       )}
       {playUntil === "max_score" && (
-        <FormItem label="Maximum score" control={<MaxScoreControl {...props} />} />
+        <FormItem label="Maximum score"
+          hint="When someone gets this score, the game will end."
+          control={<MaxScoreControl {...props} />}
+        />
       )}
-      <FormItem label="Cards per person" control={<CardsPerPersonControl {...props} />} />
-      <FormItem label="New cards first" disabled={props.inGame} control={<NewCardsFirstControl {...props} />} />
-      <FormItem label="Sort cards by rating" disabled={props.inGame} control={<SortCardsByRatingControl {...props} />} />
-      <FormItem label="Allow join mid-game" control={<AllowJoinMidGameControl {...props} />} />
-      <FormItem label="Enable likes" control={<EnableLikesControl {...props} />} />
+      <FormItem label="Cards per person"
+        hint="Each round everyone will be dealt new cards, up to this number."
+        control={<CardsPerPersonControl {...props} />}
+      />
+      <FormItem label="New cards first" disabled={props.inGame}
+        hint="Cards that were never seen before will be played first."
+        control={<NewCardsFirstControl {...props} />}
+      />
+      <FormItem label="Sort cards by rating" disabled={props.inGame}
+        hint="Past statistics will affect card order: good cards first, bad cards last."
+        control={<SortCardsByRatingControl {...props} />}
+      />
+      <FormItem label="Allow join mid-game"
+        hint="If a new person joins after the game has started, they will automatically become a player and will receive cards."
+        control={<AllowJoinMidGameControl {...props} />}
+      />
+      <FormItem label="Enable likes"
+        control={<EnableLikesControl {...props} />}
+        hint="Non-czar players can add 'likes' to other people's responses."
+      />
       {props.settings.enable_likes && <>
-        <FormItem label="Who can see likes" control={<ShowLikesToControl {...props} />} />
-        <FormItem label="Limit likes" control={<LimitLikesControl {...props} />} />
+        <FormItem label="Who can see likes"
+          hint="By default, players can see the number of likes in real time. Hiding them can help the Czar to make an honest decision."
+          control={<ShowLikesToControl {...props} />}
+        />
+        <FormItem label="Limit likes"
+          hint="Each player can add this many likes per round."
+          control={<LimitLikesControl {...props} />}
+        />
       </>}
-      <FormItem label="Freeze card stats" control={<FreezeStatsControl {...props} />} />
+      <FormItem label="Freeze card stats"
+        hint="Card statistics will not be updated during this game. Use this for test games."
+        control={<FreezeStatsControl {...props} />}
+      />
     </div>
-  </>;
+  </div>;
 }
 
 function EndControl({ settings, readOnly, onChange }: Props) {
@@ -187,14 +221,28 @@ function FreezeStatsControl({ settings, readOnly, onChange }: Props) {
 
 interface ItemProps {
   label: string,
+  hint?: ReactNode,
   control: ReactNode,
   disabled?: boolean,
 }
 
-function FormItem({ label, control, disabled }: ItemProps) {
+function FormItem({ label, hint, control, disabled }: ItemProps) {
   const disabledClass = disabled ? "disabled" : "";
+  const [showHint, setShowHint] = useState(false);
   return <div className={`lobby-settings-form-item ${disabledClass}`}>
-    <span style={{ textAlign: "end" }}>{label}</span>
+    <div className="label-container">
+      <div className="label">
+        {label}
+        {hint && (
+          <span className="hint-icon"
+            title={showHint ? "Hide help" : "Show help"}
+            onClick={() => setShowHint(!showHint)}>
+            {showHint ? <IconChevronDownInline /> : <IconQuestionInline />}
+          </span>
+        )}
+      </div>
+      {showHint && <div className="hint">{hint}</div>}
+    </div>
     {control}
   </div>;
 }

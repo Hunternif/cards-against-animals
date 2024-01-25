@@ -55,6 +55,9 @@ $like-color: #fc8181;
   // box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
   border: 2px solid;
   border-radius: 4px;
+  // This fixes baseline position on this line
+  display: flex;
+  align-items: baseline;
   label {
     width: 18px;
     height: 18px;
@@ -196,6 +199,10 @@ input.control {
       @extend .miniscrollbar;
       @extend .miniscrollbar-light;
       overflow-y: auto;
+      // Reset font
+      font-size: medium;
+      font-weight: 400;
+      text-align: unset;
     }
     header {
       text-align: center;
@@ -215,6 +222,7 @@ input.control {
       background-attachment: fixed;
       z-index: 1;
       bottom: 0;
+      top: 0;
     }
   }
   footer {
@@ -232,25 +240,52 @@ input.control {
   }
 }
 
-.lobby-settings-container {
+.lobby-settings-container header {
+  padding-bottom: 1em;
+}
+.lobby-settings-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1em;
-  row-gap: 0.25em;
+  column-gap: 3em;
+  row-gap: 0.5em;
   padding: 0.5em 2em;
   @media (max-width: 50rem) {
     display: flex;
     flex-direction: column;
+    padding: 0.5em 1em;
   }
 }
 .lobby-settings-form-item {
   display: grid;
   grid-template-columns: 60% 40%;
-  gap: 0.75em;
-  align-items: center;
+  // column-gap: 0.75em; // this is bugged, ignores parent grid gap
+  align-items: baseline;
   min-height: 2.5em;
   &.disabled {
     opacity: 0.5;
+  }
+  .label-container {
+    .label {
+      display: inline-flex;
+      justify-content: end;
+      gap: 0.4em;
+      margin-right: 0.75em;
+      margin-bottom: 0.25em;
+      .hint-icon {
+        opacity: 0.5;
+        cursor: pointer;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+    .hint {
+      font-size: small;
+      font-weight: 400;
+    }
+  }
+  .checkbox {
+    margin-top: 0.5em; // aligns it with other form inputs
   }
 }
 
@@ -395,4 +430,13 @@ input.control {
 .cat-icon {
   color: #111827;
   margin-right: -0.15em;
+}
+.icon-info-inline {
+  margin-bottom: 0.2em;
+}
+.icon-chevron-down-inline {
+  width: 1.5em;
+  height: 1.5em;
+  margin: -0.2em;
+  margin-top: -0.4em;
 }
