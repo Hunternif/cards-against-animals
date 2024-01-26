@@ -11,6 +11,8 @@ interface ControlProps {
   submitted: boolean,
   discarding: boolean,
   onToggleDiscard: (enabled: boolean) => void,
+  onDiscardAll: () => void,
+  onUndiscardAll: () => void,
   discardedCards: ResponseCardInGame[],
 }
 
@@ -38,7 +40,7 @@ const midStyle: CSSProperties = {
   justifyContent: "center",
 };
 const rightStyle: CSSProperties = {
-  flexGrow: 1,
+  flexGrow: 2,
   flexShrink: 1,
   flexBasis: "0%",
   display: "flex",
@@ -52,19 +54,32 @@ const discardInfoStyle: CSSProperties = {
   textAlign: "center",
 };
 const discardCountStyle: CSSProperties = {
+  whiteSpace: "normal",
+  minWidth: "10em",
+  textAlign: "end",
+};
+const discardCountSmallStyle: CSSProperties = {
   whiteSpace: "nowrap",
+  textAlign: "end",
+};
+const buttonGroupStyle: CSSProperties = {
+  display: "flex",
+  gap: "0.4em",
 };
 
 export function GameControlRow({
-  selection, submitted, discarding, onToggleDiscard, discardedCards,
+  selection, submitted, discarding, discardedCards,
+  onToggleDiscard, onDiscardAll, onUndiscardAll,
 }: ControlProps) {
-  const { lobby, prompt, player } = useGameContext();
+  const { lobby, hand, prompt, player } = useGameContext();
   const picked = selection.length;
   const total = prompt?.pick ?? 1;
 
   // Discards:
   const cost = lobby.settings.discard_cost;
   const canDiscard = cost !== "no_discard";
+  const totalDiscardable =
+    hand.filter((c1) => !selection.find((c2) => c1.id === c2.id)).length;
   const discardCount = discardedCards.length;
   const isDiscardFree = cost === "free" ||
     cost === "1_free_then_1_star" && player.discards_used === 0;
@@ -75,8 +90,9 @@ export function GameControlRow({
       <div style={midStyle}>
         <span className="light" style={discardInfoStyle}>
           {discarding ? (
-            isDiscardFree ? <>Discard any number of cards</> :
-              <>Discard any number of cards for <i>1 <IconStarInline /></i></>
+            isDiscardFree ?
+              <>Select cards to discard next turn.</> :
+              <>Select cards to discard for <Cost b /> next turn.</>
           ) : (
             submitted ? "Submitted!" : prompt ? (
               `Picked ${picked} out of ${total}`
@@ -86,24 +102,43 @@ export function GameControlRow({
       </div>
       <div style={rightStyle}>
         {canDiscard && <>
-          {!discarding && discardCount > 0 &&
-            <span className="light" style={discardCountStyle}>
-              Will discard {discardCount} cards
-            </span>}
-          {discarding ? (<>
-            <span className="light" style={discardCountStyle}>
-              Will discard {discardCount} cards
+          {discarding ? (
+            <span className="light" style={discardCountSmallStyle}>
+              <><b>{discardCount}</b> selected</>
             </span>
+          ) : discardCount > 0 && (
+            <span className="light" style={discardCountStyle}>
+              <>Next turn: {isDiscardFree ?
+                <>will discard <b>{discardCount}</b> cards</> :
+                <>will pay <Cost b /> and discard <b>{discardCount}</b> cards</>}
+              </>
+            </span>
+          )}
+          {discarding ? (<div style={buttonGroupStyle}>
+            {discardCount < totalDiscardable &&
+              <GameButton small onClick={onDiscardAll}>Select all</GameButton>}
+            {discardCount > 0 &&
+              <GameButton small onClick={onUndiscardAll}>Clear</GameButton>}
             <GameButton small onClick={() => onToggleDiscard(false)}>Done</GameButton>
-          </>) : (
+          </div>) : (
             <GameButton secondary small onClick={() => onToggleDiscard(true)}
               title={isDiscardFree ? "Discard any number of cards for free" :
                 "Discard any number of cards for ⭐ points"}>
-              {isDiscardFree ? "Free discard" : <>Discard for 1 <IconStarInline /></>}
+              {discardCount > 0 ? "Edit" :
+                isDiscardFree ? "Free discard" : <>Discard: <Cost /></>}
             </GameButton>
           )}
         </>}
       </div>
     </div >
   );
+}
+
+interface CostProps {
+  b?: boolean,
+}
+function Cost({ b }: CostProps) {
+  return <i>
+    {b ? <b>1</b> : <>1</>}<IconStarInline />
+  </i>;
 }

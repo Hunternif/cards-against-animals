@@ -56,7 +56,7 @@ const miniResponsesContainerStyle: CSSProperties = {
 }
 
 export function PlayerAnsweringScreen() {
-  const { lobby, turn, player, prompt, responses,
+  const { lobby, turn, player, prompt, responses, hand,
     playerDiscard } = useGameContext();
   const response = responses.find((r) => r.player_uid === player.uid);
   const submitted = response !== undefined;
@@ -86,6 +86,17 @@ export function PlayerAnsweringScreen() {
     } else {
       setDiscarding(false);
       setDiscardedCards(playerDiscard);
+    }
+  }
+
+  /** Selecting to discard all / none. */
+  function selectDiscardAll(shouldDiscard: boolean) {
+    if (shouldDiscard) {
+      const allDiscardable =
+        hand.filter((c1) => !selectedCards.find((c2) => c1.id === c2.id));
+      handleDiscard(allDiscardable);
+    } else {
+      handleDiscard([]);
     }
   }
 
@@ -127,8 +138,10 @@ export function PlayerAnsweringScreen() {
           selection={selectedCards}
           submitted={submitted}
           discarding={discarding}
-          onToggleDiscard={toggleDiscard}
           discardedCards={discardedCards}
+          onToggleDiscard={toggleDiscard}
+          onDiscardAll={() => selectDiscardAll(true)}
+          onUndiscardAll={() => selectDiscardAll(false)}
         />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
