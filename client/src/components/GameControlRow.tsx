@@ -40,7 +40,7 @@ const midStyle: CSSProperties = {
   justifyContent: "center",
 };
 const rightStyle: CSSProperties = {
-  flexGrow: 2,
+  flexGrow: 1,
   flexShrink: 1,
   flexBasis: "0%",
   display: "flex",
