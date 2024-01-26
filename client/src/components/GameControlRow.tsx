@@ -4,6 +4,7 @@ import {
 } from "../shared/types";
 import { GameButton } from "./Buttons";
 import { useGameContext } from "./GameContext";
+import { IconStarInline } from "./Icons";
 
 interface ControlProps {
   selection: ResponseCardInGame[],
@@ -57,10 +58,16 @@ const discardCountStyle: CSSProperties = {
 export function GameControlRow({
   selection, submitted, discarding, onToggleDiscard, discardedCards,
 }: ControlProps) {
-  const { prompt } = useGameContext();
+  const { lobby, prompt, player } = useGameContext();
   const picked = selection.length;
   const total = prompt?.pick ?? 1;
+
+  // Discards:
+  const cost = lobby.settings.discard_cost;
+  const canDiscard = cost !== "no_discard";
   const discardCount = discardedCards.length;
+  const isDiscardFree = cost === "free" ||
+    cost === "1_free_then_1_star" && player.discards_used === 0;
 
   return (
     <div style={containerStyle}>
@@ -68,7 +75,8 @@ export function GameControlRow({
       <div style={midStyle}>
         <span className="light" style={discardInfoStyle}>
           {discarding ? (
-            <>Discard any number of cards for <i>1 point</i></>
+            isDiscardFree ? <>Discard any number of cards</> :
+              <>Discard any number of cards for <i>1 <IconStarInline /></i></>
           ) : (
             submitted ? "Submitted!" : prompt ? (
               `Picked ${picked} out of ${total}`
@@ -77,18 +85,24 @@ export function GameControlRow({
         </span>
       </div>
       <div style={rightStyle}>
-        {!discarding && discardCount > 0 &&
-          <span className="light" style={discardCountStyle}>
-            Will discard {discardCount} cards
-          </span>}
-        {discarding ? (<>
-          <span className="light" style={discardCountStyle}>
-            Will discard {discardCount} cards
-          </span>
-          <GameButton small onClick={() => onToggleDiscard(false)}>Done</GameButton>
-        </>) : (
-          <GameButton secondary small onClick={() => onToggleDiscard(true)}>Discard...</GameButton>
-        )}
+        {canDiscard && <>
+          {!discarding && discardCount > 0 &&
+            <span className="light" style={discardCountStyle}>
+              Will discard {discardCount} cards
+            </span>}
+          {discarding ? (<>
+            <span className="light" style={discardCountStyle}>
+              Will discard {discardCount} cards
+            </span>
+            <GameButton small onClick={() => onToggleDiscard(false)}>Done</GameButton>
+          </>) : (
+            <GameButton secondary small onClick={() => onToggleDiscard(true)}
+              title={isDiscardFree ? "Discard any number of cards for free" :
+                "Discard any number of cards for ⭐ points"}>
+              {isDiscardFree ? "Free discard" : <>Discard for 1 <IconStarInline /></>}
+            </GameButton>
+          )}
+        </>}
       </div>
     </div >
   );

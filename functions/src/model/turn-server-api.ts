@@ -321,7 +321,14 @@ export async function updatePlayerScoresFromTurn(
     const discardCount = (await discardRef.count().get()).data().count;
     if (discardCount > 0) {
       player.discards_used++;
-      player.score--;
+      // Check discard cost:
+      const lobby = await getLobby(lobbyID);
+      const cost = lobby.settings.discard_cost;
+      const isDiscardFree = cost === "free" ||
+        cost === "1_free_then_1_star" && player.discards_used === 0;
+      if (!isDiscardFree) {
+        player.score--;
+      }
     }
     const response = responses.find((r) => r.player_uid === player.uid);
     if (response) {

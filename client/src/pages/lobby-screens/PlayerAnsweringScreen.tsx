@@ -1,4 +1,4 @@
-import { CSSProperties, useContext, useState } from "react";
+import { CSSProperties, useContext, useEffect, useState } from "react";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
 import { useGameContext } from "../../components/GameContext";
@@ -95,6 +95,14 @@ export function PlayerAnsweringScreen() {
     await discardCards(lobby, turn, player.uid, cards)
       .catch((e) => setError(e));
   }
+
+  // Cancel discard if lobby settings change:
+  useEffect(() => {
+    if (lobby.settings.discard_cost === "no_discard") {
+      setDiscardedCards([]);
+      setDiscarding(false);
+    }
+  }, [lobby.settings.discard_cost]);
 
   return (
     <CenteredLayout innerStyle={containerStyle}
