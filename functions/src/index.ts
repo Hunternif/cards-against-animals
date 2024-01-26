@@ -9,6 +9,7 @@ import { setGlobalOptions } from "firebase-functions/v2/options";
 import firebaseConfig from "./firebase-config.json";
 import {
   assertCurrentJudge,
+  assertLobbyControl,
   assertLobbyCreator,
   assertLoggedIn,
   assertPlayerInLobby
@@ -117,7 +118,7 @@ export const updateLobbySettings = onCall<
   async (event) => {
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
-    await assertCurrentJudge(event, lobby);
+    await assertLobbyControl(event, lobby);
     lobby.settings = event.data.settings;
     await updateLobby(lobby);
     logger.info(`Updated settings for lobby ${lobby.id}`);
@@ -132,7 +133,7 @@ export const kickPlayer = onCall<
   async (event) => {
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
-    await assertCurrentJudge(event, lobby);
+    await assertLobbyControl(event, lobby);
     const player = await getPlayer(lobby.id, event.data.user_id);
     if (player) {
       player.role = "spectator";
@@ -173,7 +174,7 @@ export const endLobby = onCall<
   async (event) => {
     assertLoggedIn(event);
     const lobby = await getLobby(event.data.lobby_id);
-    await assertCurrentJudge(event, lobby);
+    await assertLobbyControl(event, lobby);
     await setLobbyEnded(lobby);
   }
 );

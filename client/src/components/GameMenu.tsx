@@ -54,7 +54,8 @@ const rightStyle: CSSProperties = {
 /** Menu header on top of the game page */
 export function GameMenu() {
   const navigate = useNavigate();
-  const { lobby, turn, player, players, activePlayers, isSpectator } = useGameContext();
+  const { lobby, turn, player, players, activePlayers, isSpectator, isJudge,
+    canControlLobby } = useGameContext();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
@@ -162,8 +163,8 @@ export function GameMenu() {
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>
             <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
-            <MenuItem label="Settings" onClick={openSettings} judgeOnly />
-            <MenuItem label="End game" onClick={() => setShowEndModal(true)} judgeOnly />
+            <MenuItem label="Settings" onClick={openSettings} locked={!canControlLobby} />
+            <MenuItem label="End game" onClick={() => setShowEndModal(true)} locked={!canControlLobby} />
           </Dropdown.Menu>
         </CustomDropdown>
       </div>
@@ -180,17 +181,17 @@ function InlineButton(props: React.HTMLProps<HTMLSpanElement>) {
 
 interface MenuItemProps {
   label: string,
-  judgeOnly?: boolean,
+  locked?: boolean,
   onClick?: () => void,
 }
 
-function MenuItem({ label, onClick, judgeOnly }: MenuItemProps) {
+function MenuItem({ label, onClick, locked }: MenuItemProps) {
   const { isJudge } = useGameContext();
   return (
     <Dropdown.Item
       onClick={onClick}
-      disabled={judgeOnly && !isJudge}>
-      {judgeOnly && !isJudge ? (
+      disabled={locked && !isJudge}>
+      {locked && !isJudge ? (
         // Only current judge can click this. Show an icon on the right.
         <span className="menu-item-locked" >{label}
           <Twemoji className="lock-icon" >👑</Twemoji></span>

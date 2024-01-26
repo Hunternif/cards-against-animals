@@ -63,6 +63,7 @@ function mapSettings(data: any): LobbySettings {
     show_likes_to: data.show_likes_to,
     likes_limit: data.likes_limit,
     discard_cost: data.discard_cost,
+    lobby_control: data.lobby_control,
   };
   return copyFields2(defaultLobbySettings(), removeUndefined(readSettings));
 }

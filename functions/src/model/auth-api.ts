@@ -11,6 +11,27 @@ export function assertLoggedIn(event: CallableRequest) {
   }
 }
 
+/** Asserts that current user is allowed to control the lobby, based on settings. */
+export async function assertLobbyControl(
+  event: CallableRequest, lobby: GameLobby) {
+  if (lobby.status === "new") {
+    // In a new lobby, only the creator has power:
+    assertLobbyCreator(event, lobby);
+  } else {
+    // After the game starts, other players can contribute:
+    switch (lobby.settings.lobby_control) {
+      case "creator":
+        assertLobbyCreator(event, lobby);
+        break;
+      case "czar":
+        await assertCurrentJudge(event, lobby);
+        break;
+      case "anyone":
+        break;
+    }
+  }
+}
+
 /** Asserts that current user is a "player" in this lobby. */
 export async function assertPlayerInLobby(
   event: CallableRequest, lobbyID: string) {

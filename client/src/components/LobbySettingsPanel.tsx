@@ -72,9 +72,13 @@ export function LobbySettingsPanel(props: Props) {
         />
       </>}
       <FormItem label="Discard cost"
-          hint="Players can discard any number of cards every turn by paying this cost."
-          control={<DiscardControl {...props} />}
-        />
+        hint="Players can discard any number of cards every turn by paying this cost."
+        control={<DiscardControl {...props} />}
+      />
+      <FormItem label="Who controls lobby"
+        hint="Players with this power can change game settings, kick players, and end the game."
+        control={<LobbyControlControl {...props} />}
+      />
       <FormItem label="Freeze card stats"
         hint="Card statistics will not be updated during this game. Use this for test games."
         control={<FreezeStatsControl {...props} />}
@@ -224,6 +228,21 @@ function DiscardControl({ settings, readOnly, onChange }: Props) {
       ["1_star", "1 ⭐"],
       ["1_free_then_1_star", "1 free, then 1 ⭐"],
       ["no_discard", "Disabled"],
+    ]}
+  />;
+}
+
+function LobbyControlControl({ settings, readOnly, onChange }: Props) {
+  return <SelectInput disabled={readOnly}
+    value={settings.lobby_control}
+    onChange={async (newValue) => {
+      settings.lobby_control = newValue;
+      if (onChange) await onChange(settings);
+    }}
+    options={[
+      ["creator", "Only creator"],
+      ["czar", "Only czar"],
+      ["anyone", "Anyone"],
     ]}
   />;
 }

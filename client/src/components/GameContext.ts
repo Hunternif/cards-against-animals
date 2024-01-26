@@ -15,6 +15,8 @@ export interface GameContextState {
   player: PlayerInLobby,
   /** Is current player a spectator? */
   isSpectator: boolean,
+  /** Is current player the lobby creator? */
+  isCreator: boolean,
   
   // Changes each turn:
   turn: GameTurn,
@@ -24,6 +26,8 @@ export interface GameContextState {
   judge: PlayerInLobby,
   /** Is current player this turn's judge? */
   isJudge: boolean,
+  /** Does current player have the power to control lobby settings? */
+  canControlLobby: boolean,
   /** Responses submitted by all players this turn. */
   responses: PlayerResponse[],
   /** Cards discarded by the current player this turn. */

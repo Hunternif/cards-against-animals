@@ -63,6 +63,8 @@ export interface LobbySettings {
   likes_limit: LikesLimit;
   /** How much does it cost for the player to discard cards, per turn. */
   discard_cost: DiscardCost;
+  /** Who is allowed to change lobby settings and kick players during the game. */
+  lobby_control: LobbyContol;
 }
 
 export function defaultLobbySettings(): LobbySettings {
@@ -80,6 +82,7 @@ export function defaultLobbySettings(): LobbySettings {
     show_likes_to: "all_except_czar",
     likes_limit: "none",
     discard_cost: "1_free_then_1_star",
+    lobby_control: "anyone",
   };
 }
 
@@ -87,6 +90,7 @@ export type PlayUntil = "forever" | "max_turns" | "max_turns_per_person" | "max_
 export type ShowLikes = "all" | "all_except_czar";
 export type LikesLimit = "1_pp_per_turn" | "none";
 export type DiscardCost = "free" | "1_star" | "1_free_then_1_star" | "no_discard";
+export type LobbyContol = "creator" | "czar" | "anyone";
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {

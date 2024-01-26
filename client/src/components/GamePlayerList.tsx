@@ -9,7 +9,7 @@ import { PlayerCard } from "./PlayerCard";
  * - highlights current judge
  */
 export function GamePlayerList() {
-  const { lobby, user, players, judge } = useGameContext();
+  const { lobby, user, players, judge, canControlLobby } = useGameContext();
   // Filter out people who left, order by play sequence:
   const playerSequence = players
     .filter((p) => p.role === "player" && p.status !== "left")
@@ -28,7 +28,7 @@ export function GamePlayerList() {
               player={player}
               isMe={user.uid === player.uid}
               isJudge={judge.uid === player.uid}
-              canKick={judge.uid === user.uid}
+              canKick={canControlLobby}
             />
           </li>
         )}

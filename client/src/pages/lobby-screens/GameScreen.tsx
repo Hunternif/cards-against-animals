@@ -67,8 +67,13 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   const player = players.find((p) => p.uid === user.uid);
   const isJudge = judge?.uid === user.uid;
   const isSpectator = player?.role === "spectator";
+  const isCreator = lobby.creator_uid === user.uid;
   const activePlayers = players.filter((p) =>
     p.role === "player" && p.status === "online");
+  const lobbyControl = lobby.settings.lobby_control;
+  const canControlLobby = lobbyControl === "anyone" ||
+    lobbyControl === "czar" && isJudge ||
+    lobbyControl === "creator" && isCreator;
 
   const { setError } = useContext(ErrorContext);
   useEffect(() => {
@@ -84,8 +89,9 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   }
 
   const gameState: GameContextState = {
-    user, lobby, players, activePlayers, player, isSpectator, isJudge,
+    user, lobby, players, activePlayers, player, isSpectator, isJudge, isCreator,
     turn, hand, prompt: prompts?.at(0), judge, responses, playerDiscard,
+    canControlLobby,
   };
 
   return (
