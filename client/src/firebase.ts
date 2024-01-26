@@ -49,6 +49,10 @@ export const updateLobbySettingsFun = httpsCallable<
     { lobby_id: string, settings: LobbySettings }, void
 >(functions, 'updateLobbySettings');
 
+export const kickPlayerFun = httpsCallable<
+    { lobby_id: string, user_id: string }, void
+>(functions, 'kickPlayer');
+
 export const newTurnFun = httpsCallable<
     { lobby_id: string }, void
 >(functions, 'newTurn');

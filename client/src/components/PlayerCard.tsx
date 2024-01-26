@@ -22,20 +22,30 @@ interface PlayerProps {
 export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }: PlayerProps) {
   const { setError } = useContext(ErrorContext);
   const [showKickModal, setShowKickModal] = useState(false);
+  const [kicking, setKicking] = useState(false);
   const meStyle = isMe ? "me-card" : "";
   const judgeStyle = isJudge ? "judge-card" : "";
 
   async function handleKick() {
-    await kickPlayer(lobby, player).catch((e) => setError(e));
-    setShowKickModal(false);
+    setKicking(true);
+    try {
+      await kickPlayer(lobby, player)
+      setShowKickModal(false);
+    } catch (e) {
+      setError(e);
+    }
+    finally {
+      setKicking(false);
+    }
   }
 
   return <>
     <ConfirmModal
       show={showKickModal}
       onCancel={() => setShowKickModal(false)}
-      onConfirm={handleKick}>
-      Kick the player out?
+      onConfirm={handleKick}
+      loading={kicking}>
+      Kick {player.name} out?
     </ConfirmModal>
     <Card className={`player-card ${meStyle} ${judgeStyle}`}>
       <Card.Body>

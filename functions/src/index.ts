@@ -21,9 +21,11 @@ import {
   createLobby,
   findActiveLobbyWithPlayer,
   getLobby,
+  getPlayer,
   setLobbyEnded,
   startLobbyInternal,
-  updateLobby
+  updateLobby,
+  updatePlayer
 } from "./model/lobby-server-api";
 import {
   createNewTurn,
@@ -119,6 +121,25 @@ export const updateLobbySettings = onCall<
     lobby.settings = event.data.settings;
     await updateLobby(lobby);
     logger.info(`Updated settings for lobby ${lobby.id}`);
+  }
+);
+
+/** Kicks player from the game. Allowed for creator and current judge. */
+export const kickPlayer = onCall<
+  { lobby_id: string, user_id: string }, Promise<void>
+>(
+  { maxInstances: 2 },
+  async (event) => {
+    assertLoggedIn(event);
+    const lobby = await getLobby(event.data.lobby_id);
+    await assertCurrentJudge(event, lobby);
+    const player = await getPlayer(lobby.id, event.data.user_id);
+    if (player) {
+      player.role = "spectator";
+      player.status = "kicked";
+      await updatePlayer(lobby.id, player);
+      logger.info(`Kicked player ${player.uid} from ${lobby.id}`);
+    }
   }
 );
 

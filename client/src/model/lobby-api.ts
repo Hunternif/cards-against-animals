@@ -15,6 +15,7 @@ import {
   findOrCreateLobbyAndJoinFun,
   findOrCreateLobbyFun,
   joinLobbyFun,
+  kickPlayerFun,
   lobbiesRef,
   startLobbyFun,
   updateLobbySettingsFun
@@ -130,8 +131,8 @@ export function checkIfShouldEndGame(
   switch (lobby.settings.play_until) {
     case "forever": return false;
     case "max_turns_per_person":
-      // With turns per person, we set max_turns at the start of the game.
-      // If a player joins during the game, we will add only 1 more turn.
+    // With turns per person, we set max_turns at the start of the game.
+    // If a player joins during the game, we will add only 1 more turn.
     case "max_turns":
       return turn.ordinal >= lobby.settings.max_turns;
     case "max_score": {
@@ -147,11 +148,7 @@ export function checkIfShouldEndGame(
 
 /** Sets the given player's status as "kicked", so they can't re-join. */
 export async function kickPlayer(lobby: GameLobby, player: PlayerInLobby) {
-  if (player) {
-    player.status = "kicked";
-    player.role = "spectator";
-    await updatePlayer(lobby.id, player);
-  }
+  await kickPlayerFun({ lobby_id: lobby.id, user_id: player.uid });
 }
 
 
