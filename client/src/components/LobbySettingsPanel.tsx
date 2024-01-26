@@ -71,6 +71,10 @@ export function LobbySettingsPanel(props: Props) {
           control={<LimitLikesControl {...props} />}
         />
       </>}
+      <FormItem label="Discard cost"
+          hint="Players can discard any number of cards every turn by paying this cost."
+          control={<DiscardControl {...props} />}
+        />
       <FormItem label="Freeze card stats"
         hint="Card statistics will not be updated during this game. Use this for test games."
         control={<FreezeStatsControl {...props} />}
@@ -202,8 +206,24 @@ function LimitLikesControl({ settings, readOnly, onChange }: Props) {
       if (onChange) await onChange(settings);
     }}
     options={[
-      ["none", "–"],
+      ["none", "No limit"],
       ["1_pp_per_turn", "1 per turn"],
+    ]}
+  />;
+}
+
+function DiscardControl({ settings, readOnly, onChange }: Props) {
+  return <SelectInput disabled={readOnly}
+    value={settings.discard_cost}
+    onChange={async (newValue) => {
+      settings.discard_cost = newValue;
+      if (onChange) await onChange(settings);
+    }}
+    options={[
+      ["free", "Free"],
+      ["1_star", "1 ⭐"],
+      ["1_free_then_1_star", "1 free, then 1 ⭐"],
+      ["no_discard", "Disabled"],
     ]}
   />;
 }

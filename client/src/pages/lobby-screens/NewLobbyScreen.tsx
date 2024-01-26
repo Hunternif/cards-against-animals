@@ -71,7 +71,7 @@ export function NewLobbyScreen(props: Props) {
   return (
     <FillLayout className="new-lobby-screen">
       <ScreenSizeSwitch
-        widthBreakpoint={550}
+        widthBreakpoint={600}
         smallScreen={<SmallScreenLobby {...props} />}
         bigScreen={<BigScreenLobby {...props} />}
       />
