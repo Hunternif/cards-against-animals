@@ -72,7 +72,7 @@ export function defaultLobbySettings(): LobbySettings {
     max_score: 5,
     turns_per_person: 3,
     cards_per_person: 10,
-    new_cards_first: true,
+    new_cards_first: false,
     sort_cards_by_rating: true,
     allow_join_mid_game: true,
     enable_likes: true,
