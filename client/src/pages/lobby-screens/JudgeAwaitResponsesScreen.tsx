@@ -1,4 +1,5 @@
-import { CSSProperties, useContext } from "react";
+import { CSSProperties, useContext, useEffect } from "react";
+import bell_double from '../../assets/bell_double.mp3';
 import { GameButton } from "../../components/Buttons";
 import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
@@ -54,6 +55,13 @@ export function JudgeAwaitResponsesScreen() {
   // Filter out the judge:
   const validPlayers = activePlayers.filter((p) => p.uid !== judge.uid);
   const allResponded = validPlayers.every((p) => findResponse(p));
+
+  // Play sound when everyone has answered:
+  useEffect(() => {
+    if (allResponded) {
+      new Audio(bell_double).play();
+    }
+  }, [allResponded]);
 
   return <CenteredLayout>
     <h2 style={{ textAlign: "center" }} className="dim">Wait for responses:</h2>
