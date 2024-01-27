@@ -96,7 +96,7 @@ export type LobbyContol = "creator" | "czar" | "anyone";
 export class PlayerInLobby {
   uid: string;
   name: string;
-  avatar_url?: URL;
+  avatar_id?: string;
   role: PlayerRole;
   status: PlayerStatus;
   time_joined?: Date;
@@ -114,6 +114,7 @@ export class PlayerInLobby {
   constructor(
     uid: string,
     name: string,
+    avatar_id: string | null | undefined,
     random_index: number,
     role: PlayerRole,
     status: PlayerStatus,
@@ -124,6 +125,7 @@ export class PlayerInLobby {
   ) {
     this.uid = uid;
     this.name = name;
+    if (avatar_id) this.avatar_id = avatar_id;
     this.random_index = random_index;
     this.role = role;
     this.status = status;
@@ -451,6 +453,7 @@ export class CAAUser {
   uid: string;
   email?: string;
   name?: string;
+  avatar_id?: string;
   is_admin: boolean;
   current_lobby_id?: string;
 
@@ -458,12 +461,14 @@ export class CAAUser {
     uid: string,
     email: string | null | undefined = null,
     name: string | null | undefined = null,
+    avatar_id: string | null | undefined = null,
     is_admin: boolean = false,
     current_lobby_id: string | null | undefined = null,
   ) {
     this.uid = uid;
     if (email) this.email = email;
     if (name) this.name = name;
+    if (avatar_id) this.avatar_id = avatar_id;
     this.is_admin = is_admin;
     if (current_lobby_id) this.current_lobby_id = current_lobby_id;
   }

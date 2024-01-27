@@ -26,7 +26,7 @@ export async function setUsersCurrentLobby(userID: string, lobbyID?: string) {
       await usersRef.doc(userID).set(caaUser);
     } else {
       const userName = await getUserName(userID);
-      const newUser = new CAAUser(userID, null, userName, false, lobbyID);
+      const newUser = new CAAUser(userID, null, userName, null, false, lobbyID);
       await usersRef.doc(userID).set(newUser);
     }
   } else {

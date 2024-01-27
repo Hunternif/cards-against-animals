@@ -77,7 +77,8 @@ export const playerConverter: FConverter<PlayerInLobby> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PlayerInLobby(
-      data.uid, data.name, data.random_index ?? 0, data.role, data.status,
+      data.uid, data.name, data.avatar_id,
+      data.random_index ?? 0, data.role, data.status,
       data.score ?? 0, data.wins ?? 0, data.likes ?? 0, data.discards_used ?? 0);
     ret.time_joined = (data.time_joined as FTimestamp | null)?.toDate();
     return ret;
@@ -175,8 +176,8 @@ export const userConverter: FConverter<CAAUser> = {
   toFirestore: (user: CAAUser) => copyFields(user),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
-    return new CAAUser(data.uid, data.name, data.email, data.is_admin ?? false,
-      data.current_lobby_id);
+    return new CAAUser(data.uid, data.email, data.name, data.avatar_id,
+      data.is_admin ?? false, data.current_lobby_id);
   },
 };
 
