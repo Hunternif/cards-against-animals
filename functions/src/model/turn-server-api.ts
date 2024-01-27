@@ -248,12 +248,14 @@ async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
   return selected;
 }
 
-/** Deal cards to active players. */
+/** Deal cards to all players. */
 async function dealCards(
   lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn,
 ): Promise<void> {
   const lobby = await getLobby(lobbyID);
-  const players = await getOnlinePlayers(lobbyID);
+  // Deal cards to: online players, players who left.
+  const players = (await getPlayers(lobbyID))
+    .filter((p) => p.role === "player" && p.status !== "kicked")
   for (const player of players) {
     await dealCardsToPlayer(lobby, lastTurn, newTurn, player.uid);
   }
