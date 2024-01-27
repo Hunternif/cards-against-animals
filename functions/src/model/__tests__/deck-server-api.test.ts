@@ -1,6 +1,6 @@
-import { copyFields2 } from '../../shared/utils';
-import { PromptDeckCard, ResponseDeckCard, defaultLobbySettings } from '../../shared/types';
-import { getCardIndex } from '../deck-server-api';
+import { copyFields2 } from "../../shared/utils";
+import { PromptDeckCard, ResponseDeckCard, defaultLobbySettings } from "../../shared/types";
+import { getCardIndex } from "../deck-server-api";
 
 test('update card index to put new cards first', () => {
   const fakeRng = {

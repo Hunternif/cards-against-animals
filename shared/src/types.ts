@@ -102,6 +102,8 @@ export class PlayerInLobby {
   time_joined?: Date;
   /** Current score accumulated over the entire game. */
   score: number;
+  /** How many turns were won. */
+  wins: number;
   /** Current number of likes accumulated over the entire game. */
   likes: number;
   /** Number of turns where the user used discards. */
@@ -116,6 +118,7 @@ export class PlayerInLobby {
     role: PlayerRole,
     status: PlayerStatus,
     score: number,
+    wins: number,
     likes: number,
     discards_used: number,
   ) {
@@ -125,6 +128,7 @@ export class PlayerInLobby {
     this.role = role;
     this.status = status;
     this.score = score;
+    this.wins = wins;
     this.likes = likes;
     this.discards_used = discards_used;
   }

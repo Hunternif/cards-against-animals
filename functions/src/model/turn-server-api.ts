@@ -316,6 +316,7 @@ export async function updatePlayerScoresFromTurn(
   for (const player of players) {
     if (turn.winner_uid === player.uid) {
       player.score++;
+      player.wins++;
     }
     const discardRef = getPlayerDiscardRef(lobbyID, turn.id, player.uid);
     const discardCount = (await discardRef.count().get()).data().count;
@@ -325,7 +326,7 @@ export async function updatePlayerScoresFromTurn(
       const lobby = await getLobby(lobbyID);
       const cost = lobby.settings.discard_cost;
       const isDiscardFree = cost === "free" ||
-        cost === "1_free_then_1_star" && player.discards_used === 0;
+        cost === "1_free_then_1_star" && player.discards_used <= 1;
       if (!isDiscardFree) {
         player.score--;
       }
