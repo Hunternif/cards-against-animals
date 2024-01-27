@@ -1,5 +1,5 @@
 import { User, onAuthStateChanged, signInAnonymously, updateProfile } from "firebase/auth";
-import { ReactNode, useState } from "react";
+import { FormEvent, ReactNode, useContext, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
@@ -8,6 +8,8 @@ import { useDelay } from "./Delay";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CenteredLayout } from "./layout/CenteredLayout";
 import { useEffectOnce } from "./utils";
+import { updateUserData } from "../model/users-api";
+import { ErrorContext } from "./ErrorContext";
 
 interface Props {
   onLogin?: (user: User) => void,
@@ -16,6 +18,7 @@ interface Props {
 }
 
 export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
+  const { setError } = useContext(ErrorContext);
   const [user, loadingUser] = useAuthState(firebaseAuth);
   const suggestedName = "CoolNickname123";
   const [name, setName] = useState(user?.displayName ?? "");
@@ -40,29 +43,36 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
       actualName = suggestedName;
       setName(actualName);
     }
-    await updateProfile(userToUpdate, {
-      displayName: actualName
-    });
+    await updateUserData(userToUpdate, actualName);
     console.log(`Updated user name to "${actualName}"`);
   }
 
-  function login() {
-    if (!user) {
-      setLoggingIn(true);
-      signInAnonymously(firebaseAuth).then((cred) => {
+  async function handleLogin(e: FormEvent) {
+    e.preventDefault(); // Prevent submitting the form from refreshing the page
+    try {
+      if (!user) {
+        setLoggingIn(true);
+        const cred = await signInAnonymously(firebaseAuth);
         console.log("Created new anonymous user");
+        await updateProfileName(cred.user);
         setLoggingIn(false);
-        updateProfileName(cred.user);
         if (onLogin) onLogin(cred.user);
-      })
-    } else {
-      if (user.displayName != name) updateProfileName(user);
-      if (user.displayName) {
-        console.log(`Already signed in as ${user.displayName}`);
       } else {
-        console.log("Already signed in as anonymous");
+        if (user.displayName != name) {
+          setLoggingIn(true);
+          await updateProfileName(user);
+          setLoggingIn(false);
+        }
+        if (user.displayName) {
+          console.log(`Already signed in as ${user.displayName}`);
+        } else {
+          console.log("Already signed in as anonymous");
+        }
+        if (onLogin) onLogin(user);
       }
-      if (onLogin) onLogin(user);
+    } catch (e) {
+      setError(e);
+      setLoggingIn(false);
     }
   }
 
@@ -70,7 +80,7 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
     <div className="login-card">
       {delayedLoggingIn ? <LoadingSpinner text="Logging in..." /> :
         delayedLoading ? loadingNode : (
-          <Form onSubmit={(e) => { e.preventDefault(); login(); }}>
+          <Form onSubmit={handleLogin}>
             <Form.Group style={{ marginBottom: "1em" }}>
               <Form.Label><h4>Choose a nickname</h4></Form.Label>
               {delayedLoadingUser ? <LoadingSpinner /> : (

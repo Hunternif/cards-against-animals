@@ -141,12 +141,12 @@ service cloud.firestore {
       }
     }
     match /users/{userID} {
-      allow write: if userIsAdmin();
+      allow read, write: if userIsAdmin();
       // allow reading only your own info when you are logged in.
       // also allow deleting your own info:
       allow read, delete: if isLoggedIn() && request.auth.uid == userID;
-      // allow changing your data, except admin fields:
-      allow update: if isLoggedIn() && request.auth.uid == userID && isAdminInfoUnchanged(userID);
+      // allow creating & changing your data, except admin fields:
+      allow write: if isLoggedIn() && request.auth.uid == userID && isAdminInfoUnchanged(userID);
     }
     match /{document=**} {
       allow read, write: if false;

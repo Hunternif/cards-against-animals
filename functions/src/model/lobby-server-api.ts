@@ -16,7 +16,6 @@ import {
   ResponseCardInGame,
   defaultLobbySettings
 } from "../shared/types";
-import { getUserName } from "./auth-api";
 import {
   getAllPromptsForGame,
   getAllResponsesForGame
@@ -24,6 +23,7 @@ import {
 import { createNewTurn, dealCardsToPlayer, getLastTurn, updateTurn } from "./turn-server-api";
 import {
   getCAAUser,
+  getOrCreateCAAUser,
   setUsersCurrentLobby,
   updateCAAUser
 } from "./user-server-api";
@@ -127,12 +127,12 @@ export async function getOnlinePlayers(lobbyID: string):
  * or as "spectator" if the game is already in progress.
  */
 export async function addPlayer(lobby: GameLobby, userID: string): Promise<void> {
-  const userName = await getUserName(userID);
+  const caaUser = await getOrCreateCAAUser(userID);
   const playersRef = getPlayersRef(lobby.id);
   const playerRef = playersRef.doc(userID);
   const hasAlreadyJoined = (await playerRef.get()).exists;
   if (hasAlreadyJoined) {
-    logger.warn(`User ${userName} (${userID}) re-joined lobby ${lobby.id}`);
+    logger.warn(`User ${caaUser.name} (${userID}) re-joined lobby ${lobby.id}`);
     return;
   }
   let role: PlayerRole = "spectator";
@@ -143,11 +143,11 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
   } else if (lobby.status === "in_progress" && lobby.settings.allow_join_mid_game) {
     role = "player";
   }
-  const rng = RNG.fromStrSeedWithTimestamp(lobby.id + userName);
-  const player = new PlayerInLobby(userID, userName, null, rng.randomInt(), role, "online", 0, 0, 0, 0);
+  const rng = RNG.fromStrSeedWithTimestamp(lobby.id + caaUser.name);
+  const player = new PlayerInLobby(userID, caaUser.name, null, rng.randomInt(), role, "online", 0, 0, 0, 0);
   await playerRef.set(player);
   await setUsersCurrentLobby(userID, lobby.id);
-  logger.info(`User ${userName} (${userID}) joined lobby ${lobby.id} as ${role}`);
+  logger.info(`User ${caaUser.name} (${userID}) joined lobby ${lobby.id} as ${role}`);
 
   // If the game has started, onboard the player:
   if (lobby.status == "in_progress") {

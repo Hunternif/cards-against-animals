@@ -8,6 +8,18 @@ export async function getCAAUser(userID: string): Promise<CAAUser | null> {
   return (await usersRef.doc(userID).get()).data() ?? null;
 }
 
+/** Finds or creates user data by ID */
+export async function getOrCreateCAAUser(userID: string): Promise<CAAUser> {
+  const caaUser = await getCAAUser(userID);
+  if (caaUser) return caaUser;
+  else {
+    const userName = await getUserName(userID);
+    const newUser = new CAAUser(userID, null, userName, null, false);
+    await usersRef.doc(userID).set(newUser);
+    return newUser;
+  }
+}
+
 export async function updateCAAUser(caaUser: CAAUser): Promise<void> {
   await usersRef.doc(caaUser.uid).set(caaUser);
 }
@@ -21,14 +33,9 @@ export async function setUsersCurrentLobby(userID: string, lobbyID?: string) {
   const caaUser = await getCAAUser(userID);
   if (lobbyID) {
     // Set current lobby:
-    if (caaUser) {
-      caaUser.current_lobby_id = lobbyID;
-      await usersRef.doc(userID).set(caaUser);
-    } else {
-      const userName = await getUserName(userID);
-      const newUser = new CAAUser(userID, null, userName, null, false, lobbyID);
-      await usersRef.doc(userID).set(newUser);
-    }
+    const caaUser = await getOrCreateCAAUser(userID);
+    caaUser.current_lobby_id = lobbyID;
+    await usersRef.doc(userID).set(caaUser);
   } else {
     // Delete current lobby:
     if (caaUser) {
