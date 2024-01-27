@@ -74,9 +74,9 @@ export function getCardIndex(
   // Adjust index based on rating:
   if (settings.sort_cards_by_rating) {
     let factor = (100.0 + card.rating * 40.0) / 100.0 *
-      (card.plays / 2.0 + 1.0) *
+      // (card.plays / 2.0 + 1.0) *
       1.0 / (card.views / 10.0 + 1.0) *
-      (card.wins * 2.0 + 1.0) *
+      (card.wins + 1.0) *
       1.0 / (card.discards * 10.0 + 1.0);
     // Adjust prompt cards based on votes:
     if (card instanceof PromptDeckCard) {

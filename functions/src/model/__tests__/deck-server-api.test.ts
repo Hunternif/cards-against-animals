@@ -56,35 +56,27 @@ test('sort cards based on rating', () => {
   card.views = 40;
   expect(getCardIndex(card, fakeRng, settings)).toBe(20);
 
-  // Plays increase index (increases probability):
+  // Plays don't change index:
   card.views = 40;
   card.plays = 1;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(30);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(20);
   card.plays = 2;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(40);
-  card.views = 15;
-  card.plays = 1;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(60);
-  card.plays = 2;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(80);
-  card.views = 10;
-  card.plays = 1;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(75);
-  card.plays = 2;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(100);
-  // Capped at x1.2:
-  card.plays = 3;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(120);
-  card.plays = 4;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(120);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(20);
 
-  // Wins boost index:
+  // Wins boost index (increases probability):
   card.views = 40;
   card.plays = 1;
   card.wins = 1;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(89);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(40);
   card.plays = 2;
-  card.wins = 1;
+  card.wins = 2;
+  expect(getCardIndex(card, fakeRng, settings)).toBe(60);
+  card.plays = 5;
+  card.wins = 5;
+  expect(getCardIndex(card, fakeRng, settings)).toBe(120);
+  card.plays = 6;
+  card.wins = 6;
+  // Capped at 1.2x:
   expect(getCardIndex(card, fakeRng, settings)).toBe(120);
   card.plays = 0;
   card.wins = 0;
@@ -116,15 +108,15 @@ test('sort cards based on rating', () => {
   // Likes from responses increase index:
   card.views = 40;
   card.plays = 1;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(30);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(20);
   card.likes = 1;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(44);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(30);
   card.likes = 2;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(60);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(40);
   card.likes = 4;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(89);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(60);
   card.likes = 6;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(120);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(80);
   card.likes = 0;
 
   // For prompts, views are less frequent:
@@ -132,7 +124,7 @@ test('sort cards based on rating', () => {
   // Played 1 time:
   prompt.views = 1;
   prompt.plays = 1;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(120);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(90);
   // Skipped 1 time:
   prompt.views = 1;
   prompt.plays = 0;
@@ -142,12 +134,12 @@ test('sort cards based on rating', () => {
   prompt.views = 2;
   prompt.plays = 1;
   prompt.discards = 1;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(11);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(7);
   // Played 2 times and skipped 1 time:
   prompt.views = 3;
   prompt.plays = 2;
   prompt.discards = 1;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(13);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(6);
   prompt.plays = 0;
   prompt.discards = 0;
 
@@ -156,41 +148,41 @@ test('sort cards based on rating', () => {
   prompt.plays = 1;
   prompt.discards = 1;
   prompt.upvotes = 1;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(34);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(22);
   prompt.upvotes = 2;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(56);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(37);
   prompt.upvotes = 0;
 
   // Prompt downvotes decrease index:
   prompt.views = 1;
   prompt.discards = 0;
   prompt.plays = 1;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(120);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(90);
   prompt.downvotes = 1;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(12);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(8);
   prompt.downvotes = 2;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(6);
-  prompt.downvotes = 3;
   expect(getCardIndex(prompt, fakeRng, settings)).toBe(4);
+  prompt.downvotes = 3;
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(2);
   prompt.downvotes = 4;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(3);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(2);
   prompt.downvotes = 5;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(2);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(1);
   prompt.downvotes = 6;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(2);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(1);
   prompt.views = 2;
   prompt.plays = 2;
   prompt.downvotes = 5;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(3);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(1);
 
   // Prompt upvotes and downvotes cancel each other out:
   prompt.views = 1;
   prompt.plays = 1;
   prompt.upvotes = 10;
   prompt.downvotes = 10;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(120);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(90);
   prompt.downvotes = 11;
-  expect(getCardIndex(prompt, fakeRng, settings)).toBe(12);
+  expect(getCardIndex(prompt, fakeRng, settings)).toBe(8);
 });
 
 function newPromptCard() {
