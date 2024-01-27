@@ -8,7 +8,7 @@ import { useGameContext } from "../../components/GameContext";
 import { IconHeartInline, IconStarInline } from "../../components/Icons";
 import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { checkIfShouldEndGame, endLobby } from "../../model/lobby-api";
+import { checkIfShouldEndGame, endLobby, updateLobbySettings } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
 
 const midRowStyle: CSSProperties = {
@@ -23,9 +23,8 @@ const botRowStyle: CSSProperties = {
   marginTop: "1.5rem",
   height: "3rem",
   display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
+  flexDirection: "row",
+  justifyContent: "center",
   gap: "1rem",
   marginBottom: "1rem",
 }
@@ -35,6 +34,7 @@ export function WinnerScreen() {
   const { lobby, turn, players, isJudge, prompt, responses } = useGameContext();
   const [startingNewTurn, setStartingNewTurn] = useState(false);
   const [ending, setEnding] = useState(false);
+  const [extending, setExtending] = useState(false);
   const { setError } = useContext(ErrorContext);
   const winner = players.find((p) => p.uid === turn.winner_uid);
 
@@ -50,6 +50,14 @@ export function WinnerScreen() {
       setError(e);
       setStartingNewTurn(false);
     });
+  }
+
+  async function handleExtend() {
+    setExtending(true);
+    lobby.settings.max_turns += players.length;
+    await updateLobbySettings(lobby.id, lobby.settings)
+      .catch((e) => setError(e));
+    await handleNewTurn();
   }
 
   async function handleEndGame() {
@@ -96,11 +104,14 @@ export function WinnerScreen() {
         <div style={botRowStyle} className="winner-control-row">
           {isJudge && (
             <Delay>
-              {shouldEndNow ? (
+              {(extending || shouldEndNow) ? (<>
+                <GameButton secondary onClick={handleExtend} disabled={ending}>
+                  Play more!
+                </GameButton>
                 <GameButton onClick={handleEndGame} disabled={ending}>
                   End game
                 </GameButton>
-              ) : (
+              </>) : (
                 <GameButton accent onClick={handleNewTurn}
                   disabled={startingNewTurn}>
                   Next turn
