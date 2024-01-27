@@ -5,6 +5,7 @@ import { GameLobby } from "../shared/types";
 import { Checkbox } from "./Checkbox";
 import { ErrorContext } from "./ErrorContext";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useEffectOnce } from "./utils";
 
 interface DeckProps {
   deck: DeckWithCount,
@@ -61,7 +62,7 @@ export function DeckSelector({ lobby, readOnly }: SelectorProps) {
     });
   }
 
-  useEffect(() => { loadDecks(); }, [loadDecks]);
+  useEffectOnce(() => { loadDecks(); });
 
   return (
     <div className="deck-selector">

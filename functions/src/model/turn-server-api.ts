@@ -255,7 +255,7 @@ async function dealCards(
   const lobby = await getLobby(lobbyID);
   // Deal cards to: online players, players who left.
   const players = (await getPlayers(lobbyID))
-    .filter((p) => p.role === "player" && p.status !== "kicked")
+    .filter((p) => p.role === "player" && p.status !== "kicked");
   for (const player of players) {
     await dealCardsToPlayer(lobby, lastTurn, newTurn, player.uid);
   }
