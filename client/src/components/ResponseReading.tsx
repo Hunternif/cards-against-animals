@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { detectDeer, detectLenich } from "../model/deck-api";
+import { detectCat, detectDeer, detectLenich } from "../model/deck-api";
 import { useResponseLikes } from "../model/turn-api";
 import { PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
 import { CardOffsetContext } from "./CardOffsetContext";
@@ -287,17 +287,20 @@ interface LikeProps {
 
 /** Returns a custom icon for likes */
 function LikeIcon({ response }: LikeProps) {
-  if (response.cards.find((c) => detectDeer(c.content))) {
-    return <Twemoji className="emoji-like">🦌</Twemoji>;
-  } else if (response.cards.find((c) => detectLenich(c.content))) {
-    if (response.cards[0].random_index % 2 == 0) {
-      return <Twemoji className="emoji-like">👑</Twemoji>;
-    } else {
+  for (const card of response.cards) {
+    if (detectDeer(card.content)) {
+      return <Twemoji className="emoji-like">🦌</Twemoji>;
+    } else if (detectCat(card.content)) {
       return <IconCat className="cat-icon" />;
+    } else if (detectLenich(card.content)) {
+      if (response.cards[0].random_index % 2 == 0) {
+        return <Twemoji className="emoji-like">👑</Twemoji>;
+      } else {
+        return <IconCat className="cat-icon" />;
+      }
     }
-  } else {
-    return <IconHeart className="heart-icon" />;
   }
+  return <IconHeart className="heart-icon" />;
 }
 
 /** Returns an array with the biggest of the 2 offsets. */

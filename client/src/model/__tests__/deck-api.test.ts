@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import { detectDeer, detectLenich, isOnlyEmojis, parseDeckTsv, parsePromptPick, processCardText, processPromptText } from '../deck-api';
 import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from '../../shared/types';
+import { detectCat, detectDeer, detectLenich, isOnlyEmojis, parseDeckTsv, parsePromptPick, processCardText, processPromptText } from '../deck-api';
 
 test('parse pick from prompt text', () => {
   expect(parsePromptPick("No gaps!")).toBe(1);
@@ -115,12 +115,20 @@ test('detect special words', () => {
   expect(detectDeer("кот это не олн")).toBe(false);
   expect(detectDeer("🦌🦌🦌")).toBe(true);
   expect(detectDeer("олень пришел")).toBe(true);
+  expect(detectDeer("Большой Олень")).toBe(true);
   expect(detectDeer("кто-то оленеподобный")).toBe(true);
   expect(detectDeer("арви пришел")).toBe(true);
   expect(detectDeer("похож на арвинуса")).toBe(true);
   expect(detectLenich("денис")).toBe(false);
   expect(detectLenich("ленич")).toBe(true);
   expect(detectLenich("брат ленича")).toBe(true);
+  expect(detectCat("ленич")).toBe(false);
+  expect(detectCat("Кот")).toBe(true);
+  expect(detectCat("Кошка")).toBe(true);
+  expect(detectCat("Кошька")).toBe(true);
+  expect(detectCat("Лучшая Кошкодевочка")).toBe(true);
+  expect(detectCat("Кошка-жена")).toBe(true);
+  expect(detectCat("Котовник")).toBe(false);
 });
 
 test('detect only-emoji strings', () => {

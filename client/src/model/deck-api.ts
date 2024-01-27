@@ -141,6 +141,15 @@ export function detectLenich(text: string): boolean {
   return /(^|\s)ленич/.test(lowText) || lowText.includes("👑");
 }
 
+/** 🐈 */
+export function detectCat(text: string): boolean {
+  const lowText = text.toLowerCase();
+  return /(^|\s)кот([\s,]|$)/.test(lowText) ||
+    /(^|\s)кошьк/.test(lowText) ||
+    /(^|\s)кошк/.test(lowText) ||
+    lowText.includes("🐈");
+}
+
 /**
  * Returns true if the string contains only emojis and whitespace.
  * From https://stackoverflow.com/a/73634247/1093712
