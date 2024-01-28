@@ -1,6 +1,7 @@
 import { CSSProperties } from "react";
 import { GameLobby, PlayerInLobby } from "../shared/types";
 import { IconHeartInline, IconStarInline } from "./Icons";
+import { PlayerAvatar } from "./PlayerAvatar";
 
 interface Props {
   lobby: GameLobby,
@@ -31,7 +32,7 @@ export function Scoreboard({ lobby, players }: Props) {
               <IconStarInline /> {player.score}
               {/* {"⭐".repeat(score)} */}
             </td>
-            <td className="sb-col-name">{player.name}</td>
+            <td className="sb-col-name"><PlayerAvatar player={player} />{player.name}</td>
             {showLikes && (
               <td className="sb-col-score">
                 {player.likes > 0 && <>
