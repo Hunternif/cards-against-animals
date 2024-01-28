@@ -32,7 +32,7 @@ export function AvatarSelector({ caaUser, loading, initAvatarID }: AvaProps) {
     closeSelector();
     setAvatarID(nextAvatarID);
     if (caaUser) {
-      await updateUserData(caaUser.uid, caaUser.name, avatarID);
+      await updateUserData(caaUser.uid, caaUser.name, nextAvatarID);
     }
   }
 
