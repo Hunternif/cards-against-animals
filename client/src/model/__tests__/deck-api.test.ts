@@ -121,9 +121,11 @@ test('detect special words', () => {
   expect(detectDeer("похож на арвинуса")).toBe(true);
   expect(detectLenich("денис")).toBe(false);
   expect(detectLenich("ленич")).toBe(true);
+  expect(detectLenich("Леонид")).toBe(true);
   expect(detectLenich("брат ленича")).toBe(true);
   expect(detectCat("ленич")).toBe(false);
   expect(detectCat("Кот")).toBe(true);
+  expect(detectCat("Котик")).toBe(true);
   expect(detectCat("Кошка")).toBe(true);
   expect(detectCat("Кошька")).toBe(true);
   expect(detectCat("Лучшая Кошкодевочка")).toBe(true);

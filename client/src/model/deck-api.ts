@@ -138,13 +138,16 @@ export function detectDeer(text: string): boolean {
 /** 👑 */
 export function detectLenich(text: string): boolean {
   const lowText = text.toLowerCase();
-  return /(^|\s)ленич/.test(lowText) || lowText.includes("👑");
+  return /(^|\s)ленич/.test(lowText) ||
+    /(^|\s)леонид/.test(lowText) ||
+    lowText.includes("👑");
 }
 
 /** 🐈 */
 export function detectCat(text: string): boolean {
   const lowText = text.toLowerCase();
   return /(^|\s)кот([\s,]|$)/.test(lowText) ||
+    /(^|\s)котик([\s,]|$)/.test(lowText) ||
     /(^|\s)кошьк/.test(lowText) ||
     /(^|\s)кошк/.test(lowText) ||
     lowText.includes("🐈");
