@@ -8,6 +8,7 @@ interface Props {
   // title: string,
   children: ReactNode,
   okText?: string,
+  title?: string,
   cancelText?: string,
   onConfirm: () => void,
   onCancel: () => void,
@@ -18,10 +19,11 @@ interface Props {
 }
 
 export function ConfirmModal({
-  show, children, okText, cancelText, onConfirm, onCancel, loading, loadingText,
-  className, hideCancel,
+  show, children, okText, title, cancelText, loadingText, loading,
+  className, hideCancel, onConfirm, onCancel,
 }: Props) {
   return <Modal show={show} className={className}>
+    {title && <div className="modal-title">{title}</div>}
     <div className="modal-body">
       {loading ? <LoadingSpinner text={loadingText} /> : children}
     </div>

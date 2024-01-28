@@ -16,10 +16,21 @@ export function AvatarSelector({ caaUser, loading, initAvatarID }: AvaProps) {
   const [userLoaded, setUserLoaded] = useState(false);
   const [showSelector, setShowSelector] = useState(false);
   const [avatarID, setAvatarID] = useState(initAvatarID);
+  const [nextAvatarID, setNextAvatarID] = useState(initAvatarID);
   const avatar = avatarMap.get(avatarID) ?? avatars[0];
 
-  async function applyAvatar() {
+  function openSelector() {
+    setNextAvatarID(avatarID);
+    setShowSelector(true);
+  }
+
+  function closeSelector() {
     setShowSelector(false);
+  }
+
+  async function applyAvatar() {
+    closeSelector();
+    setAvatarID(nextAvatarID);
     if (caaUser) {
       await updateUserData(caaUser.uid, caaUser.name, avatarID);
     }
@@ -43,22 +54,22 @@ export function AvatarSelector({ caaUser, loading, initAvatarID }: AvaProps) {
   }, [loading]);
 
   return <>
-    <ConfirmModal hideCancel okText="Done"
+    <ConfirmModal title="Choose avatar" okText="Done"
       className="avatar-selector-modal"
       show={showSelector}
-      onCancel={() => setShowSelector(false)}
+      onCancel={closeSelector}
       onConfirm={() => applyAvatar()}>
       {avatars.map((av) =>
         <img key={av.id} src={av.url}
-          className={`avatar ${av.id === avatarID ? "selected" : ""}`}
-          onClick={() => setAvatarID(av.id)} />
+          className={`avatar ${av.id === nextAvatarID ? "selected" : ""}`}
+          onClick={() => setNextAvatarID(av.id)} />
       )}
     </ConfirmModal>
 
     <div className="avatar-selector">
       {(loading || !userLoaded) ? <LoadingSpinner delay /> : (
         <img src={avatar.url} className="avatar avatar-selector"
-          onClick={() => setShowSelector(true)} />
+          onClick={openSelector} />
       )}
     </div>
   </>;
