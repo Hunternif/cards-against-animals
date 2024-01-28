@@ -75,14 +75,16 @@ export function WinnerScreen() {
       <CenteredLayout>
         <div style={midRowStyle}>
           <div className="winner-section">
-            <h2 style={{ textAlign: "center" }}>
-              {winner ? <>
-                Winner
-                <PlayerAvatar player={winner} />
-                <i>{winner.name}</i> <IconStarInline />
-              </> :
-                <Delay>No winner</Delay>}
-            </h2>
+            <header>
+              <h2 style={{ textAlign: "center" }}>
+                {winner ? <>
+                  Winner
+                  <PlayerAvatar player={winner} />
+                  <i>{winner.name}</i> <IconStarInline />
+                </> :
+                  <Delay>No winner</Delay>}
+              </h2>
+            </header>
             <div className="winner-cards-row">
               <CardPromptWithCzar card={prompt} />
               {winnerResponse && (
@@ -96,9 +98,11 @@ export function WinnerScreen() {
           {showAudienceAward && (
             // TODO: animate audience choice winner transition
             <div className="winner-section audience-award-section">
-              <h2 style={{ textAlign: "center" }}>
-                Audience Choice <IconHeartInline />
-              </h2>
+              <header>
+                <h2 style={{ textAlign: "center" }}>
+                  Audience Choice <IconHeartInline />
+                </h2>
+              </header>
               <div className="winner-cards-row">
                 {audienceAwardResponses.map((r, i) => (
                   <ResponseReading key={i} showName showLikes response={r}
@@ -128,6 +132,6 @@ export function WinnerScreen() {
           )}
         </div>
       </CenteredLayout >
-    </CardOffsetContextProvider>
+    </CardOffsetContextProvider >
   );
 }

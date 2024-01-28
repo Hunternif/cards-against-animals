@@ -260,8 +260,24 @@ input.control {
   height: 2em;
   margin-right: 0.5em;
 }
-.winner-section .inline-avatar {
-  margin-left: 0.5em;
+// Fix alignment with avatars:
+.winner-section {
+  header {
+    @media (min-width: 550px) {
+      height: 4.5em;
+    }
+  }
+  .inline-avatar {
+    margin-left: 0.5em;
+  }
+  &.audience-award-section {
+    header {
+      @media (min-width: 550px) {
+        // TODO: make this alignment reliable
+        padding-top: 0.6em;
+      }
+    }
+  }
 }
 
 
