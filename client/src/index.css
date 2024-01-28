@@ -328,6 +328,10 @@ button.start-button {
   height: 8em;
   cursor: pointer;
 }
+.player-name {
+  /* Always aligned in the middle to match the avatar */
+  vertical-align: middle;
+}
 
 /*--------------------- Player screen with cards --------------------*/
 
@@ -472,8 +476,6 @@ button.start-button {
 }
 .prompt-czar-name, .response-player-name {
   /* Appears below card */
-  padding-left: 0.3rem;
-  padding-right: 0.3rem;
   padding-top: 0.75rem;
   padding-bottom: 0;
   justify-content: center;
@@ -482,6 +484,13 @@ button.start-button {
   font-size: 10pt;
   text-align: center;
   color: #fff;
+  display: flex;
+  width: 100%;
+}
+.prompt-czar-name .player-name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .hoverable-card {
@@ -693,6 +702,11 @@ button.start-button {
 }
 .scoreboard-table td, .scoreboard-table th {
   background-color: rgba(0, 0, 0, 0);
+  vertical-align: middle;
+}
+.sb-col-name .player-name {
+  line-height: 2em;
+  vertical-align: middle;
 }
 .scoreboard-screen .scoreboard-table {
   min-width: 15em;

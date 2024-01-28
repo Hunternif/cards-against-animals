@@ -10,6 +10,7 @@ import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { checkIfShouldEndGame, endLobby, updateLobbySettings } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
+import { PlayerAvatar } from "../../components/PlayerAvatar";
 
 const midRowStyle: CSSProperties = {
   display: "flex",
@@ -75,13 +76,18 @@ export function WinnerScreen() {
         <div style={midRowStyle}>
           <div className="winner-section">
             <h2 style={{ textAlign: "center" }}>
-              {winner ? <>Winner <i>{winner.name}</i> <IconStarInline /></> :
+              {winner ? <>
+                Winner
+                <PlayerAvatar player={winner} />
+                <i>{winner.name}</i> <IconStarInline />
+              </> :
                 <Delay>No winner</Delay>}
             </h2>
             <div className="winner-cards-row">
               <CardPromptWithCzar card={prompt} />
               {winnerResponse && (
                 <ResponseReading
+                  player={winner}
                   showName={showAudienceAward}
                   response={winnerResponse} />
               )}
@@ -95,7 +101,8 @@ export function WinnerScreen() {
               </h2>
               <div className="winner-cards-row">
                 {audienceAwardResponses.map((r, i) => (
-                  <ResponseReading key={i} showName showLikes response={r} />
+                  <ResponseReading key={i} showName showLikes response={r}
+                    player={players.find((p) => p.uid === r.player_uid)} />
                 ))}
               </div>
             </div>

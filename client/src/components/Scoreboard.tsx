@@ -32,7 +32,10 @@ export function Scoreboard({ lobby, players }: Props) {
               <IconStarInline /> {player.score}
               {/* {"⭐".repeat(score)} */}
             </td>
-            <td className="sb-col-name"><PlayerAvatar player={player} />{player.name}</td>
+            <td className="sb-col-name">
+              <PlayerAvatar player={player} />
+              <span className="player-name">{player.name}</span>
+            </td>
             {showLikes && (
               <td className="sb-col-score">
                 {player.likes > 0 && <>

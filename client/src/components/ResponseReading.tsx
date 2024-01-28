@@ -1,15 +1,17 @@
 import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { detectCat, detectDeer, detectLenich } from "../model/deck-api";
 import { useResponseLikes } from "../model/turn-api";
-import { PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
+import { PlayerInLobby, PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
 import { CardOffsetContext } from "./CardOffsetContext";
 import { useGameContext } from "./GameContext";
 import { IconCat, IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 import { Twemoji } from "./Twemoji";
 import { useScreenWiderThan } from "./layout/ScreenSizeSwitch";
+import { PlayerAvatar } from "./PlayerAvatar";
 
 interface Props {
+  player?: PlayerInLobby,
   response: PlayerResponse,
   /** Only the judge player can reveal */
   canReveal?: boolean,
@@ -40,7 +42,8 @@ export function ResponseReading(props: Props) {
           textOverflow: "ellipsis",
           overflow: "hidden",
         }}>
-          {props.response.player_name}
+          {props.player && <PlayerAvatar player={props.player} />}
+          <span className="player-name">{props.response.player_name}</span>
         </div>
       </div>
     ) : (

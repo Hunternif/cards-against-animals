@@ -42,7 +42,7 @@ const botRowStyle: CSSProperties = {
 
 export function CardReadingScreen() {
   // const responses = dummyResponses;
-  const { lobby, turn, player, isJudge, prompt, responses } = useGameContext();
+  const { lobby, turn, player, isJudge, prompt, responses, players } = useGameContext();
   const [winner, setWinner] = useState<PlayerResponse | null>(null);
   const [startingNewTurn, setStartingNewTurn] = useState(false);
   const { setError } = useContext(ErrorContext);
@@ -115,6 +115,7 @@ export function CardReadingScreen() {
         {shuffledResponses.map((r) =>
           <ResponseReading
             key={r.player_uid}
+            player={players.find((p) => p.uid === r.player_uid)}
             response={r}
             canReveal={isJudge}
             canSelect={isJudge && allRevealed}

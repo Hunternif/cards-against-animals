@@ -14,6 +14,7 @@ import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "./Icons"
 import { LobbySettingsPanel } from "./LobbySettingsPanel";
 import { Scoreboard } from "./Scoreboard";
 import { Twemoji } from "./Twemoji";
+import { PlayerAvatar } from "./PlayerAvatar";
 
 const rowStyle: CSSProperties = {
   padding: "0.5rem",
@@ -158,7 +159,11 @@ export function GameMenu() {
         <CustomDropdown showArrow
           toggle={
             <span className="light">
-              {player.name}{isSpectator && " (spectator)"}
+              <PlayerAvatar player={player} />
+              <span className="player-name">
+                {player.name}{isSpectator && " (spectator)"}
+                {isJudge && <Twemoji className="icon-czar">👑</Twemoji>}
+              </span>
             </span>
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>

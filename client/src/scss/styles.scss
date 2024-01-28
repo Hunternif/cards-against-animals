@@ -18,6 +18,21 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 $accent-color: #ffc90f;
 $like-color: #fc8181;
 
+
+/*------------------------ Dropdown component -----------------------*/
+// Copied from Bootstrap, except for vertical align
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.255em;
+  vertical-align: middle; // 0.255em;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+
 /*------------------------ Scrollbar component -----------------------*/
 
 .miniscrollbar {
@@ -241,10 +256,12 @@ input.control {
   }
 }
 .inline-avatar {
-  width: 1.5em;
-  height: 1.5em;
-  margin-top: -0.2em;
+  width: 2em;
+  height: 2em;
   margin-right: 0.5em;
+}
+.winner-section .inline-avatar {
+  margin-left: 0.5em;
 }
 
 
@@ -337,6 +354,7 @@ input.control {
     overflow: hidden;
     white-space: nowrap;
     display: flex;
+    align-items: center;
   }
   &.empty {
     border-style: dashed;
@@ -354,10 +372,13 @@ input.control {
   .right-icon {
     margin-left: auto;
     margin-right: -0.2em;
+    margin-top: -0.1em;
+    padding-left: 0.2em;
   }
   .kick-button {
     mask-image: url(../assets/x_circle.svg);
     width: 24px;
+    height: 24px;
     background-color: var(--bs-body-color);
     flex-shrink: 0;
     margin-right: -0.4em;
@@ -375,7 +396,7 @@ input.control {
 /*----------------=------- Player list in game -----------------------*/
 /* "Player card" rendered as a simpler list */
 .game-player-list {
-  width: 14em;
+  width: 15em;
   .title {
     text-align: center;
     padding: 0.1em;
@@ -481,5 +502,7 @@ input.control {
   margin-top: -0.4em;
 }
 .icon-czar {
-  margin-right: 0.5em;
+  // Always appears to the right of the nickname
+  margin-left: 0.5em;
+  vertical-align: 0.1em;
 }

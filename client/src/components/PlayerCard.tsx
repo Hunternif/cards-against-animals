@@ -5,6 +5,7 @@ import { GameLobby, PlayerInLobby } from "../shared/types";
 import { ConfirmModal } from "./ConfirmModal";
 import { ErrorContext } from "./ErrorContext";
 import { Twemoji } from "./Twemoji";
+import { PlayerAvatar } from "./PlayerAvatar";
 
 interface PlayerProps {
   lobby: GameLobby,
@@ -49,6 +50,7 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
     </ConfirmModal>
     <Card className={`player-card ${meStyle} ${judgeStyle}`}>
       <Card.Body>
+        <PlayerAvatar player={player}/>
         <span className="player-name">{player.name}</span>
         {(isCreator || isJudge) ? <Twemoji className="right-icon">👑</Twemoji> :
           player.status === "kicked" ? <Twemoji className="right-icon">💀</Twemoji> :

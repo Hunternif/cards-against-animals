@@ -101,7 +101,7 @@ function DetailedResponses({ pick, players, responses }: DetailedResponsesProps)
     const response = findResponse(player);
     return <MiniCardResponse
       key={player.uid}
-      playerName={player.name}
+      player={player}
       ready={response != null}
       pick={pick} />
   })}</>;

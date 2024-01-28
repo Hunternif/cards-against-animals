@@ -29,7 +29,7 @@ export function GameMiniResponses() {
       const response = findResponse(player);
       return <MiniCardResponse
         key={player.uid}
-        playerName={player.name}
+        player={player}
         ready={response != null}
         pick={prompt?.pick ?? 0} />
     })}

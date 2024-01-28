@@ -1,14 +1,16 @@
+import { PlayerInLobby } from "../shared/types";
 import { IconCheck } from "./Icons";
+import { PlayerAvatar } from "./PlayerAvatar";
 
 interface Props {
   ready: boolean,
   /** How many cards were played */
   pick: number,
-  playerName: string,
+  player: PlayerInLobby,
 }
 
 /** Indicates whether a player responded */
-export function MiniCardResponse({ ready, pick, playerName }: Props) {
+export function MiniCardResponse({ ready, pick, player }: Props) {
   const readyClass = ready ? "ready" : "notready";
   const pickClass = pick > 1 ? "multiple" : "single";
   return (
@@ -30,7 +32,8 @@ export function MiniCardResponse({ ready, pick, playerName }: Props) {
         overflow: "hidden",
         textAlign: "center",
       }}>
-        {playerName}
+        <PlayerAvatar player={player} />
+        <span className="player-name">{player.name}</span>
       </div>
     </div>
   );

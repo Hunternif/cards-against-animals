@@ -17,6 +17,7 @@ import {
   LargeCard
 } from "./LargeCard";
 import { Twemoji } from "./Twemoji";
+import { PlayerAvatar } from "./PlayerAvatar";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
@@ -116,13 +117,13 @@ export function CardPromptWithCzar(props: PromptCardProps) {
   return <div className="game-card-placeholder" style={containerStyle}>
     <CardPrompt {...props} />
     {(judge && !isJudge) &&
-      <div className="prompt-czar-name" style={{
-        width: "100%",
-        whiteSpace: "nowrap",
-        textOverflow: "ellipsis",
-        overflow: "hidden",
-      }} title={`${judge.name} is card czar, will select the best answer.`}>
-        <Twemoji className="icon-czar">👑</Twemoji>{judge.name}
+      <div className="prompt-czar-name"
+        title={`${judge.name} is card czar, will select the best answer.`}>
+        <PlayerAvatar player={judge} />
+        <span className="player-name">
+          {judge.name}
+        </span>
+        <Twemoji className="icon-czar">👑</Twemoji>
       </div>
     }
   </div>;
