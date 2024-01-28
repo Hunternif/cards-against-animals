@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { updateUserData, useCAAUser } from "../model/users-api";
 import { CAAUser } from "../shared/types";
-import { avatarMap, avatars } from "./Avatars";
+import { avatarMap, avatars } from "../model/avatars";
 import { ConfirmModal } from "./ConfirmModal";
 import { LoadingSpinner } from "./LoadingSpinner";
 

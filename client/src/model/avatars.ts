@@ -62,6 +62,7 @@ import panda_002 from "../assets/avatars/panda_002.jpg"
 import snake_001 from "../assets/avatars/snake_001.jpg"
 import turtle_001 from "../assets/avatars/turtle_001.jpg"
 import zebra_001 from "../assets/avatars/zebra_001.jpg"
+import { RNG } from "../shared/rng"
 
 
 /** Avatar image that a player can use. */
@@ -148,3 +149,9 @@ export const avatars = [
 /** Avatars mapped by id */
 export const avatarMap: Map<string, Avatar> =
   new Map(avatars.map((a) => [a.id, a]));
+
+/** Returns a random avatar to be used until the user logs in */
+export function randomAvatarID(rng: RNG = RNG.fromTimestamp()): string {
+  const index = rng.randomIntClamped(0, avatars.length);
+  return Array.from(avatarMap.keys())[index];
+}

@@ -4,7 +4,7 @@ import { CAAUser } from "../shared/types";
 import { User, updateProfile } from "firebase/auth";
 import { getLobby, getPlayerInLobby, leaveLobby } from "./lobby-api";
 import { useDocumentData, useDocumentDataOnce } from "react-firebase-hooks/firestore";
-import { avatarMap } from "../components/Avatars";
+import { avatarMap } from "./avatars";
 
 /** Finds user data by ID */
 export async function getCAAUser(userID: string): Promise<CAAUser | null> {

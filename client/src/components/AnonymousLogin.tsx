@@ -3,6 +3,7 @@ import { FormEvent, ReactNode, useContext, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
+import { randomAvatarID } from "../model/avatars";
 import { updateUserData } from "../model/users-api";
 import { AnonymousAvatarSelector } from "./AvatarSelector";
 import { GameButton } from "./Buttons";
@@ -11,8 +12,6 @@ import { ErrorContext } from "./ErrorContext";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CenteredLayout } from "./layout/CenteredLayout";
 import { useEffectOnce } from "./utils";
-import { avatarMap, avatars } from "./Avatars";
-import { RNG } from "../shared/rng";
 
 interface Props {
   onLogin?: (user: User) => void,
@@ -106,10 +105,4 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
         </>}
     </div>
   );
-}
-
-/** Returns a random avatar to be used until the user logs in */
-function randomAvatarID(): string {
-  const index = RNG.fromTimestamp().randomIntClamped(0, avatars.length);
-  return Array.from(avatarMap.keys())[index];
 }
