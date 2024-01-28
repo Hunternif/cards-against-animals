@@ -213,6 +213,29 @@ input.control {
 
 /*=========================== Lobby screen ===========================*/
 
+.avatar-selector-modal {
+  .modal-body {
+    // Add vertical scrolling:
+    @extend .miniscrollbar;
+    @extend .miniscrollbar-light;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    .avatar {
+      height: 3em;
+      width: 3em;
+      cursor: pointer;
+      &.selected {
+        border: 2px solid #fff;
+      }
+    }
+  }
+}
+
+
+/*=========================== Lobby screen ===========================*/
+
 .new-lobby-main-content {
   header {
     text-align: center;

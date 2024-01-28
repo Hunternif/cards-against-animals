@@ -326,6 +326,7 @@ button.start-button {
 .avatar-selector {
   width: 8em;
   height: 8em;
+  cursor: pointer;
 }
 
 /*--------------------- Player screen with cards --------------------*/

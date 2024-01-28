@@ -14,11 +14,12 @@ interface Props {
   loading?: boolean,
   loadingText?: string,
   className?: string,
+  hideCancel?: boolean,
 }
 
 export function ConfirmModal({
   show, children, okText, cancelText, onConfirm, onCancel, loading, loadingText,
-  className,
+  className, hideCancel,
 }: Props) {
   return <Modal show={show} className={className}>
     <div className="modal-body">
@@ -28,9 +29,9 @@ export function ConfirmModal({
       <GameButton onClick={onConfirm} disabled={loading}>
         {okText ?? "Yes"}
       </GameButton>
-      <GameButton onClick={onCancel} disabled={loading}>
+      {!hideCancel && <GameButton onClick={onCancel} disabled={loading}>
         {cancelText ?? "Cancel"}
-      </GameButton>
+      </GameButton>}
     </footer>
   </Modal>;
 }

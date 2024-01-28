@@ -4,13 +4,15 @@ import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
 import { updateUserData } from "../model/users-api";
-import { AnonymourAvatarSelector } from "./AvatarSelector";
+import { AnonymousAvatarSelector } from "./AvatarSelector";
 import { GameButton } from "./Buttons";
 import { useDelay } from "./Delay";
 import { ErrorContext } from "./ErrorContext";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CenteredLayout } from "./layout/CenteredLayout";
 import { useEffectOnce } from "./utils";
+import { avatarMap, avatars } from "./Avatars";
+import { RNG } from "../shared/rng";
 
 interface Props {
   onLogin?: (user: User) => void,
@@ -22,6 +24,7 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
   const { setError } = useContext(ErrorContext);
   const [user, loadingUser] = useAuthState(firebaseAuth);
   const suggestedName = "CoolNickname123";
+  const [suggestedAvatarID] = useState(randomAvatarID());
   const [name, setName] = useState(user?.displayName ?? "");
   const [loggingIn, setLoggingIn] = useState(false);
   const delayedLoadingUser = useDelay(loadingUser, 400);
@@ -44,7 +47,7 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
       actualName = suggestedName;
       setName(actualName);
     }
-    await updateUserData(userToUpdate, actualName);
+    await updateUserData(userToUpdate.uid, actualName);
     console.log(`Updated user name to "${actualName}"`);
   }
 
@@ -81,7 +84,8 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
     <div className="login-card">
       {delayedLoggingIn ? <LoadingSpinner text="Logging in..." /> :
         delayedLoading ? loadingNode : <>
-          <AnonymourAvatarSelector userID={user?.uid} />
+          <AnonymousAvatarSelector userID={user?.uid} loading={loadingUser}
+            initAvatarID={suggestedAvatarID} />
           <Form onSubmit={handleLogin}>
             <Form.Group style={{ marginBottom: "1em" }}>
               <Form.Label><h4>Choose a nickname</h4></Form.Label>
@@ -102,4 +106,10 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
         </>}
     </div>
   );
+}
+
+/** Returns a random avatar to be used until the user logs in */
+function randomAvatarID(): string {
+  const index = RNG.fromTimestamp().randomIntClamped(0, avatars.length);
+  return Array.from(avatarMap.keys())[index];
 }

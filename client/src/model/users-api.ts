@@ -13,25 +13,28 @@ export async function getCAAUser(userID: string): Promise<CAAUser | null> {
 
 /** Creates or updates user data */
 export async function updateUserData(
-  user: User, name: string, avatar_id?: string
+  userID: string, name: string, avatar_id?: string
 ): Promise<CAAUser> {
   const avatar = avatar_id ? avatarMap.get(avatar_id) : undefined;
   // Update Firebase user info:
-  await updateProfile(user, {
-    displayName: name,
-    photoURL: avatar?.url,
-  });
+  const user = firebaseAuth.currentUser;
+  if (user) {
+    await updateProfile(user, {
+      displayName: name,
+      photoURL: avatar?.url,
+    });
+  }
 
   // Update CAA user info:
-  const caaUser = await getCAAUser(user.uid);
+  const caaUser = await getCAAUser(userID);
   if (caaUser) {
     caaUser.name = name;
     caaUser.avatar_id = avatar_id;
-    await setDoc(doc(usersRef, user.uid), caaUser);
+    await setDoc(doc(usersRef, userID), caaUser);
     return caaUser;
   } else {
-    const newUser = new CAAUser(user.uid, null, name, avatar_id);
-    await setDoc(doc(usersRef, user.uid), newUser);
+    const newUser = new CAAUser(userID, null, name, avatar_id);
+    await setDoc(doc(usersRef, userID), newUser);
     return newUser;
   }
 }
