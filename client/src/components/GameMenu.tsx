@@ -143,7 +143,7 @@ export function GameMenu() {
 
       <div style={rightStyle}>
         <CustomDropdown toggle={
-          <InlineButton title="Scores">
+          <InlineButton title="Scores" style={{ whiteSpace: "nowrap" }}>
             <IconCounter icon={<IconStarInline />} count={player.score} />
             {player.likes > 0 && (
               <IconCounter icon={<IconHeartInline />} count={player.likes} />
