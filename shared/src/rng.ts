@@ -8,6 +8,8 @@ export interface IRNG {
  * RNG functions copied from https://stackoverflow.com/a/47593316/1093712
  */
 export class RNG implements IRNG {
+  static maxInt: number = 4294967296;
+
   /** RNG function, returns random 32-bit integers. */
   private rand: () => number;
 
@@ -50,9 +52,14 @@ export class RNG implements IRNG {
     return new RNG(`${seedStr}${timestamp}`);
   }
 
-  /** Returns a random 32-bit integer. */
+  /** Returns a random 32-bit integer from 0 to 4294967296. */
   randomInt(): number {
     return this.rand();
+  }
+
+  /** Returns a random float from 0 to 1 */
+  randomFloat(): number {
+    return this.rand() / RNG.maxInt;
   }
 
   /**
@@ -62,7 +69,7 @@ export class RNG implements IRNG {
   randomIntClamped(min: number, max: number): number {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(this.rand() * (max - min + 1)) + min;
+    return (Math.floor(this.randomFloat() * (max - min + 1)) + min) >>> 0;
   }
 
   /**

@@ -1,15 +1,16 @@
-import { User, onAuthStateChanged, signInAnonymously, updateProfile } from "firebase/auth";
+import { User, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { FormEvent, ReactNode, useContext, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../firebase";
+import { updateUserData } from "../model/users-api";
+import { AnonymourAvatarSelector } from "./AvatarSelector";
 import { GameButton } from "./Buttons";
 import { useDelay } from "./Delay";
+import { ErrorContext } from "./ErrorContext";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CenteredLayout } from "./layout/CenteredLayout";
 import { useEffectOnce } from "./utils";
-import { updateUserData } from "../model/users-api";
-import { ErrorContext } from "./ErrorContext";
 
 interface Props {
   onLogin?: (user: User) => void,
@@ -79,7 +80,8 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
   return (
     <div className="login-card">
       {delayedLoggingIn ? <LoadingSpinner text="Logging in..." /> :
-        delayedLoading ? loadingNode : (
+        delayedLoading ? loadingNode : <>
+          <AnonymourAvatarSelector userID={user?.uid} />
           <Form onSubmit={handleLogin}>
             <Form.Group style={{ marginBottom: "1em" }}>
               <Form.Label><h4>Choose a nickname</h4></Form.Label>
@@ -97,7 +99,7 @@ export function AnonymousLogin({ onLogin, loadingNode, buttonText }: Props) {
               </GameButton>
             </CenteredLayout>
           </Form>
-        )}
+        </>}
     </div>
   );
 }

@@ -312,8 +312,20 @@ button.start-button {
   min-width: 16em;
   min-height: 11em;
   display: flex;
+  align-items: center;
+  gap: 1em;
+}
+.login-card form {
+  display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.avatar {
+  border-radius: 50%;
+}
+.avatar-selector {
+  width: 8em;
+  height: 8em;
 }
 
 /*--------------------- Player screen with cards --------------------*/
