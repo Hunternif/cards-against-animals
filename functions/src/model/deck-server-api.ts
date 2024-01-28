@@ -89,7 +89,7 @@ export function getCardIndex(
       factor = factor * (1.0 + card.likes / 2.0);
     }
     factor = Math.max(0.0001, factor);
-    factor = Math.min(factor, 1.2);
+    factor = Math.min(factor, 1.0);
     result = (result * factor) >>> 0;
   }
 

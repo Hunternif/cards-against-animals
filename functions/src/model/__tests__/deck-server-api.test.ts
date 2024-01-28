@@ -73,11 +73,11 @@ test('sort cards based on rating', () => {
   expect(getCardIndex(card, fakeRng, settings)).toBe(60);
   card.plays = 5;
   card.wins = 5;
-  expect(getCardIndex(card, fakeRng, settings)).toBe(120);
+  expect(getCardIndex(card, fakeRng, settings)).toBe(100);
   card.plays = 6;
   card.wins = 6;
-  // Capped at 1.2x:
-  expect(getCardIndex(card, fakeRng, settings)).toBe(120);
+  // Capped at 1.0x:
+  expect(getCardIndex(card, fakeRng, settings)).toBe(100);
   card.plays = 0;
   card.wins = 0;
 
