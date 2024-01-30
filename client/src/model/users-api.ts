@@ -11,11 +11,24 @@ export async function getCAAUser(userID: string): Promise<CAAUser | null> {
   return (await getDoc(doc(usersRef, userID))).data() ?? null;
 }
 
+/** Finds or creates user data from Firebase user. */
+export async function getOrCreateCAAUser(
+  userID: string, name: string, avatarID?: string,
+): Promise<CAAUser> {
+  const caaUser = await getCAAUser(userID);
+  if (caaUser) return caaUser;
+  else {
+    const newUser = new CAAUser(userID, null, name, avatarID, false);
+    await setDoc(doc(usersRef, userID), newUser);
+    return newUser;
+  }
+}
+
 /** Creates or updates user data */
 export async function updateUserData(
-  userID: string, name: string, avatar_id?: string
+  userID: string, name: string, avatarID?: string,
 ): Promise<CAAUser> {
-  const avatar = avatar_id ? avatarMap.get(avatar_id) : undefined;
+  const avatar = avatarID ? avatarMap.get(avatarID) : undefined;
   // Update Firebase user info:
   const user = firebaseAuth.currentUser;
   if (user) {
@@ -29,11 +42,11 @@ export async function updateUserData(
   const caaUser = await getCAAUser(userID);
   if (caaUser) {
     caaUser.name = name;
-    caaUser.avatar_id = avatar_id;
+    caaUser.avatar_id = avatarID;
     await setDoc(doc(usersRef, userID), caaUser);
     return caaUser;
   } else {
-    const newUser = new CAAUser(userID, null, name, avatar_id);
+    const newUser = new CAAUser(userID, null, name, avatarID);
     await setDoc(doc(usersRef, userID), newUser);
     return newUser;
   }

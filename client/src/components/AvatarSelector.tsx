@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react";
-import { updateUserData, useCAAUser } from "../model/users-api";
-import { CAAUser } from "../shared/types";
+import { useState } from "react";
 import { avatarMap, avatars } from "../model/avatars";
 import { ConfirmModal } from "./ConfirmModal";
 import { LoadingSpinner } from "./LoadingSpinner";
 
-interface AvaProps {
-  caaUser?: CAAUser,
+interface AvatarProps {
   /** Will not set a random avatar while it's loading */
   loading?: boolean,
-  initAvatarID: string,
+  avatarID?: string,
+  onSelect: (avatarID: string) => void,
 }
 
-export function AvatarSelector({ caaUser, loading, initAvatarID }: AvaProps) {
-  const [userLoaded, setUserLoaded] = useState(false);
+/**
+ * Renders a large avatar circle.
+ * Clicking on it opens a view with all avatars.
+ */
+export function AvatarSelector({ loading, avatarID, onSelect }: AvatarProps) {
   const [showSelector, setShowSelector] = useState(false);
-  const [avatarID, setAvatarID] = useState(initAvatarID);
-  const [nextAvatarID, setNextAvatarID] = useState(initAvatarID);
-  const avatar = avatarMap.get(avatarID) ?? avatars[0];
+  const [nextAvatarID, setNextAvatarID] = useState(avatarID ?? avatars[0].id);
+  const avatar = avatarID ? avatarMap.get(avatarID) : null;
 
   function openSelector() {
-    setNextAvatarID(avatarID);
+    if (avatarID) setNextAvatarID(avatarID);
     setShowSelector(true);
   }
 
@@ -30,28 +30,8 @@ export function AvatarSelector({ caaUser, loading, initAvatarID }: AvaProps) {
 
   async function applyAvatar() {
     closeSelector();
-    setAvatarID(nextAvatarID);
-    if (caaUser) {
-      await updateUserData(caaUser.uid, caaUser.name, nextAvatarID);
-    }
+    onSelect(nextAvatarID);
   }
-
-  // When the user loads first, set the initial avatar:
-  useEffect(() => {
-    if (caaUser) {
-      if (caaUser.avatar_id) {
-        setAvatarID(caaUser.avatar_id);
-      } else {
-        // Save the current random avatar:
-        applyAvatar();
-      }
-    }
-  }, [caaUser?.uid]);
-
-  // Prevent flashing the first image
-  useEffect(() => {
-    setUserLoaded(!loading);
-  }, [loading]);
 
   return <>
     <ConfirmModal title="Choose avatar" okText="Done"
@@ -67,35 +47,10 @@ export function AvatarSelector({ caaUser, loading, initAvatarID }: AvaProps) {
     </ConfirmModal>
 
     <div className="avatar-selector">
-      {(loading || !userLoaded) ? <LoadingSpinner delay /> : (
+      {(loading || !avatar) ? <LoadingSpinner delay /> : (
         <img src={avatar.url} className="avatar avatar-selector"
           onClick={openSelector} />
       )}
     </div>
   </>;
-}
-
-interface AnonAvatarProps {
-  userID?: string,
-  /** Will not set a random avatar while it's loading */
-  loading?: boolean,
-  initAvatarID: string,
-}
-
-export function AnonymousAvatarSelector(
-  { userID, loading, initAvatarID }: AnonAvatarProps,
-) {
-  if (userID) return <UserAvatarSelector userID={userID} initAvatarID={initAvatarID} />;
-  else return <AvatarSelector loading={loading} initAvatarID={initAvatarID} />;
-}
-
-interface UserAvatarProps {
-  userID: string,
-  initAvatarID: string,
-}
-
-function UserAvatarSelector({ userID, initAvatarID }: UserAvatarProps) {
-  const [caaUser, loading] = useCAAUser(userID);
-  return <AvatarSelector caaUser={caaUser} loading={loading}
-    initAvatarID={initAvatarID} />;
 }
