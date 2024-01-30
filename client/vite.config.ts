@@ -8,17 +8,18 @@ export default defineConfig({
     react(),
     transformHtmlPlugin({ webUrl: firebaseConfig.webUrl }),
   ],
-  // Keep file names without hashes.
+  // The following scrip keeps file names without hashes.
   // Thanks to https://www.fabiofranchino.com/log/how-to-remove-hashing-in-vite-built-file-names/
-  build: {
-    rollupOptions: {
-      output: {
-        entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
-      }
-    }
-  }
+  // But we need the hashes so that browsers don't cache modified files.
+  // build: {
+  //   rollupOptions: {
+  //     output: {
+  //       entryFileNames: `assets/[name].js`,
+  //       chunkFileNames: `assets/[name].js`,
+  //       assetFileNames: `assets/[name].[ext]`
+  //     }
+  //   }
+  // }
 })
 
 /**
