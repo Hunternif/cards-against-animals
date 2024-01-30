@@ -379,6 +379,10 @@ input.control {
       opacity: 0.5;
     }
   }
+  &.me-card {
+    /* From bootstrap: */
+    background-color: #6c757d;
+  }
   span.player-name {
     flex-grow: 1;
     text-overflow: ellipsis;
