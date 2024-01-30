@@ -179,7 +179,9 @@ function LoginForm({
   }
 
   return <>
-    <AvatarSelector avatarID={newAvatarID ?? avatarPrompt} onSelect={setNewAvatarID} />
+    <AvatarSelector
+      avatarID={newAvatarID ?? avatarPrompt}
+      onSubmit={setNewAvatarID} />
     {loadingNode ?? <Form onSubmit={handleSubmit}>
       <Form.Group style={{ marginBottom: "1em" }}>
         <Form.Label><h4>Choose a nickname</h4></Form.Label>

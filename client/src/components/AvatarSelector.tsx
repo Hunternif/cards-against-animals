@@ -7,17 +7,19 @@ interface AvatarProps {
   /** Will not set a random avatar while it's loading */
   loading?: boolean,
   avatarID?: string,
-  onSelect: (avatarID: string) => void,
+  onSubmit: (avatarID: string) => void | Promise<void>,
+  inline?: boolean,
 }
 
 /**
  * Renders a large avatar circle.
  * Clicking on it opens a view with all avatars.
  */
-export function AvatarSelector({ loading, avatarID, onSelect }: AvatarProps) {
+export function AvatarSelector({ loading, avatarID, onSubmit, inline }: AvatarProps) {
   const [showSelector, setShowSelector] = useState(false);
   const [nextAvatarID, setNextAvatarID] = useState(avatarID ?? avatars[0].id);
   const avatar = avatarID ? avatarMap.get(avatarID) : null;
+  const inlineClass = inline ? "inline-avatar" : "";
 
   function openSelector() {
     if (avatarID) setNextAvatarID(avatarID);
@@ -30,7 +32,7 @@ export function AvatarSelector({ loading, avatarID, onSelect }: AvatarProps) {
 
   async function applyAvatar() {
     closeSelector();
-    onSelect(nextAvatarID);
+    onSubmit(nextAvatarID);
   }
 
   return <>
@@ -48,7 +50,7 @@ export function AvatarSelector({ loading, avatarID, onSelect }: AvatarProps) {
 
     <div className="avatar-selector">
       {(loading || !avatar) ? <LoadingSpinner delay /> : (
-        <img src={avatar.url} className="avatar avatar-selector"
+        <img src={avatar.url} className={`avatar avatar-selector ${inlineClass}`}
           onClick={openSelector} />
       )}
     </div>

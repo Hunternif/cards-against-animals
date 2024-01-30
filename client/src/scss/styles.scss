@@ -267,24 +267,12 @@ input.control {
   height: 2em;
   margin-right: 0.5em;
 }
-// Fix alignment with avatars:
-.winner-section {
-  header {
-    @media (min-width: 550px) {
-      height: 4.5em;
-    }
-  }
-  .inline-avatar {
-    margin-left: 0.5em;
-  }
-  &.audience-award-section {
-    header {
-      @media (min-width: 550px) {
-        // TODO: make this alignment reliable
-        padding-top: 0.6em;
-      }
-    }
-  }
+.login-card .avatar-selector {
+  width: 8em;
+  height: 8em;
+}
+.avatar.avatar-selector {
+  cursor: pointer;
 }
 
 
@@ -491,6 +479,31 @@ input.control {
     margin: 0 0.1em;
   }
 }
+
+
+/*----------------------------- Winner screen -----------------------------*/
+// Fix alignment with avatars:
+.winner-section {
+  header {
+    @media (min-width: 550px) {
+      height: 4.5em;
+    }
+  }
+  .inline-avatar {
+    margin-left: 0.5em;
+  }
+  &.audience-award-section {
+    header {
+      @media (min-width: 550px) {
+        // TODO: make this alignment reliable
+        padding-top: 0.6em;
+      }
+    }
+  }
+}
+
+
+/*--------------------------------- Icons ---------------------------------*/
 
 .heart-icon {
   color: $like-color;

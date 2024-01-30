@@ -323,13 +323,6 @@ button.start-button {
 .avatar {
   border-radius: 50%;
 }
-.avatar-selector {
-  width: 8em;
-  height: 8em;
-}
-.avatar.avatar-selector {
-  cursor: pointer;
-}
 .player-name {
   /* Always aligned in the middle to match the avatar */
   vertical-align: middle;

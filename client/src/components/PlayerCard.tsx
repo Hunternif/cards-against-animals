@@ -1,11 +1,13 @@
 import { useContext, useState } from "react";
 import { Card } from "react-bootstrap";
-import { kickPlayer } from "../model/lobby-api";
+import { kickPlayer, updatePlayer } from "../model/lobby-api";
+import { updateUserData } from "../model/users-api";
 import { GameLobby, PlayerInLobby } from "../shared/types";
+import { AvatarSelector } from "./AvatarSelector";
 import { ConfirmModal } from "./ConfirmModal";
 import { ErrorContext } from "./ErrorContext";
-import { Twemoji } from "./Twemoji";
 import { PlayerAvatar } from "./PlayerAvatar";
+import { Twemoji } from "./Twemoji";
 
 interface PlayerProps {
   lobby: GameLobby,
@@ -40,6 +42,17 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
     }
   }
 
+  async function setNewAvatar(avatarID: string) {
+    try {
+      // Update both in the lobby and globally:
+      player.avatar_id = avatarID;
+      await updatePlayer(lobby.id, player);
+      await updateUserData(player.uid, player.name, avatarID);
+    } catch (e) {
+      setError(e);
+    }
+  }
+
   return <>
     <ConfirmModal
       show={showKickModal}
@@ -50,7 +63,14 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
     </ConfirmModal>
     <Card className={`player-card ${meStyle} ${judgeStyle}`}>
       <Card.Body>
-        <PlayerAvatar player={player}/>
+        {isMe ? (
+          // TODO: the popup is bugged in in-game player list. Don't use dropdown!
+          <AvatarSelector inline
+            avatarID={player.avatar_id}
+            onSubmit={setNewAvatar} />
+        ) : (
+          <PlayerAvatar player={player} />
+        )}
         <span className="player-name">{player.name}</span>
         {(isCreator || isJudge) ? <Twemoji className="right-icon">👑</Twemoji> :
           player.status === "kicked" ? <Twemoji className="right-icon">💀</Twemoji> :

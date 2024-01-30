@@ -38,7 +38,7 @@ export function LobbyPlayerList({ lobby, user, players }: ListProps) {
     }
     setSlots(newSlots);
     setSlotCount(newSlotCount);
-  }, [validPlayers.length, minSlotCount, lobby, slotCount, user.uid]);
+  }, [players, validPlayers.length, minSlotCount, lobby, slotCount, user.uid]);
 
   // Set initial number of slots to fill the entire screen:
   useEffect(() => {
