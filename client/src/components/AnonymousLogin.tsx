@@ -13,6 +13,9 @@ import { ErrorContext } from "./ErrorContext";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CenteredLayout } from "./layout/CenteredLayout";
 
+
+type LoginMode = "unset" | "new_user" | "existing_user";
+
 interface Props {
   onLogin: (user: User, caaUser: CAAUser) => void,
   loadingNode?: ReactNode,
@@ -26,12 +29,14 @@ interface Props {
  */
 export function AnonymousLogin(props: Props) {
   const [user, loadingUser] = useAuthState(firebaseAuth);
-  const rng = RNG.fromTimestamp();
-  // TODO: prevent switching to login-with-user during loging in without user.
+  const [loginMode, setLoginMode] = useState<LoginMode>("unset");
+  const newProps = { ...props, rng: RNG.fromTimestamp(), loginMode, setLoginMode };
+
   return <div className="login-card">
     {loadingUser ? <LoadingSpinner delay /> :
-      user ? <AnonymousLoginWithUser {...props} user={user} rng={rng} /> :
-        <AnonymousLoginWithoutUser {...props} rng={rng} />
+      loginMode === "new_user" ? <AnonymousLoginWithoutUser {...newProps} /> :
+        user ? <AnonymousLoginWithUser {...newProps} user={user} /> :
+          <AnonymousLoginWithoutUser {...newProps} />
     }
   </div>;
 }
@@ -39,18 +44,23 @@ export function AnonymousLogin(props: Props) {
 interface PropsWithoutUser extends Props {
   /** Used for selecting the initial random name & avatar */
   rng: RNG,
+  /** Current mode of logging in. This prevents switching components
+   * during the login process. */
+  loginMode: LoginMode,
+  setLoginMode: (mode: LoginMode) => void,
 }
 
 /**
  * When the user is not logged in. Set their initial name & avatar.
  */
 function AnonymousLoginWithoutUser({
-  onLogin, loadingNode, buttonText, rng
+  onLogin, loadingNode, buttonText, rng, setLoginMode,
 }: PropsWithoutUser) {
   const [loggingIn, setLoggingIn] = useState(false);
   const { setError } = useContext(ErrorContext);
 
   async function handleSubmit(name: string, avatarID: string) {
+    setLoginMode("new_user");
     setLoggingIn(true);
     try {
       const cred = await signInAnonymously(firebaseAuth);
@@ -86,12 +96,15 @@ function AnonymousLoginWithUser(props: PropsWithUser) {
 
   // If CAAUser for this user doesn't exist, create it:
   useEffect(() => {
-    const name = props.user.displayName ?? randomNickname(props.rng);
-    const avatarID = randomAvatarID(props.rng);
-    getOrCreateCAAUser(props.user.uid, name, avatarID)
-      .then((newCaaUser) => setCaaUser(newCaaUser))
-      .catch((e) => setError(e));
-  }, [props.user.uid]);
+    // Only do this if login is not in progress:
+    if (props.loginMode !== "new_user") {
+      const name = props.user.displayName ?? randomNickname(props.rng);
+      const avatarID = randomAvatarID(props.rng);
+      getOrCreateCAAUser(props.user.uid, name, avatarID)
+        .then((newCaaUser) => setCaaUser(newCaaUser))
+        .catch((e) => setError(e));
+    }
+  }, [props.user.uid, props.loginMode]);
 
   if (!caaUser) return <LoadingSpinner delay />;
   return <AnonymousLoginWithCaaUser {...props} caaUser={caaUser} />;
@@ -106,12 +119,13 @@ interface PropsWithCaaUser extends PropsWithUser {
  * We use the form to let them change their name & avatar.
  */
 function AnonymousLoginWithCaaUser({
-  user, caaUser, onLogin, loadingNode, buttonText, rng
+  user, caaUser, onLogin, loadingNode, buttonText, rng, setLoginMode,
 }: PropsWithCaaUser) {
   const [updating, setUpdating] = useState(false);
   const { setError } = useContext(ErrorContext);
 
   async function handleSubmit(name: string, avatarID: string) {
+    setLoginMode("existing_user");
     setUpdating(true);
     console.log(`Already signed in as ${user.uid}. Updating...`);
     try {

@@ -152,6 +152,6 @@ export const avatarMap: Map<string, Avatar> =
 
 /** Returns a random avatar to be used until the user logs in */
 export function randomAvatarID(rng: RNG = RNG.fromTimestamp()): string {
-  const index = rng.randomIntClamped(0, avatars.length);
+  const index = rng.randomIntClamped(0, avatars.length - 1);
   return Array.from(avatarMap.keys())[index];
 }
