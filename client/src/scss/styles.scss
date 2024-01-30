@@ -204,6 +204,9 @@ input.control {
       width: 6em;
     }
   }
+  @media (max-width: 50rem) {
+    max-width: 95vw;
+  }
 
   &.game-settings-modal {
     min-width: 25rem;
@@ -234,15 +237,19 @@ input.control {
 /*=========================== Lobby screen ===========================*/
 
 .avatar-selector-modal {
+  width: 36em; // Fits 8 avatars on a non-mobile screen + padding.
   .modal-body {
     // Add vertical scrolling:
     @extend .miniscrollbar;
     @extend .miniscrollbar-light;
     overflow-y: auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5em;
-    justify-content: space-between;
+
+    // Thanks to https://stackoverflow.com/a/46099319/1093712
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 3em);
+    grid-gap: 0.75rem;
+    justify-content: center;
+
     padding: 0.5em;
     .avatar {
       height: 3em;
