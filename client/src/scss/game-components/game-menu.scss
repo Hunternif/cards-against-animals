@@ -1,0 +1,108 @@
+@use "../colors.scss";
+
+/*=========================== Game Menu ===========================*/
+// Appears at the top of the page when the game is in progress.
+
+.menu-inline-button {
+  padding-top: 0.2rem;
+  padding-bottom: 0.3rem;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+  border-radius: 0.2rem;
+}
+.menu-inline-button {
+  cursor: pointer;
+}
+.menu-inline-button:hover {
+  background-color: rgba(colors.$text, 0.2);
+}
+.menu-inline-button .heart-icon-inline {
+  margin-left: 0.5em;
+}
+.icon-counter .count {
+  margin: 0 0.2em;
+}
+
+.game-menu-icon {
+  opacity: 0.5;
+}
+.game-menu-icon:hover {
+  opacity: 1;
+}
+.menu-turn-ordinal {
+  opacity: 0.4;
+}
+.menu-player-counter {
+  opacity: 0.4;
+}
+
+.menu-item-locked {
+  display: flex;
+  justify-content: space-between;
+}
+.menu-item-locked .lock-icon {
+  opacity: 0.6;
+}
+
+
+/*--------------------- Scoreboard in game menu -----------------*/
+
+.menu-scoreboard {
+  .scoreboard-table {
+    margin-bottom: 0;
+    margin-top: 0;
+    margin-left: 0.75em;
+    margin-right: 0.5em;
+    .sb-col-score {
+      width: 20%;
+      white-space: nowrap;
+    }
+  }
+  .sb-col-name {
+    white-space: nowrap;
+    max-width: 15rem;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+  }
+  tr:last-child td {
+    border-style: none;
+  }
+}
+
+
+/*----------------=------- Player list in game -----------------------*/
+// "Player card" rendered as a simpler list
+// TODO: render it without using player-card
+.game-player-list {
+  width: 15em;
+  .title {
+    text-align: center;
+    padding: 0.1em;
+  }
+  .player-card {
+    border-style: none;
+    border-bottom-style: solid;
+    border-radius: 0;
+    margin: 0;
+    // padding: 0.1em 0.15em;
+    opacity: 0.8;
+    &.me-card {
+      background-color: rgba(colors.$player-me-bg, 0.2);
+    }
+    &.judge-card {
+      font-weight: 700;
+      color: #fff;
+      opacity: 1;
+    }
+  }
+  li:last-child .player-card {
+    border-bottom-style: none;
+  }
+}
+
+// Displays the current number of players in an icon-counter
+.lobby-player-counter .count,
+.menu-player-counter .count {
+  font-weight: 600;
+  margin: 0 0.2em;
+}

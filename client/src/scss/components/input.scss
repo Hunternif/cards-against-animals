@@ -1,0 +1,24 @@
+@use "../colors.scss";
+
+/*------------------------- Input component ------------------------*/
+/* Copied from Bootstrap and modified */
+input.control {
+  display: block;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  color: colors.$text;
+  appearance: none;
+  background-color: colors.$control-bg;
+  background-clip: padding-box;
+  border: 2px solid colors.$control-border;
+  border-radius: var(--bs-border-radius);
+  &:focus,
+  &:focus-visible {
+    background-color: colors.$control-bg-focus;
+    border-color: colors.$control-border-focus;
+    outline: 0;
+  }
+  option {
+    background-color: #323844;
+  }
+}

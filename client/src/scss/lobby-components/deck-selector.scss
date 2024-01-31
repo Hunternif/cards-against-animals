@@ -1,0 +1,106 @@
+@use "../colors.scss";
+
+/*-------------------------- Deck selector --------------------------*/
+
+.deck-row {
+  height: 3rem;
+  cursor: pointer;
+  background-color: rgba(colors.$bg-dark, 0.2);
+  &.readonly {
+    cursor: default;
+  }
+  &.unselected.editable:hover {
+    background-color: rgba(colors.$bg-dark, 0.333);
+  }
+  &.selected {
+    color: #fff;
+    background-color: rgba(colors.$bg-dark, 0.533);
+  }
+  // Dim down checkbox opacity when unselected:
+  &.editable.unselected:hover .checkbox label::after {
+    opacity: 0.4;
+  }
+  &.unselected .checkbox {
+    opacity: 0.6;
+  }
+}
+
+.deck-row-title {
+  font-weight: 600;
+  text-wrap: wrap;
+  text-overflow: ellipsis;
+  max-height: 3rem;
+  &.unselected {
+    opacity: 0.6;
+  }
+}
+
+.deck-selector {
+  margin: 1em 0;
+
+  table {
+    /* border collapse is needed for sticky header */
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .deck-row td {
+    padding: 0 0.5em;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    /* border must be set on td due to border collapse behavior */
+    border-bottom: 2px solid rgba(colors.$text, 0.25);
+  }
+  .deck-row:last-child td {
+    border-bottom: none;
+  }
+  td:first-child,
+  th:first-child {
+    padding-left: 1em;
+  }
+  td:last-child,
+  th:last-child {
+    padding-right: 1em;
+  }
+  th {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-bottom: 0.5em;
+    font-weight: 400;
+    color: rgba(colors.$text, 0.6);
+    border-bottom: 2px solid rgba(colors.$text, 0.25);
+    /* Sticky header: */
+    position: sticky;
+    background-attachment: fixed;
+    background-image: linear-gradient(to bottom, #494f5c, #858792);
+    z-index: 1;
+    top: 0;
+  }
+  .count-column {
+    max-width: 10vw;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: end;
+  }
+}
+
+.deck-totals-row {
+  height: 3rem;
+  position: sticky;
+  background-attachment: fixed;
+  background-image: linear-gradient(to bottom, #494f5c, #858792);
+  z-index: 1;
+  bottom: 1.5em;
+  td {
+    border-top: 2px solid rgba(colors.$text, 0.25);
+  }
+}
+.deck-total-label {
+  color: rgba(colors.$text, 0.6);
+}
+.deck-total-value {
+  padding: 0 0.5em;
+  color: colors.$text-hilight;
+  font-weight: 500;
+}

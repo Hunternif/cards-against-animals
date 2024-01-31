@@ -1,0 +1,289 @@
+@use "../colors.scss";
+
+/*======================= General card components ======================*/
+
+.game-card {
+  /* Drop-shadow: */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5em;
+  padding: 0.75em;
+  width: 10rem;
+  height: 14rem;
+  font-size: 13px;
+  font-weight: 600;
+
+  .card-content {
+    padding: 0 0.25em;
+    white-space: pre-line;
+    display: inline-block;
+    // Render large emoji:
+    .emoji {
+      height: 18px;
+    }
+    &.emoji-only {
+      padding-top: 0.2em;
+      .emoji {
+        /* Fits exactly 3 large emojis in a row: */
+        height: 44px;
+      }
+    }
+  }
+  .card-center-icon {
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    top: 0;
+    left: 0;
+    align-content: center;
+    justify-content: center;
+    user-select: none;
+    pointer-events: none;
+  }
+  .card-bottom {
+    display: flex;
+    margin-top: auto;
+  }
+  .card-bottom-right, .card-bottom-left {
+    display: flex;
+    align-items: baseline;
+    flex-direction: row;
+    margin-top: auto;
+    flex-wrap: wrap;
+  }
+  .card-bottom-right {
+    margin-left: auto;
+  }
+  .card-bottom-left {
+    margin-right: auto;
+  }
+}
+
+
+/*===================== Per-screen card components ====================*/
+
+/*---------------------- Player screen with cards ---------------------*/
+
+.hoverable-card {
+  transition-property: transform, box-shadow, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 100ms;
+  &:hover {
+    transform: scaleX(1.03) scaleY(1.03);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+  &.selected {
+    transform: scaleX(1.05) scaleY(1.05);
+  }
+}
+.game-card.locked-card.unselected {
+  opacity: 0.6;
+}
+.game-card.card-response {
+  background-color: colors.$card-response-bg;
+  color: colors.$card-response-text;
+}
+.game-card.card-response.selected,
+.game-card.response-reading.selected {
+  color: colors.$burned-text;
+  background-image: colors.$card-response-bg-selected;
+  box-shadow: 0px 0px 20px 4px rgba(colors.$burned-text, 0.8);
+}
+.selected-response-index {
+  color: rgba(colors.$accent, 0.8);
+  font-size: 5rem;
+  font-weight: bold;
+  align-content: center;
+  justify-content: center;
+}
+
+
+/*--------------------------- Prompt card ----------------------------*/
+
+.game-card.card-prompt {
+  background-image: colors.$card-prompt-bg;
+  color: colors.$card-prompt-text;
+}
+.prompt-unknown-icon {
+  color: rgba(colors.$text, 0.4);
+  font-size: 5rem;
+}
+.prompt-pick-number {
+  text-align: center;
+  border-radius: 50%;
+  width: 1.2em;
+  height: 1.2em;
+  line-height: 1.2em;
+  margin-left: 0.5em;
+  margin-right: 0.2em;
+  background-color: colors.$card-prompt-text;
+  color: #000;
+  font-weight: bold;
+}
+.prompt-czar-name, .response-player-name {
+  /* Appears below card */
+  padding-top: 0.75rem;
+  padding-bottom: 0;
+  justify-content: center;
+  align-items: center;
+  /* font-size: small; */
+  font-size: 10pt;
+  text-align: center;
+  color: colors.$text-hilight;
+  display: flex;
+  width: 100%;
+}
+.prompt-czar-name .player-name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
+/*--------------------- Screen for reading responses --------------------*/
+
+.game-card.card-response.response-reading.can-reveal.unrevealed:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+.game-card.card-response.response-reading.unrevealed {
+  opacity: 0.6;
+}
+.reading-unrevealed-icon {
+  color: #111827cc;
+  font-size: 5rem;
+}
+.game-card.selectable {
+  cursor: pointer;
+}
+
+
+/*------------------ Stacks of many cards in response -------------------*/
+
+.game-card-placeholder {
+  /* Maintains card size, but doesn't display anything */
+  width: 10rem;
+  height: 14rem;
+}
+.many-cards > .game-card {
+  box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 100ms;
+}
+.game-card.overlaid {
+  height: 13rem;
+}
+.many-cards {
+  position: relative;
+  /* Transition needed when child card stacks are revealed with extra margins: */
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 100ms;
+  &.selected, &:hover {
+    z-index: 10;
+  }
+}
+
+
+/*----------------------------- Likes -----------------------------*/
+
+.card-response, .many-cards {
+  &:hover .like-response-button {
+    opacity: 0.2;
+  }
+  .like-response-button {
+    width: 50%;
+    height: 50%;
+    opacity: 0;
+    cursor: pointer;
+    pointer-events: all;
+    &:hover {
+      opacity: 0.5;
+    }
+    &:active {
+      opacity: 0.7;
+    }
+    .like-response-icon {
+      color: colors.$like;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .emoji-like .emoji {
+    height: 16px;
+    margin: 0 0.1em;
+  }
+}
+
+
+/*------------------------- Upvotes / Downvotes ------------------------*/
+
+.card-response .downvote-card-icon {
+  color: colors.$response-downvote;
+}
+.vote-card-icon {
+  opacity: 0.1;
+  cursor: pointer;
+}
+.vote-card-icon:hover {
+  opacity: 0.5;
+}
+.game-card.upvoted .upvote-card-icon,
+.game-card.downvoted .downvote-card-icon {
+  opacity: 0.9;
+}
+.game-card.upvoted .upvote-card-icon:hover,
+.game-card.downvoted .downvote-card-icon:hover {
+  opacity: 1;
+}
+.game-card.locked-card .vote-card-icon {
+  opacity: 0.1;
+}
+.game-card.locked-card.upvoted .upvote-card-icon,
+.game-card.locked-card.downvoted .downvote-card-icon {
+  opacity: 1;
+}
+.prompt-voting {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+}
+.prompt-voting .upvote-card-icon {
+  color: colors.$prompt-upvote;
+}
+.prompt-voting .downvote-card-icon {
+  color: colors.$prompt-downvote;
+  margin-bottom: -0.5em;
+}
+
+
+/*--------------------- Discarding response cards -----------------*/
+
+.card-discard-icon {
+  color: colors.$discard-icon;
+  font-size: 5rem;
+  opacity: 0.1;
+}
+.card-response.discarding.hoverable-card:hover .card-discard-icon {
+  opacity: 0.4;
+}
+.card-response.discarding.hoverable-card:hover {
+  opacity: 1;
+  box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.1);
+}
+.card-response.unselected.discarded {
+  background-color: colors.$discarded-bg;
+  box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.2);
+  opacity: 1;
+}
+.card-response.discarded .card-discard-icon {
+  opacity: 0.9;
+}
+.card-response.discarded.hoverable-card:hover .card-discard-icon {
+  opacity: 0.9;
+}
+.card-response.discarded.hoverable-card:hover {
+  background-color: colors.$discarded-bg-hover;
+  box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,29 @@
+@use "../colors.scss";
+
+/*------------------------- Select component ------------------------*/
+/* Copied from Bootstrap and modified */
+select {
+  --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  display: block;
+  padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+  line-height: 1.5;
+  color: colors.$text;
+  appearance: none;
+  background-color: colors.$control-bg;
+  background-image: var(--bs-form-select-bg-img); // Chevron
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 14px;
+  border: 2px solid colors.$control-border;
+  border-radius: var(--bs-border-radius);
+  &:focus,
+  &:focus-visible {
+    background-color: colors.$control-bg-focus;
+    border-color: colors.$control-border-focus;
+    outline: 0;
+    /* box-shadow: 0 0 0 1px rgba(13, 110, 253, 0.25); */
+  }
+  option {
+    background-color: #323844;
+  }
+}

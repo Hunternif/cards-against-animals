@@ -1,8 +1,4 @@
-// Order matters!
-// First import Bootstrap styles:
 import './scss/styles.scss'
-// Then custom styles:
-import './index.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'

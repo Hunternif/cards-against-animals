@@ -1,0 +1,70 @@
+@use "../colors.scss";
+
+/*------------------------- Modal component ------------------------*/
+
+.modal-backdrop {
+  color: #000;
+  opacity: 0.6;
+}
+
+/* Similar to login-card */
+.modal-card {
+  padding: 1em;
+  border-radius: 0.735rem;
+  background-color: colors.$panel-bg;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  display: flex;
+  gap: 1em;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 18em;
+  max-width: 60vw;
+  min-height: 8em;
+  max-height: 80vh;
+  .modal-title {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 600;
+  }
+  .modal-body {
+    text-align: center;
+    font-size: large;
+    font-weight: 600;
+  }
+  footer {
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+    button {
+      width: 6em;
+    }
+  }
+  @media (max-width: 50rem) {
+    max-width: 95vw;
+  }
+
+  // Special sizing for the large "settings" modal:
+  &.game-settings-modal {
+    min-width: 25rem;
+    max-width: 90vw;
+    width: 60rem;
+    @media (max-width: 50rem) {
+      min-width: 20rem;
+      width: 30rem;
+      max-width: 95vw;
+    }
+    .modal-body {
+      // Add vertical scrolling:
+      @extend .miniscrollbar;
+      @extend .miniscrollbar-light;
+      overflow-y: auto;
+      // Reset font
+      font-size: medium;
+      font-weight: 400;
+      text-align: unset;
+    }
+    header {
+      text-align: center;
+    }
+  }
+}

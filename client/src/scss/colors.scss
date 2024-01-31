@@ -1,0 +1,72 @@
+/*--------------------------- Accents ----------------------------*/
+/** Gold star, primary button etc */
+$accent: #ffc90f;
+$like: #fc8181;
+
+
+/*------------------------- Theme colors -------------------------*/
+$text: #dee2e6; // copied from Bootstrap --bs-body-color
+// $text2: #e5e7eb; // existed in original index.css
+$text-hilight: #fff;
+$bg-dark: #111827;
+
+$button-dark-bg: #1a1a1a;
+$button-text: #fff;
+$button-border-hover: #8BB9F9;
+$button-accent-text: #000;
+$button-accent-border-hover: #fff;
+
+$button-light-bg: #374151;
+
+
+/*--------------------- Background gradients ---------------------*/
+$welcome-bg: linear-gradient(to bottom, #111827, #374151);
+$lobby-bg: linear-gradient(to bottom, #494f5c, #858792);
+$lobby-player-list-bg: linear-gradient(to bottom, #2c3037, #505157);
+
+// game bg is a blend of color and gradient:
+$game-bg-color: #999;
+$game-bg-image: linear-gradient(to bottom, #111827cc, #374151cc);
+$game-bg: linear-gradient(to bottom, #090a0d, #3d434e, #090a0d);
+
+$reading-vignette: linear-gradient(to bottom,
+    #000 0%, #37415100 48%, #37415100 52%, #000 100%);
+// Vignette roughly merged with the underlying layer, for mobile header:
+$reading-vignette-merged: linear-gradient(to bottom,
+    #090a0d 0%, #3d434e 48%, #3d434e 52%, #090a0d 100%);
+$winner-vignette: linear-gradient(to bottom,
+    #030711 0%, #324464 48%, #324464 52%, #111827 100%);
+$scoreboard-bg: linear-gradient(to bottom, #030711, #324464);
+
+$player-me-bg: #6c757d; // copied from Bootstrap
+
+
+/*----------------------------- Cards ----------------------------*/
+$card-prompt-bg: linear-gradient(to bottom, #141820, #2d3441);
+$card-prompt-text: #fff;
+$card-response-bg: #fff;
+$card-response-text: #000;
+$card-response-bg-selected: linear-gradient(to bottom, rgba($accent, 0.4), #fff);
+$burned-text: #d45f00;
+$discard-icon: #36332f;
+$discarded-bg: #bbb;
+$discarded-bg-hover: #ccc;
+$prompt-upvote: #63865c;
+$prompt-downvote: #975757;
+$response-downvote: #b91c1c;
+
+$minicard-bg: rgba(#fff, 0.7);
+$minicard-icon: #181d29;
+$minicard-stack-bg: #888;
+
+
+/*------------------------- Form controls ------------------------*/
+$control-bg: rgba($bg-dark, 0.266);
+$control-bg-focus: rgba($bg-dark, 0.533);
+$control-border: rgba($text, 0.5);
+$control-border-focus: #86b7fe;
+
+
+/*------------------- "Panels" (modals & cards) ------------------*/
+$panel-bg: #2f3542;
+$panel-border: #374151;

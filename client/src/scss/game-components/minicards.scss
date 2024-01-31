@@ -1,0 +1,70 @@
+@use "../colors.scss";
+
+
+/*------------- Mini-cards (tracking who submitted response) ------------*/
+
+.game-minicard {
+  width: 5rem;
+  height: 7rem;
+  border-radius: 0.5rem;
+}
+.game-minicard.ready {
+  color: colors.$minicard-icon;
+  background-color: colors.$minicard-bg;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.game-minicard.ready.multiple {
+  box-shadow: inset -5px -1px 0 colors.$minicard-stack-bg;
+}
+.game-minicard.notready {
+  border: 5px dashed;
+  border-color: colors.$text;
+  color: colors.$text;
+  opacity: 0.2;
+}
+.minicard-player-name {
+  width: 5rem;
+  padding: 0.75rem 0.3rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 9pt;
+  color: #fff;
+}
+.game-minicard > .ready-icon {
+  font-size: 3rem;
+  user-select: none;
+}
+.game-minicard .ready-icon .tick {
+  margin-bottom: 0.5rem;
+}
+
+
+/*---------------- Shortened response counter for mobile ---------------*/
+
+.response-count-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: end;
+}
+.response-count-header {
+  font-size: smaller;
+  opacity: 0.6;
+  margin-top: 0.5rem;
+  margin-bottom: -0.5rem;
+}
+.response-count-group {
+  font-size: 3rem;
+  font-weight: 600;
+}
+.response-count-group .count-current {
+  opacity: 0.6;
+}
+.response-count-group .slash {
+  opacity: 0.3;
+  font-weight: 400;
+}
+.response-count-group .count-total {
+  opacity: 0.3;
+}

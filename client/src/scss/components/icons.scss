@@ -1,0 +1,53 @@
+@use "../colors.scss";
+
+/*--------------------------------- Icons ---------------------------------*/
+// SVG icons often need adjustment to appear nicely on the text line.
+
+.heart-icon {
+  color: colors.$like;
+  margin-bottom: -0.15em;
+  margin-right: -0.15em;
+}
+.star-icon-inline {
+  color: colors.$accent;
+  margin-bottom: 0.2em;
+}
+.heart-icon-inline {
+  color: colors.$like;
+  margin-top: -0.15em;
+}
+.person-icon-inline {
+  margin-left: 0.15em;
+  margin-right: 0.15em;
+  margin-bottom: 0.2em;
+}
+.person-icon-inline-small {
+  margin-left: 0.1em;
+  margin-right: 0.1em;
+  margin-bottom: 0.2em;
+}
+.cat-icon {
+  color: colors.$bg-dark;
+  margin-right: -0.15em;
+}
+.icon-info-inline {
+  margin-bottom: 0.2em;
+}
+.icon-chevron-down-inline {
+  width: 1.5em;
+  height: 1.5em;
+  margin: -0.2em;
+  margin-top: -0.4em;
+}
+.icon-czar {
+  // Always appears to the right of the nickname
+  margin-left: 0.5em;
+  vertical-align: 0.1em;
+}
+
+.twemoji {
+  display: inline-block;
+  width: auto;
+  height: 1em;
+  vertical-align: -0.2em;
+}

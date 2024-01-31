@@ -1,10 +1,15 @@
-// Required
+// This file combines all the styles together.
+
+@use "colors.scss";
+
+
+// Required for Bootstrap
 @import "bootstrap/scss/functions";
 
-// Default variable overrides
+// Default variable overrides for Bootstrap
 $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 
-// Required
+// Required for Bootstrap
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/variables-dark";
 @import "bootstrap/scss/maps";
@@ -15,534 +20,71 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 @import "bootstrap/scss/bootstrap";
 
 
-$accent-color: #ffc90f;
-$like-color: #fc8181;
+/*---------------------- Custom local stylesheets ---------------------*/
+
+// Common components:
+@import "components/dropdown.scss";
+@import "components/scrollbar.scss";
+@import "components/checkbox.scss";
+@import "components/select.scss";
+@import "components/input.scss";
+@import "components/modal.scss";
+@import "components/icons.scss";
+@import "components/text.scss";
+@import "components/buttons.scss";
+@import "components/avatars.scss";
+
+// Main screens:
+@import "login-screen.scss";
+@import "lobby-screen.scss";
+@import "game-screen.scss";
+@import "winner-screen.scss";
+@import "scoreboard-screen.scss";
+
+// Lobby-screen-specific components:
+@import "lobby-components/deck-selector.scss";
+
+// Game-screen-specific components:
+@import "game-components/cards.scss";
+@import "game-components/minicards.scss";
+@import "game-components/game-menu.scss";
+
+// Final overrides for mobile:
+@import "mobile.scss";
 
 
-/*------------------------ Dropdown component -----------------------*/
-// Copied from Bootstrap, except for vertical align
-.dropdown-toggle::after {
-  display: inline-block;
-  margin-left: 0.255em;
-  vertical-align: middle; // 0.255em;
-  content: "";
-  border-top: 0.3em solid;
-  border-right: 0.3em solid transparent;
-  border-bottom: 0;
-  border-left: 0.3em solid transparent;
-}
+/*---------------------------- Root layout ---------------------------*/
 
-
-/*------------------------ Scrollbar component -----------------------*/
-
-.miniscrollbar {
-  scrollbar-gutter: stable;
-  &.miniscrollbar-auto {
-    scrollbar-gutter: auto;
-  }
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-track {
-    background: 0 0;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #111827;
-    border-radius: 4px;
-  }
-  &.miniscrollbar-dark::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.6);
-  }
-  &.miniscrollbar-light::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.5);
-  }
-}
-
-
-/*------------------------ Checkbox component ------------------------*/
-// From https://codepen.io/alvarotrigo/pen/YzezaMR
-.checkbox {
-  width: 20px;
-  height: 20px;
-  position: relative;
-  // background: #fcfff4;
-  // background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
-  // box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
-  border: 2px solid;
-  border-radius: 4px;
-  // This fixes baseline position on this line
-  display: flex;
-  align-items: baseline;
-  label {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    // background: linear-gradient(to bottom, #222 0%, #45484d 100%);
-    // box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
-    &:after {
-      content: '';
-      width: 9px;
-      height: 5px;
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      border: 2px solid #fff;
-      border-top: none;
-      border-right: none;
-      background: transparent;
-      opacity: 0;
-      transform: rotate(-45deg);
-      box-sizing: content-box;
-    }
-    &:hover::after {
-      opacity: 0.3;
-    }
-  }
-  input[type=checkbox] {
-    visibility: hidden;
-    &:checked + label:after {
-      opacity: 1;
-    }
-    // Disabled state:
-    &:disabled + label {
-      cursor: default;
-    }
-    &:not(:checked):disabled + label:hover:after {
-      opacity: 0;
-    }
-  }
-}
-
-/*------------------------- Select component ------------------------*/
-/* Copied from Bootstrap and modified */
-select {
-  --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-  display: block;
-  padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  /* #dee2e6 */
-  color: var(--bs-body-color);
-  appearance: none;
-  background-color: #11182744;
-  background-image: var(--bs-form-select-bg-img);
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 16px 14px;
-  border: 2px solid rgba(222, 226, 230, 0.5);
-  border-radius: var(--bs-border-radius);
-  &:focus,
-  &:focus-visible {
-    background-color: #11182788;
-    border-color: #86b7fe;
-    outline: 0;
-    /* box-shadow: 0 0 0 1px rgba(13, 110, 253, 0.25); */
-  }
-  option {
-    background-color: #323844;
-  }
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424; // Usually hidden behind other components
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-
-/*------------------------- Input component ------------------------*/
-/* Copied from Bootstrap and modified */
-input.control {
-  display: block;
-  padding: 0.375rem 0.75rem;
-  line-height: 1.5;
-  color: var(--bs-body-color);
-  appearance: none;
-  background-color: #11182744;
-  background-clip: padding-box;
-  border: 2px solid rgba(222, 226, 230, 0.5);
-  border-radius: var(--bs-border-radius);
-  &:focus,
-  &:focus-visible {
-    background-color: #11182788;
-    border-color: #86b7fe;
-    outline: 0;
-  }
-  option {
-    background-color: #323844;
-  }
+#root {
+  margin: auto;
+  width: 100%;
+  height: 100%;
 }
 
+html {
+  height: 100%;
+}
 
-/*------------------------- Modal component ------------------------*/
-/* Similar to login-card */
-.modal-card {
-  padding: 1em;
-  border-radius: 0.735rem;
-  background-color: #2f3542;
-  border-color: #374151;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+body {
+  margin: 0;
   display: flex;
-  gap: 1em;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 18em;
-  max-width: 60vw;
-  min-height: 8em;
-  max-height: 80vh;
-  .modal-title {
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: 600;
-  }
-  .modal-body {
-    text-align: center;
-    font-size: large;
-    font-weight: 600;
-  }
-  footer {
-    display: flex;
-    gap: 1em;
-    justify-content: center;
-    button {
-      width: 6em;
-    }
-  }
-  @media (max-width: 50rem) {
-    max-width: 95vw;
-  }
-
-  &.game-settings-modal {
-    min-width: 25rem;
-    max-width: 90vw;
-    width: 60rem;
-    @media (max-width: 50rem) {
-      min-width: 20rem;
-      width: 30rem;
-      max-width: 95vw;
-    }
-    .modal-body {
-      // Add vertical scrolling:
-      @extend .miniscrollbar;
-      @extend .miniscrollbar-light;
-      overflow-y: auto;
-      // Reset font
-      font-size: medium;
-      font-weight: 400;
-      text-align: unset;
-    }
-    header {
-      text-align: center;
-    }
-  }
-}
-
-
-/*=========================== Lobby screen ===========================*/
-
-.avatar-selector-modal {
-  width: 36em; // Fits 8 avatars on a non-mobile screen + padding.
-  .modal-body {
-    // Add vertical scrolling:
-    @extend .miniscrollbar;
-    @extend .miniscrollbar-light;
-    overflow-y: auto;
-
-    // Thanks to https://stackoverflow.com/a/46099319/1093712
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 3em);
-    grid-gap: 0.75rem;
-    justify-content: center;
-
-    padding: 0.5em;
-    .avatar {
-      height: 3em;
-      width: 3em;
-      cursor: pointer;
-      &.selected {
-        box-shadow: 0 0 0 4px #fff;
-        transform: scaleX(1.05) scaleY(1.05);
-      }
-    }
-  }
-}
-.inline-avatar {
-  width: 2em;
-  height: 2em;
-  margin-right: 0.5em;
-}
-.login-card .avatar-selector {
-  width: 8em;
-  height: 8em;
-}
-.avatar.avatar-selector {
-  cursor: pointer;
-}
-
-
-/*=========================== Lobby screen ===========================*/
-
-.new-lobby-main-content {
-  header {
-    text-align: center;
-    &.lobby-settings {
-      position: sticky;
-      background-image: linear-gradient(to bottom, #494f5c, #858792);
-      background-attachment: fixed;
-      z-index: 1;
-      bottom: 0;
-      top: 0;
-    }
-  }
-  footer {
-    margin: 2em 0;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1em;
-    // Mobile:
-    @media (max-width: 25rem) {
-      margin-bottom: 0.5em;
-      margin-top: 1em;
-    }
-  }
-}
-
-.lobby-settings-container header {
-  padding-bottom: 1em;
-}
-.lobby-settings-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 3em;
-  row-gap: 0.5em;
-  padding: 0.5em 1em;
-  @media (max-width: 60rem) {
-    display: flex;
-    flex-direction: column;
-    padding: 0.5em 2em;
-  }
-  @media (max-width: 600px) {
-    padding: 0.5em 1em;
-  }
-}
-.lobby-settings-form-item {
-  display: grid;
-  grid-template-columns: 60% 40%;
-  // column-gap: 0.75em; // this is bugged, ignores parent grid gap
-  align-items: baseline;
-  min-height: 2.5em;
-  &.disabled {
-    opacity: 0.5;
-  }
-  .label-container {
-    .label {
-      display: inline-flex;
-      justify-content: end;
-      gap: 0.4em;
-      margin-right: 0.75em;
-      margin-bottom: 0.25em;
-      .hint-icon {
-        opacity: 0.5;
-        cursor: pointer;
-        &:hover {
-          opacity: 1;
-        }
-      }
-    }
-    .hint {
-      font-size: small;
-      font-weight: 400;
-    }
-  }
-  .checkbox {
-    margin-top: 0.5em; // aligns it with other form inputs
-  }
-}
-
-/*------------------------- Player list in lobby -------------------------*/
-.player-card {
-  margin: 0.5em 0;
-  .card-body {
-    padding: 0.5em 0.8em;
-    overflow: hidden;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-  }
-  &.empty {
-    border-style: dashed;
-    background-color: transparent;
-    .card-body {
-      opacity: 0.5;
-    }
-  }
-  &.me-card {
-    /* From bootstrap: */
-    background-color: #6c757d;
-  }
-  span.player-name {
-    flex-grow: 1;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  .right-icon {
-    margin-left: auto;
-    margin-right: -0.2em;
-    margin-top: -0.1em;
-    padding-left: 0.2em;
-  }
-  .kick-button {
-    mask-image: url(../assets/x_circle.svg);
-    width: 24px;
-    height: 24px;
-    background-color: var(--bs-body-color);
-    flex-shrink: 0;
-    margin-right: -0.4em;
-    opacity: 0.7;
-    cursor: pointer;
-    &:hover {
-      mask-image: url(../assets/x_circle_filled.svg);
-    }
-  }
-}
-
-
-/*=========================== Game screens ===========================*/
-
-/*----------------=------- Player list in game -----------------------*/
-/* "Player card" rendered as a simpler list */
-.game-player-list {
-  width: 15em;
-  .title {
-    text-align: center;
-    padding: 0.1em;
-  }
-  .player-card {
-    border-style: none;
-    border-bottom-style: solid;
-    border-radius: 0;
-    margin: 0;
-    // padding: 0.1em 0.15em;
-    opacity: 0.8;
-    &.me-card {
-      /* From bootstrap: */
-      background-color: #6c757d33;
-    }
-    &.judge-card {
-      font-weight: 700;
-      color: #fff;
-      opacity: 1;
-    }
-  }
-  li:last-child .player-card {
-    border-bottom-style: none;
-  }
-}
-
-/*----------------------------- Likes -----------------------------*/
-.card-response, .many-cards {
-  &:hover .like-response-button {
-    opacity: 0.2;
-  }
-  .like-response-container {
-    // Mobile: align right
-    @media (max-width: 25rem) {
-      justify-content: flex-end;
-      padding: 1em;
-    }
-  }
-  .like-response-button {
-    width: 50%;
-    height: 50%;
-    opacity: 0;
-    cursor: pointer;
-    pointer-events: all;
-    &:hover {
-      opacity: 0.5;
-    }
-    &:active {
-      opacity: 0.7;
-    }
-    .like-response-icon {
-      color: $like-color;
-      width: 100%;
-      height: 100%;
-    }
-    // Mobile:
-    @media (max-width: 25rem) {
-      opacity: 0.3;
-      height: 3em;
-      width: 3em;
-    }
-  }
-  .emoji-like .emoji {
-    height: 16px;
-    margin: 0 0.1em;
-  }
-}
-
-
-/*----------------------------- Winner screen -----------------------------*/
-// Fix alignment with avatars:
-.winner-section {
-  header {
-    @media (min-width: 550px) {
-      height: 4.5em;
-    }
-  }
-  .inline-avatar {
-    margin-left: 0.5em;
-  }
-  &.audience-award-section {
-    header {
-      @media (min-width: 550px) {
-        // TODO: make this alignment reliable
-        padding-top: 0.6em;
-      }
-    }
-  }
-}
-
-
-/*--------------------------------- Icons ---------------------------------*/
-
-.heart-icon {
-  color: $like-color;
-  margin-bottom: -0.15em;
-  margin-right: -0.15em;
-}
-.star-icon-inline {
-  color: $accent-color;
-  margin-bottom: 0.2em;
-}
-.heart-icon-inline {
-  color: $like-color;
-  margin-top: -0.15em;
-}
-.person-icon-inline {
-  margin-left: 0.15em;
-  margin-right: 0.15em;
-  margin-bottom: 0.2em;
-}
-.person-icon-inline-small {
-  margin-left: 0.1em;
-  margin-right: 0.1em;
-  margin-bottom: 0.2em;
-}
-.cat-icon {
-  color: #111827;
-  margin-right: -0.15em;
-}
-.icon-info-inline {
-  margin-bottom: 0.2em;
-}
-.icon-chevron-down-inline {
-  width: 1.5em;
-  height: 1.5em;
-  margin: -0.2em;
-  margin-top: -0.4em;
-}
-.icon-czar {
-  // Always appears to the right of the nickname
-  margin-left: 0.5em;
-  vertical-align: 0.1em;
+  place-items: stretch;
+  min-width: 320px;
+  width: 100%;
+  height: 100%;
 }

@@ -1,0 +1,80 @@
+@use "colors.scss";
+
+/*=============================== Mobile ===============================*/
+// This contains all (or most) changes that happen on small mobile screens.
+
+@media (max-width: 25rem) {
+  .player-answering-container {
+    gap: 0;
+  }
+  .player-answering-container .game-card.card-response {
+    width: 100%;
+    height: auto;
+    min-height: 4em;
+  }
+  .selected-response-index {
+    font-size: 3.5rem;
+  }
+  .reading-control-row {
+    position: sticky;
+    margin-top: 0;
+    top: 0;
+    z-index: 10;
+    padding-top: 1em;
+    background-attachment: fixed;
+    background-image: colors.$reading-vignette-merged;
+  }
+  .reading-control-row button {
+    height: 2.5em;
+  }
+  .winner-control-row {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    padding: 0.5em;
+    height: auto !important;
+    background-attachment: fixed;
+    background-image: colors.$winner-vignette;
+  }
+  .winner-control-row button {
+    height: 2.5em;
+  }
+  .reading-layout-container {
+    width: 100%;
+    padding: 1em;
+  }
+  .reading-main-row {
+    flex-direction: column !important;
+    align-content: center;
+    width: 100%;
+  }
+  .reading-main-row .card-prompt {
+    margin: auto;
+  }
+  .reading-main-row .game-card-placeholder,
+  .reading-main-row .game-card.card-response,
+  .reading-main-row .many-cards {
+    width: 100%;
+    height: auto;
+    min-height: 4em;
+  }
+  .reading-main-row .reading-unrevealed-icon {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  .card-content.emoji-only .emoji {
+    height: 32px;
+  }
+  // Align the "like" button to the right, make it fixed size:
+  .card-response, .many-cards {
+    .like-response-button {
+      opacity: 0.3;
+      height: 3em;
+      width: 3em;
+    }
+    .like-response-container {
+      justify-content: flex-end;
+      padding: 1em;
+    }
+  }
+}
