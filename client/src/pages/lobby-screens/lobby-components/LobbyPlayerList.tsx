@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { GameLobby, PlayerInLobby } from "../shared/types";
+import { GameLobby, PlayerInLobby } from "../../../shared/types";
 import { EmptyPlayerCard, PlayerCard } from "./PlayerCard";
 
 interface ListProps {

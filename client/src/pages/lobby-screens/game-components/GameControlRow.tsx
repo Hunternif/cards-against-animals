@@ -1,10 +1,10 @@
 import { CSSProperties } from "react";
+import { GameButton } from "../../../components/Buttons";
+import { IconStarInline } from "../../../components/Icons";
 import {
   ResponseCardInGame
-} from "../shared/types";
-import { GameButton } from "./Buttons";
+} from "../../../shared/types";
 import { useGameContext } from "./GameContext";
-import { IconStarInline } from "./Icons";
 
 interface ControlProps {
   selection: ResponseCardInGame[],

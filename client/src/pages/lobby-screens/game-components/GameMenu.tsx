@@ -1,20 +1,20 @@
 import { CSSProperties, useContext, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { endLobby, leaveLobby, updateLobbySettings } from "../model/lobby-api";
-import { LobbySettings } from "../shared/types";
-import { copyFields } from "../shared/utils";
-import { ConfirmModal } from "./ConfirmModal";
-import { CustomDropdown } from "./CustomDropdown";
-import { ErrorContext } from "./ErrorContext";
+import { endLobby, leaveLobby, updateLobbySettings } from "../../../model/lobby-api";
+import { LobbySettings } from "../../../shared/types";
+import { copyFields } from "../../../shared/utils";
+import { ConfirmModal } from "../../../components/ConfirmModal";
+import { CustomDropdown } from "../../../components/CustomDropdown";
+import { ErrorContext } from "../../../components/ErrorContext";
 import { useGameContext } from "./GameContext";
 import { GamePlayerList } from "./GamePlayerList";
-import { IconCounter } from "./IconCounter";
-import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "./Icons";
-import { LobbySettingsPanel } from "./LobbySettingsPanel";
-import { Scoreboard } from "./Scoreboard";
-import { Twemoji } from "./Twemoji";
-import { PlayerAvatar } from "./PlayerAvatar";
+import { IconCounter } from "../../../components/IconCounter";
+import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "../../../components/Icons";
+import { LobbySettingsPanel } from "../lobby-components/LobbySettingsPanel";
+import { Scoreboard } from "../../../components/Scoreboard";
+import { Twemoji } from "../../../components/Twemoji";
+import { PlayerAvatar } from "../../../components/PlayerAvatar";
 
 const rowStyle: CSSProperties = {
   padding: "0.5rem",

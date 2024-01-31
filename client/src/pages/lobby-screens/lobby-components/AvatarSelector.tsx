@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { avatarMap, avatars } from "../model/avatars";
-import { ConfirmModal } from "./ConfirmModal";
-import { LoadingSpinner } from "./LoadingSpinner";
+import { ConfirmModal } from "../../../components/ConfirmModal";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { avatarMap, avatars } from "../../../model/avatars";
 
 interface AvatarProps {
   /** Will not set a random avatar while it's loading */

@@ -1,16 +1,16 @@
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { CardOffsetContextProvider } from "../../components/CardOffsetContext";
-import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
-import { useGameContext } from "../../components/GameContext";
 import { IconHeartInline, IconStarInline } from "../../components/Icons";
-import { ResponseReading } from "../../components/ResponseReading";
+import { PlayerAvatar } from "../../components/PlayerAvatar";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { checkIfShouldEndGame, endLobby, updateLobbySettings } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
-import { PlayerAvatar } from "../../components/PlayerAvatar";
+import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
+import { CardPromptWithCzar } from "./game-components/CardPrompt";
+import { useGameContext } from "./game-components/GameContext";
+import { ResponseReading } from "./game-components/ResponseReading";
 
 const midRowStyle: CSSProperties = {
   display: "flex",

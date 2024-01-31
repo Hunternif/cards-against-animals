@@ -2,16 +2,16 @@ import { User, signInAnonymously } from "firebase/auth";
 import { FormEvent, ReactNode, useContext, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { firebaseAuth } from "../firebase";
-import { randomAvatarID } from "../model/avatars";
-import { getOrCreateCAAUser, updateUserData } from "../model/users-api";
-import { RNG } from "../shared/rng";
-import { CAAUser } from "../shared/types";
-import { AvatarSelector } from "./AvatarSelector";
-import { GameButton } from "./Buttons";
-import { ErrorContext } from "./ErrorContext";
-import { LoadingSpinner } from "./LoadingSpinner";
-import { CenteredLayout } from "./layout/CenteredLayout";
+import { firebaseAuth } from "../../../firebase";
+import { randomAvatarID } from "../../../model/avatars";
+import { getOrCreateCAAUser, updateUserData } from "../../../model/users-api";
+import { RNG } from "../../../shared/rng";
+import { CAAUser } from "../../../shared/types";
+import { AvatarSelector } from "../lobby-components/AvatarSelector";
+import { GameButton } from "../../../components/Buttons";
+import { ErrorContext } from "../../../components/ErrorContext";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { CenteredLayout } from "../../../components/layout/CenteredLayout";
 
 
 type LoginMode = "unset" | "new_user" | "existing_user";

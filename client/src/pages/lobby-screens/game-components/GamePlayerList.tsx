@@ -1,5 +1,5 @@
+import { PlayerCard } from "../lobby-components/PlayerCard";
 import { useGameContext } from "./GameContext";
-import { PlayerCard } from "./PlayerCard";
 
 /**
  * List of players in the game.

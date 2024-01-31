@@ -1,11 +1,5 @@
 import { CSSProperties, useContext, useEffect, useState } from "react";
-import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
-import { useGameContext } from "../../components/GameContext";
-import { GameControlRow } from "../../components/GameControlRow";
-import { GameHand } from "../../components/GameHand";
-import { GameMiniResponses } from "../../components/GameMiniResponses";
-import { ResponseCount } from "../../components/ResponseCount";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import {
@@ -16,6 +10,12 @@ import {
 import {
   ResponseCardInGame
 } from "../../shared/types";
+import { CardPromptWithCzar } from "./game-components/CardPrompt";
+import { useGameContext } from "./game-components/GameContext";
+import { GameControlRow } from "./game-components/GameControlRow";
+import { GameHand } from "./game-components/GameHand";
+import { GameMiniResponses } from "./game-components/GameMiniResponses";
+import { ResponseCount } from "./game-components/ResponseCount";
 
 const containerStyle: CSSProperties = {
   display: "flex",

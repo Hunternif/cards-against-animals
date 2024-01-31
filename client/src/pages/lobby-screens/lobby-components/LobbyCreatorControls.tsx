@@ -1,13 +1,13 @@
 import { CSSProperties, useContext, useState } from "react";
 import { Container } from "react-bootstrap";
-import { startLobby, updateLobby } from "../model/lobby-api";
-import { GameLobby } from "../shared/types";
-import { GameButton } from "./Buttons";
+import { GameButton } from "../../../components/Buttons";
+import { Timed } from "../../../components/Delay";
+import { ErrorContext } from "../../../components/ErrorContext";
+import { IconLink, IconPlay } from "../../../components/Icons";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { startLobby, updateLobby } from "../../../model/lobby-api";
+import { GameLobby } from "../../../shared/types";
 import { DeckSelector } from "./DeckSelector";
-import { Timed } from "./Delay";
-import { ErrorContext } from "./ErrorContext";
-import { IconLink, IconPlay } from "./Icons";
-import { LoadingSpinner } from "./LoadingSpinner";
 import { LobbySettingsPanel } from "./LobbySettingsPanel";
 
 interface Props {

@@ -1,14 +1,14 @@
 import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { detectCat, detectDeer, detectLenich } from "../model/deck-api";
-import { useResponseLikes } from "../model/turn-api";
-import { PlayerInLobby, PlayerResponse, ResponseCardInGame, Vote } from "../shared/types";
+import { IconCat, IconHeart } from "../../../components/Icons";
+import { PlayerAvatar } from "../../../components/PlayerAvatar";
+import { Twemoji } from "../../../components/Twemoji";
+import { useScreenWiderThan } from "../../../components/layout/ScreenSizeSwitch";
+import { detectCat, detectDeer, detectLenich } from "../../../model/deck-api";
+import { useResponseLikes } from "../../../model/turn-api";
+import { PlayerInLobby, PlayerResponse, ResponseCardInGame, Vote } from "../../../shared/types";
 import { CardOffsetContext } from "./CardOffsetContext";
 import { useGameContext } from "./GameContext";
-import { IconCat, IconHeart } from "./Icons";
 import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
-import { Twemoji } from "./Twemoji";
-import { useScreenWiderThan } from "./layout/ScreenSizeSwitch";
-import { PlayerAvatar } from "./PlayerAvatar";
 
 interface Props {
   player?: PlayerInLobby,

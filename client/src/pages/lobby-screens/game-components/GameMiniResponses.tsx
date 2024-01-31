@@ -1,4 +1,4 @@
-import { PlayerInLobby, PlayerResponse } from "../shared/types";
+import { PlayerInLobby, PlayerResponse } from "../../../shared/types";
 import { useGameContext } from "./GameContext";
 import { MiniCardResponse } from "./MiniCardResponse";
 

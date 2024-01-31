@@ -1,6 +1,6 @@
-import { ResponseCardInGame } from "../shared/types";
+import { ResponseCardInGame } from "../../../shared/types";
 import { Downvote } from "./CardVotes";
-import { IconTrash } from "./Icons";
+import { IconTrash } from "../../../components/Icons";
 import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
 
 interface ResponseCardProps {

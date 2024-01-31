@@ -1,12 +1,12 @@
 import { CSSProperties, useContext } from "react";
-import { usePromptVotes, votePrompt } from "../model/turn-api";
+import { usePromptVotes, votePrompt } from "../../../model/turn-api";
 import {
   PromptCardInGame,
   VoteChoice
-} from "../shared/types";
-import { copyFields2 } from "../shared/utils";
+} from "../../../shared/types";
+import { copyFields2 } from "../../../shared/utils";
 import { Downvote, Upvote } from "./CardVotes";
-import { ErrorContext } from "./ErrorContext";
+import { ErrorContext } from "../../../components/ErrorContext";
 import { useGameContext } from "./GameContext";
 import {
   CardBottom,
@@ -16,8 +16,8 @@ import {
   CardContent,
   LargeCard
 } from "./LargeCard";
-import { Twemoji } from "./Twemoji";
-import { PlayerAvatar } from "./PlayerAvatar";
+import { Twemoji } from "../../../components/Twemoji";
+import { PlayerAvatar } from "../../../components/PlayerAvatar";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */

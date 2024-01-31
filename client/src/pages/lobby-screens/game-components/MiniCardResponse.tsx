@@ -1,6 +1,6 @@
-import { PlayerInLobby } from "../shared/types";
-import { IconCheck } from "./Icons";
-import { PlayerAvatar } from "./PlayerAvatar";
+import { IconCheck } from "../../../components/Icons";
+import { PlayerAvatar } from "../../../components/PlayerAvatar";
+import { PlayerInLobby } from "../../../shared/types";
 
 interface Props {
   ready: boolean,

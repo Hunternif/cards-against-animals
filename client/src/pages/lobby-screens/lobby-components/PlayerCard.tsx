@@ -1,13 +1,13 @@
 import { useContext, useState } from "react";
 import { Card } from "react-bootstrap";
-import { kickPlayer, updatePlayer } from "../model/lobby-api";
-import { updateUserData } from "../model/users-api";
-import { GameLobby, PlayerInLobby } from "../shared/types";
+import { ConfirmModal } from "../../../components/ConfirmModal";
+import { ErrorContext } from "../../../components/ErrorContext";
+import { PlayerAvatar } from "../../../components/PlayerAvatar";
+import { Twemoji } from "../../../components/Twemoji";
+import { kickPlayer, updatePlayer } from "../../../model/lobby-api";
+import { updateUserData } from "../../../model/users-api";
+import { GameLobby, PlayerInLobby } from "../../../shared/types";
 import { AvatarSelector } from "./AvatarSelector";
-import { ConfirmModal } from "./ConfirmModal";
-import { ErrorContext } from "./ErrorContext";
-import { PlayerAvatar } from "./PlayerAvatar";
-import { Twemoji } from "./Twemoji";
 
 interface PlayerProps {
   lobby: GameLobby,

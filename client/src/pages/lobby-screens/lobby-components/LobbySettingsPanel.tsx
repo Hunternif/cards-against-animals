@@ -1,8 +1,8 @@
 import { ReactNode, useState } from "react";
-import { LobbySettings } from "../shared/types";
-import { useDelay } from "./Delay";
-import { NumberInput, SelectInput, ToggleInput } from "./FormControls";
-import { IconChevronDownInline, IconQuestionInline } from "./Icons";
+import { useDelay } from "../../../components/Delay";
+import { NumberInput, SelectInput, ToggleInput } from "../../../components/FormControls";
+import { IconChevronDownInline, IconQuestionInline } from "../../../components/Icons";
+import { LobbySettings } from "../../../shared/types";
 
 interface Props {
   settings: LobbySettings,

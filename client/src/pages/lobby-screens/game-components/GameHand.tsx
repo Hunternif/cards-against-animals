@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { toggleDownvoteCard } from "../model/turn-api";
-import { PlayerResponse, ResponseCardInGame } from "../shared/types";
+import { ErrorContext } from "../../../components/ErrorContext";
+import { toggleDownvoteCard } from "../../../model/turn-api";
+import { PlayerResponse, ResponseCardInGame } from "../../../shared/types";
 import { CardResponse } from "./CardResponse";
-import { ErrorContext } from "./ErrorContext";
 import { useGameContext } from "./GameContext";
 
 interface HandProps {

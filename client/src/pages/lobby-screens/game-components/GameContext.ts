@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { createContext, useContext } from "react";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../shared/types";
+import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../../../shared/types";
 
 /** State of the game in progress. */
 export interface GameContextState {

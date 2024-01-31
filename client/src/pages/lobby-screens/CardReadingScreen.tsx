@@ -1,13 +1,13 @@
 import { CSSProperties, useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { CardOffsetContextProvider } from "../../components/CardOffsetContext";
-import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
-import { useGameContext } from "../../components/GameContext";
-import { ResponseReading } from "../../components/ResponseReading";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse } from "../../model/turn-api";
 import { PlayerResponse } from "../../shared/types";
+import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
+import { CardPromptWithCzar } from "./game-components/CardPrompt";
+import { useGameContext } from "./game-components/GameContext";
+import { ResponseReading } from "./game-components/ResponseReading";
 
 const topRowStyle: CSSProperties = {
   display: "flex",

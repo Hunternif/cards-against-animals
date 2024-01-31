@@ -14,7 +14,7 @@ const tableContainerStyle: CSSProperties = {
   maxHeight: "70vh",
 }
 
-/** Small component that is placed outside of the screen. */
+/** Reusable scoreboard table component. */
 export function Scoreboard({ lobby, players }: Props) {
   const playersByScore = players
     .filter((p) => p.role === "player" &&

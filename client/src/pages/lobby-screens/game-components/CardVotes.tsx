@@ -1,4 +1,4 @@
-import { IconThumbsDown, IconThumbsUp } from "./Icons";
+import { IconThumbsDown, IconThumbsUp } from "../../../components/Icons";
 
 interface VoteProps extends React.HTMLProps<HTMLDivElement> {
   onClick?: () => void,

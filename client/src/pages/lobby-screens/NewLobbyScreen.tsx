@@ -6,15 +6,15 @@ import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { IconCounter } from "../../components/IconCounter";
 import { IconArowLeft, IconHamburger, IconPersonInline } from "../../components/Icons";
-import { LobbyCreationReadOnly } from "../../components/LobbyCreationReadOnly";
-import { LobbyCreatorControls } from "../../components/LobbyCreatorControls";
-import { LobbyPlayerList } from "../../components/LobbyPlayerList";
 import { ModalBackdrop } from "../../components/ModalBackdrop";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { RowLayout } from "../../components/layout/RowLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import { leaveLobby } from "../../model/lobby-api";
 import { GameLobby, PlayerInLobby } from "../../shared/types";
+import { LobbyCreationReadOnly } from "./lobby-components/LobbyCreationReadOnly";
+import { LobbyCreatorControls } from "./lobby-components/LobbyCreatorControls";
+import { LobbyPlayerList } from "./lobby-components/LobbyPlayerList";
 
 interface Props {
   lobby: GameLobby,

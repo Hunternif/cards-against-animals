@@ -1,7 +1,6 @@
 import { User, onAuthStateChanged } from "firebase/auth";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnonymousLogin } from "../../components/AnonymousLogin";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
@@ -15,6 +14,7 @@ import {
 } from "../../model/lobby-api";
 import { findPastLobbyID } from "../../model/users-api";
 import { CAAUser } from "../../shared/types";
+import { AnonymousLogin } from "./login-components/AnonymousLogin";
 
 interface Props {
   existingLobbyID?: string,

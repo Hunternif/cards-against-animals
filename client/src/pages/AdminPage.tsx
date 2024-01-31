@@ -1,15 +1,15 @@
 import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
+import { useContext, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { ErrorContext } from "../components/ErrorContext";
+import { ErrorModal } from "../components/ErrorModal";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import { CenteredLayout } from "../components/layout/CenteredLayout";
 import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth } from "../firebase";
-import { AdminUserPill } from "../components/AdminUserPill";
 import { signOut, useCAAUserOnce } from "../model/users-api";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { ErrorContext } from "../components/ErrorContext";
-import { ErrorModal } from "../components/ErrorModal";
-import { useContext, useState } from "react";
+import { AdminUserPill } from "./admin-screens/admin-components/AdminUserPill";
 
 function LogInBox() {
   const signInWithGoogle = () => {
@@ -26,7 +26,7 @@ interface UserProps {
 }
 
 function AccessDeniedView({ user }: UserProps) {
-  const {setError} = useContext(ErrorContext);
+  const { setError } = useContext(ErrorContext);
   async function handleSignOut() {
     await signOut(user).catch((e) => setError(e));
   }

@@ -1,14 +1,14 @@
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { CardPrompt } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
-import { useGameContext } from "../../components/GameContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { logInteraction } from "../../components/utils";
 import { endLobby } from "../../model/lobby-api";
 import { discardPrompt, getPromptCount, pickNewPrompt, playPrompt } from "../../model/turn-api";
 import { PromptCardInGame } from "../../shared/types";
+import { CardPrompt } from "./game-components/CardPrompt";
+import { useGameContext } from "./game-components/GameContext";
 
 const containerStyle: CSSProperties = {
   height: "20rem",

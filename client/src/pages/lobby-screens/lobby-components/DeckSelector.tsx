@@ -1,11 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { DeckWithCount, getDecksWithCount } from "../model/deck-api";
-import { addDeck, removeDeck } from "../model/lobby-api";
-import { GameLobby } from "../shared/types";
-import { Checkbox } from "./Checkbox";
-import { ErrorContext } from "./ErrorContext";
-import { LoadingSpinner } from "./LoadingSpinner";
-import { useEffectOnce } from "./utils";
+import { DeckWithCount, getDecksWithCount } from "../../../model/deck-api";
+import { addDeck, removeDeck } from "../../../model/lobby-api";
+import { GameLobby } from "../../../shared/types";
+import { Checkbox } from "../../../components/Checkbox";
+import { ErrorContext } from "../../../components/ErrorContext";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { useEffectOnce } from "../../../components/utils";
 
 interface DeckProps {
   deck: DeckWithCount,

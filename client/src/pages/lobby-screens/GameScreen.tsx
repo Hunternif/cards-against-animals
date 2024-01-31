@@ -1,8 +1,6 @@
 import { User } from "firebase/auth";
 import { CSSProperties, useContext, useEffect } from "react";
 import { ErrorContext } from "../../components/ErrorContext";
-import { GameContext, GameContextState } from "../../components/GameContext";
-import { GameMenu } from "../../components/GameMenu";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { FillLayout } from "../../components/layout/FillLayout";
 import {
@@ -22,6 +20,8 @@ import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
 import { JudgePickPromptScreen } from "./JudgePickPromptScreen";
 import { PlayerAnsweringScreen } from "./PlayerAnsweringScreen";
 import { WinnerScreen } from "./WinnerScreen";
+import { GameContext, GameContextState } from "./game-components/GameContext";
+import { GameMenu } from "./game-components/GameMenu";
 
 interface ScreenProps {
   lobby: GameLobby,

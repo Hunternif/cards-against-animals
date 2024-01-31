@@ -1,15 +1,15 @@
 import { CSSProperties, useContext, useEffect } from "react";
 import bell_double from '../../assets/bell_double.mp3';
 import { GameButton } from "../../components/Buttons";
-import { CardPromptWithCzar } from "../../components/CardPrompt";
 import { ErrorContext } from "../../components/ErrorContext";
-import { useGameContext } from "../../components/GameContext";
-import { MiniCardResponse } from "../../components/MiniCardResponse";
-import { ResponseCount } from "../../components/ResponseCount";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import { startReadingPhase } from "../../model/turn-api";
 import { PlayerInLobby, PlayerResponse } from "../../shared/types";
+import { CardPromptWithCzar } from "./game-components/CardPrompt";
+import { useGameContext } from "./game-components/GameContext";
+import { MiniCardResponse } from "./game-components/MiniCardResponse";
+import { ResponseCount } from "./game-components/ResponseCount";
 
 const topRowStyle: CSSProperties = {
   display: "flex",

@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import { Container } from "react-bootstrap";
-import { GameLobby } from "../shared/types";
+import { GameLobby } from "../../../shared/types";
 import { DeckSelector } from "./DeckSelector";
 import { LobbySettingsPanel } from "./LobbySettingsPanel";
 
