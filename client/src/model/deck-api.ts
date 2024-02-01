@@ -165,7 +165,7 @@ export function isOnlyEmojis(str: string): boolean {
 
 export async function uploadDeck(deck: Deck) {
   await runTransaction(db, async (transaction) => {
-    const docRef = doc(decksRef, deck.title);
+    const docRef = doc(decksRef, deck.id);
     const docSnap = await transaction.get(docRef);
     if (docSnap.exists()) {
       throw new Error(`Deck "${deck.title}" already exists`);

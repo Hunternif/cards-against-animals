@@ -38,11 +38,11 @@ export function UploadDeckTsv() {
       <Row className="mb-3">
         <Form.Group as={Col}>
           <Form.Label>Title</Form.Label>
-          <Form.Control type="text" name="title" disabled={isUploading} />
+          <Form.Control type="text" name="title" disabled={isUploading} required />
         </Form.Group>
         <Form.Group as={Col}>
           <Form.Label>ID</Form.Label>
-          <Form.Control type="text" name="id" disabled={isUploading} />
+          <Form.Control type="text" name="id" disabled={isUploading} required />
         </Form.Group>
       </Row>
       <Form.Group className="mb-3">
