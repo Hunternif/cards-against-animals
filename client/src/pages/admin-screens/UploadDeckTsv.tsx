@@ -34,15 +34,18 @@ export function UploadDeckTsv() {
     <h2>Upload new deck from TSV</h2>
     {info && <Alert variant="light">{info}</Alert>}
     {error && <Alert variant="danger">{error.message}</Alert>}
+    <p className="light">This is a special format for uploading cards with tags.</p>
     <Form onSubmit={handleSubmit}>
       <Row className="mb-3">
         <Form.Group as={Col}>
           <Form.Label>Title</Form.Label>
-          <Form.Control type="text" name="title" disabled={isUploading} required />
+          <Form.Control type="text" name="title" disabled={isUploading} required
+            placeholder="My new deck" />
         </Form.Group>
         <Form.Group as={Col}>
           <Form.Label>ID</Form.Label>
-          <Form.Control type="text" name="id" disabled={isUploading} required />
+          <Form.Control type="text" name="id" disabled={isUploading} required
+            placeholder="my_deck_id" />
         </Form.Group>
       </Row>
       <Form.Group className="mb-3">

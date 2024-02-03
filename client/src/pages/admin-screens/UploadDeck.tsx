@@ -18,8 +18,8 @@ export function UploadDeck() {
       const deck = parseDeck(
         data.get('id') as string,
         data.get('title') as string,
-        data.get('questions') as string,
-        data.get('answers') as string,
+        data.get('prompts') as string,
+        data.get('responses') as string,
       );
       await uploadDeck(deck);
       setInfo(`Deck "${deck.title}" uploaded`)
@@ -38,20 +38,32 @@ export function UploadDeck() {
       <Row className="mb-3">
         <Form.Group as={Col}>
           <Form.Label>Title</Form.Label>
-          <Form.Control type="text" name="title" disabled={isUploading} required />
+          <Form.Control type="text" name="title" disabled={isUploading} required
+            placeholder="My new deck" />
         </Form.Group>
         <Form.Group as={Col}>
           <Form.Label>ID</Form.Label>
-          <Form.Control type="text" name="id" disabled={isUploading} required />
+          <Form.Control type="text" name="id" disabled={isUploading} required
+            placeholder="my_deck_id" />
         </Form.Group>
       </Row>
       <Form.Group className="mb-3">
-        <Form.Label>Questions</Form.Label>
-        <Form.Control as="textarea" name="questions" rows={10} disabled={isUploading} />
+        <Form.Label>Prompts</Form.Label>
+        <Form.Control as="textarea" name="prompts" rows={10} disabled={isUploading}
+          style={{ fontFamily: "monospace" }}
+          placeholder="Why did __ cross the road?
+I like big __
+..." />
       </Form.Group>
       <Form.Group className="mb-3">
-        <Form.Label>Answers</Form.Label>
-        <Form.Control as="textarea" name="answers" rows={10} disabled={isUploading} />
+        <Form.Label>Responses</Form.Label>
+        <Form.Control as="textarea" name="responses" rows={10} disabled={isUploading}
+          style={{ fontFamily: "monospace" }}
+          placeholder="Chicken
+Egg
+Your mom
+..."
+        />
       </Form.Group>
       <Button type="submit" disabled={isUploading}>
         {isUploading ? "Submitting..." : "Submit"}
