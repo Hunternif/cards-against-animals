@@ -155,3 +155,9 @@ export function randomAvatarID(rng: RNG = RNG.fromTimestamp()): string {
   const index = rng.randomIntClamped(0, avatars.length - 1);
   return Array.from(avatarMap.keys())[index];
 }
+
+/** Returns a random avatar */
+export function randomAvatar(rng: RNG = RNG.fromTimestamp()): Avatar {
+  const index = rng.randomIntClamped(0, avatars.length - 1);
+  return avatars.at(index) ?? avatars[0];
+}

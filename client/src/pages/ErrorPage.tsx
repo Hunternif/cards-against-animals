@@ -1,8 +1,8 @@
+import { CSSProperties, ReactNode, useState } from "react";
 import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router-dom";
-import { CenteredLayout } from "../components/layout/CenteredLayout";
-import { CSSProperties, ReactNode } from "react";
-import confused_kitty from '../assets/confused_kitty.jpg'
 import { GameButton } from "../components/Buttons";
+import { CenteredLayout } from "../components/layout/CenteredLayout";
+import { randomAvatar } from "../model/avatars";
 
 
 
@@ -31,13 +31,14 @@ const botRowStyle: CSSProperties = {
 export function ErrorPage() {
   const error = useRouteError();
   const navigate = useNavigate();
+  const [pic] = useState(randomAvatar());
   return <CenteredLayout innerStyle={{ maxWidth: "500px" }}>
     <h1>Oops!</h1>
     <p>Sorry, an unexpected error has occurred.</p>
     {error != undefined && error != null && <p>
       <i>{getErrorMessage(error)}</i>
     </p>}
-    <img src={confused_kitty} style={{ width: "100%" }} />
+    <img src={pic.url} style={{ width: "100%" }} />
     <div style={botRowStyle}>
       <GameButton secondary onClick={() => navigate("/")}>Go home</GameButton>
     </div>
