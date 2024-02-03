@@ -2,36 +2,21 @@
 
 # Project Setup
 
-This guide assumes you have installed `Node.js` and `npm`. This repo contains 2 web projects: `client` and `functions`. Npm commands can be run from each web project directory (after `cd client`), or from the root directory using a prefix (e.g. `--prefix client`). Firebase commands must be always run from the root folder.
+This guide assumes you have installed `Node.js` and `npm`. This repo contains 2 web projects: `client` and `functions`. The root file `package.json` contains scripts to manage both projects.
 
-
-To begin, from command line, install the 2 projects:
+To begin, from command line, run the install script:
 ```sh
-cd client
 npm install
-npm run build
-
-cd ../functions
-npm install
-npm run build
-
-cd ..
 ```
 
-During building, files from the `shared` directory and `firebase-config.json` will be copied to `client` and `functions`, and the new copies will be ignored by Git.
+During building, files from the `shared` directory and `firebase-config.json` will be copied to `client` and `functions`, and the new copies will be ignored by Git. As the last step it will trigger Firebase setup.
 
 ### Firebase setup
 
-Firebase requires a Firebase project. Go to https://console.firebase.google.com/ to create one. If you only plan to develop locally using emulators, you can use the free plan. Add a "Web app" to your project and copy the Firebase SDK parameters to the file `firebase-config.json`, replacing example values.
-
-From command line, from the root directory, initialize Firebase:
-
-```sh
-firebase init
-```
+Firebase requires a Firebase project, even when developing locally. To create a project, go to https://console.firebase.google.com/. The base plan is free. Add a "Web app" to your project and copy the Firebase SDK parameters to the file `firebase-config.json`, replacing example values. Then go back to command line to continue Firebase setup, and follow the prompts.
 
 #### 1. Firebase features
-Follow the prompts to enable the needed features. To develop locally with emulators, you only need the feature `Emulators`. Otherwise, to deploy to production, you will need all these:
+To develop locally with emulators, you only need the feature `Emulators`. Otherwise, to deploy to production, you will need all these:
 ```
  (*) Firestore
  (*) Functions
@@ -53,20 +38,19 @@ The following emulators must be enabled:
 
 After completing the above, rebuild your projects:
 ```
-npm --prefix client run build
-npm --prefix functions run build
+npm run build
 ```
 
 # Run locally
 
 To run the client:
 ```sh
-npm --prefix client run dev
+npm run dev-client
 ```
 
 To run Firebase emulators:
 ```sh
-firebase emulators:start --import=exported-dev-data --export-on-exit=exported-dev-data
+npm run dev-server
 ```
 
 Client code will hot-reload automatically as you change it. But Firebase functions need to rebuilt manually each time you change them:
@@ -77,15 +61,13 @@ npm --prefix functions run build
 ### Run Unit Tests
 
 ```sh
-npm --prefix client run test
-npm --prefix functions run test
+npm run test
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
-npm --prefix client run lint
-npm --prefix functions run lint
+npm run lint
 ```
 
 # Deploy to Production
@@ -97,7 +79,7 @@ During deployment, `firebase-config.json` will be auto-updated to disable emulat
 
 Also note these additional values in `firebase-config.json`:
 
-```json
+```js
 {
   // Firebase SDK parameters:
   "apiKey": ...
@@ -113,18 +95,19 @@ Also note these additional values in `firebase-config.json`:
 
 # Test data setup
 
-In order to create decks with cards, you need to be an admin user. You can create a fake admin using Firebase emulators.
+In order to create card decks, you need to be an admin user. You can create a local admin user using Firebase emulators.
 
 ## Creating an admin user
-Run the emulators, head to http://localhost:5173/admin, and click "Sign in with Google". The emulator will offer you to create a mock account. Use any email address and username:
+Run the client and emulators, go to http://localhost:5173/admin, and click "Sign in with Google". The emulator will offer you to create a mock local account. Use any email address and username:
 
 ![Creating a mock Google account](https://raw.githubusercontent.com/Hunternif/cards-against-animals/main/docs/emulator_google_account_setup.png)
 
-After that, go to http://localhost:5173/. This will initialize your user document in Firestore. Head to you your Firestore emulator console at http://127.0.0.1:4000/firestore. You will see only one user with your name. Change the value `is_admin` to `true`:
+After that, go to http://localhost:5173/. This will initialize your user document in Firestore. Go to you your Firestore emulator console at http://localhost:4000/firestore. You will see only one user with your name. Change the value `is_admin` to `true`:
 
 ![Setting id_admin on your user](https://raw.githubusercontent.com/Hunternif/cards-against-animals/main/docs/emulator_admin_user_setup.png)
 
-You will now have access to the admin console, and you can use it to upload decks at http://localhost:5173/admin/uploadDeck:
+## Uploading card decks
+When logged in as a local admin user, you will have access to the admin console, and you can use it to upload decks at http://localhost:5173/admin/uploadDeck:
 
 ![Upload your test deck](https://raw.githubusercontent.com/Hunternif/cards-against-animals/main/docs/upload_test_deck.png)
 

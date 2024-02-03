@@ -8,8 +8,7 @@
     "build": "rm -rf ./src/shared && cp -R ../shared/src/. ./src/shared && tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "postinstall": "cp -n ../firebase-config.json.example ../firebase-config.json",
-    "test": "vitest",
+    "test": "vitest run",
     "predeploy": "json -I -f ../firebase-config.json -e \"this.useEmulator=false\""
   },
   "dependencies": {
