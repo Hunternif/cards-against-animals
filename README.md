@@ -102,7 +102,7 @@ Run the client and emulators, go to http://localhost:5173/admin, and click "Sign
 
 ![Creating a mock Google account](https://raw.githubusercontent.com/Hunternif/cards-against-animals/main/docs/emulator_google_account_setup.png)
 
-After that, go to http://localhost:5173/. This will initialize your user document in Firestore. Go to you your Firestore emulator console at http://localhost:4000/firestore. You will see only one user with your name. Change the value `is_admin` to `true`:
+Go to you your Firestore emulator console at http://localhost:4000/firestore. You will see only one user with your name. Change the value `is_admin` to `true`:
 
 ![Setting id_admin on your user](https://raw.githubusercontent.com/Hunternif/cards-against-animals/main/docs/emulator_admin_user_setup.png)
 

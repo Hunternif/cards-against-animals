@@ -8,13 +8,19 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { CenteredLayout } from "../components/layout/CenteredLayout";
 import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth } from "../firebase";
-import { signOut, useCAAUserOnce } from "../model/users-api";
+import { getOrCreateCAAUser, signOut, useCAAUserOnce } from "../model/users-api";
 import { AdminUserPill } from "./admin-screens/admin-components/AdminUserPill";
 
 function LogInBox() {
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(firebaseAuth, provider);
+  const { setError } = useContext(ErrorContext);
+  async function signInWithGoogle() {
+    try {
+      const provider = new GoogleAuthProvider();
+      const cred = await signInWithPopup(firebaseAuth, provider);
+      await getOrCreateCAAUser(cred.user.uid, cred.user.displayName ?? "New user");
+    } catch (e) {
+      setError(e);
+    }
   }
   return <CenteredLayout>
     <button onClick={signInWithGoogle}>Sign in with Google</button>
