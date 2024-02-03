@@ -6,7 +6,7 @@ import { avatarMap, avatars } from "../../../model/avatars";
 interface AvatarProps {
   /** Will not set a random avatar while it's loading */
   loading?: boolean,
-  avatarID?: string,
+  avatarID?: string | null,
   onSubmit: (avatarID: string) => void | Promise<void>,
   inline?: boolean,
 }

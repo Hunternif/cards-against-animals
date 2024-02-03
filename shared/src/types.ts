@@ -7,12 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 export class GameLobby {
-  id: string;
   /** Null only during creation */
   time_created?: Date;
-  creator_uid: string;
-  status: LobbyStatus;
-  settings: LobbySettings;
 
   /* Must be fetched separately from a Firebase subcollection. */
   players: Array<PlayerInLobby> = [];
@@ -30,16 +26,11 @@ export class GameLobby {
   deck_responses: Array<ResponseCardInGame> = [];
 
   constructor(
-    id: string,
-    creator_uid: string,
-    settings: LobbySettings,
-    status: LobbyStatus = "new",
-  ) {
-    this.id = id;
-    this.creator_uid = creator_uid;
-    this.settings = settings;
-    this.status = status;
-  }
+    public id: string,
+    public creator_uid: string,
+    public settings: LobbySettings,
+    public status: LobbyStatus = "new",
+  ) { }
 }
 
 export interface LobbySettings {
@@ -94,53 +85,29 @@ export type LobbyContol = "creator" | "czar" | "anyone";
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {
-  uid: string;
-  name: string;
-  avatar_id?: string;
-  role: PlayerRole;
-  status: PlayerStatus;
   time_joined?: Date;
-  /** Current score accumulated over the entire game. */
-  score: number;
-  /** How many turns were won. */
-  wins: number;
-  /** Current number of likes accumulated over the entire game. */
-  likes: number;
-  /** Number of turns where the user used discards. */
-  discards_used: number;
-  /** Used for ordering players to select the next judge. */
-  random_index: number;
 
   constructor(
-    uid: string,
-    name: string,
-    avatar_id: string | null | undefined,
-    random_index: number,
-    role: PlayerRole,
-    status: PlayerStatus,
-    score: number,
-    wins: number,
-    likes: number,
-    discards_used: number,
-  ) {
-    this.uid = uid;
-    this.name = name;
-    if (avatar_id) this.avatar_id = avatar_id;
-    this.random_index = random_index;
-    this.role = role;
-    this.status = status;
-    this.score = score;
-    this.wins = wins;
-    this.likes = likes;
-    this.discards_used = discards_used;
-  }
+    public uid: string,
+    public name: string,
+    public avatar_id: string | null | undefined,
+    /** Used for ordering players to select the next judge. */
+    public random_index: number,
+    public role: PlayerRole,
+    public status: PlayerStatus,
+    /** Current score accumulated over the entire game. */
+    public score: number,
+    /** How many turns were won. */
+    public wins: number,
+    /** Current number of likes accumulated over the entire game. */
+    public likes: number,
+    public discards_used: number,
+  ) { }
 }
 
 /** One turn, containing the entire state of the game board. */
 export class GameTurn {
   //================= Main game stuff ===================
-  /** UID of the player who will judge the winner. */
-  judge_uid: string;
   /** DEPRECATED. Use subcollection 'prompts' instead. */
   legacy_prompt?: PromptCardInGame;
   /** Maps player UID to what cards they have on hand in this turn.
@@ -163,31 +130,22 @@ export class GameTurn {
   prompts: Array<PromptCardInGame> = [];
 
   //================== Technical stuff ==================
-  id: string;
-  /** Turn's ordinal number: 1, 2, 3, ... */
-  ordinal: number;
   /** Counts down to 0 in ms, to limit time for the next action. */
   timer_ms: number = 0;
-  time_created: Date;
   phase: TurnPhase = "new";
 
   constructor(
-    id: string,
-    ordinal: number,
-    judge_uid: string,
-    time_created: Date = new Date(),
-  ) {
-    this.id = id;
-    this.ordinal = ordinal;
-    this.judge_uid = judge_uid;
-    this.time_created = time_created;
-  }
+    public id: string,
+    /** Turn's ordinal number: 1, 2, 3, ... */
+    public ordinal: number,
+    /** UID of the player who will judge the winner. */
+    public judge_uid: string,
+    public time_created: Date = new Date(),
+  ) { }
 }
 
 /** State of the player in a turn. */
 export class PlayerDataInTurn {
-  player_uid: string;
-  player_name: string; // Copied from 'Players' for convenience.
   /** Cards in the player's hand, including `current_response`.
    * Must be fetched separately from a Firebase subcollection. */
   hand: Array<ResponseCardInGame> = [];
@@ -195,56 +153,43 @@ export class PlayerDataInTurn {
    * Must be fetched separately from a Firebase subcollection. */
   discarded: Array<ResponseCardInGame> = [];
 
-  constructor(player_uid: string, player_name: string) {
-    this.player_uid = player_uid;
-    this.player_name = player_name;
-  }
+  constructor(
+    public player_uid: string,
+    public player_name: string, // Copied from 'Players' for convenience.
+  ) { }
 }
 
 /** Player's submitted cards in a turn. */
 export class PlayerResponse {
-  player_uid: string;
-  player_name: string; // Copied from 'Players' for convenience.
-  cards: Array<ResponseCardInGame>;
-  random_index: number;
-  revealed: boolean;
-  /** Will be updated after the turn completes. */
-  like_count?: number;
   /** List of players who liked this response.
    * Must be fetched separately from a Firebase subcollection. */
   likes: Array<Vote> = [];
 
   constructor(
-    player_uid: string, player_name: string, cards: Array<ResponseCardInGame>,
-    random_index: number, revealed: boolean, like_count: number | undefined,
-  ) {
-    this.player_uid = player_uid;
-    this.player_name = player_name;
-    this.cards = cards;
-    this.random_index = random_index;
-    this.revealed = revealed;
-    this.like_count = like_count;
-  }
+    public player_uid: string,
+    public player_name: string, // Copied from 'Players' for convenience.
+    public cards: Array<ResponseCardInGame>,
+    /** For sorting */
+    public random_index: number,
+    public revealed: boolean,
+    /** Will be updated after the turn completes. */
+    public like_count: number | undefined,
+  ) { }
 }
 
 /** Represents a player who voted on a card, e.g. like or dislike. */
 export class Vote {
-  player_uid: string;
-  player_name: string; // Copied from 'Players' for convenience.
-  choice: VoteChoice;
-  constructor(player_uid: string, player_name: string, choice: VoteChoice) {
-    this.player_uid = player_uid;
-    this.player_name = player_name;
-    this.choice = choice;
-  }
+  constructor(
+    public player_uid: string,
+    public player_name: string, // Copied from 'Players' for convenience.
+    public choice: VoteChoice,
+  ) { }
 }
 
 export type VoteChoice = "yes" | "no";
 
 /** Deck as an immutable collection that can be loaded into a game lobby. */
 export class Deck {
-  id: string;
-  title: string;
   /** Must be fetched separately from a Firebase subcollection. */
   prompts: Array<PromptDeckCard> = [];
   /** Must be fetched separately from a Firebase subcollection. */
@@ -252,19 +197,11 @@ export class Deck {
   /** Must be fetched separately from a Firebase subcollection. */
   tags: DeckTag[] = [];
 
-  constructor(id: string, title: string) {
-    this.id = id;
-    this.title = title;
-  }
+  constructor(public id: string, public title: string) { }
 }
 
 export class DeckTag {
-  name: string;
-  description?: string;
-  constructor(name: string, description?: string) {
-    this.name = name;
-    this.description = description;
-  }
+  constructor(public name: string, public description?: string) { }
 }
 
 /** Card in deck */
@@ -288,67 +225,39 @@ export interface DeckCard {
 
 /** Prompt card in deck */
 export class PromptDeckCard implements DeckCard {
-  id: string;
-  content: string;
-  rating: number;
-  /** How many cards to pick in response */
-  pick: number;
+  wins = 0; // doesn't apply to prompts
   time_created?: Date;
-  views: number;
-  plays: number;
-  discards: number;
-  wins: number;
-  tags: string[];
-  upvotes: number;
-  downvotes: number;
   constructor(
-    id: string, content: string, pick: number, rating: number,
-    views: number, plays: number, discards: number,
-    tags: string[], upvotes: number, downvotes: number,
-  ) {
-    this.id = id;
-    this.content = content;
-    this.pick = pick;
-    this.rating = rating || 0;
-    this.views = views || 0;
-    this.plays = plays || 0;
-    this.discards = discards || 0;
-    this.wins = 0;
-    this.tags = tags;
-    this.upvotes = upvotes || 0;
-    this.downvotes = downvotes || 0;
-  }
+    public id: string,
+    public content: string,
+    /** How many cards to pick in response */
+    public pick: number,
+    public rating: number,
+    public views: number,
+    public plays: number,
+    public discards: number,
+    public tags: string[],
+    public upvotes: number,
+    public downvotes: number,
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
 }
 
 /** Response card in deck */
 export class ResponseDeckCard implements DeckCard {
-  id: string;
-  content: string;
-  rating: number;
   time_created?: Date;
-  views: number;
-  plays: number;
-  discards: number;
-  wins: number;
-  likes: number;
-  tags: string[];
   constructor(
-    id: string, content: string, rating: number,
-    views: number, plays: number, discards: number, wins: number, likes: number,
-    tags: string[],
-  ) {
-    this.id = id;
-    this.content = content;
-    this.rating = rating || 0;
-    this.views = views || 0;
-    this.plays = plays || 0;
-    this.discards = discards || 0;
-    this.wins = wins || 0;
-    this.likes = likes || 0;
-    this.tags = tags;
-  }
+    public id: string,
+    public content: string,
+    public rating: number,
+    public views: number,
+    public plays: number,
+    public discards: number,
+    public wins: number,
+    public likes: number,
+    public tags: string[],
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
 }
@@ -373,65 +282,38 @@ export interface CardInGame {
 
 /** An instance of a Prompt card in a game */
 export class PromptCardInGame implements CardInGame {
-  id: string;
-  deck_id: string;
-  card_id_in_deck: string;
-  random_index: number;
-  content: string;
-  pick: number;
-  rating: number;
   /** List of player votes who liked or disliked this prompt.
    * Must be fetched separately from a Firebase subcollection. */
   votes: Array<Vote> = [];
   constructor(
-    id: string,
-    deck_id: string,
-    card_id_in_deck: string,
-    random_index: number,
-    content: string,
-    pick: number,
-    rating: number,
-  ) {
-    this.id = id;
-    this.deck_id = deck_id;
-    this.card_id_in_deck = card_id_in_deck;
-    this.random_index = random_index;
-    this.content = content;
-    this.pick = pick;
-    this.rating = rating;
-  }
+    public id: string,
+    public deck_id: string,
+    public card_id_in_deck: string,
+    public random_index: number,
+    public content: string,
+    public pick: number,
+    public rating: number,
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
 }
 
 /** An instance of a Response card in game */
 export class ResponseCardInGame implements CardInGame {
-  id: string;
-  deck_id: string;
-  card_id_in_deck: string;
-  random_index: number;
-  content: string;
-  rating: number;
-  /** Can be downvoted once per lobby. Downvoting decreases rating.
-   * TODO: maybe convert this downvote to a subcollection of Votes. */
-  downvoted: boolean;
   constructor(
-    id: string,
-    deck_id: string,
-    card_id_in_deck: string,
-    random_index: number,
-    content: string,
-    rating: number,
-    downvoted: boolean,
-  ) {
-    this.id = id;
-    this.deck_id = deck_id;
-    this.card_id_in_deck = card_id_in_deck;
-    this.random_index = random_index;
-    this.content = content;
-    this.rating = rating;
-    this.downvoted = downvoted;
-  }
+    public id: string,
+    public deck_id: string,
+    public card_id_in_deck: string,
+    public random_index: number,
+    public content: string,
+    public rating: number,
+    /** 
+     * True if downvoted by the player who owns this card.
+     * Can be downvoted once per game. Downvoting decreases rating.
+     * TODO: maybe convert this downvote to a subcollection of Votes.
+     */
+    public downvoted: boolean,
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
 }
@@ -450,26 +332,12 @@ export type LobbyStatus = "new" | "in_progress" | "ended";
  * Multiple users are allowed to have the same name!
 */
 export class CAAUser {
-  uid: string;
-  email?: string;
-  name: string;
-  avatar_id?: string;
-  is_admin: boolean;
-  current_lobby_id?: string;
-
   constructor(
-    uid: string,
-    email: string | null | undefined = null,
-    name: string,
-    avatar_id: string | null | undefined = null,
-    is_admin: boolean = false,
-    current_lobby_id: string | null | undefined = null,
-  ) {
-    this.uid = uid;
-    if (email) this.email = email;
-    this.name = name;
-    if (avatar_id) this.avatar_id = avatar_id;
-    this.is_admin = is_admin;
-    if (current_lobby_id) this.current_lobby_id = current_lobby_id;
-  }
+    public uid: string,
+    public email: string | null | undefined = null,
+    public name: string,
+    public avatar_id: string | null | undefined = null,
+    public is_admin: boolean = false,
+    public current_lobby_id: string | null | undefined = null,
+  ) { }
 }

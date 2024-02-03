@@ -139,8 +139,8 @@ function AnonymousLoginWithCaaUser({
   }
 
   return <LoginForm
-    name={caaUser?.name ?? user.displayName ?? ""}
-    avatarID={caaUser?.avatar_id}
+    name={caaUser.name}
+    avatarID={caaUser.avatar_id}
     onSubmit={handleSubmit}
     buttonText={buttonText}
     loadingNode={updating ? loadingNode : null}
@@ -150,7 +150,7 @@ function AnonymousLoginWithCaaUser({
 
 interface FormProps {
   name: string,
-  avatarID?: string,
+  avatarID?: string | null,
   onSubmit: (name: string, avatarID: string) => void | Promise<void>,
   /** If present, shows loading. */
   loadingNode?: ReactNode,
