@@ -1,9 +1,12 @@
 import { useState } from "react";
+import csgo_headshot from "../assets/icons/csgo_headshot.png";
 
 interface SvgProps
   extends React.SVGAttributes<SVGSVGElement> {
   colorStroke?: boolean,
 }
+
+interface HtmlProps extends React.HTMLAttributes<HTMLElement> { }
 
 /** Sets color from css font color*/
 function Svg(props: SvgProps) {
@@ -180,4 +183,9 @@ export function IconChevronDown(props: IconSvgProps) {
 
 export function IconChevronDownInline() {
   return <IconChevronDown className="icon-chevron-down-inline" />;
+}
+
+export function IconHeadshot(props: HtmlProps) {
+  return <img {...props} src={csgo_headshot}
+    className={`icon-headshot ${props.className ?? ""}`} />;
 }

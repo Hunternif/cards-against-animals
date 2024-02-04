@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { IconCat, IconHeart } from "../../../components/Icons";
+import { IconCat, IconHeadshot, IconHeart } from "../../../components/Icons";
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Twemoji } from "../../../components/Twemoji";
 import { useScreenWiderThan } from "../../../components/layout/ScreenSizeSwitch";
@@ -291,7 +291,9 @@ interface LikeProps {
 /** Returns a custom icon for likes */
 function LikeIcon({ response }: LikeProps) {
   for (const card of response.cards) {
-    if (detectDeer(card.content)) {
+    if (card.tags.includes("csgo")) {
+      return <IconHeadshot />;
+    } else if (detectDeer(card.content)) {
       return <Twemoji className="emoji-like">🦌</Twemoji>;
     } else if (detectCat(card.content)) {
       return <IconCat className="cat-icon" />;

@@ -44,6 +44,13 @@
   margin-left: 0.5em;
   vertical-align: 0.1em;
 }
+.icon-headshot {
+  // Note: relative url import is borken in SCSS:
+  // background-image: url(../assets/icons/csgo_headshot.png);
+  // background-size: contain;
+  // background-repeat: no-repeat;
+  height: 16px;
+}
 
 .twemoji {
   display: inline-block;
