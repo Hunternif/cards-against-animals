@@ -329,7 +329,7 @@ export async function updatePlayerScoresFromTurn(
       const cost = lobby.settings.discard_cost;
       const isDiscardFree = cost === "free" ||
         cost === "1_free_then_1_star" && player.discards_used <= 1;
-      if (!isDiscardFree) {
+      if (!isDiscardFree && player.score > 0) {
         player.score--;
       }
     }
