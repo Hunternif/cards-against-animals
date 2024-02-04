@@ -31,12 +31,20 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: baseline;
     gap: 1em;
     // Mobile:
     @media (max-width: 25rem) {
       margin-bottom: 0.5em;
       margin-top: 1em;
     }
+  }
+  .link-copied-popup {
+    position: absolute;
+    bottom: 100%;
+    padding-bottom: 0.3em;
+    width: 100%;
+    left: 0;
   }
 }
 

@@ -27,20 +27,6 @@ const midStyle: CSSProperties = {
   overflowY: "auto",
 }
 
-const startButtonStyle: CSSProperties = {
-  width: "10rem",
-  maxWidth: "40vw",
-  position: "relative",
-};
-
-const linkCopiedStyle: CSSProperties = {
-  position: "absolute",
-  bottom: "100%",
-  paddingBottom: "0.3rem",
-  width: "100%",
-  left: 0,
-};
-
 export function LobbyCreatorControls({ lobby }: Props) {
   const [starting, setStarting] = useState(false);
   const [showLink, setShowLink] = useState(false);
@@ -76,14 +62,14 @@ export function LobbyCreatorControls({ lobby }: Props) {
       <LobbySettingsPanel settings={lobby.settings} onChange={handleSettingsChange} />
     </Container>
     <footer>
-      <GameButton light style={startButtonStyle} className="start-button"
+      <GameButton light className="start-button"
         onClick={handleInvite} icon={<IconLink />}>
         Invite
         {showLink && <Timed onClear={() => setShowLink(false)}>
-          <span style={linkCopiedStyle} className="light">Link copied</span>
+          <span className="light link-copied-popup">Link copied</span>
         </Timed>}
       </GameButton>
-      <GameButton accent style={startButtonStyle} className="start-button"
+      <GameButton accent className="start-button"
         onClick={handleStart}
         disabled={lobby.deck_ids.size == 0}
         icon={<IconPlay />}>

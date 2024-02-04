@@ -81,4 +81,7 @@ button.small-button {
 button.start-button {
   font-size: large;
   font-weight: bold;
+  width: 10rem;
+  max-width: 40vw;
+  position: relative;
 }
