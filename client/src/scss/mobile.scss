@@ -27,12 +27,17 @@
   .reading-control-row button {
     height: 2.5em;
   }
+  .layout-game {
+    // Make the footer sticky:
+    footer {
+      position: sticky;
+      width: 100%;
+      bottom: 0;
+      z-index: 2;
+      padding: 0.5em;
+    }
+  }
   .winner-control-row {
-    position: sticky;
-    bottom: 0;
-    z-index: 2;
-    padding: 0.5em;
-    height: auto !important;
     background-attachment: fixed;
     background-image: colors.$winner-vignette;
   }

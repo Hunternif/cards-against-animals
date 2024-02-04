@@ -1,8 +1,8 @@
-import { CSSProperties, useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import bell_double from '../../assets/bell_double.mp3';
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { GameLayout } from "../../components/layout/GameLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import { startReadingPhase } from "../../model/turn-api";
 import { PlayerInLobby, PlayerResponse } from "../../shared/types";
@@ -11,29 +11,6 @@ import { useGameContext } from "./game-components/GameContext";
 import { MiniCardResponse } from "./game-components/MiniCardResponse";
 import { ResponseCount } from "./game-components/ResponseCount";
 
-const topRowStyle: CSSProperties = {
-  display: "flex",
-  flexFlow: "wrap",
-  justifyContent: "center",
-  gap: "1rem",
-}
-
-const midRowStyle: CSSProperties = {
-  display: "flex",
-  flexFlow: "wrap",
-  justifyContent: "center",
-  gap: "1rem",
-}
-
-const botRowStyle: CSSProperties = {
-  marginTop: "1.5rem",
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "1rem",
-  height: "3em",
-}
 
 // const dummyPlayer = new PlayerInLobby("01", "Dummy");
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
@@ -63,9 +40,11 @@ export function JudgeAwaitResponsesScreen() {
     }
   }, [allResponded]);
 
-  return <CenteredLayout>
-    <h2 style={{ textAlign: "center" }} className="dim">Wait for responses:</h2>
-    <div style={midRowStyle}>
+  return <GameLayout>
+    <header>
+      <h2 className="dim">Wait for responses:</h2>
+    </header>
+    <section>
       <CardPromptWithCzar card={prompt} />
       <ScreenSizeSwitch
         widthBreakpoint={500}
@@ -77,14 +56,14 @@ export function JudgeAwaitResponsesScreen() {
             pick={prompt?.pick ?? 0} />
         }
       />
-    </div>
-    <div style={botRowStyle}>
+    </section>
+    <footer>
       {allResponded && isJudge && (<>
         <span>All players responded!</span>
         <GameButton accent onClick={handleNext}>Next</GameButton>
       </>)}
-    </div>
-  </CenteredLayout>;
+    </footer>
+  </GameLayout>;
 }
 
 interface DetailedResponsesProps {

@@ -12,21 +12,11 @@ export function CenteredLayout(
   { children, outerClassName, outerStyle, innerClassName, innerStyle }: LayoutProps
 ) {
   return (
-    <div style={{
-      // TODO: figure out how to do this without height
-      height: "100%",
-      flex: "1 1 auto",
-      justifyContent: "center",
-      display: "flex",
-      ...outerStyle,
-    }}
-      className={outerClassName}
+    <div style={outerStyle}
+      className={`layout-center-outer ${outerClassName ?? ""}`}
     >
-      <div style={{
-        margin: "auto",
-        ...innerStyle
-      }}
-        className={innerClassName}
+      <div style={innerStyle}
+        className={`layout-center-inner ${innerClassName ?? ""}`}
       >
         {children}
       </div>

@@ -9,13 +9,8 @@ interface LayoutProps {
 /** Horizontal row that takes 100% height */
 export function RowLayout({ children, className, style }: LayoutProps) {
   return (
-    <div style={{
-      display: "flex",
-      flexWrap: "nowrap",
-      height: "100%",
-      ...style
-    }}
-      className={className}
+    <div style={style}
+      className={`layout-row ${className ?? ""}`}
     >
       {children}
     </div>

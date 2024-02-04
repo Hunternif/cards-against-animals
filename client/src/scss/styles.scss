@@ -23,6 +23,7 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 /*---------------------- Custom local stylesheets ---------------------*/
 
 // Common components:
+@import "components/layouts.scss";
 @import "components/dropdown.scss";
 @import "components/scrollbar.scss";
 @import "components/checkbox.scss";
@@ -38,7 +39,6 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 @import "login-screen.scss";
 @import "lobby-screen.scss";
 @import "game-screen.scss";
-@import "winner-screen.scss";
 @import "scoreboard-screen.scss";
 
 // Lobby-screen-specific components:

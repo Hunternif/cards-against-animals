@@ -2,7 +2,7 @@ import { CSSProperties, useContext, useEffect, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { GameLayout } from "../../components/layout/GameLayout";
 import { logInteraction } from "../../components/utils";
 import { endLobby } from "../../model/lobby-api";
 import { discardPrompt, getPromptCount, pickNewPrompt, playPrompt } from "../../model/turn-api";
@@ -10,28 +10,6 @@ import { PromptCardInGame } from "../../shared/types";
 import { CardPrompt } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 
-const containerStyle: CSSProperties = {
-  height: "20rem",
-}
-
-const midRowStyle: CSSProperties = {
-  position: "relative",
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  height: "14rem",
-}
-
-const botRowStyle: CSSProperties = {
-  position: "relative",
-  marginTop: "1.5rem",
-  height: "3rem",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "stretch",
-  gap: "1rem",
-}
 
 /** Aligned to the right of the centered card */
 const sideSectionStyle: CSSProperties = {
@@ -106,59 +84,54 @@ export function JudgePickPromptScreen() {
     getPromptCount(lobby).then((c) => setCardCount(c));
   }, [lobby, prompt]);
 
-  return <CenteredLayout innerStyle={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  }}>
-    <h2 style={{ textAlign: "center" }} className="dim">
-      You are <i>Card Czar</i>! Pick a card:
-    </h2>
-    {/* Fixed-size container to prevent layout shift during loading */}
-    <div style={containerStyle}>
+  return <GameLayout className="pick-prompt-screen">
+    <header>
+      <h2 className="dim">
+        You are <i>Card Czar</i>! Pick a card:
+      </h2>
+    </header>
+    <section>
       {!initialLoaded ? (
         <LoadingSpinner delay text="Loading deck..." />
       ) : <>
-        <div style={midRowStyle}>
-          {prompt ? (
-            <>
-              <CardPrompt card={prompt} />
-              <div style={sideSectionStyle}>
-                {cardCount > 1 ? (<>
-                  <GameButton secondary small onClick={handleChange}>
-                    Change
-                  </GameButton>
-                  <span style={countStyle} className="extra-dim">
-                    {cardCount} cards left
-                  </span>
-                </>) : (
-                  <span className="extra-dim" style={{ whiteSpace: "nowrap" }}>
-                    Last card
-                  </span>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              {cardCount > 0 ? `Oops! ${cardCount} cards remaining, but couldn't load any` :
-                cardCount == 0 ? "No more cards left :(" : ""}
-            </>
-          )}
-        </div>
-        <div style={botRowStyle}>
-          {prompt ? (
-            <GameButton accent onClick={handleSubmit}
-              disabled={!prompt || submitted || ending}>Play</GameButton>
-          ) : (
-            <>
-              {cardCount == 0 &&
-                <GameButton onClick={handleEndGame} disabled={ending}>
-                  End game
-                </GameButton>}
-            </>
-          )}
-        </div>
+        {prompt ? (
+          <>
+            <CardPrompt card={prompt} />
+            <div style={sideSectionStyle}>
+              {cardCount > 1 ? (<>
+                <GameButton secondary small onClick={handleChange}>
+                  Change
+                </GameButton>
+                <span style={countStyle} className="extra-dim">
+                  {cardCount} cards left
+                </span>
+              </>) : (
+                <span className="extra-dim" style={{ whiteSpace: "nowrap" }}>
+                  Last card
+                </span>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            {cardCount > 0 ? `Oops! ${cardCount} cards remaining, but couldn't load any` :
+              cardCount == 0 ? "No more cards left :(" : ""}
+          </>
+        )}
       </>}
-    </div>
-  </CenteredLayout>;
+    </section>
+    <footer>
+      {prompt ? (
+        <GameButton accent onClick={handleSubmit}
+          disabled={!prompt || submitted || ending}>Play</GameButton>
+      ) : (
+        <>
+          {cardCount == 0 &&
+            <GameButton onClick={handleEndGame} disabled={ending}>
+              End game
+            </GameButton>}
+        </>
+      )}
+    </footer>
+  </GameLayout>;
 }

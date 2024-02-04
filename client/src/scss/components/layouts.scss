@@ -1,0 +1,57 @@
+.layout-center-outer {
+  // TODO: figure out how to do this without height
+  height: 100%;
+  flex: 1 1 auto;
+  justify-content: center;
+  display: flex;
+  .layout-center-inner {
+    margin: auto;
+  }
+}
+
+.layout-fill {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+}
+
+.layout-row {
+  display: flex;
+  flex-wrap: nowrap;
+  height: 100%;
+}
+
+.layout-game {
+  // Centered on the page:
+  margin: auto;
+
+  // Inner content:
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  header {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    justify-content: center;
+    text-align: center;
+  }
+  section {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    justify-content: center;
+    min-height: 14rem; // prevent layout shift when content is added
+  }
+  footer {
+    position: relative;
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5em;
+    height: 3em; // prevent layout shift when content is added
+  }
+}

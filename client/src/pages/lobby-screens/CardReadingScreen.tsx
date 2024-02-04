@@ -1,7 +1,7 @@
-import { CSSProperties, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { GameLayout } from "../../components/layout/GameLayout";
 import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse } from "../../model/turn-api";
 import { PlayerResponse } from "../../shared/types";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
@@ -9,32 +9,6 @@ import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
 
-const topRowStyle: CSSProperties = {
-  display: "flex",
-  flexFlow: "wrap",
-  justifyContent: "center",
-  gap: "1rem",
-  marginBottom: "1rem",
-}
-
-const midRowStyle: CSSProperties = {
-  display: "flex",
-  flexFlow: "wrap",
-  justifyContent: "center",
-  // alignItems: "center",
-  gap: "1rem",
-}
-
-const botRowStyle: CSSProperties = {
-  position: "relative",
-  marginTop: "1.5rem",
-  height: "3rem",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  gap: "1rem",
-}
 
 // const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);
 // const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard, dummyCard], 123, true);
@@ -96,8 +70,8 @@ export function CardReadingScreen() {
       .catch((e) => setError(e));
   }
 
-  return <CenteredLayout innerClassName="reading-layout-container">
-    <div style={topRowStyle} className="reading-control-row">
+  return <GameLayout className="card-reading-screen reading-layout-container">
+    <header className="reading-control-row">
       {isJudge && <>
         <h2 className="dim">
           {noResponses ? "No responses :(" :
@@ -106,8 +80,8 @@ export function CardReadingScreen() {
         {winner &&
           <GameButton accent onClick={handleConfirm}>Confirm</GameButton>}
       </>}
-    </div>
-    <div style={midRowStyle} className="reading-main-row">
+    </header>
+    <section className="reading-main-row">
       <CardPromptWithCzar card={prompt}
         canVote={isActivePlayer && !isJudge} />
       {/* Add context to share offsets between responses */}
@@ -127,14 +101,14 @@ export function CardReadingScreen() {
           />
         )}
       </CardOffsetContextProvider>
-    </div>
-    <div style={botRowStyle}>
+    </section>
+    <footer>
       {noResponses && <>
         <GameButton accent onClick={handleSkipTurn}
           disabled={startingNewTurn}>
           Next turn
         </GameButton>
       </>}
-    </div>
-  </CenteredLayout>;
+    </footer>
+  </GameLayout>;
 }

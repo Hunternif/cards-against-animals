@@ -6,15 +6,7 @@ interface ComponentProps extends React.HTMLAttributes<HTMLElement> { }
 
 export function LargeCard(props: ComponentProps) {
   return (
-    <div {...props}
-      className={`game-card ${props.className ?? ""}`}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-        flexShrink: "0",
-        ...props.style,
-      }} />
+    <div {...props} className={`game-card ${props.className ?? ""}`} />
   );
 }
 

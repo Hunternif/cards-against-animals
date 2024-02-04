@@ -1,10 +1,10 @@
-import { CSSProperties, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
 import { IconHeartInline, IconStarInline } from "../../components/Icons";
 import { PlayerAvatar } from "../../components/PlayerAvatar";
-import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { GameLayout } from "../../components/layout/GameLayout";
 import { checkIfShouldEndGame, endLobby, updateLobbySettings } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
@@ -12,23 +12,6 @@ import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
 
-const midRowStyle: CSSProperties = {
-  display: "flex",
-  flexFlow: "wrap",
-  justifyContent: "center",
-  // alignItems: "center",
-  gap: "3rem",
-}
-
-const botRowStyle: CSSProperties = {
-  marginTop: "1.5rem",
-  height: "3rem",
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  gap: "1rem",
-  marginBottom: "1rem",
-}
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -72,11 +55,11 @@ export function WinnerScreen() {
   return (
     // Add context to share offsets between responses
     <CardOffsetContextProvider>
-      <CenteredLayout>
-        <div style={midRowStyle}>
+      <GameLayout className="winner-screen">
+        <div className="sections-container">
           <div className="winner-section">
             <header>
-              <h2 style={{ textAlign: "center" }}>
+              <h2>
                 {winner ? <>
                   Winner
                   <PlayerAvatar player={winner} />
@@ -85,7 +68,7 @@ export function WinnerScreen() {
                   <Delay>No winner</Delay>}
               </h2>
             </header>
-            <div className="winner-cards-row">
+            <section>
               <CardPromptWithCzar card={prompt} />
               {winnerResponse && (
                 <ResponseReading
@@ -93,26 +76,26 @@ export function WinnerScreen() {
                   showName={showAudienceAward}
                   response={winnerResponse} />
               )}
-            </div>
+            </section>
           </div>
           {showAudienceAward && (
             // TODO: animate audience choice winner transition
             <div className="winner-section audience-award-section">
               <header>
-                <h2 style={{ textAlign: "center" }}>
+                <h2 >
                   Audience Choice <IconHeartInline />
                 </h2>
               </header>
-              <div className="winner-cards-row">
+              <section>
                 {audienceAwardResponses.map((r, i) => (
                   <ResponseReading key={i} showName showLikes response={r}
                     player={players.find((p) => p.uid === r.player_uid)} />
                 ))}
-              </div>
+              </section>
             </div>
           )}
         </div>
-        <div style={botRowStyle} className="winner-control-row">
+        <footer className="winner-control-row">
           {isJudge && (
             <Delay>
               {(extending || shouldEndNow) ? (<>
@@ -130,8 +113,8 @@ export function WinnerScreen() {
               )}
             </Delay>
           )}
-        </div>
-      </CenteredLayout >
+        </footer>
+      </GameLayout >
     </CardOffsetContextProvider >
   );
 }
