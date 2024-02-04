@@ -1,5 +1,6 @@
 import { useState } from "react";
 import csgo_headshot from "../assets/icons/csgo_headshot.png";
+import star_of_david from "../assets/icons/star_of_david.svg";
 
 interface SvgProps
   extends React.SVGAttributes<SVGSVGElement> {
@@ -188,4 +189,9 @@ export function IconChevronDownInline() {
 export function IconHeadshot(props: HtmlProps) {
   return <img {...props} src={csgo_headshot}
     className={`icon-headshot ${props.className ?? ""}`} />;
+}
+
+export function IconStarOfDavid(props: HtmlProps) {
+  return <img {...props} src={star_of_david}
+    className={`icon-star-of-david ${props.className ?? ""}`} />;
 }
