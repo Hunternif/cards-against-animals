@@ -37,7 +37,7 @@ export async function getAllPromptsForGame(
     const cardInLobby = new PromptCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
       getCardIndex(card, rng, settings),
-      card.content, card.pick, card.rating);
+      card.content, card.pick, card.rating, card.tags);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });
@@ -53,7 +53,7 @@ export async function getAllResponsesForGame(
     const cardInLobby = new ResponseCardInGame(
       prefixID(deckID, card.id), deckID, card.id,
       getCardIndex(card, rng, settings),
-      card.content, card.rating, false);
+      card.content, card.rating, false, card.tags);
     cardInLobby.deck_id = deckID;
     return cardInLobby;
   });

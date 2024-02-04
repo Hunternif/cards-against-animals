@@ -168,11 +168,13 @@ export const voteConverter: FConverter<Vote> = {
 
 function mapPromptCardInGame(data: any): PromptCardInGame {
   return new PromptCardInGame(data.id, data.deck_id, data.card_id_in_deck,
-    data.random_index, data.content, data.pick, data.rating);
+    data.random_index ?? 0, data.content, data.pick ?? 1, data.rating ?? 0,
+    data.tags ?? []);
 }
 function mapResponseCardInGame(data: any): ResponseCardInGame {
   return new ResponseCardInGame(data.id, data.deck_id, data.card_id_in_deck,
-    data.random_index, data.content, data.rating, data.downvoted);
+    data.random_index ?? 0, data.content, data.rating ?? 0, data.downvoted ?? false,
+    data.tags ?? []);
 }
 
 export const userConverter: FConverter<CAAUser> = {
@@ -221,7 +223,8 @@ export const promptCardInGameConverter: FConverter<PromptCardInGame> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
-      data.random_index ?? 0, data.content, data.pick, data.rating);
+      data.random_index ?? 0, data.content, data.pick ?? 1, data.rating ?? 0,
+      data.tags ?? []);
   },
 };
 
@@ -230,6 +233,7 @@ export const responseCardInGameConverter: FConverter<ResponseCardInGame> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new ResponseCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
-      data.random_index ?? 0, data.content, data.rating ?? 0, data.downvoted);
+      data.random_index ?? 0, data.content, data.rating ?? 0, data.downvoted ?? false,
+      data.tags ?? []);
   },
 };

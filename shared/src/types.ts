@@ -278,6 +278,7 @@ export interface CardInGame {
   random_index: number;
   content: string;
   rating: number;
+  tags: string[];
 }
 
 /** An instance of a Prompt card in a game */
@@ -293,6 +294,7 @@ export class PromptCardInGame implements CardInGame {
     public content: string,
     public pick: number,
     public rating: number,
+    public tags: string[],
   ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
@@ -313,6 +315,7 @@ export class ResponseCardInGame implements CardInGame {
      * TODO: maybe convert this downvote to a subcollection of Votes.
      */
     public downvoted: boolean,
+    public tags: string[],
   ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
