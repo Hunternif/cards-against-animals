@@ -293,13 +293,25 @@ function LikeIcon({ response }: LikeProps) {
   for (const card of response.cards) {
     if (card.tags.includes("jew")) {
       return <IconStarOfDavid />;
-    } else if (card.tags.includes("csgo")) {
+    }
+  }
+  for (const card of response.cards) {
+    if (card.tags.includes("csgo")) {
       return <IconHeadshot />;
-    } else if (detectDeer(card.content)) {
+    }
+  }
+  for (const card of response.cards) {
+    if (detectDeer(card.content)) {
       return <Twemoji className="emoji-like">🦌</Twemoji>;
-    } else if (detectCat(card.content)) {
+    }
+  }
+  for (const card of response.cards) {
+    if (detectCat(card.content)) {
       return <IconCat className="cat-icon" />;
-    } else if (detectLenich(card.content)) {
+    }
+  }
+  for (const card of response.cards) {
+    if (detectLenich(card.content)) {
       if (response.cards[0].random_index % 2 == 0) {
         return <Twemoji className="emoji-like">👑</Twemoji>;
       } else {
