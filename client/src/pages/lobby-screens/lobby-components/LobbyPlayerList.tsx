@@ -45,7 +45,7 @@ export function LobbyPlayerList({ lobby, user, players }: ListProps) {
     if (ulRef.current?.parentElement) {
       const containerHeight = ulRef.current.parentElement.clientHeight;
       const emSize = Math.max(12, parseFloat(getComputedStyle(ulRef.current).fontSize));
-      const slotHeight = 3 * emSize;
+      const slotHeight = 3.5 * emSize;
       setMinSlotCount(Math.floor(containerHeight / slotHeight) - 1);
     }
   }, [ulRef]);

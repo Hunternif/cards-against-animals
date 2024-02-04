@@ -84,7 +84,10 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
 export function EmptyPlayerCard() {
   return (
     <Card className="player-card empty">
-      <Card.Body>Empty</Card.Body>
+      <Card.Body>
+        <div className="avatar inline-avatar empty-avatar" />
+        <span>Empty</span>
+      </Card.Body>
     </Card>
   );
 }

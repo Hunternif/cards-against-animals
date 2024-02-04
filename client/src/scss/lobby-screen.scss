@@ -106,10 +106,13 @@
     align-items: center;
   }
   &.empty {
-    border-style: dashed;
+    border: 1px dashed rgba(#fff, 0.2);
     background-color: transparent;
-    .card-body {
-      opacity: 0.5;
+    .card-body span {
+      opacity: 0.4;
+    }
+    .avatar {
+      border: 1px dashed rgba(#fff, 0.2);
     }
   }
   &.me-card {
