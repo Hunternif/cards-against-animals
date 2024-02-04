@@ -20,7 +20,7 @@ export function Scoreboard({ lobby, players }: Props) {
     .filter((p) => p.role === "player" &&
       // Show people who left, but only if they have > 0 score:
       p.status !== "left" || p.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => (b.score - a.score) * 10000 + (b.likes - a.likes));
   const showLikes = lobby.settings.enable_likes;
 
   return <>
