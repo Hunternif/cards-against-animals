@@ -192,9 +192,9 @@ export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
   }),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
-    const ret = new PromptDeckCard(snapshot.id, data.content, data.pick,
-      data.rating, data.views, data.plays, data.discards, data.tags || [],
-      data.upvotes, data.downvotes);
+    const ret = new PromptDeckCard(snapshot.id, data.content, data.pick ?? 1,
+      data.rating ?? 0, data.views ?? 0, data.plays ?? 0, data.discards ?? 0,
+      data.tags || [], data.upvotes ?? 0, data.downvotes ?? 0);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },
@@ -208,9 +208,9 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
   }),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
-    const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating,
-      data.views, data.plays, data.discards, data.wins, data.likes,
-      data.tags || []);
+    const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating ?? 0,
+      data.views ?? 0, data.plays ?? 0, data.discards ?? 0, data.wins ?? 0,
+      data.likes ?? 0, data.tags || []);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },
@@ -221,7 +221,7 @@ export const promptCardInGameConverter: FConverter<PromptCardInGame> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
-      data.random_index, data.content, data.pick, data.rating);
+      data.random_index ?? 0, data.content, data.pick, data.rating);
   },
 };
 
@@ -230,6 +230,6 @@ export const responseCardInGameConverter: FConverter<ResponseCardInGame> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new ResponseCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
-      data.random_index, data.content, data.rating, data.downvoted);
+      data.random_index ?? 0, data.content, data.rating ?? 0, data.downvoted);
   },
 };
