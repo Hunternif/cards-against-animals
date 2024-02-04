@@ -130,9 +130,9 @@ export class GameTurn {
   prompts: Array<PromptCardInGame> = [];
 
   //================== Technical stuff ==================
-  /** Counts down to 0 in ms, to limit time for the next action. */
-  timer_ms: number = 0;
   phase: TurnPhase = "new";
+  /** Time when the last phase bagan. */
+  phase_start_time: Date = this.time_created;
 
   constructor(
     public id: string,
@@ -307,7 +307,7 @@ export class ResponseCardInGame implements CardInGame {
     public random_index: number,
     public content: string,
     public rating: number,
-    /** 
+    /**
      * True if downvoted by the player who owns this card.
      * Can be downvoted once per game. Downvoting decreases rating.
      * TODO: maybe convert this downvote to a subcollection of Votes.

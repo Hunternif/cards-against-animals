@@ -110,19 +110,22 @@ export const deckTagConverter: FConverter<DeckTag> = {
 export const turnConverter: FConverter<GameTurn> = {
   toFirestore: (turn: GameTurn) => copyFields2(turn, {
     time_created: FTimestamp.fromDate(turn.time_created),
+    phase_start_time: FTimestamp.fromDate(turn.phase_start_time),
     // if legacy prompt exists, keep it:
     prompt: turn.legacy_prompt && copyFields(turn.legacy_prompt, []),
   }, ['id', 'player_data', 'player_responses', 'legacy_prompt', 'prompts']),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
-    const time_created = data.time_created as FTimestamp | null;
+    const time_created =
+      (data.time_created as FTimestamp | null)?.toDate() ?? new Date();
     const ret = new GameTurn(
       snapshot.id,
       data.ordinal,
       data.judge_uid,
-      time_created?.toDate(),
+      time_created,
     );
-    ret.timer_ms = data.timer_ms || 0;
+    ret.phase_start_time =
+      (data.phase_start_time as FTimestamp | null)?.toDate() ?? time_created;
     ret.phase = data.phase || "new";
     ret.winner_uid = data.winner_uid;
     ret.audience_award_uids = data.audience_award_uids ?? [];

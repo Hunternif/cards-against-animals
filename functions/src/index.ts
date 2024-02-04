@@ -34,7 +34,8 @@ import {
   logInteractionsInCompletePhase,
   logInteractionsInReadingPhase,
   logPlayedPrompt,
-  updatePlayerScoresFromTurn
+  updatePlayerScoresFromTurn,
+  updateTurn
 } from "./model/turn-server-api";
 import { lobbyConverter, playerConverter, turnConverter } from "./shared/firestore-converters";
 import { LobbySettings, PromptCardInGame, ResponseCardInGame } from "./shared/types";
@@ -243,6 +244,9 @@ export const onTurnPhaseChange = onDocumentUpdated(
         await updatePlayerScoresFromTurn(lobbyID, turnAfter, responses);
         await logInteractionsInCompletePhase(lobbyID, turnAfter, responses);
       }
+      // Update timestamp
+      turnAfter.phase_start_time = new Date();
+      await updateTurn(lobbyID, turnAfter);
     }
   }
 );
