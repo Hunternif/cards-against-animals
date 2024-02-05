@@ -45,6 +45,8 @@ $player-me-bg: #6c757d; // copied from Bootstrap
 $card-prompt-bg: linear-gradient(to bottom, #141820, #2d3441);
 $card-prompt-text: #fff;
 $card-response-bg: #fff;
+$card-response-bg-unrevealed: #aaa;
+$card-response-bg-unrevealed-hover: #ccc;
 $card-response-text: #000;
 $card-response-bg-selected: linear-gradient(to bottom, rgba($accent, 0.4), #fff);
 $burned-text: #d45f00;

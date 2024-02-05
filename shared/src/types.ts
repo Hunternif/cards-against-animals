@@ -171,7 +171,8 @@ export class PlayerResponse {
     public cards: Array<ResponseCardInGame>,
     /** For sorting */
     public random_index: number,
-    public revealed: boolean,
+    /** How many cards in this response were revealed */
+    public reveal_count: number,
     /** Will be updated after the turn completes. */
     public like_count: number | undefined,
   ) { }

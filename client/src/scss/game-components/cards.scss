@@ -146,15 +146,16 @@
 
 /*--------------------- Screen for reading responses --------------------*/
 
-.game-card.card-response.response-reading.can-reveal.unrevealed:hover {
-  opacity: 1;
+.game-card.response-reading.can-reveal.unrevealed:hover,
+.many-cards.can-reveal:hover .game-card.response-reading.unrevealed {
+  background-color: colors.$card-response-bg-unrevealed-hover;
   cursor: pointer;
 }
 .game-card.card-response.response-reading.unrevealed {
-  opacity: 0.6;
+  background-color: colors.$card-response-bg-unrevealed;
 }
 .reading-unrevealed-icon {
-  color: #111827cc;
+  color: rgba(colors.$bg-dark, 0.6);
   font-size: 5rem;
 }
 .game-card.selectable {

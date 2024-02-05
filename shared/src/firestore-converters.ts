@@ -153,7 +153,7 @@ export const playerResponseConverter: FConverter<PlayerResponse> = {
     const player_uid = snapshot.id;
     const cards = (data.cards as Array<any>)?.map(mapResponseCardInGame) || [];
     return new PlayerResponse(player_uid, data.player_name, cards,
-      data.random_index, data.revealed, data.like_count);
+      data.random_index, data.reveal_count ?? 0, data.like_count ?? 0);
   },
 };
 

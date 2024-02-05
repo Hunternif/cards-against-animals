@@ -20,7 +20,7 @@ export function CardReadingScreen() {
   const [winner, setWinner] = useState<PlayerResponse | null>(null);
   const [startingNewTurn, setStartingNewTurn] = useState(false);
   const { setError } = useContext(ErrorContext);
-  const allRevealed = responses.every((r) => r.revealed) ?? false;
+  const allRevealed = responses.every((r) => r.reveal_count >= r.cards.length) ?? false;
   const noResponses = responses.length === 0;
   const shuffledResponses = responses.sort((r1, r2) => r1.random_index - r2.random_index);
   const isActivePlayer = player.role === "player";

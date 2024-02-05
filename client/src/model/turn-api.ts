@@ -6,7 +6,7 @@ import {
   collection, deleteDoc, doc,
   getCountFromServer,
   getDoc,
-  getDocs, limit, orderBy,
+  getDocs, increment, limit, orderBy,
   query, runTransaction, setDoc, updateDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -198,7 +198,7 @@ export async function submitPlayerResponse(
 ) {
   const rng = RNG.fromTimestamp();
   const response = new PlayerResponse(
-    player.uid, player.name, cards, rng.randomInt(), false, 0);
+    player.uid, player.name, cards, rng.randomInt(), 0, 0);
   await setDoc(
     doc(getPlayerResponsesRef(lobby.id, turn.id), player.uid), response);
 }
@@ -218,7 +218,7 @@ export async function revealPlayerResponse(
   lobby: GameLobby, turn: GameTurn, playerID: string,
 ) {
   const responseRef = doc(getPlayerResponsesRef(lobby.id, turn.id), playerID);
-  await updateDoc(responseRef, { revealed: true });
+  await updateDoc(responseRef, { reveal_count: increment(1) });
 }
 
 /** Fetches all responses in this turn. */
