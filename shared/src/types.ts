@@ -15,6 +15,8 @@ export class GameLobby {
   /** The last "turn" is the current state of the game board.
    * Must be fetched separately from a Firebase subcollection. */
   turns: Array<GameTurn> = [];
+  /** ID of the most recent turn. */
+  current_turn_id?: string;
 
   /** List of deck IDs selected for this lobby */
   deck_ids: Set<string> = new Set();

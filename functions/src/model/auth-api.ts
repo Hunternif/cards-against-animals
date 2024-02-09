@@ -48,7 +48,7 @@ export async function assertPlayerInLobby(
 export async function assertCurrentJudge(
   event: CallableRequest, lobby: GameLobby) {
   assertLoggedIn(event);
-  const lastTurn = await getLastTurn(lobby.id);
+  const lastTurn = await getLastTurn(lobby);
   if (!lastTurn) {
     assertLobbyCreator(event, lobby);
   } else {

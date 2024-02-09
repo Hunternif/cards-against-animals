@@ -159,7 +159,7 @@ export const newTurn = onCall<
     // if (lastTurn && lastTurn.phase != "complete") {
     //   throw new HttpsError("failed-precondition", "Last turn is not complete");
     // }
-    await createNewTurn(lobby.id);
+    await createNewTurn(lobby);
     logger.info(`Started new turn in lobby ${lobby.id}`);
   }
 );

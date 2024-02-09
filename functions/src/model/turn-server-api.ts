@@ -4,12 +4,12 @@ import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
 import { db } from "../firebase-server";
 import {
-  voteConverter,
   playerDataConverter,
   playerResponseConverter,
   promptCardInGameConverter,
   responseCardInGameConverter,
-  turnConverter
+  turnConverter,
+  voteConverter
 } from "../shared/firestore-converters";
 import {
   GameLobby,
@@ -25,10 +25,10 @@ import { logCardInteractions } from "./deck-server-api";
 import {
   findNextPlayer,
   getLobby,
-  getOnlinePlayers,
   getPlayer,
   getPlayerSequence,
   getPlayers,
+  updateLobby,
   updatePlayer
 } from "./lobby-server-api";
 
@@ -93,13 +93,9 @@ export async function getTurn(lobbyID: string, turnID: string):
 }
 
 /** Finds the last turn in the lobby. */
-export async function getLastTurn(lobbyID: string): Promise<GameTurn | null> {
-  const docs = (await getTurnsRef(lobbyID)
-    .orderBy("time_created", "desc")
-    .limit(1).get()
-  ).docs;
-  if (docs.length === 0) return null;
-  return docs[0].data();
+export async function getLastTurn(lobby: GameLobby): Promise<GameTurn | null> {
+  return lobby.current_turn_id ?
+    await getTurn(lobby.id, lobby.current_turn_id) : null;
 }
 
 /**
@@ -194,23 +190,25 @@ export async function getPromptVotes(
 /**
  * Creates a new turn without a prompt, and returns it.
  */
-export async function createNewTurn(lobbyID: string): Promise<GameTurn> {
-  const lastTurn = await getLastTurn(lobbyID);
+export async function createNewTurn(lobby: GameLobby): Promise<GameTurn> {
+  const lastTurn = await getLastTurn(lobby);
   // Allow players to start a new turn whenever:
   // if (lastTurn && lastTurn.phase != "complete") {
   //   throw new HttpsError("failed-precondition",
   //     `Last turn has not completed in lobby ${lobbyID}`);
   // }
-  const judge = await selectJudge(lobbyID, lastTurn);
+  const judge = await selectJudge(lobby.id, lastTurn);
   const newOrdinal = lastTurn ? (lastTurn.ordinal + 1) : 1;
-  const id = String(newOrdinal).padStart(2, '0');
+  const id = "turn_" + String(newOrdinal).padStart(2, '0');
   if (!judge) {
     throw new HttpsError(
-      "failed-precondition", `No more players in lobby ${lobbyID}`);
+      "failed-precondition", `No more players in lobby ${lobby.id}`);
   }
   const newTurn = new GameTurn(id, newOrdinal, judge.uid);
-  await getTurnsRef(lobbyID).doc(id).set(newTurn);
-  await dealCards(lobbyID, lastTurn, newTurn);
+  await getTurnsRef(lobby.id).doc(id).set(newTurn);
+  await dealCards(lobby, lastTurn, newTurn);
+  lobby.current_turn_id = newTurn.id;
+  await updateLobby(lobby);
   return newTurn; // timestamp may not have reloaded but that's ok.
 }
 
@@ -250,11 +248,10 @@ async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
 
 /** Deal cards to all players. */
 async function dealCards(
-  lobbyID: string, lastTurn: GameTurn | null, newTurn: GameTurn,
+  lobby: GameLobby, lastTurn: GameTurn | null, newTurn: GameTurn,
 ): Promise<void> {
-  const lobby = await getLobby(lobbyID);
   // Deal cards to: online players, players who left.
-  const players = (await getPlayers(lobbyID))
+  const players = (await getPlayers(lobby.id))
     .filter((p) => p.role === "player" && p.status !== "kicked");
   for (const player of players) {
     await dealCardsToPlayer(lobby, lastTurn, newTurn, player.uid);

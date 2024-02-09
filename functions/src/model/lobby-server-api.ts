@@ -154,7 +154,7 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
   // If the game has started, onboard the player:
   if (lobby.status == "in_progress") {
     // Deal cards to the new player:
-    const turn = await getLastTurn(lobby.id);
+    const turn = await getLastTurn(lobby);
     if (turn) {
       await dealCardsToPlayer(lobby, null, turn, userID);
     } else {
@@ -173,7 +173,7 @@ export async function startLobbyInternal(lobby: GameLobby) {
   await validateGameSettings(lobby);
   // Copy cards from all added decks into the lobby:
   await copyDecksToLobby(lobby);
-  await createNewTurn(lobby.id);
+  await createNewTurn(lobby);
   // Start the game:
   lobby.status = "in_progress";
   await updateLobby(lobby);
@@ -307,7 +307,7 @@ export async function cleanUpPlayer(lobbyID: string, player: PlayerInLobby) {
 
     if (lobby.status === "in_progress") {
       // If you're the current judge, reassign this role to the next user:
-      const lastTurn = await getLastTurn(lobbyID);
+      const lastTurn = await getLastTurn(lobby);
       if (lastTurn?.judge_uid === player.uid && lastTurn.phase !== "complete") {
         lastTurn.judge_uid = nextPlayer.uid;
         await updateTurn(lobbyID, lastTurn);

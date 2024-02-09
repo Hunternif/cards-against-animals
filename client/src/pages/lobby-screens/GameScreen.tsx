@@ -36,7 +36,7 @@ const gameContainerStyle: CSSProperties = {
 }
 
 export function GameScreen({ lobby, user, players }: ScreenProps) {
-  const [turn, loading, error] = useLastTurn(lobby.id);
+  const [turn, loading, error] = useLastTurn(lobby);
   const { setError } = useContext(ErrorContext);
   useEffect(() => { if (error) setError(error); }, [error, setError]);
   return (

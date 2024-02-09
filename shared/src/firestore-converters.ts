@@ -25,9 +25,10 @@ import { copyFields, copyFields2, removeUndefined } from "./utils";
 
 export const lobbyConverter: FConverter<GameLobby> = {
   toFirestore: (lobby: GameLobby) => {
-    return {
+    return removeUndefined({
       status: lobby.status,
       creator_uid: lobby.creator_uid,
+      current_turn_id: lobby.current_turn_id,
       time_created: lobby.time_created ?
         FTimestamp.fromDate(lobby.time_created) :
         fServerTimestamp(), // set new time when creating a new lobby
@@ -35,13 +36,14 @@ export const lobbyConverter: FConverter<GameLobby> = {
       settings: copyFields(lobby.settings),
       // the rest of the fields are subcollections, and they
       // should not be uploaded during creation.
-    };
+    });
   },
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const settings: LobbySettings = data.settings ?
       mapSettings(data.settings) : defaultLobbySettings();
     const ret = new GameLobby(snapshot.id, data.creator_uid, settings, data.status);
+    ret.current_turn_id = data.current_turn_id;
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     ret.deck_ids = new Set<string>(data.deck_ids || []);
     return ret;

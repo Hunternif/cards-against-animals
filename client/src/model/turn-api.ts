@@ -117,20 +117,6 @@ export async function getAllTurns(lobbyID: string): Promise<Array<GameTurn>> {
   return (await getDocs(getTurnsRef(lobbyID))).docs.map((d) => d.data());
 }
 
-/**
- * Finds the last turn in the lobby.
- * On the client side, it should alway be non-null.
- */
-export async function getLastTurn(lobbyID: string): Promise<GameTurn | null> {
-  const turns = (await getDocs(query(
-    getTurnsRef(lobbyID),
-    orderBy("time_created", "desc"),
-    limit(1)))
-  ).docs.map((d) => d.data());
-  if (turns.length === 0) return null;
-  return turns[0];
-}
-
 /** Get the played prompt for the current turn. */
 export async function getTurnPrompt(lobbyID: string, turn: GameTurn):
   Promise<PromptCardInGame | null> {
@@ -348,27 +334,15 @@ async function selectAudienceAwardWinners(lobbyID: string, turn: GameTurn) {
 
 
 type LastTurnHook = [
-  lastTurn: GameTurn | null,
+  lastTurn: GameTurn | undefined,
   loading: boolean,
   error: any,
 ]
 
 /** Returns and subscribes to the current turn in the lobby. */
-export function useLastTurn(lobbyID: string): LastTurnHook {
-  const [lastTurn, setLastTurn] = useState<GameTurn | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [turnsSnap] = useCollection(getTurnsRef(lobbyID));
-  useEffect(() => {
-    setLoading(true);
-    getLastTurn(lobbyID).then((turn) => {
-      setLastTurn(turn);
-      setLoading(false);
-    }).catch((e) => {
-      setError(e);
-      setLoading(false);
-    });
-  }, [lobbyID, turnsSnap]);
+export function useLastTurn(lobby: GameLobby): LastTurnHook {
+  const [lastTurn, loading, error] =
+    useDocumentData(doc(getTurnsRef(lobby.id), lobby.current_turn_id));
   return [lastTurn, loading, error];
 }
 
