@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { ConfirmModal } from "../../../components/ConfirmModal";
@@ -103,7 +103,7 @@ export function GameMenu() {
             <GamePlayerList />
           </Dropdown.Menu>
         </CustomDropdown>
-        <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
+        <TurnCounter />
       </div>
 
       <div className="menu-row-right">
@@ -168,4 +168,23 @@ function MenuItem({ label, onClick, locked }: MenuItemProps) {
       ) : label}
     </Dropdown.Item>
   );
+}
+
+/** Shows current turn number and total turns. */
+function TurnCounter() {
+  const { lobby, turn } = useGameContext();
+  let total: ReactNode = "";
+  switch (lobby.settings.play_until) {
+    case "forever":
+      total = " / ∞";
+      break;
+    case "max_turns":
+    case "max_turns_per_person":
+      total = ` / ${lobby.settings.max_turns}`;
+      break;
+    case "max_score":
+      total = <> – until {lobby.settings.max_score}<IconStarInline/></>;
+      break;
+  }
+  return <span className="menu-turn-ordinal">Turn {turn.ordinal}{total}</span>;
 }
