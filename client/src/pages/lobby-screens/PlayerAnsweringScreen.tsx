@@ -115,6 +115,11 @@ export function PlayerAnsweringScreen() {
     }
   }, [lobby.settings.discard_cost]);
 
+  // Clear selection if it's a new turn:
+  if (turn.phase !== "answering" && selectedCards.length > 0) {
+    setSelectedCards([]);
+  }
+
   return (
     <CenteredLayout innerStyle={containerStyle}
       outerClassName="player-answering-screen"
