@@ -1,55 +1,20 @@
-import { CSSProperties, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { endLobby, leaveLobby, updateLobbySettings } from "../../../model/lobby-api";
-import { LobbySettings } from "../../../shared/types";
-import { copyFields } from "../../../shared/utils";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { CustomDropdown } from "../../../components/CustomDropdown";
 import { ErrorContext } from "../../../components/ErrorContext";
-import { useGameContext } from "./GameContext";
-import { GamePlayerList } from "./GamePlayerList";
 import { IconCounter } from "../../../components/IconCounter";
 import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "../../../components/Icons";
-import { LobbySettingsPanel } from "../lobby-components/LobbySettingsPanel";
+import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Scoreboard } from "../../../components/Scoreboard";
 import { Twemoji } from "../../../components/Twemoji";
-import { PlayerAvatar } from "../../../components/PlayerAvatar";
-
-const rowStyle: CSSProperties = {
-  padding: "0.5rem",
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  gap: "0.5rem",
-  zIndex: 99,
-}
-
-const leftStyle: CSSProperties = {
-  flexGrow: 1,
-  flexShrink: 1,
-  flexBasis: "0%",
-  display: "flex",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  gap: "0.5em",
-};
-const midStyle: CSSProperties = {
-  flexGrow: 1,
-  flexShrink: 0,
-  flexBasis: "0%",
-  display: "flex",
-  justifyContent: "center",
-};
-const rightStyle: CSSProperties = {
-  flexGrow: 1,
-  flexShrink: 1,
-  flexBasis: "0%",
-  display: "flex",
-  gap: "0.5em",
-  justifyContent: "flex-end",
-  alignItems: "center",
-};
+import { endLobby, leaveLobby, updateLobbySettings } from "../../../model/lobby-api";
+import { LobbySettings } from "../../../shared/types";
+import { copyFields } from "../../../shared/utils";
+import { LobbySettingsPanel } from "../lobby-components/LobbySettingsPanel";
+import { useGameContext } from "./GameContext";
+import { GamePlayerList } from "./GamePlayerList";
 
 
 /** Menu header on top of the game page */
@@ -127,8 +92,8 @@ export function GameMenu() {
       <LobbySettingsPanel inGame settings={settings} onChange={refreshSettings} />
     </ConfirmModal>
 
-    <div style={rowStyle}>
-      <div style={leftStyle}>
+    <div className="menu-row">
+      <div className="menu-row-left">
         <CustomDropdown toggle={
           <InlineButton className="menu-player-counter" title="Players">
             <IconCounter icon={<IconPersonInlineSmall />} count={activePlayers.length} />
@@ -141,7 +106,7 @@ export function GameMenu() {
         <span className="menu-turn-ordinal">Turn {turn.ordinal}</span>
       </div>
 
-      <div style={rightStyle}>
+      <div className="menu-row-right">
         <CustomDropdown toggle={
           <InlineButton title="Scores" style={{ whiteSpace: "nowrap" }}>
             <IconCounter icon={<IconStarInline />} count={player.score} />

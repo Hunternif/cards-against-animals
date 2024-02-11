@@ -3,6 +3,35 @@
 /*=========================== Game Menu ===========================*/
 // Appears at the top of the page when the game is in progress.
 
+/*--------------------------- Menu rows ---------------------------*/
+.menu-row {
+  padding: 0.5em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+  z-index: 99;
+}
+.menu-row-section {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.menu-row-left {
+  @extend .menu-row-section;
+  justify-content: flex-start;
+  
+}
+.menu-row-right {
+  @extend .menu-row-section;
+  justify-content: flex-end;
+}
+
+
+/*-------------------------- Menu buttons -------------------------*/
 .menu-inline-button {
   padding-top: 0.2rem;
   padding-bottom: 0.3rem;
