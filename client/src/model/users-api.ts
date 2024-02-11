@@ -5,6 +5,7 @@ import { User, updateProfile } from "firebase/auth";
 import { getLobby, getPlayerInLobby, leaveLobby } from "./lobby-api";
 import { useDocumentData, useDocumentDataOnce } from "react-firebase-hooks/firestore";
 import { avatarMap } from "./avatars";
+import { userConverter } from "../shared/firestore-converters";
 
 /** Finds user data by ID */
 export async function getCAAUser(userID: string): Promise<CAAUser | null> {
@@ -43,7 +44,7 @@ export async function updateUserData(
   if (caaUser) {
     caaUser.name = name;
     caaUser.avatar_id = avatarID;
-    await setDoc(doc(usersRef, userID), caaUser);
+    await updateDoc(doc(usersRef, userID), userConverter.toFirestore(caaUser));
     return caaUser;
   } else {
     const newUser = new CAAUser(userID, null, name, avatarID);

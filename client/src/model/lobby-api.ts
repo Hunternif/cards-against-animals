@@ -6,7 +6,7 @@ import {
   getDocs,
   orderBy,
   query,
-  setDoc
+  updateDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
@@ -20,7 +20,7 @@ import {
   startLobbyFun,
   updateLobbySettingsFun
 } from "../firebase";
-import { playerConverter } from "../shared/firestore-converters";
+import { lobbyConverter, playerConverter } from "../shared/firestore-converters";
 import { GameLobby, GameTurn, LobbySettings, PlayerInLobby, PlayerStatus } from "../shared/types";
 
 function getPlayersRef(lobbyID: string) {
@@ -33,11 +33,13 @@ export async function getLobby(lobbyID: string): Promise<GameLobby | null> {
 }
 
 export async function updateLobby(lobby: GameLobby): Promise<void> {
-  await setDoc(doc(lobbiesRef, lobby.id), lobby);
+  await updateDoc(doc(lobbiesRef, lobby.id),
+    lobbyConverter.toFirestore(lobby));
 }
 
 export async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
-  await setDoc(doc(getPlayersRef(lobbyID), player.uid), player);
+  await updateDoc(doc(getPlayersRef(lobbyID), player.uid),
+    playerConverter.toFirestore(player));
 }
 
 export async function getAllPlayersInLobby(lobbyID: string):

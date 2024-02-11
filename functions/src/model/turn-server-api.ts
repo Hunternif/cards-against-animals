@@ -103,7 +103,8 @@ export async function getLastTurn(lobby: GameLobby): Promise<GameTurn | null> {
  * Does not update subcollections! (player_data, player_resposnes etc)
  */
 export async function updateTurn(lobbyID: string, turn: GameTurn): Promise<void> {
-  await getTurnsRef(lobbyID).doc(turn.id).set(turn);
+  await getTurnsRef(lobbyID).doc(turn.id)
+    .update(turnConverter.toFirestore(turn));
 }
 
 /** Counts how many turns have occurred in this lobby. */
@@ -170,7 +171,8 @@ export async function getAllPlayerResponses(lobbyID: string, turnID: string):
 export async function updatePlayerResponse(
   lobbyID: string, turnID: string, response: PlayerResponse,
 ) {
-  await getPlayerResponsesRef(lobbyID, turnID).doc(response.player_uid).set(response);
+  await getPlayerResponsesRef(lobbyID, turnID).doc(response.player_uid)
+    .update(playerResponseConverter.toFirestore(response));
 }
 
 /** How many likes this response has. */

@@ -99,7 +99,8 @@ export async function getResponseLikeCount(
 /** Updates Firestore document with this turn data.
  * Doesn't update subcollections! */
 async function updateTurn(lobbyID: string, turn: GameTurn): Promise<void> {
-  await setDoc(doc(getTurnsRef(lobbyID), turn.id), turn);
+  await updateDoc(doc(getTurnsRef(lobbyID), turn.id),
+    turnConverter.toFirestore(turn));
 }
 
 /** Updates Firestore document with this turn data.
@@ -107,7 +108,8 @@ async function updateTurn(lobbyID: string, turn: GameTurn): Promise<void> {
 async function updateHandCard(
   lobbyID: string, turnID: string, userID: string, card: ResponseCardInGame,
 ) {
-  await setDoc(doc(getPlayerHandRef(lobbyID, turnID, userID), card.id), card);
+  await updateDoc(doc(getPlayerHandRef(lobbyID, turnID, userID), card.id),
+    responseCardInGameConverter.toFirestore(card));
 }
 
 /** Fetches all turns that occurred in the lobby. */

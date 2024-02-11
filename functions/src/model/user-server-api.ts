@@ -2,6 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { usersRef } from "../firebase-server";
 import { CAAUser } from "../shared/types";
 import { getUserName } from "./auth-api";
+import { userConverter } from "../shared/firestore-converters";
 
 /** Finds user data by ID */
 export async function getCAAUser(userID: string): Promise<CAAUser | null> {
@@ -21,7 +22,7 @@ export async function getOrCreateCAAUser(userID: string): Promise<CAAUser> {
 }
 
 export async function updateCAAUser(caaUser: CAAUser): Promise<void> {
-  await usersRef.doc(caaUser.uid).set(caaUser);
+  await usersRef.doc(caaUser.uid).update(userConverter.toFirestore(caaUser));
 }
 
 /**

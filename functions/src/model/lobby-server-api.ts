@@ -3,6 +3,7 @@ import * as logger from "firebase-functions/logger";
 import { HttpsError } from "firebase-functions/v2/https";
 import { db, lobbiesRef, usersRef } from "../firebase-server";
 import {
+  lobbyConverter,
   playerConverter,
   promptCardInGameConverter,
   responseCardInGameConverter
@@ -76,12 +77,13 @@ export async function getLobby(lobbyID: string): Promise<GameLobby> {
  * Does not update subcollections! (players, turns, deck etc)
  */
 export async function updateLobby(lobby: GameLobby): Promise<void> {
-  await lobbiesRef.doc(lobby.id).set(lobby);
+  await lobbiesRef.doc(lobby.id).update(lobbyConverter.toFirestore(lobby));
 }
 
 /** Updates player data in lobby in Firestore. */
 export async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
-  await getPlayersRef(lobbyID).doc(player.uid).set(player);
+  await getPlayersRef(lobbyID).doc(player.uid)
+    .update(playerConverter.toFirestore(player));
 }
 
 /** Find player in this lobby. */
