@@ -1,7 +1,7 @@
 import { collection, doc, getCountFromServer, getDocs, runTransaction } from "firebase/firestore";
 import { db, decksRef } from "../firebase";
 import { deckTagConverter, promptDeckCardConverter, responseDeckCardConverter } from "../shared/firestore-converters";
-import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from "../shared/types";
+import { Deck, DeckTag, PromptCardInGame, PromptDeckCard, ResponseDeckCard } from "../shared/types";
 
 /** Returns Firestore subcollection reference of prompt cards in deck. */
 function getPromptsRef(deckID: string) {
@@ -220,3 +220,8 @@ export async function getPrompts(deckID: string): Promise<Array<PromptDeckCard>>
 export async function getResponses(deckID: string): Promise<Array<ResponseDeckCard>> {
   return (await getDocs(getResponsesRef(deckID))).docs.map((p) => p.data());
 }
+
+export const generatedDeck = new Deck("generated", "Generated cards");
+export const haikuPrompt = new PromptCardInGame(
+  "haiku", generatedDeck.id, "haiku", 0, "Make a haiku:\n_\n_\n_", 3, 0, [],
+);

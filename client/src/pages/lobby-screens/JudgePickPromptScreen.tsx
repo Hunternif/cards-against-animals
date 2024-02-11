@@ -9,6 +9,7 @@ import { discardPrompt, getPromptCount, pickNewPrompt, playPrompt } from "../../
 import { PromptCardInGame } from "../../shared/types";
 import { CardPrompt } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
+import { haikuPrompt } from "../../model/deck-api";
 
 
 export function JudgePickPromptScreen() {
@@ -19,6 +20,7 @@ export function JudgePickPromptScreen() {
   const [submitted, setSubmitted] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
+  const isHaiku = prompt === haikuPrompt;
 
   async function getInitialPrompt() {
     await (pickNewPrompt(lobby))
@@ -30,7 +32,9 @@ export function JudgePickPromptScreen() {
   }
 
   async function handleChange() {
-    if (prompt) {
+    if (isHaiku) {
+      await getInitialPrompt();
+    } else if (prompt) {
       // This is only called once per card, so we can safely log the impression
       // of the previous card, because we will never see it again:
       logInteraction(lobby.id, { viewed: [prompt], discarded: [prompt] });
@@ -42,7 +46,11 @@ export function JudgePickPromptScreen() {
   }
 
   async function handlePlayHaiku() {
-    //TODO
+    if (!isHaiku) {
+      setPrompt(haikuPrompt);
+    } else {
+      await getInitialPrompt();
+    }
   }
 
   async function handleSubmit() {
@@ -95,8 +103,8 @@ export function JudgePickPromptScreen() {
               {cardCount > 1 ? (<>
                 <GameButton secondary small onClick={handlePlayHaiku}
                   className="haiku-button" title="Play a haiku prompt with 3 phrases."
-                  iconRight={<span className="prompt-pick-number-light">3</span>}>
-                  Play Haiku
+                  iconRight={!isHaiku && <span className="prompt-pick-number-light">3</span>}>
+                  {!isHaiku ? "Play Haiku" : "Cancel haiku"}
                 </GameButton>
                 <GameButton secondary small onClick={handleChange}
                   title="Discard this prompt and get a new one.">
