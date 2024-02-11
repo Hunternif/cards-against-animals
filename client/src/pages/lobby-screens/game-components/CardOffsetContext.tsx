@@ -1,12 +1,12 @@
 import { createContext, useState } from "react";
 
 /**
- * Stores offsets calculated from all stacks of cards on the screen,
+ * Stores content height calculated from all stacks of cards on the screen,
  * to align them.
  */
 export interface CardOffsetState {
-  offsets: number[],
-  setOffsets: (newValue: number[]) => void,
+  heights: number[],
+  setHeights: (newValue: number[]) => void,
 }
 
 export const CardOffsetContext = createContext<CardOffsetState | undefined>(
@@ -18,12 +18,12 @@ export const CardOffsetContext = createContext<CardOffsetState | undefined>(
  * From https://stackoverflow.com/a/57435454/1093712
  */
 export function CardOffsetContextProvider(props: React.PropsWithChildren) {
-  function setOffsets(newValue: number[]) {
-    setState({ ...state, offsets: newValue });
+  function setHeights(newValue: number[]) {
+    setState({ ...state, heights: newValue });
   }
   const initState: CardOffsetState = {
-    offsets: [],
-    setOffsets,
+    heights: [],
+    setHeights,
   }
   const [state, setState] = useState(initState);
   return <CardOffsetContext.Provider value={state}>

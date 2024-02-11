@@ -120,7 +120,7 @@ function ManyCardsStack({
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(response.cards.map(() => 0));
-  const [offsets, setOffsets] = useState<Array<number>>(response.cards.map(() => 0));
+  const [offsets] = useState<Array<number>>(response.cards.map(() => 0));
   const [finishedMeasuring, setFinishedMeasuring] = useState(false);
   const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
   // If selected, the 1.05 scale is already applied to child cards:
@@ -141,23 +141,18 @@ function ManyCardsStack({
   /** Updates local offests based on measured heights. */
   function measureOffsets() {
     if (!finishedMeasuring) {
-      let totalOffset = 0;
-      offsets[0] = 0;
-      heights.forEach((height, i) => {
-        totalOffset += height;
-        offsets[i + 1] = totalOffset; // set offset for the next card
-      });
+      calculateOffsets(heights);
       if (shouldAlignGlobalOffsets && offsetContext) {
         // Increase offsets to match globals:
-        const maxOffsets = getMaxOffsets(offsets, offsetContext.offsets);
-        setOffsets(maxOffsets);
+        const maxHeights = getMaxItems(heights, offsetContext.heights);
+        calculateOffsets(maxHeights);
         // Update global offsets manually to communicate with other responses
         // during the same render:
-        maxOffsets.forEach((off, i) => {
-          offsetContext.offsets[i] = off;
+        maxHeights.forEach((val, i) => {
+          offsetContext.heights[i] = val;
         });
         // Trigger rerender in other responses:
-        offsetContext.setOffsets(maxOffsets);
+        offsetContext.setHeights(maxHeights);
       }
       // All measurement will complete during the first render,
       // so no need to do it again:
@@ -165,11 +160,21 @@ function ManyCardsStack({
     }
   }
 
+  /** Calculates offests from heights */
+  function calculateOffsets(heights: number[]) {
+    let totalOffset = 0;
+    offsets[0] = 0;
+    heights.forEach((height, i) => {
+      totalOffset += height;
+      offsets[i + 1] = totalOffset; // set offset for the next card
+    });
+  }
+
   // Whenever another card updates global offsets:
   useEffect(() => {
     if (shouldAlignGlobalOffsets && offsetContext) {
-      const maxOffsets = getMaxOffsets(offsets, offsetContext.offsets);
-      setOffsets(maxOffsets);
+      const maxHeights = getMaxItems(heights, offsetContext.heights);
+      calculateOffsets(maxHeights);
     }
   }, [offsetContext]); // only update when global offsets change
 
@@ -337,13 +342,13 @@ function LikeIcon({ response }: LikeProps) {
   return <IconHeart className="heart-icon" />;
 }
 
-/** Returns an array with the biggest of the 2 offsets. */
-function getMaxOffsets(localOffsets: number[], globalOffsets: number[]): number[] {
+/** Returns an array with the biggest of the 2 numbers. */
+function getMaxItems(localItems: number[], globalItems: number[]): number[] {
   const result = new Array<number>();
-  const length = Math.max(localOffsets.length, globalOffsets.length);
+  const length = Math.max(localItems.length, globalItems.length);
   for (let i = 0; i < length; i++) {
-    const maxOffset = Math.max(localOffsets[i] ?? 0, globalOffsets[i] ?? 0);
-    result[i] = maxOffset;
+    const maxItem = Math.max(localItems[i] ?? 0, globalItems[i] ?? 0);
+    result[i] = maxItem;
   }
   return result;
 }
