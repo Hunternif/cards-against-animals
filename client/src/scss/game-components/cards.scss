@@ -123,6 +123,14 @@
   background-color: colors.$card-prompt-text;
   color: #000;
   font-weight: bold;
+  box-sizing: content-box;
+}
+.prompt-pick-number-light {
+  @extend .prompt-pick-number;
+  color: rgba(colors.$text, 0.8);
+  border: 2px solid rgba(colors.$text, 0.6);;
+  background-color: transparent;
+  font-weight: 500;
 }
 .prompt-czar-name, .response-player-name {
   /* Appears below card */

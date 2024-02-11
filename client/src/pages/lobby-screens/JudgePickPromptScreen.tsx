@@ -41,6 +41,10 @@ export function JudgePickPromptScreen() {
     }
   }
 
+  async function handlePlayHaiku() {
+    //TODO
+  }
+
   async function handleSubmit() {
     if (prompt) {
       // "Played" interaction will be logged on the server.
@@ -89,7 +93,13 @@ export function JudgePickPromptScreen() {
             </div>
             <div className="column-right controls">
               {cardCount > 1 ? (<>
-                <GameButton secondary small onClick={handleChange}>
+                <GameButton secondary small onClick={handlePlayHaiku}
+                  className="haiku-button" title="Play a haiku prompt with 3 phrases."
+                  iconRight={<span className="prompt-pick-number-light">3</span>}>
+                  Play Haiku
+                </GameButton>
+                <GameButton secondary small onClick={handleChange}
+                  title="Discard this prompt and get a new one.">
                   Change
                 </GameButton>
                 <span className="extra-dim card-counter">

@@ -41,7 +41,7 @@ export function LobbyCreationReadOnly({ lobby }: Props) {
     </Container>
     <footer>
       <GameButton light className="start-button"
-        onClick={handleInvite} icon={<IconLink />}>
+        onClick={handleInvite} iconLeft={<IconLink />}>
         Invite
         {showLink && <Timed onClear={() => setShowLink(false)}>
           <span className="light link-copied-popup">Link copied</span>
