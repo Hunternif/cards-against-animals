@@ -4,6 +4,7 @@ import bird_003 from "../assets/avatars/bird_003.jpg"
 import bird_004 from "../assets/avatars/bird_004.jpg"
 import bird_005 from "../assets/avatars/bird_005.jpg"
 import bird_006 from "../assets/avatars/bird_006.jpg"
+import bird_007 from "../assets/avatars/bird_007.jpg"
 import cat_001 from "../assets/avatars/cat_001.jpg"
 import cat_002 from "../assets/avatars/cat_002.jpg"
 import cat_003 from "../assets/avatars/cat_003.jpg"
@@ -24,6 +25,8 @@ import cat_017 from "../assets/avatars/cat_017.jpg"
 import cat_018 from "../assets/avatars/cat_018.jpg"
 import cat_019 from "../assets/avatars/cat_019.jpg"
 import cat_020 from "../assets/avatars/cat_020.jpg"
+import cat_021 from "../assets/avatars/cat_021.jpg"
+import cat_022 from "../assets/avatars/cat_022.jpg"
 import deer_001 from "../assets/avatars/deer_001.jpg"
 import deer_002 from "../assets/avatars/deer_002.jpg"
 import deer_003 from "../assets/avatars/deer_003.jpg"
@@ -41,7 +44,11 @@ import fox_001 from "../assets/avatars/fox_001.jpg"
 import fox_002 from "../assets/avatars/fox_002.jpg"
 import fox_003 from "../assets/avatars/fox_003.jpg"
 import fox_004 from "../assets/avatars/fox_004.jpg"
+import fox_005 from "../assets/avatars/fox_005.jpg"
 import goat_001 from "../assets/avatars/goat_001.jpg"
+import goat_002 from "../assets/avatars/goat_002.jpg"
+import goat_003 from "../assets/avatars/goat_003.jpg"
+import goat_004 from "../assets/avatars/goat_004.jpg"
 import hamster_001 from "../assets/avatars/hamster_001.jpg"
 import hamster_002 from "../assets/avatars/hamster_002.jpg"
 import horse_001 from "../assets/avatars/horse_001.jpg"
@@ -59,6 +66,7 @@ import otter_001 from "../assets/avatars/otter_001.jpg"
 import otter_002 from "../assets/avatars/otter_002.jpg"
 import panda_001 from "../assets/avatars/panda_001.jpg"
 import panda_002 from "../assets/avatars/panda_002.jpg"
+import panda_003 from "../assets/avatars/panda_003.jpg"
 import snake_001 from "../assets/avatars/snake_001.jpg"
 import turtle_001 from "../assets/avatars/turtle_001.jpg"
 import zebra_001 from "../assets/avatars/zebra_001.jpg"
@@ -86,6 +94,7 @@ export const avatars = [
   new Avatar("bird_004", bird_004, ["bird"]),
   new Avatar("bird_005", bird_005, ["bird"]),
   new Avatar("bird_006", bird_006, ["bird"]),
+  new Avatar("bird_007", bird_007, ["bird"]),
   new Avatar("cat_001", cat_001, ["cat"]),
   new Avatar("cat_002", cat_002, ["cat"]),
   new Avatar("cat_003", cat_003, ["cat"]),
@@ -106,6 +115,8 @@ export const avatars = [
   new Avatar("cat_018", cat_018, ["cat"]),
   new Avatar("cat_019", cat_019, ["cat"]),
   new Avatar("cat_020", cat_020, ["cat"]),
+  new Avatar("cat_021", cat_021, ["cat"]),
+  new Avatar("cat_022", cat_022, ["cat"]),
   new Avatar("deer_001", deer_001, ["deer"]),
   new Avatar("deer_002", deer_002, ["deer"]),
   new Avatar("deer_003", deer_003, ["deer"]),
@@ -123,7 +134,11 @@ export const avatars = [
   new Avatar("fox_002", fox_002, ["fox"]),
   new Avatar("fox_003", fox_003, ["fox"]),
   new Avatar("fox_004", fox_004, ["fox"]),
+  new Avatar("fox_005", fox_005, ["fox"]),
   new Avatar("goat_001", goat_001, ["goat"]),
+  new Avatar("goat_002", goat_002, ["goat"]),
+  new Avatar("goat_003", goat_003, ["goat"]),
+  new Avatar("goat_004", goat_004, ["goat"]),
   new Avatar("hamster_001", hamster_001, ["hamster"]),
   new Avatar("hamster_002", hamster_002, ["hamster"]),
   new Avatar("horse_001", horse_001, ["horse"]),
@@ -141,6 +156,7 @@ export const avatars = [
   new Avatar("otter_002", otter_002, ["otter"]),
   new Avatar("panda_001", panda_001, ["panda"]),
   new Avatar("panda_002", panda_002, ["panda"]),
+  new Avatar("panda_003", panda_003, ["panda"]),
   new Avatar("snake_001", snake_001, ["snake"]),
   new Avatar("turtle_001", turtle_001, ["turtle"]),
   new Avatar("zebra_001", zebra_001, ["zebra"]),
