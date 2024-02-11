@@ -97,7 +97,7 @@ function KnownPrompt({ card, canVote }: KnownPromptCardProps) {
 }
 
 /** Prompt that hasn't been chosen or hasn't loaded, shows a big "?". */
-function UnknownPrompt() {
+export function UnknownPrompt() {
   return (
     <LargeCard className="card-prompt">
       <CardCenterIcon className="prompt-unknown-icon">

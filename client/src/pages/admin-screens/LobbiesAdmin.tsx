@@ -75,7 +75,7 @@ interface PlayerProps {
   responses?: PlayerResponse[],
 }
 function PlayerInTurnData({ lobby, turn, data, responses }: PlayerProps) {
-  const [hand] = usePlayerHandOnce(lobby, turn, data.player_uid);
+  const [hand] = usePlayerHandOnce(lobby, turn.id, data.player_uid);
   const played = responses?.find((r) => r.player_uid === data.player_uid)
     ?.cards?.map((card) => card.content).join(', ') ?? null;
   const isJudge = turn.judge_uid == data.player_uid;

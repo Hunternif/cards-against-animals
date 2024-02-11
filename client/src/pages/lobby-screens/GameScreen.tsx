@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { CSSProperties, useContext, useEffect } from "react";
+import { CSSProperties, useContext, useEffect, useState } from "react";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { FillLayout } from "../../components/layout/FillLayout";
@@ -13,7 +13,8 @@ import {
 import {
   GameLobby,
   GameTurn,
-  PlayerInLobby
+  PlayerInLobby,
+  ResponseCardInGame
 } from "../../shared/types";
 import { CardReadingScreen } from "./CardReadingScreen";
 import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
@@ -36,16 +37,29 @@ const gameContainerStyle: CSSProperties = {
 }
 
 export function GameScreen({ lobby, user, players }: ScreenProps) {
-  const [turn, loading, error] = useLastTurn(lobby);
+  const [turn, loadingTurn, error] = useLastTurn(lobby);
+  const [newHand, loadingHand, error2] =
+    usePlayerHand(lobby, lobby.current_turn_id ?? "turn_unknown", user.uid);
+
   const { setError } = useContext(ErrorContext);
-  useEffect(() => { if (error) setError(error); }, [error, setError]);
+  useEffect(() => {
+    if (error || error2) setError(error || error2);
+  }, [error, error2, setError]);
+
+  // Remember hand from the previous turn:
+  const [prevHand, setPrevHand] = useState<ResponseCardInGame[]>([]);
+  if (newHand && prevHand != newHand) {
+    setPrevHand(newHand);
+  }
+  const hand = newHand ?? prevHand;
+
   return (
     <FillLayout style={gameContainerStyle}
       className="game-screen miniscrollbar miniscrollbar-light">
-      {(!turn || loading) ? (
+      {(!turn) ? (
         <LoadingSpinner delay text="Waiting for next turn..." />
       ) : (
-        <TurnScreen turn={turn} lobby={lobby} user={user} players={players} />
+        <TurnScreen turn={turn} hand={hand} lobby={lobby} user={user} players={players} />
       )}
     </FillLayout>
   );
@@ -54,15 +68,16 @@ export function GameScreen({ lobby, user, players }: ScreenProps) {
 interface PreTurnProps {
   lobby: GameLobby,
   turn: GameTurn,
+  hand: ResponseCardInGame[],
   user: User,
   players: PlayerInLobby[],
 }
 
-function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
+function TurnScreen({ lobby, turn, hand, user, players }: PreTurnProps) {
   const [prompts, loadingPrompts, error] = useAllTurnPrompts(lobby, turn);
   const [responses, loadingResponses, error2] = useAllPlayerResponses(lobby, turn);
   const [playerDiscard, loadingDiscard, error3] = usePlayerDiscard(lobby, turn, user.uid);
-  const [hand, loadingHand, error4] = usePlayerHand(lobby, turn, user.uid);
+
   const judge = players.find((p) => p.uid === turn.judge_uid);
   const player = players.find((p) => p.uid === user.uid);
   const isJudge = judge?.uid === user.uid;
@@ -77,20 +92,22 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
 
   const { setError } = useContext(ErrorContext);
   useEffect(() => {
-    if (error || error2 || error3 || error4)
-      setError(error || error2 || error3 || error4);
-  }, [error, error2, error3, error4, setError]);
+    if (error || error2 || error3)
+      setError(error || error2 || error3);
+  }, [error, error2, error3, setError]);
 
-  if (!responses || loadingResponses ||
-    !playerDiscard || loadingDiscard ||
-    !prompts || loadingPrompts ||
-    !hand || loadingHand || !player || !judge) {
-    return <LoadingSpinner delay text="Loading turn data..." />;
+  if (!player) {
+    setError("Current player is not in lobby");
+    return <></>;
+  }
+  if (!judge) {
+    setError("No judge");
+    return <></>;
   }
 
   const gameState: GameContextState = {
     user, lobby, players, activePlayers, player, isSpectator, isJudge, isCreator,
-    turn, hand, prompt: prompts?.at(0), judge, responses, playerDiscard,
+    turn, hand, prompt: prompts.at(0), judge, responses, playerDiscard,
     canControlLobby,
   };
 
@@ -134,4 +151,13 @@ function SpectatorScreen({ turn }: TurnProps) {
     case "reading": return <CardReadingScreen />;
     case "complete": return <WinnerScreen />;
   }
+}
+
+/** Compares 2 hands by card ids */
+function isHandEqual(hand1: ResponseCardInGame[], hand2: ResponseCardInGame[]): boolean {
+  if (hand1.length !== hand2.length) return false;
+  for (let i = 0; i < hand1.length; i++) {
+    if (hand1[i].id !== hand2[i].id) return false;
+  }
+  return true;
 }

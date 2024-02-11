@@ -1,21 +1,19 @@
 // Client APIs for game turns, when the game is in progress.
 
 import {
-  FirestoreError,
-  QuerySnapshot,
   collection, deleteDoc, doc,
   getCountFromServer,
   getDoc,
   getDocs, increment, limit, orderBy,
   query, runTransaction, setDoc, updateDoc
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-  useCollection,
   useCollectionData,
   useCollectionDataOnce,
   useDocumentData
 } from "react-firebase-hooks/firestore";
+import { FirestoreCollectionDataHookNullSafe, useCollectionDataNonNull } from "../components/utils";
 import { db, lobbiesRef, newTurnFun } from "../firebase";
 import {
   playerDataConverter,
@@ -341,17 +339,17 @@ type LastTurnHook = [
 
 /** Returns and subscribes to the current turn in the lobby. */
 export function useLastTurn(lobby: GameLobby): LastTurnHook {
+  // While the new turn is loading, return the previous turn:
+  const [prevTurn, setPrevTurn] = useState<GameTurn | undefined>(undefined);
   const [lastTurn, loading, error] =
     useDocumentData(doc(getTurnsRef(lobby.id), lobby.current_turn_id));
-  return [lastTurn, loading, error];
+  if (lastTurn && prevTurn != lastTurn) {
+    setPrevTurn(lastTurn);
+  }
+  return [lastTurn || prevTurn, loading, error];
 }
 
-type FirestoreCollectionDataHook<T> = [
-  value: T[] | undefined,
-  loading: boolean,
-  error?: FirestoreError,
-  snapshot?: QuerySnapshot<T>,
-];
+
 
 /** Returns and subscribes to all turns in the lobby. */
 export function useAllTurns(lobby: GameLobby) {
@@ -376,7 +374,7 @@ export function usePlayerData(lobby: GameLobby, turn: GameTurn, userID: string) 
 /** Returns and subscribes to all users's player data in the current turn
  * in the lobby. */
 export function useAllPlayerData(lobby: GameLobby, turn: GameTurn) {
-  return useCollectionData(
+  return useCollectionDataNonNull(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data")
       .withConverter(playerDataConverter));
 }
@@ -390,16 +388,16 @@ export function useAllPlayerDataOnce(lobby: GameLobby, turn: GameTurn) {
 
 /** Returns and subscribes to current user's player hand in the current turn
  * in the lobby. */
-export function usePlayerHand(lobby: GameLobby, turn: GameTurn, userID: string) {
+export function usePlayerHand(lobby: GameLobby, turnID: string, userID: string) {
   return useCollectionData(
-    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID, "hand")
+    collection(lobbiesRef, lobby.id, "turns", turnID, "player_data", userID, "hand")
       .withConverter(responseCardInGameConverter));
 }
 
 /** Returns to current user's player hand in the current turn in the lobby. */
-export function usePlayerHandOnce(lobby: GameLobby, turn: GameTurn, userID: string) {
+export function usePlayerHandOnce(lobby: GameLobby, turnID: string, userID: string) {
   return useCollectionDataOnce(
-    collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID, "hand")
+    collection(lobbiesRef, lobby.id, "turns", turnID, "player_data", userID, "hand")
       .withConverter(responseCardInGameConverter));
 }
 
@@ -414,7 +412,7 @@ export function usePlayerResponse(lobby: GameLobby, turn: GameTurn, userID: stri
 /** Returns and subscribes to all players responses that they played
  * in the current turn in the lobby. */
 export function useAllPlayerResponses(lobby: GameLobby, turn: GameTurn) {
-  return useCollectionData(
+  return useCollectionDataNonNull(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses")
       .withConverter(playerResponseConverter));
 }
@@ -430,7 +428,7 @@ export function useAllPlayerResponsesOnce(lobby: GameLobby, turn: GameTurn) {
 /** Returns and subscribes to current user's player discarded cards
  * in the current turn in the lobby. */
 export function usePlayerDiscard(lobby: GameLobby, turn: GameTurn, userID: string) {
-  return useCollectionData(
+  return useCollectionDataNonNull(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_data", userID, "discarded")
       .withConverter(responseCardInGameConverter));
 }
@@ -438,26 +436,26 @@ export function usePlayerDiscard(lobby: GameLobby, turn: GameTurn, userID: strin
 /** Returns and subscribes to the likes on the given player's response
  * in the current turn in the lobby. */
 export function useResponseLikes(lobby: GameLobby, turn: GameTurn, response: PlayerResponse) {
-  return useCollectionData(
+  return useCollectionDataNonNull(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "player_responses", response.player_uid, "likes")
       .withConverter(voteConverter));
 }
 
 /** Returns and subscribes to the prompt in the current turn in the lobby. */
 export function useAllTurnPrompts(lobby: GameLobby, turn: GameTurn):
-  FirestoreCollectionDataHook<PromptCardInGame> {
-  const promptsHook = useCollectionData(
+  FirestoreCollectionDataHookNullSafe<PromptCardInGame> {
+  const promptsHook = useCollectionDataNonNull(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "prompts")
       .withConverter(promptCardInGameConverter));
   // Check legacy prompt:
-  if (turn.legacy_prompt) return [[turn.legacy_prompt], false];
+  if (turn.legacy_prompt) return [[turn.legacy_prompt], false, undefined];
   else return promptsHook;
 }
 
 /** Returns and subscribes to the votes on the given prompt card
  * in the current turn in the lobby. */
 export function usePromptVotes(lobby: GameLobby, turn: GameTurn, prompt: PromptCardInGame) {
-  return useCollectionData(
+  return useCollectionDataNonNull(
     collection(lobbiesRef, lobby.id, "turns", turn.id, "prompts", prompt.id, "votes")
       .withConverter(voteConverter));
 }

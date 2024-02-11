@@ -1,4 +1,6 @@
+import { FirestoreError, Query, QuerySnapshot } from "firebase/firestore";
 import { EffectCallback, useEffect } from "react";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import { logInteractionFun } from "../firebase";
 import { CardInGame, PromptCardInGame, ResponseCardInGame } from "../shared/types";
 
@@ -50,4 +52,24 @@ export async function logInteraction(lobbyID: string,
     data.won_responses.push(card);
   }
   await logInteractionFun(data);
+}
+
+export type FirestoreCollectionDataHook<T> = [
+  value: T[] | undefined,
+  loading: boolean,
+  error?: FirestoreError,
+  snapshot?: QuerySnapshot<T>,
+];
+export type FirestoreCollectionDataHookNullSafe<T> = [
+  value: T[],
+  loading: boolean,
+  error?: FirestoreError,
+  snapshot?: QuerySnapshot<T>,
+];
+
+/** Same as Firestore useCollectionData, but the returned collection is non-null. */
+export function useCollectionDataNonNull<T>(query?: Query<T>):
+  FirestoreCollectionDataHookNullSafe<T> {
+  const [data, loading, error, snapshot] = useCollectionData(query);
+  return [data || [], loading, error, snapshot];
 }
