@@ -55,3 +55,12 @@
     height: 3em; // prevent layout shift when content is added
   }
 }
+
+
+/*----------------------- Aligns in the center with 2 sides ------------------------*/
+.layout-side-column {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  display: flex;
+}

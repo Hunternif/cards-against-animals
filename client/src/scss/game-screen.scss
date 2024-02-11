@@ -35,12 +35,24 @@
 .pick-prompt-screen {
   section {
     align-items: center;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 10em 1fr;
+    grid-column-gap: 2em;
+    // Extra buttons on the side
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
   }
   footer {
     flex-direction: column;
     justify-content: flex-start;
     width: 10em;
-    align-items: stretch;
+    .play-button {
+      width: 10em;
+    }
   }
 }
 

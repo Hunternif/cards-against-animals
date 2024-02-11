@@ -26,23 +26,14 @@ const containerStyle: CSSProperties = {
   gap: "1em",
 };
 const leftStyle: CSSProperties = {
-  flexGrow: 1,
-  flexShrink: 1,
-  flexBasis: "0%",
   display: "flex",
   justifyContent: "flex-start",
 };
 const midStyle: CSSProperties = {
-  flexGrow: 1,
-  flexShrink: 0,
-  flexBasis: "0%",
   display: "flex",
   justifyContent: "center",
 };
 const rightStyle: CSSProperties = {
-  flexGrow: 1,
-  flexShrink: 1,
-  flexBasis: "0%",
   display: "flex",
   gap: "0.75em",
   justifyContent: "flex-end",
@@ -86,8 +77,8 @@ export function GameControlRow({
 
   return (
     <div style={containerStyle}>
-      <div style={leftStyle}></div>
-      <div style={midStyle}>
+      <div className="layout-side-column" style={leftStyle}></div>
+      <div className="layout-side-column" style={midStyle}>
         <span className="light" style={discardInfoStyle}>
           {discarding ? (
             isDiscardFree ?
@@ -100,7 +91,7 @@ export function GameControlRow({
           )}
         </span>
       </div>
-      <div style={rightStyle}>
+      <div className="layout-side-column" style={rightStyle}>
         {canDiscard && <>
           {discarding ? (
             <span className="light" style={discardCountSmallStyle}>

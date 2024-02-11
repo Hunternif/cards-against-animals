@@ -4,6 +4,19 @@
 // This contains all (or most) changes that happen on small mobile screens.
 
 @media (max-width: 25rem) {
+  .pick-prompt-screen {
+    section {
+      display: flex;
+      flex-direction: column;
+      .controls {
+        margin-bottom: 1em;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
   .player-answering-container {
     gap: 0;
   }

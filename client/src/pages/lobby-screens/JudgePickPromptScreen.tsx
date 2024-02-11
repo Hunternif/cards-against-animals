@@ -11,19 +11,6 @@ import { CardPrompt } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 
 
-/** Aligned to the right of the centered card */
-const sideSectionStyle: CSSProperties = {
-  position: "absolute",
-  marginLeft: "2rem",
-  left: "100%",
-}
-
-/** Aligned below the "Change" button */
-const countStyle: CSSProperties = {
-  position: "absolute",
-  top: "3.5rem",
-}
-
 export function JudgePickPromptScreen() {
   const { lobby, turn } = useGameContext();
   const [prompt, setPrompt] = useState<PromptCardInGame | null>(null);
@@ -96,13 +83,16 @@ export function JudgePickPromptScreen() {
       ) : <>
         {prompt ? (
           <>
-            <CardPrompt card={prompt} />
-            <div style={sideSectionStyle}>
+            <div className="column-left" />
+            <div className="column-center">
+              <CardPrompt card={prompt} />
+            </div>
+            <div className="column-right controls">
               {cardCount > 1 ? (<>
                 <GameButton secondary small onClick={handleChange}>
                   Change
                 </GameButton>
-                <span style={countStyle} className="extra-dim">
+                <span className="extra-dim card-counter">
                   {cardCount} cards left
                 </span>
               </>) : (
@@ -122,7 +112,7 @@ export function JudgePickPromptScreen() {
     </section>
     <footer>
       {prompt ? (
-        <GameButton accent onClick={handleSubmit}
+        <GameButton accent onClick={handleSubmit} className="play-button"
           disabled={!prompt || submitted || ending}>Play</GameButton>
       ) : (
         <>
