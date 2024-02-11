@@ -244,9 +244,12 @@ export const onTurnPhaseChange = onDocumentUpdated(
         await updatePlayerScoresFromTurn(lobbyID, turnAfter, responses);
         await logInteractionsInCompletePhase(lobbyID, turnAfter, responses);
       }
-      // Update timestamp
-      turnAfter.phase_start_time = new Date();
-      await updateTurn(lobbyID, turnAfter);
+      // Update phase timestamp
+      if (turnBefore.phase_start_time.getUTCMilliseconds() ===
+        turnAfter.phase_start_time.getUTCMilliseconds()) {
+        turnAfter.phase_start_time = new Date();
+        await updateTurn(lobbyID, turnAfter);
+      }
     }
   }
 );
