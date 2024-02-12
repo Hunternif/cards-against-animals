@@ -68,10 +68,7 @@ export function PlayerAnsweringScreen() {
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
-  // Refresh selection, e.g. when reloading the page:
-  if (response && selectedCards.length === 0) {
-    setSelectedCards(response.cards.slice());
-  }
+  //TODO: fix selection bugs: when page refreshes
 
   // Whenever a new response is added, play a sound:
   useSoundOnResponse();
