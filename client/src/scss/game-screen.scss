@@ -37,12 +37,18 @@
     align-items: center;
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 10em minmax(0, 1fr);
+    grid-template-columns: minmax(7em, 1fr) auto minmax(7em, 1fr);
     grid-column-gap: 2em;
     // Extra buttons on the side
     .controls {
       display: flex;
       flex-direction: column;
+      gap: 1em;
+    }
+    .prompts-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
       gap: 1em;
     }
   }

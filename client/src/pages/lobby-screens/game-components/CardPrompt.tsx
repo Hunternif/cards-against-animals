@@ -23,6 +23,9 @@ interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
   card: PromptCardInGame | undefined | null,
   canVote?: boolean,
+  canSelect?: boolean,
+  selected?: boolean,
+  onClick?: () => void,
 }
 
 /** Formats gaps to be longer. */
@@ -44,13 +47,17 @@ interface KnownPromptCardProps extends PromptCardProps {
 }
 
 /** Prompt that exists (has been chosen and loaded). */
-function KnownPrompt({ card, canVote }: KnownPromptCardProps) {
+function KnownPrompt({
+  card, canVote, canSelect, selected, onClick,
+}: KnownPromptCardProps) {
   const { lobby, turn, player } = useGameContext();
   const { setError } = useContext(ErrorContext);
   const [promptVotes] = usePromptVotes(lobby, turn, card);
   const currentVote = promptVotes?.find((v) => v.player_uid === player.uid);
   const voteClass = currentVote ?
     (currentVote.choice === "yes" ? "upvoted" : "downvoted") : "";
+  const canSelectClass = canSelect ? "hoverable-card" : "";
+  const selectedClass = selected ? "selected" : "unselected";
 
   async function vote(choice?: VoteChoice) {
     await votePrompt(lobby, turn, card, player, choice)
@@ -74,7 +81,8 @@ function KnownPrompt({ card, canVote }: KnownPromptCardProps) {
     }
   }
   return (
-    <LargeCard className={`card-prompt ${voteClass}`}>
+    <LargeCard className={`card-prompt ${voteClass} ${canSelectClass} ${selectedClass}`}
+      onClick={onClick}>
       <CardContent>{formatPrompt(card.content)}</CardContent>
       {(canVote || card.pick > 1) && (
         <CardBottom>

@@ -107,6 +107,10 @@
 .game-card.card-prompt {
   background-image: colors.$card-prompt-bg;
   color: colors.$card-prompt-text;
+  &.selected {
+    background-image: colors.$card-prompt-bg-selected;
+    box-shadow: 0px 0px 10px 0px rgba(colors.$control-border-focus, 0.2);
+  }
 }
 .prompt-unknown-icon {
   color: rgba(colors.$text, 0.4);

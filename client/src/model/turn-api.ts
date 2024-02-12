@@ -130,17 +130,22 @@ export async function getTurnPrompt(lobbyID: string, turn: GameTurn):
 
 /** Selects a new random prompt from the remaining deck.
  * If no more prompts in deck, returns null. */
-export async function pickNewPrompt(lobby: GameLobby): Promise<PromptCardInGame | null> {
+export async function pickNewPrompts(lobby: GameLobby): Promise<PromptCardInGame[]> {
+  // TODO: put prompt count in settings
   const prompts = (await getDocs(query(
-    getDeckPromptsRef(lobby.id), orderBy("random_index", "desc"), limit(1)))
+    getDeckPromptsRef(lobby.id), orderBy("random_index", "desc"), limit(3)))
   ).docs.map((d) => d.data());
-  if (prompts.length === 0) return null;
-  return prompts[0];
+  if (prompts.length === 0) return [];
+  return prompts;
 }
 
 /** Removes this prompt card from the deck without playing it. */
-export async function discardPrompt(lobby: GameLobby, card: PromptCardInGame) {
-  await deleteDoc(doc(getDeckPromptsRef(lobby.id), card.id));
+export async function discardPrompts(lobby: GameLobby, cards: PromptCardInGame[]) {
+  await runTransaction(db, async (transaction) => {
+    for (const card of cards) {
+      transaction.delete(doc(getDeckPromptsRef(lobby.id), card.id));
+    }
+  });
 }
 
 /** Sets the given card as the prompt of the turn.
@@ -150,7 +155,7 @@ export async function playPrompt(
   if (turn.phase !== "new") {
     throw new Error(`Invalid turn phase to play prompt: ${turn.phase}`);
   }
-  await discardPrompt(lobby, card);
+  await discardPrompts(lobby, [card]);
   await setDoc(doc(getTurnPromptsRef(lobby.id, turn.id), card.id), card);
   turn.phase = "answering";
   await updateTurn(lobby.id, turn);
