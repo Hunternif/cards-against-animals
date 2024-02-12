@@ -16,6 +16,7 @@ import { GameControlRow } from "./game-components/GameControlRow";
 import { GameHand } from "./game-components/GameHand";
 import { GameMiniResponses } from "./game-components/GameMiniResponses";
 import { ResponseCount } from "./game-components/ResponseCount";
+import { useSoundOnResponse } from "../../components/sounds";
 
 const containerStyle: CSSProperties = {
   display: "flex",
@@ -71,6 +72,9 @@ export function PlayerAnsweringScreen() {
   if (response && selectedCards.length === 0) {
     setSelectedCards(response.cards.slice());
   }
+
+  // Whenever a new response is added, play a sound:
+  useSoundOnResponse();
 
   /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {

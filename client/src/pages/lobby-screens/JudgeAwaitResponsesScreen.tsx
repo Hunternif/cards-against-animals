@@ -1,9 +1,10 @@
 import { useContext, useEffect } from "react";
-import bell_double from '../../assets/bell_double.mp3';
+import bell_double from '../../assets/sounds/bell_double.mp3';
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { GameLayout } from "../../components/layout/GameLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
+import { useSoundOnResponse } from "../../components/sounds";
 import { startReadingPhase } from "../../model/turn-api";
 import { PlayerInLobby, PlayerResponse } from "../../shared/types";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
@@ -20,6 +21,9 @@ export function JudgeAwaitResponsesScreen() {
   // const players = dummyPlayers;
   const { lobby, turn, activePlayers, isJudge, prompt, judge, responses } = useGameContext();
   const { setError } = useContext(ErrorContext);
+
+  // Whenever a new response is added, play a sound:
+  useSoundOnResponse();
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
     return responses.find((res) => res.player_uid === player.uid) ?? null;
