@@ -67,6 +67,11 @@ export function PlayerAnsweringScreen() {
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
+  // Refresh selection, e.g. when reloading the page:
+  if (response && selectedCards.length === 0) {
+    setSelectedCards(response.cards.slice());
+  }
+
   /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {
     setSelectedCards(cards);
