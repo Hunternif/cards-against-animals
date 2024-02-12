@@ -11,6 +11,8 @@ import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
+import { useEffectOnce } from "../../components/utils";
+import confetti from "canvas-confetti";
 
 
 /** Displays winner of the turn */
@@ -51,6 +53,10 @@ export function WinnerScreen() {
       setEnding(false);
     });
   }
+
+  useEffectOnce(() => {
+    confetti();
+  });
 
   return (
     // Add context to share offsets between responses
