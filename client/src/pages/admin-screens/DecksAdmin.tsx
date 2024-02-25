@@ -5,12 +5,12 @@ import { Accordion, AccordionItem } from "../../components/Accordion";
 import { decksRef } from "../../firebase";
 import { promptDeckCardConverter, responseDeckCardConverter } from "../../shared/firestore-converters";
 import { Deck } from "../../shared/types";
+import { AdminSubpage } from "./admin-components/AdminSubpage";
 
 export function DecksAdmin() {
   const [decks] = useCollection(decksRef);
 
-  return <div className="data-section">
-    <h2>Decks</h2>
+  return <AdminSubpage title="Decks">
     <Accordion>
       {decks && decks.docs.map((doc) => {
         const deck = doc.data();
@@ -22,7 +22,7 @@ export function DecksAdmin() {
         </AccordionItem>;
       })}
     </Accordion>
-  </div>;
+  </AdminSubpage>;
 }
 
 interface DeckProps {

@@ -1,0 +1,11 @@
+@use "colors.scss";
+
+.admin-subpage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .admin-header {
+    position: sticky;
+    top: 0;
+  }
+}

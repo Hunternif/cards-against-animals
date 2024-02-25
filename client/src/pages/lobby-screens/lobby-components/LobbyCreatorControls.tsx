@@ -1,10 +1,10 @@
-import { CSSProperties, useContext, useState } from "react";
-import { Container } from "react-bootstrap";
+import { useContext, useState } from "react";
 import { GameButton } from "../../../components/Buttons";
 import { Timed } from "../../../components/Delay";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { IconLink, IconPlay } from "../../../components/Icons";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { ScrollContainer } from "../../../components/layout/ScrollContainer";
 import { startLobby, updateLobby } from "../../../model/lobby-api";
 import { GameLobby } from "../../../shared/types";
 import { DeckSelector } from "./DeckSelector";
@@ -12,19 +12,6 @@ import { LobbySettingsPanel } from "./LobbySettingsPanel";
 
 interface Props {
   lobby: GameLobby,
-}
-
-const midStyle: CSSProperties = {
-  flexGrow: 1,
-  maxWidth: "50em",
-  padding: 0,
-  flex: "1 1 auto",
-  width: "100%",
-  minHeight: 0, // this prevents overflowing parent flexbox
-  display: "flex",
-  flexDirection: "column",
-  gap: "1em",
-  overflowY: "auto",
 }
 
 export function LobbyCreatorControls({ lobby }: Props) {
@@ -56,11 +43,10 @@ export function LobbyCreatorControls({ lobby }: Props) {
   if (starting) return <LoadingSpinner text="Starting..." delay />;
   return <>
     <header><h3>Select decks</h3></header>
-    <Container style={midStyle}
-      className="miniscrollbar miniscrollbar-auto miniscrollbar-light">
+    <ScrollContainer scrollLight className="content">
       <DeckSelector lobby={lobby} />
       <LobbySettingsPanel settings={lobby.settings} onChange={handleSettingsChange} />
-    </Container>
+    </ScrollContainer>
     <footer>
       <GameButton light className="start-button"
         onClick={handleInvite} iconLeft={<IconLink />}>

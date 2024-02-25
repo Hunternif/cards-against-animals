@@ -24,6 +24,7 @@
       height: 1em;
       width: 1em;
       margin-left: auto;
+      background-repeat: no-repeat;
     }
     &.open:after {
       background-image: var(--accordion-button-icon-up);
@@ -33,6 +34,8 @@
     }
     &.open {
       background-color: colors.$button-light-bg;
+      position: sticky;
+      top: 0;
     }
     &.closed:hover {
       background-color: rgba(colors.$button-light-bg, 0.3);

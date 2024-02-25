@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { parseDeckTsv, uploadDeck } from "../../model/deck-api";
+import { AdminSubpage } from "./admin-components/AdminSubpage";
 
 export function UploadDeckTsv() {
   const [isUploading, setUploading] = useState(false);
@@ -30,8 +31,7 @@ export function UploadDeckTsv() {
       setUploading(false);
     }
   }
-  return <>
-    <h2>Upload new deck from TSV</h2>
+  return <AdminSubpage title="Upload new deck from TSV">
     {info && <Alert variant="light">{info}</Alert>}
     {error && <Alert variant="danger">{error.message}</Alert>}
     <p className="light">This is a special format for uploading cards with tags.</p>
@@ -71,5 +71,5 @@ tag2    ...
         {isUploading ? "Submitting..." : "Submit"}
       </Button>
     </Form>
-  </>;
+  </AdminSubpage>;
 }

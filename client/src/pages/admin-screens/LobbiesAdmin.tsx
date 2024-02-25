@@ -5,6 +5,7 @@ import { lobbiesRef } from "../../firebase";
 import { usePlayers } from "../../model/lobby-api";
 import { useAllPlayerDataOnce, useAllPlayerResponsesOnce, useAllTurnPrompts, useAllTurnsOnce, usePlayerHandOnce } from "../../model/turn-api";
 import { GameLobby, GameTurn, PlayerDataInTurn, PlayerResponse } from "../../shared/types";
+import { AdminSubpage } from "./admin-components/AdminSubpage";
 
 interface LobbyProps {
   lobby: GameLobby;
@@ -90,12 +91,11 @@ function PlayerInTurnData({ lobby, turn, data, responses }: PlayerProps) {
 export function LobbiesAdmin() {
   const [lobbies] = useCollection(lobbiesRef);
 
-  return <div className="data-section">
-    <h2>Lobbies</h2>
+  return <AdminSubpage title="Lobbies">
     <Accordion>
       {lobbies && lobbies.docs.map((doc) =>
         <LobbyData lobby={doc.data()} key={doc.id} />
       )}
     </Accordion>
-  </div>;
+  </AdminSubpage>;
 }

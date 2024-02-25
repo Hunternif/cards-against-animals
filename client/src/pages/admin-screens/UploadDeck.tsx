@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { parseDeck, uploadDeck } from "../../model/deck-api";
+import { AdminSubpage } from "./admin-components/AdminSubpage";
 
 export function UploadDeck() {
   const [isUploading, setUploading] = useState(false);
@@ -30,8 +31,7 @@ export function UploadDeck() {
       setUploading(false);
     }
   }
-  return <>
-    <h2>Upload new deck</h2>
+  return <AdminSubpage title="Upload new deck">
     {info && <Alert variant="light">{info}</Alert>}
     {error && <Alert variant="danger">{error.message}</Alert>}
     <Form onSubmit={handleSubmit}>
@@ -69,5 +69,5 @@ Your mom
         {isUploading ? "Submitting..." : "Submit"}
       </Button>
     </Form>
-  </>;
+  </AdminSubpage>;
 }

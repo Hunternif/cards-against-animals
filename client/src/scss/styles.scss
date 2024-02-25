@@ -41,6 +41,7 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 @import "lobby-screen.scss";
 @import "game-screen.scss";
 @import "scoreboard-screen.scss";
+@import "admin-screen.scss";
 
 // Lobby-screen-specific components:
 @import "lobby-components/deck-selector.scss";

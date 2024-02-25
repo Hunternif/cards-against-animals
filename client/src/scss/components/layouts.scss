@@ -56,6 +56,18 @@
   }
 }
 
+/** Fits to the height of parent, without overflowing it. */
+.layout-scroll-container {
+  flex-grow: 1;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0; // this prevents overflowing parent flexbox
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 
 /*----------------------- Aligns in the center with 2 sides ------------------------*/
 .layout-side-column {
