@@ -1,0 +1,45 @@
+@use "../colors.scss";
+
+.accordion-container {
+  > .accordion-item.closed:last-child {
+    header {
+      border-bottom: none;
+    }
+  }
+}
+.accordion-item {
+  width: 100%;
+  header {
+    padding: 0.5em 1em;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    cursor: pointer;
+    height: 3rem;
+    border-bottom: 2px solid rgba(colors.$text, 0.25);
+    &:after {
+      --accordion-button-icon-down: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+      --accordion-button-icon-up: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 11 6 -6 6 6'/%3e%3c/svg%3e");
+      content: '';
+      height: 1em;
+      width: 1em;
+      margin-left: auto;
+    }
+    &.open:after {
+      background-image: var(--accordion-button-icon-up);
+    }
+    &.closed:after {
+      background-image: var(--accordion-button-icon-down);
+    }
+    &.open {
+      background-color: colors.$button-light-bg;
+    }
+    &.closed:hover {
+      background-color: rgba(colors.$button-light-bg, 0.3);
+    }
+  }
+  section {
+    padding: 0.5em 0;
+    border-bottom: 2px solid rgba(colors.$text, 0.25);
+  }
+}

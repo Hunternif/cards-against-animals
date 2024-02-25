@@ -1,5 +1,6 @@
-import { Accordion } from "react-bootstrap";
+
 import { useCollection } from "react-firebase-hooks/firestore";
+import { Accordion, AccordionItem } from "../../components/Accordion";
 import { lobbiesRef } from "../../firebase";
 import { usePlayers } from "../../model/lobby-api";
 import { useAllPlayerDataOnce, useAllPlayerResponsesOnce, useAllTurnPrompts, useAllTurnsOnce, usePlayerHandOnce } from "../../model/turn-api";
@@ -15,23 +16,19 @@ interface TurnProps {
 }
 
 function LobbyData({ lobby }: LobbyProps) {
-  return <Accordion.Item eventKey={lobby.id}>
-    <Accordion.Header>{lobby.id}</Accordion.Header>
-    <Accordion.Body>
-      <ul>
-        <div className="data-subsection">
-          <li>Creator: {lobby.creator_uid}</li>
-          <li>Created: {lobby.time_created ? new Date(lobby.time_created).toLocaleDateString() : '-'}</li>
-          <li>Status: {lobby.status}</li>
-        </div>
-        <PlayersData lobby={lobby} />
-      </ul>
-      <Accordion>
-        <Accordion.Header>Turns</Accordion.Header>
-        <Accordion.Body> <TurnsData lobby={lobby} /></Accordion.Body>
-      </Accordion>
-    </Accordion.Body>
-  </Accordion.Item>;
+  return <AccordionItem key={lobby.id} header={lobby.id}>
+    <ul>
+      <div className="data-subsection">
+        <li>Creator: {lobby.creator_uid}</li>
+        <li>Created: {lobby.time_created ? new Date(lobby.time_created).toLocaleDateString() : '-'}</li>
+        <li>Status: {lobby.status}</li>
+      </div>
+      <PlayersData lobby={lobby} />
+    </ul>
+    <AccordionItem header="Turns">
+      <TurnsData lobby={lobby} />
+    </AccordionItem>
+  </AccordionItem>;
 }
 
 function PlayersData({ lobby }: LobbyProps) {

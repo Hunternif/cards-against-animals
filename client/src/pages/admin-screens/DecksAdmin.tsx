@@ -1,10 +1,10 @@
 
-import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
-import { decksRef } from "../../firebase";
-import { Deck } from "../../shared/types";
 import { collection } from "firebase/firestore";
+import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
+import { Accordion, AccordionItem } from "../../components/Accordion";
+import { decksRef } from "../../firebase";
 import { promptDeckCardConverter, responseDeckCardConverter } from "../../shared/firestore-converters";
-import { Accordion } from "react-bootstrap";
+import { Deck } from "../../shared/types";
 
 export function DecksAdmin() {
   const [decks] = useCollection(decksRef);
@@ -14,15 +14,12 @@ export function DecksAdmin() {
     <Accordion>
       {decks && decks.docs.map((doc) => {
         const deck = doc.data();
-        return <Accordion.Item key={doc.id} eventKey={doc.id}>
-          <Accordion.Header>{deck.title}</Accordion.Header>
-          <Accordion.Body>
-            <ul>
-              <PromptsData deck={deck} />
-              <ResponseData deck={deck} />
-            </ul>
-          </Accordion.Body>
-        </Accordion.Item>
+        return <AccordionItem key={doc.id} header={deck.title}>
+          <ul>
+            <PromptsData deck={deck} />
+            <ResponseData deck={deck} />
+          </ul>
+        </AccordionItem>;
       })}
     </Accordion>
   </div>;
