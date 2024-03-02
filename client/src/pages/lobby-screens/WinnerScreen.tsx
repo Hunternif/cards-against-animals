@@ -1,3 +1,4 @@
+import confetti from "canvas-confetti";
 import { useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { Delay } from "../../components/Delay";
@@ -5,14 +6,13 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { IconHeartInline, IconStarInline } from "../../components/Icons";
 import { PlayerAvatar } from "../../components/PlayerAvatar";
 import { GameLayout } from "../../components/layout/GameLayout";
+import { useEffectOnce } from "../../components/utils";
 import { checkIfShouldEndGame, endLobby, updateLobbySettings } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
-import { useEffectOnce } from "../../components/utils";
-import confetti from "canvas-confetti";
 
 
 /** Displays winner of the turn */
@@ -40,7 +40,7 @@ export function WinnerScreen() {
 
   async function handleExtend() {
     setExtending(true);
-    lobby.settings.max_turns += players.length;
+    lobby.settings.max_turns += Math.min(5, players.length);
     await updateLobbySettings(lobby.id, lobby.settings)
       .catch((e) => setError(e));
     await handleNewTurn();
