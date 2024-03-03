@@ -223,6 +223,7 @@ export interface DeckCard {
   /** Analytics: how many times this card won a turn */
   wins: number;
   tags: string[];
+  type: CardType;
 }
 
 
@@ -245,6 +246,7 @@ export class PromptDeckCard implements DeckCard {
   ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
+  type: CardType = "prompt";
 }
 
 /** Response card in deck */
@@ -263,6 +265,7 @@ export class ResponseDeckCard implements DeckCard {
   ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
+  type: CardType = "response";
 }
 
 /**
@@ -282,6 +285,7 @@ export interface CardInGame {
   content: string;
   rating: number;
   tags: string[];
+  type: CardType;
 }
 
 /** An instance of a Prompt card in a game */
@@ -301,6 +305,7 @@ export class PromptCardInGame implements CardInGame {
   ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
+  type: CardType = "prompt";
 }
 
 /** An instance of a Response card in game */
@@ -322,6 +327,7 @@ export class ResponseCardInGame implements CardInGame {
   ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
+  type: CardType = "response";
 }
 
 export type PlayerRole = "player" | "spectator";
@@ -331,6 +337,8 @@ export type PlayerStatus = "online" | "left" | "kicked";
 export type TurnPhase = "new" | "answering" | "reading" | "complete";
 
 export type LobbyStatus = "new" | "in_progress" | "ended";
+
+export type CardType = "prompt" | "response";
 
 /**
  * User data stored in the database.
