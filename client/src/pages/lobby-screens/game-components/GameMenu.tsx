@@ -15,6 +15,7 @@ import { copyFields } from "../../../shared/utils";
 import { LobbySettingsPanel } from "../lobby-components/LobbySettingsPanel";
 import { useGameContext } from "./GameContext";
 import { GamePlayerList } from "./GamePlayerList";
+import { InlineButton } from "../../../components/Buttons";
 
 
 /** Menu header on top of the game page */
@@ -140,12 +141,6 @@ export function GameMenu() {
       </div>
     </div>
   </>;
-}
-
-function InlineButton(props: React.HTMLProps<HTMLSpanElement>) {
-  return <div className="menu-inline-button-block">
-    <span {...props} className={`menu-inline-button ${props.className ?? ""}`} />
-  </div>;
 }
 
 

@@ -31,3 +31,9 @@ export function GameButton(props: ButtonProps) {
     </span>}
   </button>;
 }
+
+export function InlineButton(props: React.HTMLProps<HTMLSpanElement>) {
+  return <div className="inline-button-block">
+    <span {...props} className={`inline-button ${props.className ?? ""}`} />
+  </div>;
+}
