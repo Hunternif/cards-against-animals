@@ -4,6 +4,7 @@ import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { useEffectOnce } from "../../../components/utils";
 import { loadDeck } from "../../../model/deck-api";
 import { Deck, DeckCard, PromptDeckCard } from "../../../shared/types";
+import { CardContent } from "../../lobby-screens/game-components/LargeCard";
 
 interface Props {
   deckID: string,
@@ -37,6 +38,7 @@ export function AdminDeck({ deckID }: Props) {
   });
   if (!deck) return <LoadingSpinner />;
 
+  // TODO: use react-virtualized to speed up rendering of a large table
   return <>
     <table className="admin-deck">
       <tbody>
@@ -71,7 +73,7 @@ function CardRow({ card, edited, onClick }: RowProps) {
     onClick={onClick}>
     <td className="col-card-id">{card.id}</td>
     <td className="col-card-content">
-      <span className="content">{card.content}</span>
+      <CardContent>{card.content}</CardContent>
       {isPrompt && <div className="prompt-pick-number">{card.pick}</div>}
     </td>
     <td className="col-card-tags">{card.tags.join(", ")}</td>

@@ -70,7 +70,7 @@
         // background-color: rgba(colors.$button-border-hover, 0.3);
         background-color: rgba(colors.$card-response-bg, 0.7);
       }
-      .col-card-content .content::after {
+      .col-card-content .card-content::after {
         content: '';
         display: inline-block;
         mask-image: url(../assets/icons/pencil.svg);
@@ -80,6 +80,11 @@
         width: 12px;
         height: 12px;
         margin-left: 0.25em;
+      }
+      .col-card-content .card-content.emoji-only::after {
+        width: 24px;
+        height: 24px;
+        margin: 6px;
       }
     }
   }

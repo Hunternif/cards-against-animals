@@ -15,51 +15,50 @@
   flex-direction: column;
   position: relative;
   flex-shrink: 0;
-
-  .card-content {
-    padding: 0 0.25em;
-    white-space: pre-line;
-    display: inline-block;
-    // Render large emoji:
+}
+.card-content {
+  padding: 0 0.25em;
+  white-space: pre-line;
+  display: inline-block;
+  // Render large emoji:
+  .emoji {
+    height: 18px;
+  }
+  &.emoji-only {
+    padding-top: 0.2em;
     .emoji {
-      height: 18px;
-    }
-    &.emoji-only {
-      padding-top: 0.2em;
-      .emoji {
-        /* Fits exactly 3 large emojis in a row: */
-        height: 44px;
-      }
+      /* Fits exactly 3 large emojis in a row: */
+      height: 44px;
     }
   }
-  .card-center-icon {
-    display: flex;
-    flex-wrap: wrap;
-    position: absolute;
-    top: 0;
-    left: 0;
-    align-content: center;
-    justify-content: center;
-    user-select: none;
-    pointer-events: none;
-  }
-  .card-bottom {
-    display: flex;
-    margin-top: auto;
-  }
-  .card-bottom-right, .card-bottom-left {
-    display: flex;
-    align-items: baseline;
-    flex-direction: row;
-    margin-top: auto;
-    flex-wrap: wrap;
-  }
-  .card-bottom-right {
-    margin-left: auto;
-  }
-  .card-bottom-left {
-    margin-right: auto;
-  }
+}
+.card-center-icon {
+  display: flex;
+  flex-wrap: wrap;
+  position: absolute;
+  top: 0;
+  left: 0;
+  align-content: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+}
+.card-bottom {
+  display: flex;
+  margin-top: auto;
+}
+.card-bottom-right, .card-bottom-left {
+  display: flex;
+  align-items: baseline;
+  flex-direction: row;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+.card-bottom-right {
+  margin-left: auto;
+}
+.card-bottom-left {
+  margin-right: auto;
 }
 
 
