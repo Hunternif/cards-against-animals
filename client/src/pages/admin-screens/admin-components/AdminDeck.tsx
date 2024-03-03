@@ -74,7 +74,7 @@ function CardRow({ card, edited, onClick }: RowProps) {
     onClick={onClick}>
     <td className="col-card-id">{card.id}</td>
     <td className="col-card-content">
-      <CardContent>{card.content}</CardContent>
+      <CardContent contentEditable={edited}>{card.content}</CardContent>
       {isPrompt && <div className="prompt-pick-number">{card.pick}</div>}
     </td>
     <td className="col-card-tags">{card.tags.join(", ")}</td>

@@ -1,3 +1,4 @@
+import { FormEvent, useState } from 'react';
 import twemoji from 'twemoji';
 import { copyFields } from '../shared/utils';
 
@@ -10,13 +11,22 @@ interface Props extends React.HTMLAttributes<HTMLSpanElement> { }
 export function Twemoji(props: Props) {
   const children = props.children?.toString() ?? "";
   const newProps = copyFields(props, ["children"]);
+  const [innerHtml, setInnerHtml] = useState(parseEmoji(children));
+
+  function parseEmoji(str: string): string {
+    return twemoji.parse(str ?? "", {
+      folder: "svg",
+      ext: ".svg",
+      className: "twemoji emoji",
+    });
+  }
+  // TODO: parse emoji while typing
+  function refreshHTML(event: FormEvent<HTMLSpanElement>) {
+    setInnerHtml(parseEmoji(event.currentTarget.innerText));
+  }
+
   return <span {...newProps}
-    dangerouslySetInnerHTML={{
-      __html: twemoji.parse(children ?? "", {
-        folder: "svg",
-        ext: ".svg",
-        className: "twemoji emoji",
-      })
-    }}
+    dangerouslySetInnerHTML={{ __html: innerHtml }}
+  // onInput={refreshHTML}
   />;
 }
