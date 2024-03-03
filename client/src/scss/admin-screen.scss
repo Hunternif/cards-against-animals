@@ -28,6 +28,7 @@
 .admin-deck {
   width: 100%;
   border-collapse: separate;
+  border-spacing: 0 2px;
   td {
     padding: 0 0.5em;
     font-size: 13px;
@@ -51,11 +52,39 @@
     }
   }
   .row-prompt .col-card-content {
-    background-color: colors.$card-prompt-bg-solid;
+    background-color: colors.$card-prompt-bg-dark;
     color: colors.$card-prompt-text;
   }
   .row-response .col-card-content {
     background-color: colors.$card-response-bg;
     color: colors.$card-response-text;
+  }
+  .card-row.editable {
+    cursor: pointer;
+    &:hover {
+      background-color: colors.$button-light-bg;
+      &.row-prompt .col-card-content {
+        background-color: rgba(colors.$card-prompt-bg-dark, 0.3);
+      }
+      &.row-response .col-card-content {
+        // background-color: rgba(colors.$button-border-hover, 0.3);
+        background-color: rgba(colors.$card-response-bg, 0.7);
+      }
+      .col-card-content .content::after {
+        content: '';
+        display: inline-block;
+        mask-image: url(../assets/icons/pencil.svg);
+        mask-repeat: no-repeat;
+        background-color: currentColor;
+        opacity: 0.5;
+        width: 12px;
+        height: 12px;
+        margin-left: 0.25em;
+      }
+    }
+  }
+  .card-row.edited {
+    background-color: colors.$accent;
+    color: colors.$button-accent-text;
   }
 }
