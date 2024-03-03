@@ -19,7 +19,8 @@ export function AdminDeck({ deckID }: Props) {
   const [editedCards, setEditedCards] = useState<DeckCard[]>([]);
 
   function isEdited(card: DeckCard): boolean {
-    return editedCards.findIndex((c) => c.id === card.id) > -1;
+    return editedCards.findIndex((c) =>
+      c.id === card.id && c.type === card.type) > -1;
   }
   function startEditCard(card: DeckCard) {
     if (!isEdited(card)) {
