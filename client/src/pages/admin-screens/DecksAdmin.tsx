@@ -11,7 +11,12 @@ export function DecksAdmin() {
   return <AdminSubpage title="Decks">
     <Accordion>
       {decks && decks.map((deck) => {
-        return <AccordionItem key={deck.id} header={deck.title}>
+        return <AccordionItem key={deck.id} header={
+          <div className="deck-header">
+            <span className="deck-title">{deck.title}</span>
+            <span className="deck-id">id: {deck.id}</span>
+          </div>
+        }>
           <AdminDeck deckID={deck.id} />
         </AccordionItem>;
       })}
