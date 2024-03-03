@@ -1,19 +1,18 @@
 
-import { useCollection } from "react-firebase-hooks/firestore";
+import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
 import { Accordion, AccordionItem } from "../../components/Accordion";
 import { decksRef } from "../../firebase";
 import { AdminDeck } from "./admin-components/AdminDeck";
 import { AdminSubpage } from "./admin-components/AdminSubpage";
 
 export function DecksAdmin() {
-  const [decks] = useCollection(decksRef);
+  const [decks] = useCollectionDataOnce(decksRef);
 
   return <AdminSubpage title="Decks">
     <Accordion>
-      {decks && decks.docs.map((doc) => {
-        const deck = doc.data();
-        return <AccordionItem key={doc.id} header={deck.title}>
-          <AdminDeck deck={deck} />
+      {decks && decks.map((deck) => {
+        return <AccordionItem key={deck.id} header={deck.title}>
+          <AdminDeck deckID={deck.id} />
         </AccordionItem>;
       })}
     </Accordion>

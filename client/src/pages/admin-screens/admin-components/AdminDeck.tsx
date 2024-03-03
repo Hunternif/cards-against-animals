@@ -1,27 +1,32 @@
-import { collection } from "firebase/firestore";
-import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
-import { decksRef } from "../../../firebase";
-import { promptDeckCardConverter, responseDeckCardConverter } from "../../../shared/firestore-converters";
+import { useContext, useState } from "react";
+import { ErrorContext } from "../../../components/ErrorContext";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { useEffectOnce } from "../../../components/utils";
+import { loadDeck } from "../../../model/deck-api";
 import { Deck } from "../../../shared/types";
 
 interface Props {
-  deck: Deck,
+  deckID: string,
 }
 
 /**
  * Renders all cards in the deck as a table.
  */
-export function AdminDeck({ deck }: Props) {
-  const [prompts] = useCollectionDataOnce(
-    collection(decksRef, deck.id, 'prompts')
-      .withConverter(promptDeckCardConverter));
-  const [responses] = useCollectionDataOnce(
-    collection(decksRef, deck.id, 'responses')
-      .withConverter(responseDeckCardConverter));
+export function AdminDeck({ deckID }: Props) {
+  const [deck, setDeck] = useState<Deck | null>(null);
+  const { setError } = useContext(ErrorContext);
+  useEffectOnce(() => {
+    if (!deck) {
+      loadDeck(deckID).then((val) => setDeck(val))
+        .catch((e) => setError(e));
+    }
+  });
+  if (!deck) return <LoadingSpinner />;
+
   return <>
     <table className="admin-deck">
       <tbody>
-        {prompts?.map((card) => (
+        {deck.prompts.map((card) => (
           <tr key={card.id} className="row-prompt">
             <td className="col-card-id">{card.id}</td>
             <td className="col-card-content">
@@ -31,7 +36,7 @@ export function AdminDeck({ deck }: Props) {
             <td className="col-card-tags">{card.tags.join(", ")}</td>
           </tr>
         ))}
-        {responses?.map((card) => (
+        {deck.responses.map((card) => (
           <tr key={card.id} className="row-response">
             <td className="col-card-id">{card.id}</td>
             <td className="col-card-content">{card.content}</td>

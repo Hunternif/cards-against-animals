@@ -1,4 +1,11 @@
-import { collection, doc, getCountFromServer, getDocs, runTransaction } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  runTransaction,
+} from "firebase/firestore";
 import { db, decksRef } from "../firebase";
 import { deckTagConverter, promptDeckCardConverter, responseDeckCardConverter } from "../shared/firestore-converters";
 import { Deck, DeckTag, PromptCardInGame, PromptDeckCard, ResponseDeckCard } from "../shared/types";
@@ -14,6 +21,35 @@ function getResponsesRef(deckID: string) {
   return collection(decksRef, deckID, 'responses')
     .withConverter(responseDeckCardConverter);
 }
+
+/**
+ * Keeps the contents of the loaded decks, so there's no need to re-load it.
+ * Maps deck ID to deck instance with its prompts and responses loaded.
+ */
+const deckCache: Map<string, Deck> = new Map<string, Deck>();
+
+/**
+ * Loads complete content of a deck, with prompts and responses, and stores it
+ * in cache. Calling this multiple times for the same deck ID should not trigger
+ * a network request.
+ * Throws exception if the deck doesn't exist.
+ */
+export async function loadDeck(deckID: string): Promise<Deck> {
+  const existingDeck = deckCache.get(deckID);
+  if (existingDeck) return existingDeck;
+  // Fetch deck from Firestore:
+  const deck = (await getDoc(doc(decksRef, deckID))).data();
+  if (!deck) throw new Error(`Deck "${deckID}" does not exist`);
+  const [proDocs, resDocs] = await Promise.all([
+    getDocs(getPromptsRef(deckID)),
+    getDocs(getResponsesRef(deckID))
+  ]);
+  deck.prompts = proDocs.docs.map((d) => d.data());
+  deck.responses = resDocs.docs.map((d) => d.data());
+  deckCache.set(deckID, deck);
+  return deck;
+}
+
 
 /**
  * Parses collection data. `promptList` and `responseList` are strings where
