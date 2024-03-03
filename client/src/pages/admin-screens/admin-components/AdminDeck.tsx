@@ -22,16 +22,18 @@ export function AdminDeck({ deck }: Props) {
     <table className="admin-deck">
       <tbody>
         {prompts?.map((card) => (
-          <tr key={card.id}>
-            <td className="col-id">{card.id}</td>
-            <td className="col-card-content">{card.content}</td>
-            <td className="col-card-pick">{card.pick}</td>
+          <tr key={card.id} className="row-prompt">
+            <td className="col-card-id">{card.id}</td>
+            <td className="col-card-content">
+              <span className="content">{card.content}</span>
+              <div className="prompt-pick-number">{card.pick}</div>
+            </td>
             <td className="col-card-tags">{card.tags.join(", ")}</td>
           </tr>
         ))}
         {responses?.map((card) => (
-          <tr key={card.id}>
-            <td className="col-id">{card.id}</td>
+          <tr key={card.id} className="row-response">
+            <td className="col-card-id">{card.id}</td>
             <td className="col-card-content">{card.content}</td>
             <td className="col-card-tags">{card.tags.join(", ")}</td>
           </tr>

@@ -12,4 +12,35 @@
 
 .admin-deck {
   width: 100%;
+  border-collapse: separate;
+  td {
+    padding: 0 0.5em;
+    font-size: 13px;
+  }
+  .col-card-id {
+    width: 1%;
+  }
+  .col-card-pick {
+    width: 1%;
+  }
+  .col-card-content {
+    padding: 0.1em 0.5em;
+    border-radius: 0.4em;
+    display: flex;
+    .prompt-pick-number {
+      align-self: flex-end;
+      margin-left: auto;
+      margin-bottom: 0.1em;
+      margin-right: -0.1em;
+      flex-shrink: 0;
+    }
+  }
+  .row-prompt .col-card-content {
+    background-color: colors.$card-prompt-bg-solid;
+    color: colors.$card-prompt-text;
+  }
+  .row-response .col-card-content {
+    background-color: colors.$card-response-bg;
+    color: colors.$card-response-text;
+  }
 }
