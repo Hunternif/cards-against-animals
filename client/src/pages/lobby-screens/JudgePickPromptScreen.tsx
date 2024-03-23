@@ -101,7 +101,7 @@ export function JudgePickPromptScreen() {
             <div className="column-left" />
             <div className="column-center prompts-container">
               {prompts.map((card) =>
-                <CardPrompt card={card}
+                <CardPrompt key={card.id} card={card}
                   canSelect={prompts.length > 1}
                   selected={prompts.length > 1 && selectedPrompt?.id === card.id}
                   onClick={() => setSelectedPrompt(card)} />
