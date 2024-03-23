@@ -61,7 +61,7 @@ export function WinnerScreen() {
 
   // Automatically proceed to next turn after timer:
   useEffect(() => {
-    if (shouldStartNewTurn) {
+    if (shouldStartNewTurn && !shouldEndNow) {
       handleNewTurn();
     }
   }, [shouldStartNewTurn]);
