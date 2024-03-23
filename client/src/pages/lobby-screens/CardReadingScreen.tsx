@@ -57,7 +57,7 @@ export function CardReadingScreen() {
 
   async function handleSkipTurn() {
     setStartingNewTurn(true);
-    await startNewTurn(lobby)
+    await startNewTurn(lobby, turn)
       .catch((e) => {
         setError(e);
         setStartingNewTurn(false);

@@ -145,9 +145,9 @@ export const kickPlayer = onCall<
   }
 );
 
-/** Begins new turn. */
+/** Begins new turn. Current turn id ensures idempotency. */
 export const newTurn = onCall<
-  { lobby_id: string }, Promise<void>
+  { lobby_id: string, current_turn_id: string }, Promise<void>
 >(
   { maxInstances: 2 },
   async (event) => {
@@ -159,8 +159,13 @@ export const newTurn = onCall<
     // if (lastTurn && lastTurn.phase != "complete") {
     //   throw new HttpsError("failed-precondition", "Last turn is not complete");
     // }
-    await createNewTurn(lobby);
-    logger.info(`Started new turn in lobby ${lobby.id}`);
+    // Ensure current turn is the same:
+    if (lobby.current_turn_id !== event.data.current_turn_id) {
+      logger.warn(`Attempt to start new turn at the wrong time in lobby ${lobby.id}`);
+    } else {
+      await createNewTurn(lobby);
+      logger.info(`Started new turn in lobby ${lobby.id}`);
+    }
   }
 );
 

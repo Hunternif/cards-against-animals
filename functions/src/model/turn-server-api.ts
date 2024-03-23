@@ -193,6 +193,7 @@ export async function getPromptVotes(
  * Creates a new turn without a prompt, and returns it.
  */
 export async function createNewTurn(lobby: GameLobby): Promise<GameTurn> {
+  // TODO: use transaction to ensure only one turn is created.
   const lastTurn = await getLastTurn(lobby);
   // Allow players to start a new turn whenever:
   // if (lastTurn && lastTurn.phase != "complete") {

@@ -170,9 +170,9 @@ export async function startReadingPhase(lobby: GameLobby, turn: GameTurn) {
   await updateTurn(lobby.id, turn);
 }
 
-/** Begins a new turn. */
-export async function startNewTurn(lobby: GameLobby) {
-  await newTurnFun({ lobby_id: lobby.id });
+/** Begins a new turn. Current turn value ensures idempotency. */
+export async function startNewTurn(lobby: GameLobby, currentTurn: GameTurn) {
+  await newTurnFun({ lobby_id: lobby.id, current_turn_id: currentTurn.id });
 }
 
 /** How many prompts remain in the deck */

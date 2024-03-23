@@ -54,7 +54,7 @@ export const kickPlayerFun = httpsCallable<
 >(functions, 'kickPlayer');
 
 export const newTurnFun = httpsCallable<
-    { lobby_id: string }, void
+    { lobby_id: string, current_turn_id: string }, void
 >(functions, 'newTurn');
 
 export const endLobbyFun = httpsCallable<

@@ -33,7 +33,7 @@ export function WinnerScreen() {
 
   async function handleNewTurn() {
     setStartingNewTurn(true);
-    await startNewTurn(lobby).catch((e) => {
+    await startNewTurn(lobby, turn).catch((e) => {
       setError(e);
       setStartingNewTurn(false);
     });
