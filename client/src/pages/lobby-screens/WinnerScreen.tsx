@@ -1,10 +1,11 @@
 import confetti from "canvas-confetti";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
-import { Delay, useDelay } from "../../components/Delay";
+import { Delay } from "../../components/Delay";
 import { ErrorContext } from "../../components/ErrorContext";
 import { IconHeartInline, IconStarInline } from "../../components/Icons";
 import { PlayerAvatar } from "../../components/PlayerAvatar";
+import { Timer } from "../../components/Timer";
 import { GameLayout } from "../../components/layout/GameLayout";
 import { useEffectOnce } from "../../components/utils";
 import { checkIfShouldEndGame, endLobby, updateLobbySettings } from "../../model/lobby-api";
@@ -29,7 +30,6 @@ export function WinnerScreen() {
   const audienceAwardResponses = responses
     .filter((r) => turn.audience_award_uids.includes(r.player_uid));
   const showAudienceAward = lobby.settings.enable_likes && audienceAwardResponses.length > 0;
-  const shouldStartNewTurn = useDelay(true, 4000);
 
   async function handleNewTurn() {
     setStartingNewTurn(true);
@@ -58,13 +58,6 @@ export function WinnerScreen() {
   useEffectOnce(() => {
     confetti();
   });
-
-  // Automatically proceed to next turn after timer:
-  useEffect(() => {
-    if (shouldStartNewTurn && !shouldEndNow) {
-      handleNewTurn();
-    }
-  }, [shouldStartNewTurn]);
 
   return (
     // Add context to share offsets between responses
@@ -122,7 +115,9 @@ export function WinnerScreen() {
               </>) : (
                 <GameButton accent onClick={handleNewTurn}
                   disabled={startingNewTurn}>
-                  Next turn
+                  {startingNewTurn ? "Next turn..." : <>
+                    Next turn in <b><Timer totalMs={4000} onClear={handleNewTurn} /></b>
+                  </>}
                 </GameButton>
               )}
             </Delay>

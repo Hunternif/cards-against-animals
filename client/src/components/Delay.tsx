@@ -43,7 +43,7 @@ export function useDelay<T>(
     timeout = setTimeout(() => {
       setShow(true);
       if (onClear) onClear();
-    }, delayMs)
+    }, delayMs);
     return reset;
   }, [delayMs, value, onClear]);
 
