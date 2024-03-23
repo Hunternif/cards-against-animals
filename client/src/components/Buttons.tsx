@@ -9,6 +9,8 @@ interface ButtonProps
   secondary?: boolean,
   light?: boolean,
   small?: boolean,
+  /** If non-null, button will show a loading animation for this duration. */
+  loadingMs?: number,
 }
 
 export function GameButton(props: ButtonProps) {

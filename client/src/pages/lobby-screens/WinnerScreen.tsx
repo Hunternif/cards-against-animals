@@ -62,7 +62,7 @@ export function WinnerScreen() {
   // Automatically proceed to next turn after timer:
   useEffect(() => {
     if (shouldStartNewTurn && !shouldEndNow) {
-      handleNewTurn();
+      // handleNewTurn();
     }
   }, [shouldStartNewTurn]);
 
@@ -121,7 +121,7 @@ export function WinnerScreen() {
                 </GameButton>
               </>) : (
                 <GameButton accent onClick={handleNewTurn}
-                  disabled={startingNewTurn}>
+                  disabled={startingNewTurn} className="timed">
                   Next turn
                 </GameButton>
               )}
