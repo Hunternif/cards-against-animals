@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import twemoji from 'twemoji';
 import { copyFields } from '../shared/utils';
 
@@ -24,6 +24,13 @@ export function Twemoji(props: Props) {
   function refreshHTML(event: FormEvent<HTMLSpanElement>) {
     setInnerHtml(parseEmoji(event.currentTarget.innerText));
   }
+
+  // Cancel twemoji rendering while editing content
+  // useEffect(() => {
+  //   if (props.contentEditable) {
+  //     setInnerHtml(children);
+  //   }
+  // }, [props.contentEditable]);
 
   return <span {...newProps}
     dangerouslySetInnerHTML={{ __html: innerHtml }}

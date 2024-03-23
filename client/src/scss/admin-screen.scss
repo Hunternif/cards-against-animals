@@ -30,7 +30,7 @@
   border-collapse: separate;
   border-spacing: 0 2px;
   td {
-    padding: 0 0.5em;
+    padding: 0.1em 0.5em;
     font-size: 13px;
   }
   .col-card-id {
@@ -38,6 +38,12 @@
   }
   .col-card-pick {
     width: 1%;
+  }
+  .col-card-controls {
+    width: 3em;
+    .inline-button:hover {
+      opacity: 0.5;
+    }
   }
   .col-card-content {
     padding: 0.1em 0.5em;
@@ -90,5 +96,11 @@
   .card-row.edited {
     background-color: colors.$accent;
     color: colors.$button-accent-text;
+    &.row-prompt .col-card-content {
+      background-color: rgba(colors.$card-prompt-bg-dark, 0.85);
+    }
+    &.row-response .col-card-content {
+      background-color: rgba(colors.$card-response-bg, 0.85);
+    }
   }
 }

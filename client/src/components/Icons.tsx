@@ -206,3 +206,11 @@ export function IconStarOfDavid(props: HtmlProps) {
   return <img {...props} src={star_of_david}
     className={`icon-star-of-david ${props.className ?? ""}`} />;
 }
+
+export function IconUndo(props: IconSvgProps) {
+  // Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
+  // License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.
+  return <Svg {...props} height={props.height ?? 16} width={props.width ?? 16} viewBox="0 0 512 512">
+    <path d="M255.5 8c-66.3 .1-126.4 26.2-170.9 68.7L49 41C33.9 25.9 8 36.6 8 57.9V192c0 13.3 10.7 24 24 24h134.1c21.4 0 32.1-25.9 17-41l-41.8-41.8c30.9-28.9 70.8-44.9 113.2-45.3 92.4-.8 170.3 74 169.5 169.4C423.2 348 349.8 424 256 424c-41.1 0-80-14.7-110.6-41.6-4.7-4.2-11.9-3.9-16.4 .6L89.3 422.7c-4.9 4.9-4.6 12.8 .5 17.4C133.8 479.8 192.1 504 256 504c137 0 248-111 248-248C504 119.2 392.4 7.8 255.5 8z"/>
+  </Svg>;
+}
