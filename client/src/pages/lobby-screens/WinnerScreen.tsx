@@ -7,7 +7,7 @@ import { IconHeartInline, IconStarInline } from "../../components/Icons";
 import { PlayerAvatar } from "../../components/PlayerAvatar";
 import { Timer } from "../../components/Timer";
 import { GameLayout } from "../../components/layout/GameLayout";
-import { useEffectOnce } from "../../components/utils";
+import { sleep, useEffectOnce } from "../../components/utils";
 import { checkIfShouldEndGame, endLobby, updateLobbySettings } from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
@@ -108,7 +108,7 @@ export function WinnerScreen() {
           {isJudge && (
             <Delay>
               {(extending || shouldEndNow) ? (<>
-                <GameButton secondary onClick={handleExtend} disabled={ending}>
+                <GameButton secondary onClick={handleExtend} disabled={extending || ending}>
                   Play more!
                 </GameButton>
                 <GameButton onClick={handleEndGame} disabled={ending}>

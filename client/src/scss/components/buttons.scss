@@ -80,6 +80,9 @@ button.secondary-button {
   &:hover:disabled {
     border: 2px solid;
     color: rgba(colors.$text, 0.8);
+    * {
+      color: rgba(colors.$text, 0.8);
+    }
     border-color: rgba(colors.$text, 0.4);
     background-color: rgba(colors.$text, 0);
   }
