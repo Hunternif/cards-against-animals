@@ -45,6 +45,10 @@ export function LobbySettingsPanel(props: Props) {
         hint="Each round everyone will be dealt new cards, up to this number."
         control={<CardsPerPersonControl {...props} />}
       />
+      <FormItem label="Next turn after [sec]"
+        hint="On Winner screen, auto-starts the next turn after this amount of time (in seconds). 0 to disable."
+        control={<NextTurnTimeControl {...props} />}
+      />
       <FormItem label="New cards first" disabled={props.inGame}
         hint="Cards that were never seen before will be played first."
         control={<NewCardsFirstControl {...props} />}
@@ -143,6 +147,16 @@ function CardsPerPersonControl({ settings, readOnly, onChange }: Props) {
     value={settings.cards_per_person}
     onChange={async (newValue) => {
       settings.cards_per_person = newValue;
+      if (onChange) await onChange(settings);
+    }}
+  />;
+}
+
+function NextTurnTimeControl({ settings, readOnly, onChange }: Props) {
+  return <NumberInput min={0.0} max={99.0} step={0.5} disabled={readOnly}
+    value={settings.next_turn_time_sec}
+    onChange={async (newValue) => {
+      settings.next_turn_time_sec = newValue;
       if (onChange) await onChange(settings);
     }}
   />;

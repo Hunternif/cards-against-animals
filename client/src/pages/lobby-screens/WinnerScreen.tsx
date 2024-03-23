@@ -30,6 +30,8 @@ export function WinnerScreen() {
   const audienceAwardResponses = responses
     .filter((r) => turn.audience_award_uids.includes(r.player_uid));
   const showAudienceAward = lobby.settings.enable_likes && audienceAwardResponses.length > 0;
+  const nextTurnTime = lobby.settings.next_turn_time_sec * 1000;
+  const shouldAutoContinue = nextTurnTime > 0;
 
   async function handleNewTurn() {
     setStartingNewTurn(true);
@@ -115,9 +117,14 @@ export function WinnerScreen() {
               </>) : (
                 <GameButton accent onClick={handleNewTurn}
                   disabled={startingNewTurn}>
-                  {startingNewTurn ? "Next turn..." : <>
-                    Next turn in <b><Timer totalMs={4000} onClear={handleNewTurn} /></b>
-                  </>}
+                  {startingNewTurn ? "Next turn..." :
+                    shouldAutoContinue ? (
+                      <>
+                        Next turn in <b>
+                          <Timer totalMs={nextTurnTime} onClear={handleNewTurn} />
+                        </b>
+                      </>
+                    ) : "Next turn"}
                 </GameButton>
               )}
             </Delay>

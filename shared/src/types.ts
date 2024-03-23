@@ -58,6 +58,8 @@ export interface LobbySettings {
   discard_cost: DiscardCost;
   /** Who is allowed to change lobby settings and kick players during the game. */
   lobby_control: LobbyContol;
+  /** Number of seconds until next turn auto-starts. 0 to disable. */
+  next_turn_time_sec: number;
 }
 
 export function defaultLobbySettings(): LobbySettings {
@@ -76,6 +78,7 @@ export function defaultLobbySettings(): LobbySettings {
     likes_limit: "none",
     discard_cost: "1_free_then_1_star",
     lobby_control: "anyone",
+    next_turn_time_sec: 4.0,
   };
 }
 

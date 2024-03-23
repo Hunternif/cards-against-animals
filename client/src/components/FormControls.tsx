@@ -6,25 +6,28 @@ import { ErrorContext } from "./ErrorContext";
 interface NumberInputProps {
   min: number,
   max: number,
+  step?: number,
   value: number,
   disabled?: boolean,
   onChange: (newValue: number) => Promise<void>,
 }
 
-/** Form input: integer numbers */
+/** Form input: integer or float numbers */
 export function NumberInput(
-  { min, max, value, disabled, onChange }: NumberInputProps
+  { min, max, step, value, disabled, onChange }: NumberInputProps
 ) {
+  const isInt = step != undefined && Math.floor(step) === step;
   const { setError } = useContext(ErrorContext);
 
   async function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    const newValue = parseInt(event.target.value);
+    const strVal = event.target.value;
+    const newValue = isInt ? parseInt(strVal) : parseFloat(strVal);
     await onChange(newValue).catch((e) => setError(e));
   }
 
   return (
     <input className="control" disabled={disabled}
-      type="number" min={min} max={max}
+      type="number" min={min} max={max} step={step ?? 1}
       value={value} onChange={handleChange} />
   );
 }

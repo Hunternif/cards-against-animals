@@ -66,6 +66,7 @@ function mapSettings(data: any): LobbySettings {
     likes_limit: data.likes_limit,
     discard_cost: data.discard_cost,
     lobby_control: data.lobby_control,
+    next_turn_time_sec: data.next_turn_time_sec,
   };
   return copyFields2(defaultLobbySettings(), removeUndefined(readSettings));
 }
