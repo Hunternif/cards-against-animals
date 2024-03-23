@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 interface Props {
+  onlySeconds?: boolean,
   totalMs: number,
   onClear?: () => void,
 }
@@ -9,7 +10,7 @@ interface Props {
  * Displays countdown from top to 0 every second.
  * TODO: may be bugged?
  */
-export function Timer({ totalMs, onClear }: Props) {
+export function Timer({ onlySeconds, totalMs, onClear }: Props) {
   const [remainingMs, setRemainingMs] = useState(totalMs);
   const [startMs, setStartMs] = useState(new Date().getTime());
 
@@ -47,5 +48,14 @@ export function Timer({ totalMs, onClear }: Props) {
     return reset;
   }, [totalMs, onClear]);
 
-  return Math.ceil(remainingMs / 1000);
+  if (onlySeconds) {
+    return Math.ceil(remainingMs / 1000);
+  } else {
+    const totalSeconds = Math.ceil(remainingMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    // const minuteStr = minutes.toString().padStart(2, '0');
+    const secondStr = seconds.toString().padStart(2, '0');
+    return `${minutes}:${secondStr}`;
+  }
 }

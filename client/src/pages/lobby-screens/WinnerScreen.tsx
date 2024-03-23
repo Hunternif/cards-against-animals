@@ -121,7 +121,9 @@ export function WinnerScreen() {
                     shouldAutoContinue ? (
                       <>
                         Next turn in <b>
-                          <Timer totalMs={nextTurnTime} onClear={handleNewTurn} />
+                          <Timer onlySeconds
+                            totalMs={nextTurnTime}
+                            onClear={handleNewTurn} />
                         </b>
                       </>
                     ) : "Next turn"}
