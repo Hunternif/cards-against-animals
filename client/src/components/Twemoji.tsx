@@ -15,6 +15,7 @@ export function Twemoji(props: Props) {
 
   function parseEmoji(str: string): string {
     return twemoji.parse(str ?? "", {
+      base: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/",
       folder: "svg",
       ext: ".svg",
       className: "twemoji emoji",
