@@ -1,15 +1,26 @@
 ![banner](https://raw.githubusercontent.com/Hunternif/cards-against-animals/main/client/public/banner.jpg)
 
+This project relies on the backend features of Firebase that work out of the box:
+- user authentication;
+- data storage with real-time updates ("Firestore");
+- hosting for client files.
+
+This repo contains 3 web projects:
+- `client` - client app written in TypeScript using React.js;
+- `functions` - additional server logic written in TypeScript.
+- `shared` - is not really a project, just a collection of files that are re-used between `client` and `functions`.
+
+The file `package.json` in the root directory contains NPM scripts to manage all these projects.
+
 # Project Setup
 
-This guide assumes you have installed `Node.js` and `npm`. This repo contains 2 web projects: `client` and `functions`. The root file `package.json` contains scripts to manage both projects.
-
-To begin, from command line, run the install script:
+First, make sure you have installed `node.js` and `npm` (check the [offical guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)).
+Then, to set up this project, from command line, run the install script:
 ```sh
 npm install
 ```
 
-During building, files from the `shared` directory and `firebase-config.json` will be copied to `client` and `functions`, and the new copies will be ignored by Git. As the last step it will trigger Firebase setup.
+During install, files from the `shared` directory and `firebase-config.json` will be copied to `client` and `functions`, and the new copies will be ignored by Git. As the last step it will trigger Firebase setup.
 
 ### Firebase setup
 
@@ -53,7 +64,7 @@ To run Firebase emulators:
 npm run dev-server
 ```
 
-Client code will hot-reload automatically as you change it. But Firebase functions need to rebuilt manually each time you change them:
+Client code will hot-reload automatically as you change it. But Firebase functions must be rebuilt manually each time you change them:
 ```sh
 npm --prefix functions run build
 ```
@@ -98,7 +109,7 @@ Also note these additional values in `firebase-config.json`:
 In order to create card decks, you need to be an admin user. You can create a local admin user using Firebase emulators.
 
 ## Creating an admin user
-Run the client and emulators, go to http://localhost:5173/admin, and click "Sign in with Google". The emulator will offer you to create a mock local account. Use any email address and username:
+Run the client and emulators, go to http://localhost:5173/admin, and click "Sign in with Google". The emulator will offer you to create a mock local account. Use any made-up email address and username:
 
 ![Creating a mock Google account](https://raw.githubusercontent.com/Hunternif/cards-against-animals/main/docs/emulator_google_account_setup.png)
 
