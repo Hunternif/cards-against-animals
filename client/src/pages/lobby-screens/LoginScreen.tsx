@@ -69,6 +69,7 @@ export function LoginScreen({ existingLobbyID }: Props) {
       setJoining(false);
     } catch (e: any) {
       setError(e);
+      setJoining(false);
     }
   }
   return <CenteredLayout outerClassName="welcome-screen">
