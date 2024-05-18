@@ -134,6 +134,7 @@ export async function addPlayer(lobby: GameLobby, userID: string): Promise<void>
   const playerRef = playersRef.doc(userID);
   const hasAlreadyJoined = (await playerRef.get()).exists;
   if (hasAlreadyJoined) {
+    await setUsersCurrentLobby(userID, lobby.id);
     logger.warn(`User ${caaUser.name} (${userID}) re-joined lobby ${lobby.id}`);
     return;
   }

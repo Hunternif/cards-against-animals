@@ -39,6 +39,7 @@ import {
 } from "./model/turn-server-api";
 import { lobbyConverter, playerConverter, turnConverter } from "./shared/firestore-converters";
 import { LobbySettings, PromptCardInGame, ResponseCardInGame } from "./shared/types";
+import { setUsersCurrentLobby } from "./model/user-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -265,11 +266,16 @@ export const onPlayerStatusChange = onDocumentUpdated(
   async (event) => {
     if (!event.data) return;
     const lobbyID = event.params.lobbyID;
+    const userID = event.params.userID;
     const playerBefore = playerConverter.fromFirestore(event.data.before);
     const playerAfter = playerConverter.fromFirestore(event.data.after);
     if (playerBefore.status !== playerAfter.status) {
       if (playerAfter.status === "left" || playerAfter.status === "kicked") {
         await cleanUpPlayer(lobbyID, playerAfter);
+      } else if (playerAfter.status === "online") {
+        // Player rejoined, update current lobby ID:
+        await setUsersCurrentLobby(userID, lobbyID);
+        logger.info(`User ${playerAfter.name} (${userID}) is online in lobby ${lobbyID}`);
       }
     }
   }
