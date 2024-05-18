@@ -15,6 +15,7 @@ import {
 import { findPastLobbyID } from "../../model/users-api";
 import { CAAUser } from "../../shared/types";
 import { AnonymousLogin } from "./login-components/AnonymousLogin";
+import { GameButton } from "../../components/Buttons";
 
 interface Props {
   existingLobbyID?: string,
@@ -76,11 +77,13 @@ export function LoginScreen({ existingLobbyID }: Props) {
   }
   return <CenteredLayout outerClassName="welcome-screen">
     <h1>Cards Against Animals</h1>
-    {statusText && <div className="status">
-      {statusText}
-      <span className="light x-circle-button"
-        title="Close lobby and start a new game" />
-    </div>}
+    <div className="status">{statusText && <>
+      <span>{statusText}</span>
+      <GameButton secondary small inline
+        title="Close lobby and start a new game">
+        New game
+      </GameButton>
+    </>}</div>
     <CenteredLayout>
       <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode}
         buttonText={buttonText} />

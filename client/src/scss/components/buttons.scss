@@ -93,6 +93,12 @@ button.small-button {
   height: 2.5rem;
 }
 
+// Slightly different from a "menu" inline buutton
+button.inline-game-button {
+  height: auto;
+  padding: 0.2em 0.5em;
+}
+
 button.start-button {
   font-size: large;
   font-weight: bold;

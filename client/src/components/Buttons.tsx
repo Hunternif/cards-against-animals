@@ -9,6 +9,7 @@ interface ButtonProps
   secondary?: boolean,
   light?: boolean,
   small?: boolean,
+  inline?: boolean,
 }
 
 export function GameButton(props: ButtonProps) {
@@ -16,9 +17,10 @@ export function GameButton(props: ButtonProps) {
   const lightClass = props.light ? "light-button " : "";
   const secondaryClass = props.secondary ? "secondary-button " : "";
   const smallClass = props.small ? "small-button " : "";
-  const className = `game-button ${lightClass}${secondaryClass}${accentClass}${smallClass}${props.className ?? ""}`;
+  const inlineClass = props.inline ? "inline-game-button" : "";
+  const className = `game-button ${lightClass}${secondaryClass}${accentClass}${smallClass}${inlineClass}${props.className ?? ""}`;
   // Remove new fields when passing props to DOM:
-  const propsCopy = copyFields(props, ['accent', 'iconLeft', 'iconRight', 'secondary', 'small', 'light']);
+  const propsCopy = copyFields(props, ['accent', 'iconLeft', 'iconRight', 'secondary', 'small', 'light', 'inline']);
   return <button {...propsCopy}
     className={className}
   >
