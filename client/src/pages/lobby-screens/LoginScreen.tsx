@@ -76,7 +76,11 @@ export function LoginScreen({ existingLobbyID }: Props) {
   }
   return <CenteredLayout outerClassName="welcome-screen">
     <h1>Cards Against Animals</h1>
-    <div className="status">{statusText}</div>
+    {statusText && <div className="status">
+      {statusText}
+      <span className="light x-circle-button"
+        title="Close lobby and start a new game" />
+    </div>}
     <CenteredLayout>
       <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode}
         buttonText={buttonText} />

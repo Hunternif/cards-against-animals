@@ -6,7 +6,10 @@
   .status {
     @extend .light;
     margin: 1em;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
   }
 }
 .welcome-screen h1 {
