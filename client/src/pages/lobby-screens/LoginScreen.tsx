@@ -1,6 +1,7 @@
 import { User, onAuthStateChanged } from "firebase/auth";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
@@ -10,12 +11,12 @@ import {
   findOrCreateLobbyAndJoin,
   getPlayerInLobby,
   joinLobbyIfNeeded,
+  setPlayerStatus,
   updatePlayer
 } from "../../model/lobby-api";
 import { findPastLobbyID } from "../../model/users-api";
 import { CAAUser } from "../../shared/types";
 import { AnonymousLogin } from "./login-components/AnonymousLogin";
-import { GameButton } from "../../components/Buttons";
 
 interface Props {
   existingLobbyID?: string,
@@ -23,6 +24,7 @@ interface Props {
 
 export function LoginScreen({ existingLobbyID }: Props) {
   const [joining, setJoining] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [pastLobbyID, setPastLobbyID] = useState<string | null>(null);
   const { setError } = useContext(ErrorContext);
   const navigate = useNavigate();
@@ -32,24 +34,28 @@ export function LoginScreen({ existingLobbyID }: Props) {
   useEffectOnce(() => {
     // Load past lobby
     return onAuthStateChanged(firebaseAuth, (newUser) => {
+      setUser(newUser);
       if (newUser) {
         findPastLobbyID(newUser.uid).then((lobbyID) => {
+          // TODO: BUG: immediately after leaving lobby, the old lobbyID still shows here.
           setPastLobbyID(lobbyID);
         })
       }
     });
   });
 
-  const buttonText = pastLobbyID ? "Rejoin game" :
-    existingLobbyID ? "Join game" : "Start new game";
-  const loadingText = pastLobbyID ? "Rejoining..." :
-    existingLobbyID ? "Joining..." : "Starting new lobby...";
+  // TODO: could be re-joining an old lobby where your status is "left".
+  const buttonText = existingLobbyID ? "Join game" :
+    pastLobbyID ? "Rejoin game" : "Start new game";
+  const loadingText = existingLobbyID ? "Joining..." :
+    pastLobbyID ? "Rejoining..." : "Starting new lobby...";
   const loadingNode = joining ? <LoadingSpinner text={loadingText} /> : undefined;
-  const statusText = pastLobbyID ? `Your lobby: ${pastLobbyID}`
-    : existingLobbyID ? `Join lobby: ${existingLobbyID}` : "";
+  const statusText = existingLobbyID ? `Join lobby: ${existingLobbyID}` :
+    pastLobbyID ? `Ongoing lobby: ${pastLobbyID}` : "";
 
   async function handleLogin(user: User, caaUser: CAAUser) {
     try {
+      setUser(user);
       setJoining(true);
       if (existingLobbyID) {
         await joinLobbyIfNeeded(existingLobbyID, user);
@@ -75,15 +81,26 @@ export function LoginScreen({ existingLobbyID }: Props) {
       setJoining(false);
     }
   }
+
+  /** Leave any current or past lobby */
+  async function handleLeavePastLobby() {
+    if (user && pastLobbyID) {
+      await setPlayerStatus(pastLobbyID, user.uid, "left");
+      setPastLobbyID(null);
+    }
+  }
+
   return <CenteredLayout outerClassName="welcome-screen">
     <h1>Cards Against Animals</h1>
-    <div className="status">{statusText && <>
+    <div className="status">
       <span>{statusText}</span>
-      <GameButton secondary small inline
-        title="Close lobby and start a new game">
-        New game
-      </GameButton>
-    </>}</div>
+      {pastLobbyID &&
+        // Button to leave past lobby
+        <GameButton secondary small inline onClick={handleLeavePastLobby}
+          title="Leave this lobby to start a new game">
+          Leave
+        </GameButton>}
+    </div>
     <CenteredLayout>
       <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode}
         buttonText={buttonText} />
