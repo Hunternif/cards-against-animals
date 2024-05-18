@@ -3,6 +3,11 @@
 
 .welcome-screen {
   background-image: colors.$welcome-bg;
+  .status {
+    @extend .light;
+    margin: 1em;
+    text-align: center;
+  }
 }
 .welcome-screen h1 {
   margin-bottom: 1em;

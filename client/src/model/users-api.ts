@@ -90,6 +90,7 @@ export async function findPastLobbyID(userID: string): Promise<string | null> {
       await updateDoc(doc(usersRef, userID), { current_lobby_id: deleteField() });
       return null;
     }
+    return caaUser.current_lobby_id;
   }
   return null;
 }

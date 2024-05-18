@@ -44,6 +44,8 @@ export function LoginScreen({ existingLobbyID }: Props) {
   const loadingText = pastLobbyID ? "Rejoining..." :
     existingLobbyID ? "Joining..." : "Starting new lobby...";
   const loadingNode = joining ? <LoadingSpinner text={loadingText} /> : undefined;
+  const statusText = pastLobbyID ? `Your lobby: ${pastLobbyID}`
+    : existingLobbyID ? `Join lobby: ${existingLobbyID}` : "";
 
   async function handleLogin(user: User, caaUser: CAAUser) {
     try {
@@ -74,6 +76,7 @@ export function LoginScreen({ existingLobbyID }: Props) {
   }
   return <CenteredLayout outerClassName="welcome-screen">
     <h1>Cards Against Animals</h1>
+    <div className="status">{statusText}</div>
     <CenteredLayout>
       <AnonymousLogin onLogin={handleLogin} loadingNode={loadingNode}
         buttonText={buttonText} />
