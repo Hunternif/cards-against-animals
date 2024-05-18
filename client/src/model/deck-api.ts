@@ -97,7 +97,9 @@ export function parseDeckTsv(
     .filter((line) => line != "");
   const tagsInCards = new Array<string>();
   // Skip row of headers
-  if (cardLines[0].startsWith("Type")) cardLines.splice(0, 1);
+  if (cardLines.length > 0 && cardLines[0].startsWith("Type")) {
+    cardLines.splice(0, 1);
+  }
   cardLines.forEach((line, i) => {
     const id = String(i + 1).padStart(4, '0');
     const items = line.split("\t");
@@ -199,13 +201,18 @@ export function isOnlyEmojis(str: string): boolean {
   return emojiRegex.test(stringToTest) && Number.isNaN(Number(stringToTest));
 }
 
+/** Verifies that deck ID does not exist, and uploads data. */
+export async function uploadNewDeck(deck: Deck) {
+  if ((await getDoc(doc(decksRef, deck.id))).exists()) {
+    throw new Error(`Deck "${deck.title}" already exists`);
+  }
+  await uploadDeck(deck);
+}
+
+/** Note: this is called both for uploading new and existing decks. */
 export async function uploadDeck(deck: Deck) {
   await runTransaction(db, async (transaction) => {
     const docRef = doc(decksRef, deck.id);
-    const docSnap = await transaction.get(docRef);
-    if (docSnap.exists()) {
-      throw new Error(`Deck "${deck.title}" already exists`);
-    }
     transaction.set(docRef, deck);
     // Now upload all the cards, in sequence:
     const promptsRef = collection(docRef, 'prompts')
@@ -224,6 +231,17 @@ export async function uploadDeck(deck: Deck) {
       transaction.set(doc(tagsRef, tag.name), tag);
     });
   });
+}
+
+/**
+ * Loads destination deck, appends new values from source deck, uploads data.
+ * IDs of source deck will be changed to prevent collisions.
+ */
+export async function mergeDecks(destID: string, source: Deck): Promise<Deck> {
+  const dest = await loadDeck(destID);
+  //TODO: implement mergeDecks
+  // Assuming card ID format to be '0001'.
+  return dest;
 }
 
 export async function getDecks(): Promise<Array<Deck>> {

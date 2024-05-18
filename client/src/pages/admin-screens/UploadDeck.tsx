@@ -1,13 +1,20 @@
-import { useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { parseDeck, uploadDeck } from "../../model/deck-api";
+import { getDecks, mergeDecks, parseDeck, uploadDeck, uploadNewDeck } from "../../model/deck-api";
 import { AdminSubpage } from "./admin-components/AdminSubpage";
+import { Deck } from "../../shared/types";
+import { useEffectOnce } from "../../components/utils";
 
 export function UploadDeck() {
   const [isUploading, setUploading] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
+  const [decks, setDecks] = useState<Array<Deck>>([]);
+  const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
+  const idRef = useRef<HTMLInputElement>(null);
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     setInfo(null);
@@ -22,8 +29,14 @@ export function UploadDeck() {
         data.get('prompts') as string,
         data.get('responses') as string,
       );
-      await uploadDeck(deck);
-      setInfo(`Deck "${deck.title}" uploaded`)
+      if (targetDeck) {
+        const mergedDeck = await mergeDecks(targetDeck.id, deck);
+        await uploadDeck(mergedDeck);
+        setInfo(`Merged into "${mergedDeck.title}"`);
+      } else {
+        await uploadNewDeck(deck);
+        setInfo(`Deck "${deck.title}" uploaded`);
+      }
       setUploading(false);
       form.reset();
     } catch (error: any) {
@@ -31,19 +44,63 @@ export function UploadDeck() {
       setUploading(false);
     }
   }
+
+  useEffectOnce(() => {
+    // Load decks:
+    getDecks().then((decks) => setDecks(decks))
+      .catch((e) => setError(e));
+  });
+
+  function handleSelectTarget(event: ChangeEvent<HTMLSelectElement>) {
+    const id = event.target.value;
+    if (id === "") {
+      setTargetDeck(null);
+      setInputValues("", "");
+    } else {
+      const deck = decks.find((d) => d.id === id);
+      if (deck) {
+        setTargetDeck(deck);
+        setInputValues(deck.id, deck.title);
+      }
+    }
+  }
+
+  /** Set values for id and title inputs. */
+  function setInputValues(id: string, title: string) {
+    // Note: this updates the HTML, but does not correctly set internal values
+    // on the React form inputs. Can't use FormData after this!
+    idRef.current?.setAttribute('value', id);
+    titleRef.current?.setAttribute('value', title);
+  }
+
   return <AdminSubpage title="Upload new deck">
     {info && <Alert variant="light">{info}</Alert>}
     {error && <Alert variant="danger">{error.message}</Alert>}
     <Form onSubmit={handleSubmit}>
       <Row className="mb-3">
         <Form.Group as={Col}>
+          <Form.Label>Destination</Form.Label>
+          <Form.Select name="targetDeck" onChange={handleSelectTarget}>
+            <option value="">New deck...</option>
+            {decks.map((deck) =>
+              <option key={deck.id} value={deck.id}>{deck.title}</option>)
+            }
+          </Form.Select>
+        </Form.Group>
+        <Form.Group as={Col}>
+        </Form.Group>
+      </Row>
+      <Row className="mb-3">
+        <Form.Group as={Col}>
           <Form.Label>Title</Form.Label>
-          <Form.Control type="text" name="title" disabled={isUploading} required
+          <Form.Control ref={titleRef} type="text" name="title" required
+            disabled={isUploading || targetDeck !== null}
             placeholder="My new deck" />
         </Form.Group>
         <Form.Group as={Col}>
           <Form.Label>ID</Form.Label>
-          <Form.Control type="text" name="id" disabled={isUploading} required
+          <Form.Control ref={idRef} type="text" name="id" required
+            disabled={isUploading || targetDeck !== null}
             placeholder="my_deck_id" />
         </Form.Group>
       </Row>
