@@ -78,11 +78,12 @@ export function parseDeck(
       const text = processPromptText(processCardText(line));
       return new PromptDeckCard(id, text, pick, 0, 0, 0, 0, [], 0, 0);
     });
+  const promptCount = deck.prompts.length;
   deck.responses = responseList.split("\n")
     .map((line) => line.trim())
     .filter((line) => line != "")
     .map((line, i) => {
-      const id = cardOrdinalToID(i + 1);
+      const id = cardOrdinalToID(promptCount + i + 1);
       const text = processCardText(line);
       return new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, []);
     });

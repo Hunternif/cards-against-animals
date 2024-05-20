@@ -1,6 +1,17 @@
 import { expect, test } from 'vitest';
 import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from '../../shared/types';
-import { detectCat, detectDeer, detectLenich, isOnlyEmojis, mergeDecks, parseDeckTsv, parsePromptPick, processCardText, processPromptText } from '../deck-api';
+import {
+  detectCat,
+  detectDeer,
+  detectLenich,
+  isOnlyEmojis,
+  mergeDecks,
+  parseDeck,
+  parseDeckTsv,
+  parsePromptPick,
+  processCardText,
+  processPromptText,
+} from '../deck-api';
 
 test('parse pick from prompt text', () => {
   expect(parsePromptPick("No gaps!")).toBe(1);
@@ -36,6 +47,27 @@ test('process prompt text', () => {
     .toBe("Quotes 2: _ in my band «_»");
   expect(processPromptText("Quotes 3: book «\"__\" или __»"))
     .toBe("Quotes 3: book «\"_\" или _»");
+});
+
+test('parse deck', () => {
+  const deck = parseDeck("my_deck", "My deck",
+    "Hello, __\nBye __ and _", "Poop\nCrap");
+  const expected = new Deck("my_deck", "My deck");
+  expected.prompts = [
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, [], 0, 0),
+    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, [], 0, 0),
+  ];
+  expected.responses = [
+    new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, 0, []),
+    new ResponseDeckCard("0004", "Crap", 0, 0, 0, 0, 0, 0, []),
+  ];
+  expected.tags = [];
+  expect(deck).toEqual(expected);
+  expect(deck.title).toBe("My deck");
+  expect(deck.prompts.length).toBe(2);
+  expect(deck.prompts[0]).toEqual(
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, [], 0, 0)
+  );
 });
 
 test('parse TSV deck', () => {
