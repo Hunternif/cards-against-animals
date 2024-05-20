@@ -85,7 +85,11 @@ export function defaultLobbySettings(): LobbySettings {
 export type PlayUntil = "forever" | "max_turns" | "max_turns_per_person" | "max_score";
 export type ShowLikes = "all" | "all_except_czar";
 export type LikesLimit = "1_pp_per_turn" | "none";
-export type DiscardCost = "free" | "1_star" | "1_free_then_1_star" | "no_discard";
+export type DiscardCost = "free" | "1_star" | "1_free_then_1_star" |
+  // "progress_hearts" | // 0 hearts, then 1 heart, then 2 hearts...
+  // "1_free_then_5_hearts" |
+  // "1_free_then_1_heart_per_card" | // each card costs 1 heart
+  "no_discard";
 export type LobbyContol = "creator" | "czar" | "anyone";
 
 /** Instance of a player specific to a single game lobby. */
