@@ -1,7 +1,7 @@
 import { ChangeEvent, useRef, useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { getDecks, mergeDecks, parseDeckTsv, uploadDeck, uploadNewDeck } from "../../model/deck-api";
+import { getDecks, loadDeck, mergeDecks, parseDeckTsv, uploadDeck, uploadNewDeck } from "../../model/deck-api";
 import { AdminSubpage } from "./admin-components/AdminSubpage";
 import { useEffectOnce } from "../../components/utils";
 import { Deck } from "../../shared/types";
@@ -30,7 +30,8 @@ export function UploadDeckTsv() {
         data.get('tagData') as string,
       );
       if (targetDeck) {
-        const mergedDeck = await mergeDecks(targetDeck.id, deck);
+        const targetDeckFull = await loadDeck(targetDeck.id);
+        const mergedDeck = await mergeDecks(targetDeckFull, deck);
         await uploadDeck(mergedDeck);
         setInfo(`Merged into "${mergedDeck.title}"`);
       } else {

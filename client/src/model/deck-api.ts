@@ -8,7 +8,14 @@ import {
 } from "firebase/firestore";
 import { db, decksRef } from "../firebase";
 import { deckTagConverter, promptDeckCardConverter, responseDeckCardConverter } from "../shared/firestore-converters";
-import { Deck, DeckTag, PromptCardInGame, PromptDeckCard, ResponseDeckCard } from "../shared/types";
+import {
+  Deck,
+  DeckCard,
+  DeckTag,
+  PromptCardInGame,
+  PromptDeckCard,
+  ResponseDeckCard,
+} from "../shared/types";
 
 /** Returns Firestore subcollection reference of prompt cards in deck. */
 function getPromptsRef(deckID: string) {
@@ -66,7 +73,7 @@ export function parseDeck(
     .map((line) => line.trim())
     .filter((line) => line != "")
     .map((line, i) => {
-      const id = String(i + 1).padStart(4, '0');
+      const id = cardOrdinalToID(i + 1);
       const pick = parsePromptPick(line);
       const text = processPromptText(processCardText(line));
       return new PromptDeckCard(id, text, pick, 0, 0, 0, 0, [], 0, 0);
@@ -75,7 +82,7 @@ export function parseDeck(
     .map((line) => line.trim())
     .filter((line) => line != "")
     .map((line, i) => {
-      const id = String(i + 1).padStart(4, '0');
+      const id = cardOrdinalToID(i + 1);
       const text = processCardText(line);
       return new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, []);
     });
@@ -101,7 +108,7 @@ export function parseDeckTsv(
     cardLines.splice(0, 1);
   }
   cardLines.forEach((line, i) => {
-    const id = String(i + 1).padStart(4, '0');
+    const id = cardOrdinalToID(i + 1);
     const items = line.split("\t");
     const type = items[0];
     const rawText = items[1];
@@ -163,6 +170,10 @@ export function processPromptText(text: string): string {
   text = text.replace(/_+/g, "_");
   text = text.replace(/(^|\s)_([\s.,:;!?\-~]|$)/g, "$1_$2");
   return text;
+}
+
+function cardOrdinalToID(ordinal: number) {
+  return String(ordinal).padStart(4, '0');
 }
 
 /** 🦌 */
@@ -231,16 +242,49 @@ export async function uploadDeck(deck: Deck) {
       transaction.set(doc(tagsRef, tag.name), tag);
     });
   });
+  deckCache.set(deck.id, deck);
 }
 
 /**
  * Loads destination deck, appends new values from source deck, uploads data.
  * IDs of source deck will be changed to prevent collisions.
  */
-export async function mergeDecks(destID: string, source: Deck): Promise<Deck> {
-  const dest = await loadDeck(destID);
-  //TODO: implement mergeDecks
+export async function mergeDecks(dest: Deck, source: Deck): Promise<Deck> {
   // Assuming card ID format to be '0001'.
+  const idRegex = /^\d{4}$/;
+  let topID = -1;
+  const usedIDs = new Set<string>();
+  function processExistingID(idStr: string) {
+    usedIDs.add(idStr);
+    if (idRegex.test(idStr)) {
+      const id = parseInt(idStr);
+      if (!isNaN(id)) {
+        topID = Math.max(topID, id);
+      }
+    }
+  }
+  function updateCardID<T extends DeckCard>(card: T): T {
+    if (topID > -1 && idRegex.test(card.id)) {
+      const iCardID = parseInt(card.id);
+      if (!isNaN(iCardID)) {
+        let newID = cardOrdinalToID(topID + iCardID);
+        if (usedIDs.has(newID)) {
+          throw Error(`Couldn't merge. Duplicate ID ${newID}`);
+        }
+        usedIDs.add(newID);
+        card.id = newID;
+      }
+    }
+    return card;
+  }
+  dest.prompts.forEach((card) => processExistingID(card.id));
+  dest.responses.forEach((card) => processExistingID(card.id));
+  dest.prompts.push(...source.prompts.map((card) => updateCardID(card)));
+  dest.responses.push(...source.responses.map((card) => updateCardID(card)));
+  // Merge tags:
+  const tagMap = new Map<string, DeckTag>(dest.tags.map((tag) => [tag.name, tag]));
+  source.tags.forEach((newTag) => { tagMap.set(newTag.name, newTag) });
+  dest.tags = Array.from(tagMap.values());
   return dest;
 }
 
