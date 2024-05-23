@@ -74,9 +74,8 @@ function mapSettings(data: any): LobbySettings {
 
 export const playerConverter: FConverter<PlayerInLobby> = {
   toFirestore: (player: PlayerInLobby) => copyFields2(player, {
-    time_joined: player.time_joined ?
-      FTimestamp.fromDate(player.time_joined) :
-      fServerTimestamp(), // set new time when adding a new player
+    time_joined: FTimestamp.fromDate(player.time_joined),
+    time_dealt_cards: FTimestamp.fromDate(player.time_dealt_cards),
   }),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
@@ -84,7 +83,8 @@ export const playerConverter: FConverter<PlayerInLobby> = {
       data.uid, data.name, data.avatar_id,
       data.random_index ?? 0, data.role, data.status,
       data.score ?? 0, data.wins ?? 0, data.likes ?? 0, data.discards_used ?? 0);
-    ret.time_joined = (data.time_joined as FTimestamp | null)?.toDate();
+    ret.time_joined = (data.time_joined as FTimestamp | null)?.toDate() ?? new Date();
+    ret.time_dealt_cards = (data.time_dealt_cards as FTimestamp | null)?.toDate() ?? new Date();
     return ret;
   },
 };

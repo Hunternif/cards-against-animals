@@ -94,7 +94,10 @@ export type LobbyContol = "creator" | "czar" | "anyone";
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {
-  time_joined?: Date;
+  time_joined: Date = new Date();
+  /** Time when the player was last dealt new cards.
+   * This helps keep track of new cards. */
+  time_dealt_cards: Date = new Date();
 
   constructor(
     public uid: string,

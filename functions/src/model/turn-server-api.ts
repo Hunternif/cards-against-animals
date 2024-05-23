@@ -331,6 +331,7 @@ export async function dealCardsToPlayer(
   const totalCardsNeeded = Math.max(0, cardsPerPerson - newPlayerData.hand.length);
 
   // Fetch new cards:
+  const dealTime = new Date();
   const newCards = totalCardsNeeded <= 0 ? [] : (await deckResponsesRef
     .orderBy("random_index", "desc")
     .limit(totalCardsNeeded).get()
@@ -338,6 +339,10 @@ export async function dealCardsToPlayer(
   // Add cards to the new player hand
   newPlayerData.hand.push(...newCards);
   // If we ran out of cards, sorry!
+  if (newCards.length > 0) {
+    player.time_dealt_cards = dealTime;
+    await updatePlayer(lobby.id, player);
+  }
 
   // Remove dealt cards from the deck and upload player data & hand:
   const playerDataRef = getPlayerDataRef(lobby.id, newTurn.id);

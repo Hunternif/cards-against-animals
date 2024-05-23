@@ -29,8 +29,7 @@ export function GameHand({
   const { setError } = useContext(ErrorContext);
 
   function getIsNew(card: ResponseCardInHand): boolean {
-    // TODO: on czar's next turn, they won't know which card is new.
-    return card.time_received >= turn.time_created;
+    return card.time_received >= player.time_dealt_cards;
   }
 
   function getSelectedIndex(card: ResponseCardInHand): number {
