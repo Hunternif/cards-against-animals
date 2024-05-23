@@ -1,6 +1,7 @@
 import { ReactNode, useContext, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { InlineButton } from "../../../components/Buttons";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { CustomDropdown } from "../../../components/CustomDropdown";
 import { ErrorContext } from "../../../components/ErrorContext";
@@ -9,13 +10,14 @@ import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "../../..
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Scoreboard } from "../../../components/Scoreboard";
 import { Twemoji } from "../../../components/Twemoji";
-import { endLobby, leaveLobby, updateLobbySettings } from "../../../model/lobby-api";
+import { endLobby, leaveLobby, updateLobbySettings, updatePlayer } from "../../../model/lobby-api";
+import { updateUserData } from "../../../model/users-api";
 import { LobbySettings } from "../../../shared/types";
 import { copyFields } from "../../../shared/utils";
+import { AvatarSelector } from "../lobby-components/AvatarSelector";
 import { LobbySettingsPanel } from "../lobby-components/LobbySettingsPanel";
 import { useGameContext } from "./GameContext";
 import { GamePlayerList } from "./GamePlayerList";
-import { InlineButton } from "../../../components/Buttons";
 
 
 /** Menu header on top of the game page */
@@ -23,11 +25,14 @@ export function GameMenu() {
   const navigate = useNavigate();
   const { lobby, turn, player, players, activePlayers, isSpectator, isJudge,
     canControlLobby } = useGameContext();
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
+
+  const [newAvatarID, setNewAvatarID] = useState(player.avatar_id);
 
   // Make a local copy of settings to make changes:
   const [settings, setSettings] = useState(lobby.settings);
@@ -69,6 +74,20 @@ export function GameMenu() {
     setSettings(copyFields(newSettings));
   }
 
+  async function handleSaveProfile() {
+    try {
+      if (newAvatarID) {
+        // Update both in the lobby and globally:
+        player.avatar_id = newAvatarID;
+        await updatePlayer(lobby.id, player);
+        await updateUserData(player.uid, player.name, newAvatarID);
+        setShowProfileModal(false);
+      }
+    } catch (e) {
+      setError(e);
+    }
+  }
+
   return <>
     <ConfirmModal
       show={showLeaveModal}
@@ -91,6 +110,18 @@ export function GameMenu() {
       onConfirm={handleSaveSettings}
       okText="Save" loadingText="Saving..." loading={savingSettings}>
       <LobbySettingsPanel inGame settings={settings} onChange={refreshSettings} />
+    </ConfirmModal>
+    <ConfirmModal
+      className="profile-modal"
+      show={showProfileModal}
+      onConfirm={handleSaveProfile}
+      onCancel={() => setShowProfileModal(false)}
+      okText="Save">
+      <AvatarSelector
+        avatarID={newAvatarID}
+        onSubmit={setNewAvatarID} />
+      {/* TODO: allow changing name */}
+      <div className="player-name">{player.name}</div>
     </ConfirmModal>
 
     <div className="menu-row">
@@ -133,6 +164,7 @@ export function GameMenu() {
             </span>
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>
+            <MenuItem label="Profile" onClick={() => setShowProfileModal(true)} />
             <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
             <MenuItem label="Settings" onClick={openSettings} locked={!canControlLobby} />
             <MenuItem label="End game" onClick={() => setShowEndModal(true)} locked={!canControlLobby} />
@@ -178,7 +210,7 @@ function TurnCounter() {
       total = ` / ${lobby.settings.max_turns}`;
       break;
     case "max_score":
-      total = <> – until {lobby.settings.max_score}<IconStarInline/></>;
+      total = <> – until {lobby.settings.max_score}<IconStarInline /></>;
       break;
   }
   return <span className="menu-turn-ordinal">Turn {turn.ordinal}{total}</span>;

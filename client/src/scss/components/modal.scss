@@ -85,4 +85,10 @@
       text-align: center;
     }
   }
+
+  &.profile-modal {
+    .player-name {
+      margin-top: .5em;
+    }
+  }
 }
