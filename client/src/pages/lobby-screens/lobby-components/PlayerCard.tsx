@@ -72,10 +72,17 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
           <PlayerAvatar player={player} />
         )}
         <span className="player-name">{player.name}</span>
-        {(isCreator || isJudge) ? <Twemoji className="right-icon">👑</Twemoji> :
-          player.status === "kicked" ? <Twemoji className="right-icon">💀</Twemoji> :
-            canKick && <span className="right-icon kick-button"
-              title="Kick player" onClick={() => setShowKickModal(true)} />}
+        <span className="right-group">
+          {(isCreator || isJudge) &&
+            <Twemoji className="right-icon">👑</Twemoji>
+          }
+          {player.status === "kicked" ? (
+            <Twemoji className="right-icon">💀</Twemoji>
+          ) : (
+            canKick && !isMe && <span className="right-icon kick-button"
+              title="Kick player" onClick={() => setShowKickModal(true)} />
+          )}
+        </span>
       </Card.Body>
     </Card>
   </>;
