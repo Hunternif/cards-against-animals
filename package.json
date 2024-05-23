@@ -8,6 +8,7 @@
     "postinstall": "cp -n firebase-config.json.example firebase-config.json && cp -R shared/src/. functions/src/shared && cp -R shared/src/. client/src/shared",
     "dev-client": "cd client && npm run dev",
     "dev-server": "firebase emulators:start --import=exported-dev-data --export-on-exit=exported-dev-data",
+    "update-types": "(cd functions && npm run update-types) && (cd ../client && npm run update-types)",
     "build": "(cd functions && npm run build) && (cd ../client && npm run build)",
     "lint": "(cd functions && npm run lint) && (cd ../client && npm run lint)",
     "test": "(cd functions && npm run test) && (cd ../client && npm run test)",
