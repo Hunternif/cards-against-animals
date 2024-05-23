@@ -281,24 +281,19 @@ export async function discardNowAndDealCardsToPlayer(
   // 1. Pay discard cost;
   // 2. Remove discarded cards from hand;
   // 3. Deal new cards.
-  // TODO: do this in the same transaction.
   const player = await getPlayerThrows(lobby.id, userID);
   const newDiscard = await getNewPlayerDiscard(lobby.id, turn.id, userID);
   if (!await payDiscardCost(lobby.id, turn, player, newDiscard)) {
     return;
   }
-  const handRef = getPlayerHandRef(lobby.id, turn.id, userID);
-  await db.runTransaction(async (transaction) => {
-    for (const card of newDiscard) {
-      transaction.delete(handRef.doc(card.id));
-    }
-  });
-  logger.info(`Discarded ${newDiscard.length} cards from player ${userID}`);
+  logger.info(`Discarding ${newDiscard.length} cards from player ${userID}`);
+  // This will both remove discarded cards and deal new cards:
   await dealCardsToPlayer(lobby, turn, turn, userID);
 }
 
 /**
  * Deal cards to a given player, up to the limit.
+ * Also removes discarded cards from the hand.
  * @param lastTurn will be used to check player's current turn and discard.
  * @param newTurn new cards will be added to this turn.
  */
@@ -309,17 +304,25 @@ export async function dealCardsToPlayer(
     .withConverter(responseCardInGameConverter);
   const player = await getPlayerThrows(lobby.id, userID);
   const newPlayerData = new PlayerDataInTurn(userID, player.name);
+  const handToDiscard = new Array<ResponseCardInGame>();
+  const isNewTurn = lastTurn?.id !== newTurn.id;
   if (lastTurn) {
-    // copy old hand:
-    let oldHand = await getPlayerHand(lobby.id, lastTurn.id, userID);
-    // if starting a new turn, also filter out submitted cards:
-    if (lastTurn.id !== newTurn.id) {
-      const lastResponse = await getPlayerResponse(lobby.id, lastTurn.id, userID);
-      oldHand = oldHand
-        .filter((card) => !lastResponse?.cards?.find((c) => c.id === card.id))
+    const lastResponse = await getPlayerResponse(lobby.id, lastTurn.id, userID);
+    const lastDiscard = await getPlayerDiscard(lobby.id, lastTurn.id, userID);
+    const oldHand = await getPlayerHand(lobby.id, lastTurn.id, userID);
+    for (const oldCard of oldHand) {
+      if (lastDiscard.find((c) => c.id === oldCard.id)) {
+        // discard cards that are still in the hand:
+        handToDiscard.push(oldCard);
+      } else if (isNewTurn && lastResponse?.cards?.find((c) => c.id === oldCard.id)) {
+        // if starting a new turn, filter out submitted cards;
+        // if it's the same turn, keep them.
+      } else {
+        // copy old cards to the new hand.
+        // temporarily write them here, then upload it as a subcollection
+        newPlayerData.hand.push(oldCard);
+      }
     }
-    // temporarily write hand here, then upload it as a subcollection
-    newPlayerData.hand.push(...oldHand);
   }
   // Find how many more cards we need:
   const cardsPerPerson = lobby.settings.cards_per_person;
@@ -336,12 +339,21 @@ export async function dealCardsToPlayer(
 
   // Remove dealt cards from the deck and upload player data & hand:
   const playerDataRef = getPlayerDataRef(lobby.id, newTurn.id);
+  const handRef = getPlayerHandRef(lobby.id, newTurn.id, userID);
   await db.runTransaction(async (transaction) => {
     for (const card of newCards) {
       transaction.delete(deckResponsesRef.doc(card.id));
     }
-    transaction.set(playerDataRef.doc(userID), newPlayerData);
-    const handRef = getPlayerHandRef(lobby.id, newTurn.id, userID);
+    if (isNewTurn) {
+      transaction.set(playerDataRef.doc(userID), newPlayerData);
+    }
+    for (const card of handToDiscard) {
+      transaction.delete(handRef.doc(card.id));
+    }
+  });
+  // Firebase Bug?? Doing it in 1 transaction is not atomic.
+  // See https://stackoverflow.com/questions/78523307
+  await db.runTransaction(async (transaction) => {
     for (const card of newPlayerData.hand) {
       transaction.set(handRef.doc(card.id), card);
     }

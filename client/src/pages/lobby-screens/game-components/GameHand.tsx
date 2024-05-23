@@ -33,7 +33,8 @@ export function GameHand({
 
   // Mark new cards:
   if (handSorted && prevHand != handSorted) {
-    setNewCards(hand.filter((c) => prevHand.findIndex((c2) => c.id === c2.id) === -1));
+    const newCards = hand.filter((c) => prevHand.findIndex((c2) => c.id === c2.id) === -1);
+    setNewCards(newCards);
     setPrevHand(handSorted);
   }
   function getIsNew(card: ResponseCardInGame): boolean {
