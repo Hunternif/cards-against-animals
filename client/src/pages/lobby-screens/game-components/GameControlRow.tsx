@@ -82,8 +82,8 @@ export function GameControlRow({
         <span className="light" style={discardInfoStyle}>
           {discarding ? (
             isDiscardFree ?
-              <>Select cards to discard next turn.</> :
-              <>Select cards to discard for <Cost b /> next turn.</>
+              <>Select cards to discard.</> :
+              <>Select cards to discard for <Cost b />.</>
           ) : (
             submitted ? "Submitted!" : prompt ? (
               `Picked ${picked} out of ${total}`

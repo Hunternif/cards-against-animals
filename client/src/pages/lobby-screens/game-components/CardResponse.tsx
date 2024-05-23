@@ -5,6 +5,7 @@ import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./Large
 
 interface ResponseCardProps {
   card: ResponseCardInGame,
+  justIn?: boolean, // Card was just dealt
   selectable?: boolean,
   /** Which card it is in your submission: #1, #2 etc. Starts from 0. */
   selectedIndex?: number,
@@ -19,17 +20,19 @@ interface ResponseCardProps {
 
 export function CardResponse(
   {
-    card, selectable, selectedIndex, showIndex, onToggle, onToggleDownvote,
+    card, justIn,
+    selectable, selectedIndex, showIndex, onToggle, onToggleDownvote,
     discarding, discarded, onToggleDiscard,
   }: ResponseCardProps
 ) {
   const selected = selectedIndex != undefined && selectedIndex > -1;
+  const newStyle = justIn ? "just-in" : "";
   const selectableStyle = selectable ? "hoverable-card" : "locked-card";
   const selectedStyle = selected ? "selected" : "unselected";
   const discardingStyle = discarding ? "discarding" : "";
   const discardedStyle = discarded ? "discarded" : "";
   const voteStyle = card.downvoted ? "downvoted" : "";
-  const className = `card-response ${selectableStyle} ${selectedStyle} ${voteStyle} ${discardingStyle} ${discardedStyle}`;
+  const className = `card-response ${newStyle} ${selectableStyle} ${selectedStyle} ${voteStyle} ${discardingStyle} ${discardedStyle}`;
 
   function handleClick() {
     if (discarding) {

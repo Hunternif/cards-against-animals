@@ -86,6 +86,19 @@
 .game-card.card-response {
   background-color: colors.$card-response-bg;
   color: colors.$card-response-text;
+  &.just-in {
+    animation-name: card-slidein-top;
+    animation-duration: 0.4s;
+  }
+  @keyframes card-slidein-top {
+    from {
+      transform: translateY(-30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
 }
 .game-card.card-response.selected,
 .game-card.response-reading.selected {

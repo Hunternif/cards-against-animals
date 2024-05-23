@@ -77,6 +77,19 @@
     height: auto;
     min-height: 4em;
   }
+  .game-card.card-response.just-in {
+    animation-name: card-slidein-right;
+    animation-duration: 0.4s;
+    @keyframes card-slidein-right {
+      from {
+        transform: translateX(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+  }
   .reading-main-row .reading-unrevealed-icon {
     font-size: 2.5rem;
     font-weight: 700;

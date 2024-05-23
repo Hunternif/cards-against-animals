@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { toggleDownvoteCard } from "../../../model/turn-api";
 import { PlayerResponse, ResponseCardInGame } from "../../../shared/types";
@@ -21,9 +21,24 @@ export function GameHand({
   discarding, discardedCards, setDiscardedCards,
 }: HandProps) {
   const { lobby, turn, player, hand, prompt } = useGameContext();
+  // TODO: sort by the time cards arrive in hand.
+  const handSorted = hand.sort((c1, c2) => c1.random_index - c2.random_index);
+  // Remember hand from the previous turn:
+  const [prevHand, setPrevHand] = useState<ResponseCardInGame[]>([]);
+  // New cards will be animated:
+  const [newCards, setNewCards] = useState<ResponseCardInGame[]>([]);
   const pick = prompt?.pick ?? 0;
   const isHandSelectable = pick > 0;
   const { setError } = useContext(ErrorContext);
+
+  // Mark new cards:
+  if (handSorted && prevHand != handSorted) {
+    setNewCards(hand.filter((c) => prevHand.findIndex((c2) => c.id === c2.id) === -1));
+    setPrevHand(handSorted);
+  }
+  function getIsNew(card: ResponseCardInGame): boolean {
+    return newCards.findIndex((c2) => card.id === c2.id) > -1;
+  }
 
   function getSelectedIndex(card: ResponseCardInGame): number {
     // check card by ID, because the response instance could be unequal:
@@ -78,11 +93,12 @@ export function GameHand({
     }
   }
 
-  return hand.map((card) => {
+  return handSorted.map((card) => {
     const selectedIndex = getSelectedIndex(card);
     const isSelected = selectedIndex >= 0;
     const isDiscarded = getIsDiscarded(card);
-    return <CardResponse key={card.id} card={card}
+    const isNew = getIsNew(card);
+    return <CardResponse key={card.id} card={card} justIn={isNew}
       selectable={(discarding || isHandSelectable) && !(discarding && isSelected)}
       selectedIndex={getSelectedIndex(card)}
       showIndex={pick > 1}
