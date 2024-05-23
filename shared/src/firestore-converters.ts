@@ -194,7 +194,7 @@ export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
     time_created: card.time_created ?
       FTimestamp.fromDate(card.time_created) :
       fServerTimestamp(), // set new time when creating a new card
-  }),
+  }, ['type']),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PromptDeckCard(snapshot.id, data.content, data.pick ?? 1,
@@ -210,7 +210,7 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
     time_created: card.time_created ?
       FTimestamp.fromDate(card.time_created) :
       fServerTimestamp(), // set new time when creating a new card
-  }),
+  }, ['type']),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new ResponseDeckCard(snapshot.id, data.content, data.rating ?? 0,
@@ -222,7 +222,7 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
 };
 
 export const promptCardInGameConverter: FConverter<PromptCardInGame> = {
-  toFirestore: (card: PromptCardInGame) => copyFields(card),
+  toFirestore: (card: PromptCardInGame) => copyFields(card, ['type']),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new PromptCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
@@ -232,7 +232,7 @@ export const promptCardInGameConverter: FConverter<PromptCardInGame> = {
 };
 
 export const responseCardInGameConverter: FConverter<ResponseCardInGame> = {
-  toFirestore: (card: ResponseCardInGame) => copyFields(card),
+  toFirestore: (card: ResponseCardInGame) => copyFields(card, ['type']),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new ResponseCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
