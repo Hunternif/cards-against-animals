@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ConfirmModal } from "../../../components/ConfirmModal";
+import { ConfirmModalFooter } from "../../../components/ConfirmModal";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { Modal, ModalBody } from "../../../components/Modal";
 import { avatarMap, avatars } from "../../../model/avatars";
 
 interface AvatarProps {
@@ -36,17 +37,23 @@ export function AvatarSelector({ loading, avatarID, onSubmit, inline }: AvatarPr
   }
 
   return <>
-    <ConfirmModal title="Choose avatar" okText="Done"
+    <Modal
+      title="Choose avatar"
       className="avatar-selector-modal"
       show={showSelector}
-      onCancel={closeSelector}
-      onConfirm={() => applyAvatar()}>
-      {avatars.map((av) =>
-        <img key={av.id} src={av.url}
-          className={`avatar ${av.id === nextAvatarID ? "selected" : ""}`}
-          onClick={() => setNextAvatarID(av.id)} />
-      )}
-    </ConfirmModal>
+      onHide={closeSelector}>
+      <ModalBody>
+        {avatars.map((av) =>
+          <img key={av.id} src={av.url}
+            className={`avatar ${av.id === nextAvatarID ? "selected" : ""}`}
+            onClick={() => setNextAvatarID(av.id)} />
+        )}
+      </ModalBody>
+      <ConfirmModalFooter
+        okText="Done"
+        onCancel={closeSelector}
+        onConfirm={() => applyAvatar()} />
+    </Modal>
 
     <div className="avatar-selector">
       {(loading || !avatar) ? <LoadingSpinner delay /> : (

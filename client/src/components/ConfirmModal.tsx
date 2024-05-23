@@ -1,11 +1,9 @@
 import { ReactNode } from "react";
 import { GameButton } from "./Buttons";
-import { LoadingSpinner } from "./LoadingSpinner";
-import { Modal } from "./Modal";
+import { Modal, ModalBody } from "./Modal";
 
-interface Props {
+interface ModalProps {
   show: boolean,
-  // title: string,
   children: ReactNode,
   okText?: string,
   title?: string,
@@ -21,19 +19,48 @@ interface Props {
 export function ConfirmModal({
   show, children, okText, title, cancelText, loadingText, loading,
   className, hideCancel, onConfirm, onCancel,
-}: Props) {
-  return <Modal show={show} className={className}>
-    {title && <div className="modal-title">{title}</div>}
-    <div className="modal-body">
-      {loading ? <LoadingSpinner text={loadingText} /> : children}
-    </div>
-    <footer>
-      <GameButton onClick={onConfirm} disabled={loading}>
+}: ModalProps) {
+  return <Modal
+    show={show}
+    title={title}
+    className={className}
+    onHide={onCancel}
+  >
+    <ModalBody loading={loading} loadingText={loadingText}>
+      {children}
+    </ModalBody>
+    <ConfirmModalFooter
+      okText={okText}
+      cancelText={cancelText}
+      disabled={loading}
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+      hideCancel={hideCancel}
+    />
+  </Modal>;
+}
+
+interface FooterProps {
+  children?: ReactNode,
+  okText?: string,
+  cancelText?: string,
+  onConfirm: () => void,
+  onCancel: () => void,
+  disabled?: boolean,
+  hideCancel?: boolean,
+}
+
+export function ConfirmModalFooter({
+  children, okText, cancelText, disabled, hideCancel, onConfirm, onCancel,
+}: FooterProps) {
+  return <footer>
+    {children ?? <>
+      <GameButton onClick={onConfirm} disabled={disabled}>
         {okText ?? "Yes"}
       </GameButton>
-      {!hideCancel && <GameButton onClick={onCancel} disabled={loading}>
+      {!hideCancel && <GameButton onClick={onCancel} disabled={disabled}>
         {cancelText ?? "Cancel"}
       </GameButton>}
-    </footer>
-  </Modal>;
+    </>}
+  </footer>
 }

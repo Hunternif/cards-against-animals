@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 import { Card } from "react-bootstrap";
-import { ConfirmModal } from "../../../components/ConfirmModal";
+import { ConfirmModalFooter } from "../../../components/ConfirmModal";
 import { ErrorContext } from "../../../components/ErrorContext";
+import { Modal, ModalBody } from "../../../components/Modal";
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Twemoji } from "../../../components/Twemoji";
 import { kickPlayer, updatePlayer } from "../../../model/lobby-api";
@@ -54,13 +55,13 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
   }
 
   return <>
-    <ConfirmModal
-      show={showKickModal}
-      onCancel={() => setShowKickModal(false)}
-      onConfirm={handleKick}
-      loading={kicking}>
-      Kick {player.name} out?
-    </ConfirmModal>
+    <Modal show={showKickModal} onHide={() => setShowKickModal(false)}>
+      <ModalBody loading={kicking}>Kick {player.name} out?</ModalBody>
+      <ConfirmModalFooter
+        disabled={kicking}
+        onCancel={() => setShowKickModal(false)}
+        onConfirm={handleKick} />
+    </Modal>
     <Card className={`player-card ${meStyle} ${judgeStyle}`}>
       <Card.Body>
         {isMe ? (
