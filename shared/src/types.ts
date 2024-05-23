@@ -157,10 +157,10 @@ export class GameTurn {
 export class PlayerDataInTurn {
   /** Cards in the player's hand, including `current_response`.
    * Must be fetched separately from a Firebase subcollection. */
-  hand: Array<ResponseCardInGame> = [];
+  hand: Array<ResponseCardInHand> = [];
   /** Cards that were discarded this turn.
    * Must be fetched separately from a Firebase subcollection. */
-  discarded: Array<ResponseCardInGame> = [];
+  discarded: Array<ResponseCardInHand> = [];
 
   constructor(
     public player_uid: string,
@@ -335,6 +335,20 @@ export class ResponseCardInGame implements CardInGame {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
   type: CardType = "response";
+}
+
+/** An instance of a Response card in player's hand. */
+export class ResponseCardInHand extends ResponseCardInGame {
+  /** When the player receive this card */
+  time_received: Date = new Date();
+  static create(from: ResponseCardInGame, time: Date): ResponseCardInHand {
+    const ret = new ResponseCardInHand(
+      from.id, from.deck_id, from.card_id_in_deck, from.random_index,
+      from.content, from.rating, from.downvoted, from.tags
+    );
+    ret.time_received = time;
+    return ret;
+  }
 }
 
 export type PlayerRole = "player" | "spectator";

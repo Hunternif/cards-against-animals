@@ -17,6 +17,7 @@ import {
   PromptCardInGame,
   PromptDeckCard,
   ResponseCardInGame,
+  ResponseCardInHand,
   ResponseDeckCard,
   Vote,
   defaultLobbySettings
@@ -238,5 +239,17 @@ export const responseCardInGameConverter: FConverter<ResponseCardInGame> = {
     return new ResponseCardInGame(snapshot.id, data.deck_id, data.card_id_in_deck,
       data.random_index ?? 0, data.content, data.rating ?? 0, data.downvoted ?? false,
       data.tags ?? []);
+  },
+};
+
+export const responseCardInHandConverter: FConverter<ResponseCardInHand> = {
+  toFirestore: (card: ResponseCardInHand) => copyFields2(card, {
+    time_received: FTimestamp.fromDate(card.time_received)
+  }, ['type']),
+  fromFirestore: (snapshot: FDocSnapshot) => {
+    const data = snapshot.data();
+    const baseCard = mapResponseCardInGame(data);
+    const time_received = (data.time_received as FTimestamp | null)?.toDate() ?? new Date();
+    return ResponseCardInHand.create(baseCard, time_received);
   },
 };

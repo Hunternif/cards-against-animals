@@ -8,6 +8,7 @@ import {
   playerResponseConverter,
   promptCardInGameConverter,
   responseCardInGameConverter,
+  responseCardInHandConverter,
   turnConverter,
   voteConverter
 } from "../shared/firestore-converters";
@@ -19,6 +20,7 @@ import {
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame,
+  ResponseCardInHand,
   Vote
 } from "../shared/types";
 import { logCardInteractions } from "./deck-server-api";
@@ -52,7 +54,7 @@ export function getPlayerDataRef(lobbyID: string, turnID: string) {
 /** Returns Firestore subcollection reference. */
 function getPlayerHandRef(lobbyID: string, turnID: string, userID: string) {
   return db.collection(`lobbies/${lobbyID}/turns/${turnID}/player_data/${userID}/hand`)
-    .withConverter(responseCardInGameConverter);
+    .withConverter(responseCardInHandConverter);
 }
 
 /** Returns Firestore subcollection reference. */
@@ -140,7 +142,7 @@ export async function getAllPlayerData(lobbyID: string, turnID: string):
 /** Hand from a specific player, from a specific turn. */
 export async function getPlayerHand(
   lobbyID: string, turnID: string, uid: string
-): Promise<ResponseCardInGame[]> {
+): Promise<ResponseCardInHand[]> {
   return (await getPlayerHandRef(lobbyID, turnID, uid).get())
     .docs.map((t) => t.data());
 }
@@ -332,7 +334,7 @@ export async function dealCardsToPlayer(
   const newCards = totalCardsNeeded <= 0 ? [] : (await deckResponsesRef
     .orderBy("random_index", "desc")
     .limit(totalCardsNeeded).get()
-  ).docs.map((c) => c.data());
+  ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
   // Add cards to the new player hand
   newPlayerData.hand.push(...newCards);
   // If we ran out of cards, sorry!

@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { toggleDownvoteCard } from "../../../model/turn-api";
-import { PlayerResponse, ResponseCardInGame } from "../../../shared/types";
+import { PlayerResponse, ResponseCardInGame, ResponseCardInHand } from "../../../shared/types";
 import { CardResponse } from "./CardResponse";
 import { useGameContext } from "./GameContext";
 
@@ -21,27 +21,19 @@ export function GameHand({
   discarding, discardedCards, setDiscardedCards,
 }: HandProps) {
   const { lobby, turn, player, hand, prompt } = useGameContext();
-  // TODO: sort by the time cards arrive in hand.
-  const handSorted = hand.sort((c1, c2) => c1.random_index - c2.random_index);
-  // Remember hand from the previous turn:
-  const [prevHand, setPrevHand] = useState<ResponseCardInGame[]>([]);
-  // New cards will be animated:
-  const [newCards, setNewCards] = useState<ResponseCardInGame[]>([]);
+  const handSorted = hand.sort((c1, c2) =>
+    c1.random_index + c1.time_received.getMilliseconds() -
+    (c2.random_index + c2.time_received.getMilliseconds()));
   const pick = prompt?.pick ?? 0;
   const isHandSelectable = pick > 0;
   const { setError } = useContext(ErrorContext);
 
-  // Mark new cards:
-  if (handSorted && prevHand != handSorted) {
-    const newCards = hand.filter((c) => prevHand.findIndex((c2) => c.id === c2.id) === -1);
-    setNewCards(newCards);
-    setPrevHand(handSorted);
-  }
-  function getIsNew(card: ResponseCardInGame): boolean {
-    return newCards.findIndex((c2) => card.id === c2.id) > -1;
+  function getIsNew(card: ResponseCardInHand): boolean {
+    // TODO: on czar's next turn, they won't know which card is new.
+    return card.time_received >= turn.time_created;
   }
 
-  function getSelectedIndex(card: ResponseCardInGame): number {
+  function getSelectedIndex(card: ResponseCardInHand): number {
     // check card by ID, because the response instance could be unequal:
     if (response) {
       return response.cards.findIndex((c) => c.id === card.id);
@@ -50,7 +42,7 @@ export function GameHand({
     }
   }
 
-  function selectCard(card: ResponseCardInGame) {
+  function selectCard(card: ResponseCardInHand) {
     const newSelection = selectedCards.slice();
     // Don't select more than required:
     if (newSelection.length >= pick) {
@@ -60,7 +52,7 @@ export function GameHand({
     setSelectedCards(newSelection);
   }
 
-  function deselectCard(card: ResponseCardInGame) {
+  function deselectCard(card: ResponseCardInHand) {
     const newSelection = selectedCards.slice();
     const index = newSelection.findIndex((c) => c.id === card.id);
     if (index > -1) {
@@ -69,23 +61,23 @@ export function GameHand({
     }
   }
 
-  async function handleDownvote(card: ResponseCardInGame, downvoted: boolean) {
+  async function handleDownvote(card: ResponseCardInHand, downvoted: boolean) {
     await toggleDownvoteCard(lobby, turn, player.uid, card, downvoted)
       .catch((e) => setError(e));
   }
 
-  function getIsDiscarded(card: ResponseCardInGame): boolean {
+  function getIsDiscarded(card: ResponseCardInHand): boolean {
     // check card by ID, because the response instance could be unequal:
     return discardedCards.findIndex((c) => c.id === card.id) > -1;
   }
 
-  function discardCard(card: ResponseCardInGame) {
+  function discardCard(card: ResponseCardInHand) {
     const newDiscarded = discardedCards.slice();
     newDiscarded.push(card);
     setDiscardedCards(newDiscarded);
   }
 
-  function undiscardCard(card: ResponseCardInGame) {
+  function undiscardCard(card: ResponseCardInHand) {
     const newDiscarded = discardedCards.slice();
     const index = newDiscarded.findIndex((c) => c.id === card.id);
     if (index > -1) {

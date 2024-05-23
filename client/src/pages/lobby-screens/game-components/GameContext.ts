@@ -1,6 +1,14 @@
 import { User } from "firebase/auth";
 import { createContext, useContext } from "react";
-import { GameLobby, GameTurn, PlayerInLobby, PlayerResponse, PromptCardInGame, ResponseCardInGame } from "../../../shared/types";
+import {
+  GameLobby,
+  GameTurn,
+  PlayerInLobby,
+  PlayerResponse,
+  PromptCardInGame,
+  ResponseCardInGame,
+  ResponseCardInHand,
+} from "../../../shared/types";
 
 /** State of the game in progress. */
 export interface GameContextState {
@@ -17,11 +25,11 @@ export interface GameContextState {
   isSpectator: boolean,
   /** Is current player the lobby creator? */
   isCreator: boolean,
-  
+
   // Changes each turn:
   turn: GameTurn,
   /** Current player's hand. */
-  hand: ResponseCardInGame[],
+  hand: ResponseCardInHand[],
   prompt?: PromptCardInGame,
   judge: PlayerInLobby,
   /** Is current player this turn's judge? */

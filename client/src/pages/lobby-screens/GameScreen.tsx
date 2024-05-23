@@ -14,7 +14,8 @@ import {
   GameLobby,
   GameTurn,
   PlayerInLobby,
-  ResponseCardInGame
+  ResponseCardInGame,
+  ResponseCardInHand
 } from "../../shared/types";
 import { CardReadingScreen } from "./CardReadingScreen";
 import { JudgeAwaitResponsesScreen } from "./JudgeAwaitResponsesScreen";
@@ -38,20 +39,10 @@ const gameContainerStyle: CSSProperties = {
 
 export function GameScreen({ lobby, user, players }: ScreenProps) {
   const [turn, loadingTurn, error] = useLastTurn(lobby);
-  const [newHand, loadingHand, error2] =
-    usePlayerHand(lobby, lobby.current_turn_id ?? "turn_unknown", user.uid);
-
   const { setError } = useContext(ErrorContext);
   useEffect(() => {
-    if (error || error2) setError(error || error2);
-  }, [error, error2, setError]);
-
-  // Remember hand from the previous turn:
-  const [prevHand, setPrevHand] = useState<ResponseCardInGame[]>([]);
-  if (newHand && prevHand != newHand) {
-    setPrevHand(newHand);
-  }
-  const hand = newHand ?? prevHand;
+    if (error) setError(error);
+  }, [error, setError]);
 
   return (
     <FillLayout style={gameContainerStyle}
@@ -59,7 +50,7 @@ export function GameScreen({ lobby, user, players }: ScreenProps) {
       {(!turn) ? (
         <LoadingSpinner delay text="Waiting for next turn..." />
       ) : (
-        <TurnScreen turn={turn} hand={hand} lobby={lobby} user={user} players={players} />
+        <TurnScreen turn={turn} lobby={lobby} user={user} players={players} />
       )}
     </FillLayout>
   );
@@ -68,15 +59,22 @@ export function GameScreen({ lobby, user, players }: ScreenProps) {
 interface PreTurnProps {
   lobby: GameLobby,
   turn: GameTurn,
-  hand: ResponseCardInGame[],
   user: User,
   players: PlayerInLobby[],
 }
 
-function TurnScreen({ lobby, turn, hand, user, players }: PreTurnProps) {
+function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   const [prompts, loadingPrompts, error] = useAllTurnPrompts(lobby, turn);
   const [responses, loadingResponses, error2] = useAllPlayerResponses(lobby, turn);
   const [playerDiscard, loadingDiscard, error3] = usePlayerDiscard(lobby, turn, user.uid);
+  const [newHand, loadingHand, error4] = usePlayerHand(lobby, turn.id, user.uid);
+
+  // Remember hand from the previous turn:
+  const [prevHand, setPrevHand] = useState<ResponseCardInHand[]>([]);
+  if (newHand && prevHand != newHand) {
+    setPrevHand(newHand);
+  }
+  const hand = newHand ?? prevHand;
 
   const judge = players.find((p) => p.uid === turn.judge_uid);
   const player = players.find((p) => p.uid === user.uid);
@@ -92,9 +90,9 @@ function TurnScreen({ lobby, turn, hand, user, players }: PreTurnProps) {
 
   const { setError } = useContext(ErrorContext);
   useEffect(() => {
-    if (error || error2 || error3)
-      setError(error || error2 || error3);
-  }, [error, error2, error3, setError]);
+    if (error || error2 || error3 || error4)
+      setError(error || error2 || error3 || error4);
+  }, [error, error2, error3, error4, setError]);
 
   if (!player) {
     setError("Current player is not in lobby");

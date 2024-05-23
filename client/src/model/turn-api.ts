@@ -20,6 +20,7 @@ import {
   playerResponseConverter,
   promptCardInGameConverter,
   responseCardInGameConverter,
+  responseCardInHandConverter,
   turnConverter,
   voteConverter
 } from "../shared/firestore-converters";
@@ -403,14 +404,14 @@ export function useAllPlayerDataOnce(lobby: GameLobby, turn: GameTurn) {
 export function usePlayerHand(lobby: GameLobby, turnID: string, userID: string) {
   return useCollectionData(
     collection(lobbiesRef, lobby.id, "turns", turnID, "player_data", userID, "hand")
-      .withConverter(responseCardInGameConverter));
+      .withConverter(responseCardInHandConverter));
 }
 
 /** Returns to current user's player hand in the current turn in the lobby. */
 export function usePlayerHandOnce(lobby: GameLobby, turnID: string, userID: string) {
   return useCollectionDataOnce(
     collection(lobbiesRef, lobby.id, "turns", turnID, "player_data", userID, "hand")
-      .withConverter(responseCardInGameConverter));
+      .withConverter(responseCardInHandConverter));
 }
 
 /** Returns and subscribes to current user's player response that they played
