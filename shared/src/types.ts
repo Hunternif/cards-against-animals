@@ -77,7 +77,7 @@ export function defaultLobbySettings(): LobbySettings {
     show_likes_to: "all_except_czar",
     likes_limit: "none",
     discard_cost: "1_free_then_1_star",
-    lobby_control: "anyone",
+    lobby_control: "players",
     next_turn_time_sec: 4.0,
   };
 }
@@ -90,7 +90,8 @@ export type DiscardCost = "free" | "1_star" | "1_free_then_1_star" |
   // "1_free_then_5_hearts" |
   // "1_free_then_1_heart_per_card" | // each card costs 1 heart
   "no_discard";
-export type LobbyContol = "creator" | "czar" | "anyone";
+// "anyone" includes spectators
+export type LobbyContol = "creator" | "czar" | "players" | "anyone";
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {

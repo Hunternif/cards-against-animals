@@ -27,6 +27,9 @@ export async function assertLobbyControl(
       case "czar":
         await assertCurrentJudge(event, lobby);
         break;
+      case "players":
+        await assertPlayerInLobby(event, lobby.id);
+        break;
       case "anyone":
         break;
     }
