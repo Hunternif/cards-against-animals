@@ -25,8 +25,8 @@ import { logCardInteractions } from "./deck-server-api";
 import {
   findNextPlayer,
   getLobby,
-  getPlayer,
   getPlayerSequence,
+  getPlayerThrows,
   getPlayers,
   updateLobby,
   updatePlayer
@@ -145,12 +145,25 @@ export async function getPlayerHand(
     .docs.map((t) => t.data());
 }
 
-/** Discarded cards from a specific player, from a specific turn. */
+/** ALL discarded cards from a specific player, from a specific turn. */
 export async function getPlayerDiscard(
   lobbyID: string, turnID: string, uid: string
 ): Promise<ResponseCardInGame[]> {
   return (await getPlayerDiscardRef(lobbyID, turnID, uid).get())
     .docs.map((t) => t.data());
+}
+
+/** NEW discarded cards from a specific player, from a specific turn.
+ * Excludes cards that were discarded during previous "discard" moves. */
+export async function getNewPlayerDiscard(
+  lobbyID: string, turnID: string, uid: string
+): Promise<ResponseCardInGame[]> {
+  const discardDocs = (await getPlayerDiscardRef(lobbyID, turnID, uid).get()).docs;
+  const handDocs = (await getPlayerHandRef(lobbyID, turnID, uid).get()).docs;
+  // Filter out cards that were removed from hand, during previous discards:
+  return discardDocs
+    .filter((d) => handDocs.findIndex((h) => h.id === d.id) > -1)
+    .map((t) => t.data());
 }
 
 /** Responses from all players in this turn. */
@@ -261,24 +274,50 @@ async function dealCards(
   }
 }
 
-/** Deal cards to a given player, up to the limit. */
+/** Immediately remove discarded cards and deal new ones. */
+export async function discardNowAndDealCardsToPlayer(
+  lobby: GameLobby, turn: GameTurn, userID: string,
+) {
+  // 1. Pay discard cost;
+  // 2. Remove discarded cards from hand;
+  // 3. Deal new cards.
+  // TODO: do this in the same transaction.
+  const player = await getPlayerThrows(lobby.id, userID);
+  const newDiscard = await getNewPlayerDiscard(lobby.id, turn.id, userID);
+  if (!await payDiscardCost(lobby.id, turn, player, newDiscard)) {
+    return;
+  }
+  const handRef = getPlayerHandRef(lobby.id, turn.id, userID);
+  await db.runTransaction(async (transaction) => {
+    for (const card of newDiscard) {
+      transaction.delete(handRef.doc(card.id));
+    }
+  });
+  logger.info(`Discarded ${newDiscard.length} cards from player ${userID}`);
+  await dealCardsToPlayer(lobby, turn, turn, userID);
+}
+
+/**
+ * Deal cards to a given player, up to the limit.
+ * @param lastTurn will be used to check player's current turn and discard.
+ * @param newTurn new cards will be added to this turn.
+ */
 export async function dealCardsToPlayer(
   lobby: GameLobby, lastTurn: GameTurn | null, newTurn: GameTurn, userID: string,
 ) {
   const deckResponsesRef = db.collection(`lobbies/${lobby.id}/deck_responses`)
     .withConverter(responseCardInGameConverter);
-  const player = await getPlayer(lobby.id, userID);
-  if (!player) {
-    throw new HttpsError("not-found", `Player data not found for user ${userID}`);
-  }
+  const player = await getPlayerThrows(lobby.id, userID);
   const newPlayerData = new PlayerDataInTurn(userID, player.name);
   if (lastTurn) {
-    const lastResponse = await getPlayerResponse(lobby.id, lastTurn.id, userID);
-    const lastDiscard = await getPlayerDiscard(lobby.id, lastTurn.id, userID);
-    // copy old hand, without the submitted and discarded cards:
-    const oldHand = (await getPlayerHand(lobby.id, lastTurn.id, userID))
-      ?.filter((card) => !lastResponse?.cards?.find((c) => c.id === card.id))
-      ?.filter((card) => !lastDiscard.find((c) => c.id === card.id));
+    // copy old hand:
+    let oldHand = await getPlayerHand(lobby.id, lastTurn.id, userID);
+    // if starting a new turn, also filter out submitted cards:
+    if (lastTurn.id !== newTurn.id) {
+      const lastResponse = await getPlayerResponse(lobby.id, lastTurn.id, userID);
+      oldHand = oldHand
+        .filter((card) => !lastResponse?.cards?.find((c) => c.id === card.id))
+    }
     // temporarily write hand here, then upload it as a subcollection
     newPlayerData.hand.push(...oldHand);
   }
@@ -320,19 +359,6 @@ export async function updatePlayerScoresFromTurn(
       player.score++;
       player.wins++;
     }
-    const discardRef = getPlayerDiscardRef(lobbyID, turn.id, player.uid);
-    const discardCount = (await discardRef.count().get()).data().count;
-    if (discardCount > 0) {
-      player.discards_used++;
-      // Check discard cost:
-      const lobby = await getLobby(lobbyID);
-      const cost = lobby.settings.discard_cost;
-      const isDiscardFree = cost === "free" ||
-        cost === "1_free_then_1_star" && player.discards_used <= 1;
-      if (!isDiscardFree && player.score > 0) {
-        player.score--;
-      }
-    }
     const response = responses.find((r) => r.player_uid === player.uid);
     if (response) {
       const likeCount = await getResponseLikeCount(lobbyID, turn.id, player.uid);
@@ -342,6 +368,32 @@ export async function updatePlayerScoresFromTurn(
     }
     await updatePlayer(lobbyID, player);
   }
+}
+
+/**
+ * Updates the player's score ONE TIME, based on cards they discarded.
+ * If a player discards multiple times during a turn, this needs to be called
+ * multiple times.
+ * @return true if the pay is accepted and discarding should proceed.
+ */
+async function payDiscardCost(
+  lobbyID: string, turn: GameTurn, player: PlayerInLobby,
+  discard: ResponseCardInGame[],
+): Promise<boolean> {
+  if (discard.length > 0) {
+    player.discards_used++;
+    // Check discard cost:
+    const lobby = await getLobby(lobbyID);
+    const cost = lobby.settings.discard_cost;
+    const isDiscardFree = cost === "free" ||
+      cost === "1_free_then_1_star" && player.discards_used <= 1;
+    if (!isDiscardFree && player.score > 0) {
+      player.score--;
+    }
+    await updatePlayer(lobbyID, player);
+    return true;
+  }
+  return false;
 }
 
 /** Log interaction for the played prompt. */

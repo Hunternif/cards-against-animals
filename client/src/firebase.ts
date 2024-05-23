@@ -61,6 +61,10 @@ export const endLobbyFun = httpsCallable<
     { lobby_id: string }, void
 >(functions, 'endLobby');
 
+export const discardNowFun = httpsCallable<
+    { lobby_id: string }, void
+>(functions, 'discardNow');
+
 export const logInteractionFun = httpsCallable<
     {
         lobby_id: string,

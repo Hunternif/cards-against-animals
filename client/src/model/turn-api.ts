@@ -14,7 +14,7 @@ import {
   useDocumentData
 } from "react-firebase-hooks/firestore";
 import { FirestoreCollectionDataHookNullSafe, useCollectionDataNonNull } from "../components/utils";
-import { db, lobbiesRef, newTurnFun } from "../firebase";
+import { db, discardNowFun, lobbiesRef, newTurnFun } from "../firebase";
 import {
   playerDataConverter,
   playerResponseConverter,
@@ -264,6 +264,11 @@ export async function discardCards(
       transaction.set(doc(discardRef, card.id), card);
     }
   });
+}
+
+/** Immediately discard cards marked as discarded, and deal new cards. */
+export async function discardImmediately(lobby: GameLobby) {
+  await discardNowFun({ lobby_id: lobby.id });
 }
 
 /** Create/delete a "yes"/"no" vote for the given prompt from the current player.

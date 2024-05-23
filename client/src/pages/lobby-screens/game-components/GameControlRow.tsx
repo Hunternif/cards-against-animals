@@ -99,9 +99,8 @@ export function GameControlRow({
             </span>
           ) : discardCount > 0 && (
             <span className="light" style={discardCountStyle}>
-              <>Next turn: {isDiscardFree ?
-                <>will discard <b>{discardCount}</b> cards</> :
-                <>will pay <Cost b /> and discard <b>{discardCount}</b> cards</>}
+              <>Discarding <b>{discardCount}</b> cards
+                {isDiscardFree ? <></> : <>for <Cost b /></>}...
               </>
             </span>
           )}

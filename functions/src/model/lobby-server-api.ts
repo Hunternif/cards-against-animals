@@ -92,6 +92,16 @@ export async function getPlayer(lobbyID: string, userID: string):
   return (await getPlayersRef(lobbyID).doc(userID).get()).data() ?? null;
 }
 
+/** Find player in this lobby or throws. */
+export async function getPlayerThrows(lobbyID: string, userID: string):
+  Promise<PlayerInLobby> {
+  const player = await getPlayer(lobbyID, userID);
+  if (!player) {
+    throw new HttpsError("not-found", `Player data not found for user ${userID}`);
+  }
+  return player;
+}
+
 /** Returns all players in this lobby, by role. */
 export async function getPlayers(lobbyID: string, role?: PlayerRole):
   Promise<Array<PlayerInLobby>> {

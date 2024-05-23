@@ -4,11 +4,12 @@ import { GameLobby } from "../shared/types";
 import { getPlayersRef } from "./lobby-server-api";
 import { getLastTurn } from "./turn-server-api";
 
-/** Asserts that current user is logged in. */
-export function assertLoggedIn(event: CallableRequest) {
+/** Asserts that current user is logged in. Returns user ID. */
+export function assertLoggedIn(event: CallableRequest): string {
   if (!event.auth) {
     throw new HttpsError("unauthenticated", "Must log in before calling functions");
   }
+  return event.auth.uid;
 }
 
 /** Asserts that current user is allowed to control the lobby, based on settings. */

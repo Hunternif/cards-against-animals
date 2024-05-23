@@ -8,7 +8,6 @@ import { setGlobalOptions } from "firebase-functions/v2/options";
 // This import is copied during build
 import firebaseConfig from "./firebase-config.json";
 import {
-  assertCurrentJudge,
   assertLobbyControl,
   assertLobbyCreator,
   assertLoggedIn,
@@ -30,16 +29,18 @@ import {
 } from "./model/lobby-server-api";
 import {
   createNewTurn,
+  discardNowAndDealCardsToPlayer,
   getAllPlayerResponses,
+  getLastTurn,
   logInteractionsInCompletePhase,
   logInteractionsInReadingPhase,
   logPlayedPrompt,
   updatePlayerScoresFromTurn,
   updateTurn
 } from "./model/turn-server-api";
+import { setUsersCurrentLobby } from "./model/user-server-api";
 import { lobbyConverter, playerConverter, turnConverter } from "./shared/firestore-converters";
 import { LobbySettings, PromptCardInGame, ResponseCardInGame } from "./shared/types";
-import { setUsersCurrentLobby } from "./model/user-server-api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -226,6 +227,25 @@ export const logInteraction = onCall<
       event.data.viewed_responses.length +
       event.data.played_responses.length;
     logger.info(`Logged ${total} interactions`);
+  }
+);
+
+/**
+ * Immediately remove discarded cards from the player's hand,
+ * and deal new cards.
+ */
+export const discardNow = onCall<
+  { lobby_id: string }, Promise<void>
+>(
+  { maxInstances: 2 },
+  async (event) => {
+    const userID = assertLoggedIn(event);
+    await assertPlayerInLobby(event, event.data.lobby_id);
+    const lobby = await getLobby(event.data.lobby_id);
+    const turn = await getLastTurn(lobby);
+    if (turn) {
+      await discardNowAndDealCardsToPlayer(lobby, turn, userID);
+    }
   }
 );
 

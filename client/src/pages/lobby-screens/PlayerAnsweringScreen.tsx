@@ -5,6 +5,7 @@ import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import {
   cancelPlayerResponse,
   discardCards,
+  discardImmediately,
   submitPlayerResponse
 } from "../../model/turn-api";
 import {
@@ -57,14 +58,13 @@ const miniResponsesContainerStyle: CSSProperties = {
 }
 
 export function PlayerAnsweringScreen() {
-  const { lobby, turn, player, prompt, responses, hand,
-    playerDiscard } = useGameContext();
+  const { lobby, turn, player, prompt, responses, hand } = useGameContext();
   const response = responses.find((r) => r.player_uid === player.uid);
   const submitted = response !== undefined;
   const [selectedCards, setSelectedCards] =
     useState<ResponseCardInGame[]>(response?.cards?.slice() ?? []);
   const [discardedCards, setDiscardedCards] =
-    useState<ResponseCardInGame[]>(playerDiscard.slice());
+    useState<ResponseCardInGame[]>([]);
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
@@ -86,12 +86,15 @@ export function PlayerAnsweringScreen() {
   }
 
   /** When discarding mode is turned on/off. */
-  function toggleDiscard(on: boolean) {
+  async function toggleDiscard(on: boolean) {
     if (on) {
       setDiscarding(true);
     } else {
       setDiscarding(false);
-      setDiscardedCards(playerDiscard);
+      if (discardedCards.length > 0) {
+        await discardImmediately(lobby);
+        setDiscardedCards([]);
+      }
     }
   }
 
@@ -100,14 +103,14 @@ export function PlayerAnsweringScreen() {
     if (shouldDiscard) {
       const allDiscardable =
         hand.filter((c1) => !selectedCards.find((c2) => c1.id === c2.id));
-      handleDiscard(allDiscardable);
+      handleMarkDiscarded(allDiscardable);
     } else {
-      handleDiscard([]);
+      handleMarkDiscarded([]);
     }
   }
 
   /** When new discarded cards are clicked, automatically update firestore. */
-  async function handleDiscard(cards: ResponseCardInGame[]) {
+  async function handleMarkDiscarded(cards: ResponseCardInGame[]) {
     setDiscardedCards(cards);
     await discardCards(lobby, turn, player.uid, cards)
       .catch((e) => setError(e));
@@ -162,7 +165,7 @@ export function PlayerAnsweringScreen() {
           setSelectedCards={handleSelect}
           discarding={discarding}
           discardedCards={discardedCards}
-          setDiscardedCards={handleDiscard}
+          setDiscardedCards={handleMarkDiscarded}
         />
       </div>
     </CenteredLayout>
