@@ -40,7 +40,7 @@ import {
 } from "./model/turn-server-api";
 import { setUsersCurrentLobby } from "./model/user-server-api";
 import { lobbyConverter, playerConverter, turnConverter } from "./shared/firestore-converters";
-import { LobbySettings, PromptCardInGame, ResponseCardInGame } from "./shared/types";
+import { KickAction, LobbySettings, PromptCardInGame, ResponseCardInGame } from "./shared/types";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -130,7 +130,7 @@ export const updateLobbySettings = onCall<
 
 /** Kicks player from the game. Allowed for creator and current judge. */
 export const kickPlayer = onCall<
-  { lobby_id: string, user_id: string }, Promise<void>
+  { lobby_id: string, user_id: string, action: KickAction }, Promise<void>
 >(
   { maxInstances: 2 },
   async (event) => {
@@ -139,10 +139,19 @@ export const kickPlayer = onCall<
     await assertLobbyControl(event, lobby);
     const player = await getPlayer(lobby.id, event.data.user_id);
     if (player) {
-      player.role = "spectator";
-      player.status = "kicked";
-      await updatePlayer(lobby.id, player);
-      logger.info(`Kicked player ${player.uid} from ${lobby.id}`);
+      switch (event.data.action) {
+        case "kick":
+          player.status = "left";
+          await updatePlayer(lobby.id, player);
+          logger.info(`Soft-kicked player ${player.uid} from ${lobby.id}`);
+          break;
+        case "ban":
+          player.role = "spectator";
+          player.status = "banned";
+          await updatePlayer(lobby.id, player);
+          logger.info(`Hard-banned player ${player.uid} from ${lobby.id}`);
+          break;
+      }
     }
   }
 );
@@ -290,7 +299,7 @@ export const onPlayerStatusChange = onDocumentUpdated(
     const playerBefore = playerConverter.fromFirestore(event.data.before);
     const playerAfter = playerConverter.fromFirestore(event.data.after);
     if (playerBefore.status !== playerAfter.status) {
-      if (playerAfter.status === "left" || playerAfter.status === "kicked") {
+      if (playerAfter.status === "left" || playerAfter.status === "banned") {
         await cleanUpPlayer(lobbyID, playerAfter);
       } else if (playerAfter.status === "online") {
         // Player rejoined, update current lobby ID:

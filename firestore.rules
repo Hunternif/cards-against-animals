@@ -11,10 +11,10 @@ service cloud.firestore {
       return user != null && user.data.is_admin == true;
     }
 
-    // Current user is a player in the lobby, and is not kicked.
+    // Current user is a player in the lobby, and is not banned.
     function userIsPlayer(lobby) {
       let player = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid));
-      return player != null && player.data.status != "kicked";
+      return player != null && player.data.status != "banned";
     }
     // Allows only "players", not "spectators".
     function userIsActivePlayer(lobby) {
@@ -49,10 +49,10 @@ service cloud.firestore {
         doc.data['discards_used'] == request.resource.data['discards_used']
       );
     }
-    // Don't allow changing anything if you're kicked
+    // Don't allow changing anything if you're banned
     function userIsNotKicked(lobby, userID) {
       let doc = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
-      return doc == null || doc.data['status'] != "kicked";
+      return doc == null || doc.data['status'] != "banned";
     }
     // Allow changing user data, except admin-only fields
     function isAdminInfoUnchanged(userID) {

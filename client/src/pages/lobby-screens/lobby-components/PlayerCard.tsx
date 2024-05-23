@@ -7,8 +7,9 @@ import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Twemoji } from "../../../components/Twemoji";
 import { kickPlayer, updatePlayer } from "../../../model/lobby-api";
 import { updateUserData } from "../../../model/users-api";
-import { GameLobby, PlayerInLobby } from "../../../shared/types";
+import { GameLobby, KickAction, PlayerInLobby } from "../../../shared/types";
 import { AvatarSelector } from "./AvatarSelector";
+import { GameButton } from "../../../components/Buttons";
 
 interface PlayerProps {
   lobby: GameLobby,
@@ -30,10 +31,10 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
   const meStyle = isMe ? "me-card" : "";
   const judgeStyle = isJudge ? "judge-card" : "";
 
-  async function handleKick() {
+  async function executeKick(action: KickAction) {
     setKicking(true);
     try {
-      await kickPlayer(lobby, player)
+      await kickPlayer(lobby, player, action)
       setShowKickModal(false);
     } catch (e) {
       setError(e);
@@ -41,6 +42,14 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
     finally {
       setKicking(false);
     }
+  }
+
+  async function handleBan() {
+    await executeKick("ban");
+  }
+
+  async function handleKick() {
+    await executeKick("kick");
   }
 
   async function setNewAvatar(avatarID: string) {
@@ -57,11 +66,13 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
   return <>
     <Modal show={showKickModal} onHide={() => setShowKickModal(false)}>
       <ModalBody loading={kicking}>Kick {player.name} out?</ModalBody>
-      <ConfirmModalFooter
-        disabled={kicking}
-        onCancel={() => setShowKickModal(false)}
-        onConfirm={handleKick} />
+      <footer>
+        <GameButton onClick={handleBan} accent disabled={kicking}>Ban</GameButton>
+        <GameButton onClick={handleKick} disabled={kicking}>Kick</GameButton>
+        <GameButton onClick={() => setShowKickModal(false)} disabled={kicking}>Cancel</GameButton>
+      </footer>
     </Modal>
+
     <Card className={`player-card ${meStyle} ${judgeStyle}`}>
       <Card.Body>
         {isMe ? (
@@ -77,7 +88,7 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
           {(isCreator || isJudge) &&
             <Twemoji className="right-icon">👑</Twemoji>
           }
-          {player.status === "kicked" ? (
+          {player.status === "banned" ? (
             <Twemoji className="right-icon">💀</Twemoji>
           ) : (
             canKick && !isMe && <span className="right-icon kick-button"

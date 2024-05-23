@@ -357,13 +357,16 @@ export class ResponseCardInHand extends ResponseCardInGame {
 
 export type PlayerRole = "player" | "spectator";
 
-export type PlayerStatus = "online" | "left" | "kicked";
+export type PlayerStatus = "online" | "left" | "banned";
 
 export type TurnPhase = "new" | "answering" | "reading" | "complete";
 
 export type LobbyStatus = "new" | "in_progress" | "ended";
 
 export type CardType = "prompt" | "response";
+
+/** "kick" is re-joinable, "ban" is forever. */
+export type KickAction = "kick" | "ban";
 
 /**
  * User data stored in the database.

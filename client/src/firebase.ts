@@ -4,7 +4,7 @@ import { collection, collectionGroup, connectFirestoreEmulator, getFirestore } f
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 import firebaseConfig from '../../firebase-config.json';
 import { deckConverter, lobbyConverter, playerConverter, userConverter } from './shared/firestore-converters';
-import { LobbySettings, PromptCardInGame, ResponseCardInGame } from './shared/types';
+import { KickAction, LobbySettings, PromptCardInGame, ResponseCardInGame } from './shared/types';
 
 export const firebaseApp = initializeApp(firebaseConfig)
 
@@ -50,7 +50,7 @@ export const updateLobbySettingsFun = httpsCallable<
 >(functions, 'updateLobbySettings');
 
 export const kickPlayerFun = httpsCallable<
-    { lobby_id: string, user_id: string }, void
+    { lobby_id: string, user_id: string, action: KickAction }, void
 >(functions, 'kickPlayer');
 
 export const newTurnFun = httpsCallable<

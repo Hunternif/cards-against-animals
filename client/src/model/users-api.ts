@@ -81,7 +81,7 @@ export async function findPastLobbyID(userID: string): Promise<string | null> {
   const caaUser = await getCAAUser(userID);
   if (caaUser?.current_lobby_id) {
     const player = await getPlayerInLobby(caaUser.current_lobby_id, userID);
-    if (player?.status === "kicked") {
+    if (player?.status === "banned") {
       await updateDoc(doc(usersRef, userID), { current_lobby_id: deleteField() });
       return null;
     }

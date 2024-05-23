@@ -21,7 +21,7 @@ import {
   updateLobbySettingsFun
 } from "../firebase";
 import { lobbyConverter, playerConverter } from "../shared/firestore-converters";
-import { GameLobby, GameTurn, LobbySettings, PlayerInLobby, PlayerStatus } from "../shared/types";
+import { GameLobby, GameTurn, KickAction, LobbySettings, PlayerInLobby, PlayerStatus } from "../shared/types";
 
 function getPlayersRef(lobbyID: string) {
   return collection(lobbiesRef, lobbyID, 'players')
@@ -149,8 +149,10 @@ export function checkIfShouldEndGame(
 }
 
 /** Sets the given player's status as "kicked", so they can't re-join. */
-export async function kickPlayer(lobby: GameLobby, player: PlayerInLobby) {
-  await kickPlayerFun({ lobby_id: lobby.id, user_id: player.uid });
+export async function kickPlayer(
+  lobby: GameLobby, player: PlayerInLobby, action: KickAction
+) {
+  await kickPlayerFun({ lobby_id: lobby.id, user_id: player.uid, action });
 }
 
 
