@@ -85,6 +85,7 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
     p.role === "player" && p.status === "online");
   const lobbyControl = lobby.settings.lobby_control;
   const canControlLobby = lobbyControl === "anyone" ||
+    lobbyControl === "players" && player?.role === "player" ||
     lobbyControl === "czar" && isJudge ||
     lobbyControl === "creator" && isCreator;
 
