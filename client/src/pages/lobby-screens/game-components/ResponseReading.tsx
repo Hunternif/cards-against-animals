@@ -321,12 +321,12 @@ function LikeIcon({ response }: LikeProps) {
     }
   }
   for (const card of response.cards) {
-    if (detectDeer(card.content)) {
+    if (detectDeer(card.content) || card.tags.includes("deer")) {
       return <Twemoji className="emoji-like">🦌</Twemoji>;
     }
   }
   for (const card of response.cards) {
-    if (detectCat(card.content)) {
+    if (detectCat(card.content) || card.tags.includes("cat")) {
       return <IconCat className="cat-icon" />;
     }
   }

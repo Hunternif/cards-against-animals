@@ -200,6 +200,7 @@ export function detectCat(text: string): boolean {
     /(^|\s)котик([\s,]|$)/.test(lowText) ||
     /(^|\s)кошьк/.test(lowText) ||
     /(^|\s)кошк/.test(lowText) ||
+    /(^|\s)мяу/.test(lowText) ||
     lowText.includes("🐈");
 }
 
