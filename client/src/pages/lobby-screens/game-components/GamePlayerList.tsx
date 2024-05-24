@@ -21,8 +21,8 @@ export function GamePlayerList() {
     <div className="game-player-list">
       <h4 className="title">Player {judgeIndex}/{playerSequence.length}</h4>
       <ul style={{ padding: 0, margin: 0 }}>
-        {playerSequence.map((player, i) =>
-          <li key={i} style={{ listStyleType: "none" }}>
+        {playerSequence.map((player) =>
+          <li key={player.uid} style={{ listStyleType: "none" }}>
             <PlayerCard
               lobby={lobby}
               player={player}

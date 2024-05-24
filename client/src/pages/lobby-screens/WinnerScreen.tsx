@@ -28,7 +28,8 @@ export function WinnerScreen() {
   const winnerResponse = responses.find((r) => r.player_uid === turn.winner_uid);
   const shouldEndNow = checkIfShouldEndGame(lobby, turn, players);
   const audienceAwardResponses = responses
-    .filter((r) => turn.audience_award_uids.includes(r.player_uid));
+    .filter((r) => turn.audience_award_uids.includes(r.player_uid))
+    .sort((a, b) => a.random_index - b.random_index);
   const showAudienceAward = lobby.settings.enable_likes && audienceAwardResponses.length > 0;
   const nextTurnTime = lobby.settings.next_turn_time_sec * 1000;
   const shouldAutoContinue = nextTurnTime > 0;
@@ -96,8 +97,9 @@ export function WinnerScreen() {
                 </h2>
               </header>
               <section>
-                {audienceAwardResponses.map((r, i) => (
-                  <ResponseReading key={i} showName showLikes response={r}
+                {audienceAwardResponses.map((r) => (
+                  <ResponseReading showName showLikes
+                    key={r.player_uid} response={r}
                     player={players.find((p) => p.uid === r.player_uid)} />
                 ))}
               </section>

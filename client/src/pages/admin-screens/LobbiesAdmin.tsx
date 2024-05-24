@@ -58,8 +58,9 @@ function TurnData({ lobby, turn }: TurnProps) {
   return <div>
     <div>{turn.id}: {prompts?.at(0)?.content}</div>
     <ul>
-      {playerData && playerData.map((pdata, i) =>
-        <PlayerInTurnData key={i} lobby={lobby} turn={turn} data={pdata}
+      {playerData && playerData.map((pdata) =>
+        <PlayerInTurnData key={pdata.player_uid}
+          lobby={lobby} turn={turn} data={pdata}
           responses={playerResponses} />
       )}
     </ul>
