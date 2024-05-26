@@ -15,6 +15,7 @@ The file `package.json` in the root directory contains NPM scripts to manage all
 # Project Setup
 
 First, make sure you have installed `node.js` and `npm` (check the [offical guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)).
+Also to run emulators locally, you will need to install Java 11+ (check the [oracle site](https://www.oracle.com/java/technologies/java-se-glance.html)).
 Then, to set up this project, from command line, run the install script:
 ```sh
 npm install
