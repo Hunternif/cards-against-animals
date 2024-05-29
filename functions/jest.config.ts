@@ -1,4 +1,10 @@
 export default {
+  roots: [
+    "src"
+  ],
+  transform: {
+    "^.+\\.tsx?$": "ts-jest"
+  },
   globals: {
     "extensionsToTreatAsEsm": [".ts"],
     "ts-jest": {
