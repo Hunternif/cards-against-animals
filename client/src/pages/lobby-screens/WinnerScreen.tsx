@@ -8,13 +8,17 @@ import { PlayerAvatar } from "../../components/PlayerAvatar";
 import { Timer } from "../../components/Timer";
 import { GameLayout } from "../../components/layout/GameLayout";
 import { sleep, useEffectOnce } from "../../components/utils";
-import { checkIfShouldEndGame, endLobby, updateLobbySettings } from "../../model/lobby-api";
+import {
+  checkIfShouldEndGame,
+  endLobby,
+  updateLobbySettings,
+} from "../../model/lobby-api";
 import { startNewTurn } from "../../model/turn-api";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
-
+import { ConfirmModal } from "../../components/ConfirmModal";
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -22,15 +26,19 @@ export function WinnerScreen() {
   const [startingNewTurn, setStartingNewTurn] = useState(false);
   const [ending, setEnding] = useState(false);
   const [extending, setExtending] = useState(false);
+  const [showEndModal, setShowEndModal] = useState(false);
   const { setError } = useContext(ErrorContext);
   const winner = players.find((p) => p.uid === turn.winner_uid);
 
-  const winnerResponse = responses.find((r) => r.player_uid === turn.winner_uid);
+  const winnerResponse = responses.find(
+    (r) => r.player_uid === turn.winner_uid
+  );
   const shouldEndNow = checkIfShouldEndGame(lobby, turn, players);
   const audienceAwardResponses = responses
     .filter((r) => turn.audience_award_uids.includes(r.player_uid))
     .sort((a, b) => a.random_index - b.random_index);
-  const showAudienceAward = lobby.settings.enable_likes && audienceAwardResponses.length > 0;
+  const showAudienceAward =
+    lobby.settings.enable_likes && audienceAwardResponses.length > 0;
   const nextTurnTime = lobby.settings.next_turn_time_sec * 1000;
   const shouldAutoContinue = nextTurnTime > 0;
 
@@ -45,8 +53,9 @@ export function WinnerScreen() {
   async function handleExtend() {
     setExtending(true);
     lobby.settings.max_turns += Math.min(5, players.length);
-    await updateLobbySettings(lobby.id, lobby.settings)
-      .catch((e) => setError(e));
+    await updateLobbySettings(lobby.id, lobby.settings).catch((e) =>
+      setError(e)
+    );
     await handleNewTurn();
   }
 
@@ -63,78 +72,116 @@ export function WinnerScreen() {
   });
 
   return (
-    // Add context to share offsets between responses
-    <CardOffsetContextProvider>
-      <GameLayout className="winner-screen">
-        <div className="sections-container">
-          <div className="winner-section">
-            <header>
-              <h2>
-                {winner ? <>
-                  Winner
-                  <PlayerAvatar player={winner} />
-                  <i>{winner.name}</i> <IconStarInline />
-                </> :
-                  <Delay>No winner</Delay>}
-              </h2>
-            </header>
-            <section>
-              <CardPromptWithCzar card={prompt} />
-              {winnerResponse && (
-                <ResponseReading
-                  player={winner}
-                  showName={showAudienceAward}
-                  response={winnerResponse} />
-              )}
-            </section>
-          </div>
-          {showAudienceAward && (
-            // TODO: animate audience choice winner transition
-            <div className="winner-section audience-award-section">
+    <>
+      
+      {/* Add context to share offsets between responses */}
+      <CardOffsetContextProvider>
+        <GameLayout className="winner-screen">
+          <div className="sections-container">
+            <div className="winner-section">
               <header>
-                <h2 >
-                  Audience Choice <IconHeartInline />
+                <h2>
+                  {winner ? (
+                    <>
+                      Winner
+                      <PlayerAvatar player={winner} />
+                      <i>{winner.name}</i> <IconStarInline />
+                    </>
+                  ) : (
+                    <Delay>No winner</Delay>
+                  )}
                 </h2>
               </header>
               <section>
-                {audienceAwardResponses.map((r) => (
-                  <ResponseReading showName showLikes
-                    key={r.player_uid} response={r}
-                    player={players.find((p) => p.uid === r.player_uid)} />
-                ))}
+                <CardPromptWithCzar card={prompt} />
+                {winnerResponse && (
+                  <ResponseReading
+                    player={winner}
+                    showName={showAudienceAward}
+                    response={winnerResponse}
+                  />
+                )}
               </section>
             </div>
-          )}
-        </div>
-        <footer className="winner-control-row">
-          {isJudge && (
-            <Delay>
-              {(extending || shouldEndNow) ? (<>
-                <GameButton onClick={handleEndGame} disabled={ending}>
-                  End game
-                </GameButton>
-                <GameButton secondary onClick={handleExtend} disabled={extending || ending}>
-                  Play more!
-                </GameButton>
-              </>) : (
-                <GameButton accent onClick={handleNewTurn}
-                  disabled={startingNewTurn}>
-                  {startingNewTurn ? "Next turn..." :
-                    shouldAutoContinue ? (
+            {showAudienceAward && (
+              // TODO: animate audience choice winner transition
+              <div className="winner-section audience-award-section">
+                <header>
+                  <h2>
+                    Audience Choice <IconHeartInline />
+                  </h2>
+                </header>
+                <section>
+                  {audienceAwardResponses.map((r) => (
+                    <ResponseReading
+                      showName
+                      showLikes
+                      key={r.player_uid}
+                      response={r}
+                      player={players.find((p) => p.uid === r.player_uid)}
+                    />
+                  ))}
+                </section>
+              </div>
+            )}
+          </div>
+          <footer className="winner-control-row">
+            {isJudge && (
+              <Delay>
+                {extending || shouldEndNow ? (
+                  <>
+                  <ConfirmModal
+        show={showEndModal}
+        onCancel={() => setShowEndModal(false)}
+        onConfirm={handleEndGame}
+        loading={ending}
+        loadingText="Ending game..."
+      >
+        End the game for everyone?
+      </ConfirmModal>
+                    <GameButton
+                      onClick={() => setShowEndModal(true)}
+                      disabled={ending}
+                    >
+                      End game
+                    </GameButton>
+                    <GameButton
+                      secondary
+                      onClick={handleExtend}
+                      disabled={extending || ending}
+                    >
+                      Play more!
+                    </GameButton>
+                  </>
+                ) : (
+                  <GameButton
+                    accent
+                    onClick={handleNewTurn}
+                    disabled={startingNewTurn}
+                  >
+                    {startingNewTurn ? (
+                      "Next turn..."
+                    ) : shouldAutoContinue ? (
                       <>
-                        Next turn in <b>
-                          <Timer onlySeconds
+                        Next turn in{" "}
+                        <b>
+                          <Timer
+                            onlySeconds
                             totalMs={nextTurnTime}
-                            onClear={handleNewTurn} />
+                            onClear={handleNewTurn}
+                          />
                         </b>
                       </>
-                    ) : "Next turn"}
-                </GameButton>
-              )}
-            </Delay>
-          )}
-        </footer>
-      </GameLayout >
-    </CardOffsetContextProvider >
+                    ) : (
+                      "Next turn"
+                    )}
+                  </GameButton>
+                )}
+              </Delay>
+            )}
+          </footer>
+        </GameLayout>
+      </CardOffsetContextProvider>
+    </>
   );
 }
