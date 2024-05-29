@@ -165,8 +165,8 @@ export function GameMenu() {
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>
             <MenuItem label="Profile" onClick={() => setShowProfileModal(true)} />
-            <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
             <MenuItem label="Settings" onClick={openSettings} locked={!canControlLobby} />
+            <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
             <MenuItem label="End game" onClick={() => setShowEndModal(true)} locked={!canControlLobby} />
           </Dropdown.Menu>
         </CustomDropdown>

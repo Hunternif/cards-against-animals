@@ -110,11 +110,11 @@ export function WinnerScreen() {
           {isJudge && (
             <Delay>
               {(extending || shouldEndNow) ? (<>
-                <GameButton secondary onClick={handleExtend} disabled={extending || ending}>
-                  Play more!
-                </GameButton>
                 <GameButton onClick={handleEndGame} disabled={ending}>
                   End game
+                </GameButton>
+                <GameButton secondary onClick={handleExtend} disabled={extending || ending}>
+                  Play more!
                 </GameButton>
               </>) : (
                 <GameButton accent onClick={handleNewTurn}
