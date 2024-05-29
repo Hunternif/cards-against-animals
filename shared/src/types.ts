@@ -368,6 +368,9 @@ export type CardType = "prompt" | "response";
 /** "kick" is re-joinable, "ban" is forever. */
 export type KickAction = "kick" | "ban";
 
+/** Used for cards created during a game, e.g haiku. */
+export const GeneratedDeck = new Deck("@@generated", "Generated cards");
+
 /**
  * User data stored in the database.
  * Users should only be referenced by their UIDs.

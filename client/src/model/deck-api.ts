@@ -12,6 +12,7 @@ import {
   Deck,
   DeckCard,
   DeckTag,
+  GeneratedDeck,
   PromptCardInGame,
   PromptDeckCard,
   ResponseDeckCard,
@@ -321,7 +322,15 @@ export async function getResponses(deckID: string): Promise<Array<ResponseDeckCa
   return (await getDocs(getResponsesRef(deckID))).docs.map((p) => p.data());
 }
 
-export const generatedDeck = new Deck("generated", "Generated cards");
-export const haikuPrompt = new PromptCardInGame(
-  "haiku", generatedDeck.id, "haiku", 0, "Make a haiku:\n_\n_\n_", 3, 0, [],
+export const haikuPrompt3 = new PromptCardInGame(
+  "haiku_3", GeneratedDeck.id, "haiku_3", 0, "Make a haiku:\n_\n_\n_", 3, 0, [],
+);
+export const haikuPrompt4 = new PromptCardInGame(
+  "haiku_4", GeneratedDeck.id, "haiku_4", 0, "Make a haiku:\n_\n_\n_\n_", 4, 0, [],
+);
+export const haikuPrompt5 = new PromptCardInGame(
+  "haiku_5", GeneratedDeck.id, "haiku_5", 0, "Make a haiku:\n_\n_\n_\n_\n_", 5, 0, [],
+);
+export const haikuPrompt6 = new PromptCardInGame(
+  "haiku_6", GeneratedDeck.id, "haiku_6", 0, "Make a haiku:\n_\n_\n_\n_\n_\n_", 6, 0, [],
 );
