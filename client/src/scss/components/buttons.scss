@@ -37,7 +37,7 @@ button {
 }
 
 // Bright accent button, for the primary CTA:
-button.accent-button {
+.accent-button, .accent-control {
   background-color: colors.$accent;
   color: colors.$button-accent-text;
   border: 2px solid transparent;
@@ -54,12 +54,12 @@ button.accent-button {
 }
 
 // Semi-light button, for less important CTA:
-button.light-button {
+.light-button, .light-control {
   background-color: colors.$button-light-bg;
 }
 
 // Secondary button, for an optional de-emphasized action:
-button.secondary-button {
+.secondary-button, .secondary-control {
   border: 2px solid;
   color: rgba(colors.$text, 0.8);
   border-color: rgba(colors.$text, 0.4);
@@ -88,13 +88,13 @@ button.secondary-button {
   }
 }
 
-button.small-button {
+.small-button, .small-control {
   font-size: small;
   height: 2.5rem;
 }
 
 // Slightly different from a "menu" inline buutton
-button.inline-game-button {
+.inline-game-button, .inline-control {
   height: auto;
   padding: 0.2em 0.5em;
 }
