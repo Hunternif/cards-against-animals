@@ -129,6 +129,10 @@
   color: rgba(colors.$text, 0.4);
   font-size: 5rem;
 }
+.prompt-pick {
+  display: flex;
+  align-items: baseline;
+}
 .prompt-pick-number {
   text-align: center;
   border-radius: 50%;
