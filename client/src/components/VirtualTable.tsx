@@ -64,28 +64,29 @@ export function VirtualTable<T>({
 
   const rowsAboveScreen = Math.floor(Math.max(0, -tableOffset) / rowHeight);
   const visibleRows = Math.ceil(windowHeight / rowHeight) + 5;
+  // If the entire table is scrolled out of view,
+  // padding can't be more then the entire height:
+  const paddingTop = rowHeight * Math.min(data.length, rowsAboveScreen);
+  const paddingBottom =
+    rowHeight * Math.max(0, data.length - (rowsAboveScreen + visibleRows));
   const tableStyle = useMemo<CSSProperties>(() => {
     return {
-      paddingTop: rowHeight * rowsAboveScreen,
-      paddingBottom:
-        rowHeight * Math.max(0, data.length - (rowsAboveScreen + visibleRows)),
+      paddingTop,
+      paddingBottom,
     };
-  }, [rowsAboveScreen, visibleRows]);
+  }, [paddingTop, paddingBottom]);
 
   const Row = useCallback(({ item }: { item: T }) => render(item), [render]);
 
   return (
     <table {...props} ref={tableRef} style={tableStyle}>
       <tbody>
-        {data.map(
-          (item, i) => {
-            if (i < rowsAboveScreen || i > rowsAboveScreen + visibleRows) {
-              return null;
-            }
-            return <Row key={i} item={item} />;
+        {data.map((item, i) => {
+          if (i < rowsAboveScreen || i > rowsAboveScreen + visibleRows) {
+            return null;
           }
-          // isRowVisible(i, tableOffset) ? <Row key={i} item={item} /> : null
-        )}
+          return <Row key={i} item={item} />;
+        })}
       </tbody>
     </table>
   );
