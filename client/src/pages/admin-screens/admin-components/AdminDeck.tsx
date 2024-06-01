@@ -1,10 +1,11 @@
-import { ReactNode, useContext, useState } from "react";
+import { CSSProperties, ReactNode, useContext, useState } from "react";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { Twemoji } from "../../../components/Twemoji";
 import { useEffectOnce } from "../../../components/utils";
 import { isOnlyEmojis, loadDeck } from "../../../model/deck-api";
 import { Deck, DeckCard, PromptDeckCard } from "../../../shared/types";
+import { VirtualTable } from "../../../components/VirtualTable";
 
 interface Props {
   deckID: string;
@@ -19,11 +20,23 @@ function typedID(card: DeckCard): string {
   return card.type + card.id;
 }
 
+function combinedCardList(deck: Deck): DeckCard[] {
+  const list: DeckCard[] = deck.prompts;
+  return list.concat(deck.responses);
+}
+
+const rowHeight = 22;
+const borderWidth = 2;
+const rowStyle: CSSProperties = {
+  height: rowHeight,
+};
+
 /**
  * Renders all cards in the deck as a table.
  */
 export function AdminDeck({ deckID }: Props) {
   const [deck, setDeck] = useState<Deck | null>(null);
+  const [list, setList] = useState<DeckCard[]>([]);
   const { setError } = useContext(ErrorContext);
   // Maps card id to card
   const [selectedCards, setSelectedCards] = useState<Map<string, DeckCard>>(
@@ -45,35 +58,29 @@ export function AdminDeck({ deckID }: Props) {
   useEffectOnce(() => {
     if (!deck) {
       loadDeck(deckID)
-        .then((val) => setDeck(val))
+        .then((val) => {
+          setDeck(val);
+          setList(combinedCardList(val));
+        })
         .catch((e) => setError(e));
     }
   });
   if (!deck) return <LoadingSpinner />;
 
-  // TODO: use react-virtualized to speed up rendering of a large table
   return (
     <>
-      <table className="admin-deck">
-        <tbody>
-          {deck.prompts.map((card) => (
-            <CardRow
-              key={card.id}
-              card={card}
-              selected={isSelected(card)}
-              onClick={() => toggleSelectedCard(card)}
-            />
-          ))}
-          {deck.responses.map((card) => (
-            <CardRow
-              key={card.id}
-              card={card}
-              selected={isSelected(card)}
-              onClick={() => toggleSelectedCard(card)}
-            />
-          ))}
-        </tbody>
-      </table>
+      <VirtualTable
+        className="admin-deck"
+        rowHeight={rowHeight + borderWidth}
+        data={list}
+        render={(card) => (
+          <CardRow
+            card={card}
+            selected={isSelected(card)}
+            onClick={() => toggleSelectedCard(card)}
+          />
+        )}
+      />
     </>
   );
 }
@@ -90,12 +97,16 @@ function CardRow({ card, selected, onClick }: RowProps) {
   const cardClass = isPrompt ? "row-prompt" : "row-response";
   return (
     <tr className={`card-row ${cardClass} ${selectedClass}`} onClick={onClick}>
-      <td className="col-card-id">{card.id}</td>
-      <td className="col-card-content">
+      <td className="col-card-id" style={rowStyle}>
+        {card.id}
+      </td>
+      <td className="col-card-content" style={rowStyle}>
         <CardContentRow>{card.content}</CardContentRow>
         {isPrompt && <div className="prompt-pick-number">{card.pick}</div>}
       </td>
-      <td className="col-card-tags">{card.tags.join(", ")}</td>
+      <td className="col-card-tags" style={rowStyle}>
+        {card.tags.join(", ")}
+      </td>
     </tr>
   );
 }
