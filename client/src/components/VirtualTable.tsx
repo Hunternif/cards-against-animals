@@ -28,18 +28,25 @@ export function VirtualTable<T>({
   /** Offset of table above window, as it scrolls up. */
   const [tableOffset, setTableOffset] = useState(0);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const [shouldMeasure, setShouldMeasure] = useState(false);
+
+  const refreshTableOffset = useCallback(() => {
+    if (tableRef.current) {
+      const rect = tableRef.current.getBoundingClientRect();
+      setTableOffset(rect.top);
+    }
+  }, [tableRef]);
+
+  if (shouldMeasure) {
+    refreshTableOffset();
+    setShouldMeasure(false);
+  }
 
   useEffect(() => {
-    function refreshTableOffset() {
-      if (tableRef.current) {
-        const rect = tableRef.current.getBoundingClientRect();
-        setTableOffset(rect.top);
-      }
-    }
     refreshTableOffset(); // set initial table offset
 
     function handleScroll() {
-      refreshTableOffset();
+      setShouldMeasure(true);
     }
     function handleResizeWindow() {
       setWindowHeight(window.innerHeight);
@@ -56,12 +63,12 @@ export function VirtualTable<T>({
   }, [tableRef]);
 
   const rowsAboveScreen = Math.floor(Math.max(0, -tableOffset) / rowHeight);
-  const visibleRows = Math.ceil(windowHeight / rowHeight);
+  const visibleRows = Math.ceil(windowHeight / rowHeight) + 5;
   const tableStyle = useMemo<CSSProperties>(() => {
     return {
       paddingTop: rowHeight * rowsAboveScreen,
       paddingBottom:
-        rowHeight * (data.length - (rowsAboveScreen + visibleRows)),
+        rowHeight * Math.max(0, data.length - (rowsAboveScreen + visibleRows)),
     };
   }, [rowsAboveScreen, visibleRows]);
 
