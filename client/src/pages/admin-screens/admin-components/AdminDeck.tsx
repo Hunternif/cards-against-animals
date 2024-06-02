@@ -55,11 +55,11 @@ export function AdminDeck({ deckID }: Props) {
     else copy.set(id, card);
     setSelectedCards(copy);
   }
-  function toggleSelectAll() {
-    if (selectedCards.size > 0) {
-      setSelectedCards(new Map());
-    } else {
+  function toggleSelectAll(checked: boolean) {
+    if (checked) {
       setSelectedCards(new Map(list.map((c) => [typedID(c), c])));
+    } else {
+      setSelectedCards(new Map());
     }
   }
 
@@ -78,7 +78,11 @@ export function AdminDeck({ deckID }: Props) {
 
   return (
     <>
-      <AdminDeckControlRow deck={deck} onToggleAll={toggleSelectAll} />
+      <AdminDeckControlRow
+        deck={deck}
+        selected={Array.from(selectedCards.values())}
+        onToggleAll={toggleSelectAll}
+      />
       <VirtualTable
         className="admin-deck"
         rowHeight={rowHeight + borderWidth}

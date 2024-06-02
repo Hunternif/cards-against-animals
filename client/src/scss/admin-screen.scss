@@ -95,9 +95,16 @@
   margin-top: -0.5em; // combat accordion section padding
   background-color: var(--bs-body-bg); // bg color
   color: rgba(colors.$text, 70%);
+  font-weight: 200;
   .col-card-id {
     .checkbox {
       margin: auto;
+    }
+  }
+  .deck-count {
+    margin-left: auto;
+    .number {
+      font-weight: 400;
     }
   }
 }
