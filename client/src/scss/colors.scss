@@ -2,7 +2,7 @@
 /** Gold star, primary button etc */
 $accent: #ffc90f;
 $like: #fc8181;
-
+$menu-lvl1: #374151;
 
 /*------------------------- Theme colors -------------------------*/
 $text: #dee2e6; // copied from Bootstrap --bs-body-color
@@ -16,7 +16,7 @@ $button-border-hover: #8BB9F9;
 $button-accent-text: #000;
 $button-accent-border-hover: #fff;
 
-$button-light-bg: #374151;
+$button-light-bg: $menu-lvl1;
 
 
 /*--------------------- Background gradients ---------------------*/

@@ -6,6 +6,8 @@ import { useEffectOnce } from "../../../components/utils";
 import { isOnlyEmojis, loadDeck } from "../../../model/deck-api";
 import { Deck, DeckCard, PromptDeckCard } from "../../../shared/types";
 import { VirtualTable } from "../../../components/VirtualTable";
+import { Checkbox } from "../../../components/Checkbox";
+import { AdminDeckControlRow } from "./AdminDeckControlRow";
 
 interface Props {
   deckID: string;
@@ -38,7 +40,7 @@ export function AdminDeck({ deckID }: Props) {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [list, setList] = useState<DeckCard[]>([]);
   const { setError } = useContext(ErrorContext);
-  // Maps card id to card
+  // Maps card 'typed id' to card
   const [selectedCards, setSelectedCards] = useState<Map<string, DeckCard>>(
     new Map()
   );
@@ -52,6 +54,13 @@ export function AdminDeck({ deckID }: Props) {
     if (selectedCards.has(id)) copy.delete(id);
     else copy.set(id, card);
     setSelectedCards(copy);
+  }
+  function toggleSelectAll() {
+    if (selectedCards.size > 0) {
+      setSelectedCards(new Map());
+    } else {
+      setSelectedCards(new Map(list.map((c) => [typedID(c), c])));
+    }
   }
 
   // Load decks
@@ -69,6 +78,7 @@ export function AdminDeck({ deckID }: Props) {
 
   return (
     <>
+      <AdminDeckControlRow deck={deck} onToggleAll={toggleSelectAll} />
       <VirtualTable
         className="admin-deck"
         rowHeight={rowHeight + borderWidth}
