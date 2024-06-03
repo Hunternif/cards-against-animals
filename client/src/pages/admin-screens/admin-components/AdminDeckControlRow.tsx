@@ -28,11 +28,12 @@ export function AdminDeckControlRow({
             <span className="deck-count">
               {isSelected ? (
                 <>
-                  Selected{" "}
+                  Selected:{" "}
                   <Count>
                     {promptSelCount}/{promptCount}
                   </Count>{" "}
-                  prompts{" "}
+                  prompts
+                  <Separator />
                   <Count>
                     {resSelCount}/{resCount}
                   </Count>{" "}
@@ -40,8 +41,9 @@ export function AdminDeckControlRow({
                 </>
               ) : (
                 <>
-                  <Count>{promptCount}</Count> prompts <Count>{resCount}</Count>{" "}
-                  responses
+                  <Count>{promptCount}</Count> prompts
+                  <Separator />
+                  <Count>{resCount}</Count> responses
                 </>
               )}
             </span>
@@ -55,4 +57,8 @@ export function AdminDeckControlRow({
 
 function Count({ children }: { children: ReactNode }) {
   return <span className="number">{children}</span>;
+}
+
+function Separator() {
+  return <span style={{ margin: "0 0.5em" }}>|</span>;
 }
