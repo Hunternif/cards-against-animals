@@ -28,6 +28,7 @@ dist-ssr
 .firebase
 firebase-config.json
 exported-dev-data
+firebase-export-*
 
 # Shared files copied to clients:
 client/src/shared
