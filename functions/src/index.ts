@@ -41,6 +41,7 @@ import {
 import { setUsersCurrentLobby } from "./model/user-server-api";
 import { lobbyConverter, playerConverter, turnConverter } from "./shared/firestore-converters";
 import { KickAction, LobbySettings, PromptCardInGame, ResponseCardInGame } from "./shared/types";
+import { assertExhaustive } from "./shared/utils";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -151,6 +152,8 @@ export const kickPlayer = onCall<
           await updatePlayer(lobby.id, player);
           logger.info(`Hard-banned player ${player.uid} from ${lobby.id}`);
           break;
+        default:
+          assertExhaustive(event.data.action);
       }
     }
   }
@@ -268,16 +271,23 @@ export const onTurnPhaseChange = onDocumentUpdated(
     const turnAfter = turnConverter.fromFirestore(event.data.after);
     if (turnBefore.phase !== turnAfter.phase) {
       // Changed phase
-      if (turnAfter.phase === "answering") {
-        await logPlayedPrompt(lobbyID, turnAfter);
-      } else if (turnAfter.phase === "reading") {
-        // All responses submitted: log interactions.
-        await logInteractionsInReadingPhase(lobbyID, turnAfter);
-      } else if (turnAfter.phase === "complete") {
-        // Turn completed: update all scores.
-        const responses = await getAllPlayerResponses(lobbyID, turnAfter.id);
-        await updatePlayerScoresFromTurn(lobbyID, turnAfter, responses);
-        await logInteractionsInCompletePhase(lobbyID, turnAfter, responses);
+      switch (turnAfter.phase) {
+        case "new": break;
+        case "answering":
+          await logPlayedPrompt(lobbyID, turnAfter);
+          break;
+        case "reading":
+          // All responses submitted: log interactions.
+          await logInteractionsInReadingPhase(lobbyID, turnAfter);
+          break;
+        case "complete":
+          // Turn completed: update all scores.
+          const responses = await getAllPlayerResponses(lobbyID, turnAfter.id);
+          await updatePlayerScoresFromTurn(lobbyID, turnAfter, responses);
+          await logInteractionsInCompletePhase(lobbyID, turnAfter, responses);
+          break;
+        default:
+          assertExhaustive(turnAfter.phase);
       }
       // Update phase timestamp
       if (turnBefore.phase_start_time.getUTCMilliseconds() ===
@@ -299,12 +309,18 @@ export const onPlayerStatusChange = onDocumentUpdated(
     const playerBefore = playerConverter.fromFirestore(event.data.before);
     const playerAfter = playerConverter.fromFirestore(event.data.after);
     if (playerBefore.status !== playerAfter.status) {
-      if (playerAfter.status === "left" || playerAfter.status === "banned") {
-        await cleanUpPlayer(lobbyID, playerAfter);
-      } else if (playerAfter.status === "online") {
-        // Player rejoined, update current lobby ID:
-        await setUsersCurrentLobby(userID, lobbyID);
-        logger.info(`User ${playerAfter.name} (${userID}) is online in lobby ${lobbyID}`);
+      switch(playerAfter.status) {
+        case "left":
+        case "banned":
+          await cleanUpPlayer(lobbyID, playerAfter);
+          break;
+        case "online":
+          // Player rejoined, update current lobby ID:
+          await setUsersCurrentLobby(userID, lobbyID);
+          logger.info(`User ${playerAfter.name} (${userID}) is online in lobby ${lobbyID}`);
+          break;
+        default:
+          assertExhaustive(playerAfter.status);
       }
     }
   }

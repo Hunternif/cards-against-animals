@@ -8,6 +8,7 @@ import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
+import { assertExhaustive } from "../../shared/utils";
 
 
 // const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);
@@ -26,8 +27,14 @@ export function CardReadingScreen() {
   const isActivePlayer = player.role === "player";
 
   const settings = lobby.settings;
-  const showLikes = settings.enable_likes &&
-    (!isJudge || settings.show_likes_to !== "all_except_czar");
+  let showLikes = false;
+  if (settings.enable_likes) {
+    switch (settings.show_likes_to) {
+      case "all": showLikes = true; break;
+      case "all_except_czar": showLikes = !isJudge; break;
+      default: assertExhaustive(settings.show_likes_to);
+    }
+  }
 
   async function handleClick(response: PlayerResponse) {
     if (allRevealed) {

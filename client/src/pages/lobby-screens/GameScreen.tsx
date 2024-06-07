@@ -24,6 +24,7 @@ import { PlayerAnsweringScreen } from "./PlayerAnsweringScreen";
 import { WinnerScreen } from "./WinnerScreen";
 import { GameContext, GameContextState } from "./game-components/GameContext";
 import { GameMenu } from "./game-components/GameMenu";
+import { assertExhaustive } from "../../shared/utils";
 
 interface ScreenProps {
   lobby: GameLobby,
@@ -84,10 +85,15 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   const activePlayers = players.filter((p) =>
     p.role === "player" && p.status === "online");
   const lobbyControl = lobby.settings.lobby_control;
-  const canControlLobby = lobbyControl === "anyone" ||
-    lobbyControl === "players" && player?.role === "player" ||
-    lobbyControl === "czar" && isJudge ||
-    lobbyControl === "creator" && isCreator;
+
+  let canControlLobby = false;
+  switch (lobbyControl) {
+    case "anyone": canControlLobby = true; break;
+    case "players": canControlLobby = player?.role === "player"; break;
+    case "czar": canControlLobby = isJudge; break;
+    case "creator": canControlLobby = isCreator; break;
+    default: assertExhaustive(lobbyControl);
+  }
 
   const { setError } = useContext(ErrorContext);
   useEffect(() => {
@@ -131,6 +137,7 @@ function JudgeScreen({ turn }: TurnProps) {
     case "answering": return <JudgeAwaitResponsesScreen />;
     case "reading": return <CardReadingScreen />;
     case "complete": return <WinnerScreen />;
+    default: assertExhaustive(turn.phase);
   }
 }
 
@@ -140,6 +147,7 @@ function PlayerScreen({ turn }: TurnProps) {
     case "answering": return <PlayerAnsweringScreen />;
     case "reading": return <CardReadingScreen />;
     case "complete": return <WinnerScreen />;
+    default: assertExhaustive(turn.phase);
   }
 }
 
@@ -149,6 +157,7 @@ function SpectatorScreen({ turn }: TurnProps) {
     case "answering": return <JudgeAwaitResponsesScreen />;
     case "reading": return <CardReadingScreen />;
     case "complete": return <WinnerScreen />;
+    default: assertExhaustive(turn.phase);
   }
 }
 

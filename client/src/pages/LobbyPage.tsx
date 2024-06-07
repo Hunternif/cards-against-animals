@@ -11,6 +11,7 @@ import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
 import { ScoreboardScreen } from "./lobby-screens/ScoreboardScreen";
+import { assertExhaustive } from "../shared/utils";
 
 interface LoaderParams {
   params: any
@@ -78,6 +79,6 @@ function JoinedLobbyScreen({ lobbyID, user }: LoggedInJoinedProps) {
     case "ended":
       return <ScoreboardScreen lobby={lobby} user={user} players={players} />;
     default:
-      throw new Error(`Unknown lobby status "${lobby.status}"`);
+      assertExhaustive(lobby.status);
   }
 }

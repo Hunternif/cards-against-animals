@@ -22,6 +22,7 @@ import {
 } from "../firebase";
 import { lobbyConverter, playerConverter } from "../shared/firestore-converters";
 import { GameLobby, GameTurn, KickAction, LobbySettings, PlayerInLobby, PlayerStatus } from "../shared/types";
+import { assertExhaustive } from "../shared/utils";
 
 function getPlayersRef(lobbyID: string) {
   return collection(lobbiesRef, lobbyID, 'players')
@@ -145,6 +146,9 @@ export function checkIfShouldEndGame(
       }
       return false;
     }
+    default:
+      assertExhaustive(lobby.settings.play_until);
+      return false;
   }
 }
 

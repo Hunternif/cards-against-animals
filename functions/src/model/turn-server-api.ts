@@ -33,6 +33,7 @@ import {
   updateLobby,
   updatePlayer
 } from "./lobby-server-api";
+import { assertExhaustive } from "../shared/utils";
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
@@ -403,11 +404,21 @@ async function payDiscardCost(
     player.discards_used++;
     // Check discard cost:
     const lobby = await getLobby(lobbyID);
-    const cost = lobby.settings.discard_cost;
-    const isDiscardFree = cost === "free" ||
-      cost === "1_free_then_1_star" && player.discards_used <= 1;
-    if (!isDiscardFree && player.score > 0) {
-      player.score--;
+    let actualCost = 0;
+    switch (lobby.settings.discard_cost) {
+      case "free": break;
+      case "no_discard": break;
+      case "1_star":
+        actualCost = 1;
+        break;
+      case "1_free_then_1_star":
+        actualCost = (player.discards_used <= 1) ? 0 : 1;
+        break;
+      default:
+        assertExhaustive(lobby.settings.discard_cost);
+    }
+    if (actualCost > 0 && player.score > 0) {
+      player.score -= actualCost;
     }
     await updatePlayer(lobbyID, player);
     return true;
@@ -487,6 +498,16 @@ export async function logInteractionsInCompletePhase(
     const voteData = { card: prompt, upvotes: 0, downvotes: 0 };
     const votes = await getPromptVotes(lobbyID, turn.id, prompt.id);
     for (const vote of votes) {
+      switch (vote.choice) {
+        case "yes":
+          voteData.upvotes++;
+          break;
+        case "no":
+          voteData.downvotes++;
+          break;
+        default:
+          assertExhaustive(vote.choice);
+      }
       if (vote.choice === "yes") voteData.upvotes++;
       if (vote.choice === "no") voteData.downvotes++;
     }

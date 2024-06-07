@@ -13,7 +13,7 @@ import { Twemoji } from "../../../components/Twemoji";
 import { endLobby, leaveLobby, updateLobbySettings, updatePlayer } from "../../../model/lobby-api";
 import { updateUserData } from "../../../model/users-api";
 import { LobbySettings } from "../../../shared/types";
-import { copyFields } from "../../../shared/utils";
+import { assertExhaustive, copyFields } from "../../../shared/utils";
 import { AvatarSelector } from "../lobby-components/AvatarSelector";
 import { LobbySettingsPanel } from "../lobby-components/LobbySettingsPanel";
 import { useGameContext } from "./GameContext";
@@ -212,6 +212,8 @@ function TurnCounter() {
     case "max_score":
       total = <> – until {lobby.settings.max_score}<IconStarInline /></>;
       break;
+    default:
+      assertExhaustive(lobby.settings.play_until);
   }
   return <span className="menu-turn-ordinal">Turn {turn.ordinal}{total}</span>;
 }

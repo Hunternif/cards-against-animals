@@ -35,6 +35,7 @@ import {
   Vote,
   VoteChoice
 } from "../shared/types";
+import { assertExhaustive } from "../shared/utils";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 function getTurnsRef(lobbyID: string) {
@@ -299,11 +300,18 @@ export async function toggleLikeResponse(
   const userLikeRef = doc(likesRef, currentPlayer.uid);
   const userLikeExists = (await getDoc(userLikeRef)).exists();
 
-  if (lobby.settings.likes_limit === "1_pp_per_turn") {
-    // Ensure only 1 like per person, delete all other likes:
-    await deleteAllUserLikes(lobby, turn, allResponses, currentPlayer.uid);
-  } else if (userLikeExists) {
-    await deleteDoc(userLikeRef);
+  switch (lobby.settings.likes_limit) {
+    case "1_pp_per_turn":
+      // Ensure only 1 like per person, delete all other likes:
+      await deleteAllUserLikes(lobby, turn, allResponses, currentPlayer.uid);
+      break;
+    case "none":
+      if (userLikeExists) {
+        await deleteDoc(userLikeRef);
+      }
+      break;
+    default:
+      assertExhaustive(lobby.settings.likes_limit);
   }
 
   if (!userLikeExists) {

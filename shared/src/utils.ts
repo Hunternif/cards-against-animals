@@ -27,3 +27,8 @@ export function copyFields2<U, V>(
   }
   return removeUndefined(obj);
 }
+
+/** Put this in your switch 'default' block */
+export function assertExhaustive(val: never) {
+  throw new Error(`Unhandled value ${val}`);
+}

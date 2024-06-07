@@ -3,6 +3,7 @@ import { firebaseAuth } from "../firebase-server";
 import { GameLobby } from "../shared/types";
 import { getPlayersRef } from "./lobby-server-api";
 import { getLastTurn } from "./turn-server-api";
+import { assertExhaustive } from "../shared/utils";
 
 /** Asserts that current user is logged in. Returns user ID. */
 export function assertLoggedIn(event: CallableRequest): string {
@@ -32,6 +33,8 @@ export async function assertLobbyControl(
         break;
       case "anyone":
         break;
+      default:
+        assertExhaustive(lobby.settings.lobby_control);
     }
   }
 }
