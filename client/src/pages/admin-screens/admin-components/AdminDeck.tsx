@@ -8,6 +8,7 @@ import { Deck, DeckCard, PromptDeckCard } from "../../../shared/types";
 import { VirtualTable } from "../../../components/VirtualTable";
 import { Checkbox } from "../../../components/Checkbox";
 import { AdminDeckControlRow } from "./AdminDeckControlRow";
+import { GameButton } from "../../../components/Buttons";
 
 interface Props {
   deckID: string;
@@ -116,6 +117,7 @@ function CardRow({ card, selected, onClick }: RowProps) {
       </td>
       <td className="col-card-content" style={rowStyle}>
         <CardContentRow>{card.content}</CardContentRow>
+        <EditButton />
         {isPrompt && <div className="prompt-pick-number">{card.pick}</div>}
       </td>
       <td className="col-card-tags" style={rowStyle}>
@@ -133,5 +135,23 @@ function CardContentRow(props: CardContentRowProps) {
   const emojiClass = isOnlyEmojis(content) ? "emoji-only " : "";
   return (
     <Twemoji {...props} className={`card-content-admin-row ${emojiClass}`} />
+  );
+}
+
+function EditButton({ onClick }: { onClick?: () => void }) {
+  return (
+    <div className="edit-button-container">
+      <GameButton
+        tiny
+        light
+        className="edit-button"
+        onClick={(e) => {
+          e.stopPropagation(); // prevent selecting the row
+          if (onClick) onClick();
+        }}
+      >
+        Edit
+      </GameButton>
+    </div>
   );
 }

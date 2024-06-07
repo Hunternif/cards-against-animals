@@ -8,6 +8,7 @@ export interface ControlProps {
   secondary?: boolean;
   light?: boolean;
   small?: boolean;
+  tiny?: boolean;
   inline?: boolean;
 }
 
@@ -124,6 +125,7 @@ export function getControlStyle({
   light,
   secondary,
   small,
+  tiny,
   inline,
 }: ControlProps): string {
   const classes = new Array<string>();
@@ -132,6 +134,7 @@ export function getControlStyle({
   if (light) classes.push("light-control");
   if (secondary) classes.push("secondary-control");
   if (small) classes.push("small-control");
+  if (tiny) classes.push("tiny-control");
   if (inline) classes.push("inline-contorl");
   return classes.join(" ");
 }
@@ -143,6 +146,7 @@ export function stripControlProps<T>({
   secondary,
   small,
   inline,
+  tiny,
   ...props
 }: ControlProps & T) {
   return props;
