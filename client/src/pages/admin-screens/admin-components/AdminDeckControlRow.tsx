@@ -17,7 +17,7 @@ export function AdminDeckControlRow({
   const resSelCount = selected.filter((c) => c.type === "response").length;
   const isSelected = selected.length > 0;
   return (
-    <table className="admin-deck admin-deck-control-row">
+    <table className="admin-deck-table admin-deck-control-row">
       <tbody>
         <tr>
           <td className="col-card-id">

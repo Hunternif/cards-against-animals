@@ -85,7 +85,7 @@ export function AdminDeck({ deckID }: Props) {
         onToggleAll={toggleSelectAll}
       />
       <VirtualTable
-        className="admin-deck"
+        className="admin-deck-table"
         rowHeight={rowHeight + borderWidth}
         data={list}
         render={(card) => (

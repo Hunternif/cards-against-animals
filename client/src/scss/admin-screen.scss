@@ -25,7 +25,14 @@
   }
 }
 
-.admin-deck {
+.admin-decks-toolbar {
+  display: flex;
+  h2 {
+    margin-right: auto;
+  }
+}
+
+.admin-deck-table {
   width: 100%;
   table-layout: fixed; // this is important for text ellipsis...
   border-collapse: separate;
