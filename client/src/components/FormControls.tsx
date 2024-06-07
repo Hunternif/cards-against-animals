@@ -7,6 +7,7 @@ export interface ControlProps {
   accent?: boolean;
   secondary?: boolean;
   light?: boolean;
+  lighter?: boolean;
   small?: boolean;
   tiny?: boolean;
   inline?: boolean;
@@ -123,6 +124,7 @@ export function getControlStyle({
   className,
   accent,
   light,
+  lighter,
   secondary,
   small,
   tiny,
@@ -132,6 +134,7 @@ export function getControlStyle({
   if (className) classes.push(className);
   if (accent) classes.push("accent-control");
   if (light) classes.push("light-control");
+  if (lighter) classes.push("lighter-control");
   if (secondary) classes.push("secondary-control");
   if (small) classes.push("small-control");
   if (tiny) classes.push("tiny-control");
@@ -143,6 +146,7 @@ export function stripControlProps<T>({
   className,
   accent,
   light,
+  lighter,
   secondary,
   small,
   inline,

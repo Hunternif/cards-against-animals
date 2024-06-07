@@ -57,6 +57,10 @@ button {
 .light-button, .light-control {
   background-color: colors.$button-light-bg;
 }
+// Lighter button for a light background:
+.lighter-button, .lighter-control {
+  background-color: colors.$button-lighter-bg;
+}
 
 // Secondary button, for an optional de-emphasized action:
 .secondary-button, .secondary-control {

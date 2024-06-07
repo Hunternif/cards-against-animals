@@ -143,7 +143,6 @@ function EditButton({ onClick }: { onClick?: () => void }) {
     <div className="edit-button-container">
       <GameButton
         tiny
-        light
         className="edit-button"
         onClick={(e) => {
           e.stopPropagation(); // prevent selecting the row
