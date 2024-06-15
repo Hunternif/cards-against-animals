@@ -1,5 +1,5 @@
 import { CSSProperties, useContext } from "react";
-import { usePromptVotes, votePrompt } from "../../../model/turn-api";
+import { usePromptVotes, votePrompt } from "../../../api/turn-api";
 import { PromptCardInGame, VoteChoice } from "../../../shared/types";
 import { copyFields2 } from "../../../shared/utils";
 import { Downvote, Upvote } from "./CardVotes";

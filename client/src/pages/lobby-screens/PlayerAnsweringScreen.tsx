@@ -7,7 +7,7 @@ import {
   discardCards,
   discardImmediately,
   submitPlayerResponse
-} from "../../model/turn-api";
+} from "../../api/turn-api";
 import {
   ResponseCardInGame
 } from "../../shared/types";

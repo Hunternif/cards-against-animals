@@ -10,7 +10,7 @@ import { ModalBackdrop } from "../../components/ModalBackdrop";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { RowLayout } from "../../components/layout/RowLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
-import { leaveLobby } from "../../model/lobby-api";
+import { leaveLobby } from "../../api/lobby-api";
 import { GameLobby, PlayerInLobby } from "../../shared/types";
 import { LobbyCreationReadOnly } from "./lobby-components/LobbyCreationReadOnly";
 import { LobbyCreatorControls } from "./lobby-components/LobbyCreatorControls";

@@ -6,7 +6,7 @@ import { Twemoji } from '../../../components/Twemoji';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { useDIContext } from '../../../di-context';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
-import { isOnlyEmojis } from '../../../model/deck-api';
+import { isOnlyEmojis } from '../../../api/deck-api';
 import { Deck, DeckCard, PromptDeckCard } from '../../../shared/types';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
 

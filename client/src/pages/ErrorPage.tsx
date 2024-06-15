@@ -2,7 +2,7 @@ import { CSSProperties, ReactNode, useState } from "react";
 import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router-dom";
 import { GameButton } from "../components/Buttons";
 import { CenteredLayout } from "../components/layout/CenteredLayout";
-import { randomAvatar } from "../model/avatars";
+import { randomAvatar } from "../api/avatars";
 
 
 

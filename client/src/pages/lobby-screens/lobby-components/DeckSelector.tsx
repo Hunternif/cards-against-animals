@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { addDeck, removeDeck } from "../../../model/lobby-api";
+import { addDeck, removeDeck } from "../../../api/lobby-api";
 import { GameLobby } from "../../../shared/types";
 import { Checkbox } from "../../../components/Checkbox";
 import { ErrorContext } from "../../../components/ErrorContext";

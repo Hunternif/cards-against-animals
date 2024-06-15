@@ -5,7 +5,7 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { GameLayout } from "../../components/layout/GameLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import { useSoundOnResponse } from "../../components/sounds";
-import { startReadingPhase } from "../../model/turn-api";
+import { startReadingPhase } from "../../api/turn-api";
 import { PlayerInLobby, PlayerResponse } from "../../shared/types";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";

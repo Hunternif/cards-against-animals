@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { Dropdown } from "react-bootstrap";
-import { signOut } from "../../../model/users-api";
+import { signOut } from "../../../api/users-api";
 import { CustomDropdown } from "../../../components/CustomDropdown";
 
 interface UserProps {

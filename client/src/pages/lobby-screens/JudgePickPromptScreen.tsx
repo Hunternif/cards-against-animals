@@ -3,13 +3,13 @@ import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { GameLayout } from "../../components/layout/GameLayout";
-import { endLobby } from "../../model/lobby-api";
+import { endLobby } from "../../api/lobby-api";
 import {
   discardPrompts,
   getPromptCount,
   pickNewPrompts,
   playPrompt,
-} from "../../model/turn-api";
+} from "../../api/turn-api";
 import { PromptCardInGame } from "../../shared/types";
 import { CardPrompt } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";

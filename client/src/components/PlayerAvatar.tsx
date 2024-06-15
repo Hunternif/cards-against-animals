@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { avatarMap, avatars, randomAvatarID } from "../model/avatars";
+import { avatarMap, avatars, randomAvatarID } from "../api/avatars";
 import { RNG } from "../shared/rng";
 import { PlayerInLobby } from "../shared/types";
 

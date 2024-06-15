@@ -10,8 +10,8 @@ import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "../../..
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Scoreboard } from "../../../components/Scoreboard";
 import { Twemoji } from "../../../components/Twemoji";
-import { endLobby, leaveLobby, updateLobbySettings, updatePlayer } from "../../../model/lobby-api";
-import { updateUserData } from "../../../model/users-api";
+import { endLobby, leaveLobby, updateLobbySettings, updatePlayer } from "../../../api/lobby-api";
+import { updateUserData } from "../../../api/users-api";
 import { LobbySettings } from "../../../shared/types";
 import { assertExhaustive, copyFields } from "../../../shared/utils";
 import { AvatarSelector } from "../lobby-components/AvatarSelector";

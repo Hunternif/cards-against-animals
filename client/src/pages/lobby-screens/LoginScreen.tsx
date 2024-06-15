@@ -12,8 +12,8 @@ import {
   joinLobbyIfNeeded,
   setPlayerStatus,
   updatePlayer
-} from "../../model/lobby-api";
-import { findPastLobbyID } from "../../model/users-api";
+} from "../../api/lobby-api";
+import { findPastLobbyID } from "../../api/users-api";
 import { CAAUser } from "../../shared/types";
 import { AnonymousLogin } from "./login-components/AnonymousLogin";
 import { useEffectOnce } from "../../hooks/ui-hooks";

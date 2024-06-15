@@ -8,7 +8,7 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { CenteredLayout } from "../components/layout/CenteredLayout";
 import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth } from "../firebase";
-import { getOrCreateCAAUser, signOut, useCAAUserOnce } from "../model/users-api";
+import { getOrCreateCAAUser, signOut, useCAAUserOnce } from "../api/users-api";
 import { AdminUserPill } from "./admin-screens/admin-components/AdminUserPill";
 
 function LogInBox() {

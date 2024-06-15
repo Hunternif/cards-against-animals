@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { GameLayout } from "../../components/layout/GameLayout";
-import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse } from "../../model/turn-api";
+import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse } from "../../api/turn-api";
 import { PlayerResponse } from "../../shared/types";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
