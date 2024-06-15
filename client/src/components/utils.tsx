@@ -1,8 +1,12 @@
-import { FirestoreError, Query, QuerySnapshot } from "firebase/firestore";
-import { EffectCallback, useEffect } from "react";
-import { useCollectionData } from "react-firebase-hooks/firestore";
-import { logInteractionFun } from "../firebase";
-import { CardInGame, PromptCardInGame, ResponseCardInGame } from "../shared/types";
+import { FirestoreError, Query, QuerySnapshot } from 'firebase/firestore';
+import { EffectCallback, useEffect, useState } from 'react';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { logInteractionFun } from '../firebase';
+import {
+  CardInGame,
+  PromptCardInGame,
+  ResponseCardInGame,
+} from '../shared/types';
 
 export function useEffectOnce(effect: EffectCallback) {
   useEffect(effect, []);
@@ -11,10 +15,13 @@ export function useEffectOnce(effect: EffectCallback) {
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Logs impressions and interactions with cards */
-export async function logInteraction(lobbyID: string,
+export async function logInteraction(
+  lobbyID: string,
   interaction: {
-    viewed?: CardInGame[], played?: CardInGame[],
-    discarded?: CardInGame[], won?: ResponseCardInGame[],
+    viewed?: CardInGame[];
+    played?: CardInGame[];
+    discarded?: CardInGame[];
+    won?: ResponseCardInGame[];
   },
 ) {
   const data = {
@@ -68,8 +75,9 @@ export type FirestoreCollectionDataHookNullSafe<T> = [
 ];
 
 /** Same as Firestore useCollectionData, but the returned collection is non-null. */
-export function useCollectionDataNonNull<T>(query?: Query<T>):
-  FirestoreCollectionDataHookNullSafe<T> {
+export function useCollectionDataNonNull<T>(
+  query?: Query<T>,
+): FirestoreCollectionDataHookNullSafe<T> {
   const [data, loading, error, snapshot] = useCollectionData(query);
   return [data || [], loading, error, snapshot];
 }
@@ -89,12 +97,24 @@ export function useKeyDown(callback: () => void, keys: string[]) {
       event.preventDefault();
       callback();
     }
-  };
+  }
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [onKeyDown]);
-};
+}
 
+/** Convenience hook to get async data. */
+export function useAsyncData<T>(fn: () => Promise<T>): T | null {
+  const [data, setData] = useState<T | null>(null);
+  const [error, setError] = useState<any>(null);
+  useEffect(() => {
+    fn()
+      .then((result) => setData(result))
+      .catch((e: any) => setError(e));
+  }, [fn]);
+  if (error) throw error;
+  return data;
+}

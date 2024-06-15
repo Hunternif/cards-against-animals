@@ -1,12 +1,13 @@
-import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
-import { Accordion, AccordionItem } from "../../components/Accordion";
-import { GameButton } from "../../components/Buttons";
-import { decksRef } from "../../firebase";
-import { AdminDeck } from "./admin-components/AdminDeck";
-import { AdminSubpage } from "./admin-components/AdminSubpage";
+import { Accordion, AccordionItem } from '../../components/Accordion';
+import { GameButton } from '../../components/Buttons';
+import { useAsyncData } from '../../components/utils';
+import { useDIContext } from '../../di-context';
+import { AdminDeck } from './admin-components/AdminDeck';
+import { AdminSubpage } from './admin-components/AdminSubpage';
 
 export function DecksAdmin() {
-  const [decks] = useCollectionDataOnce(decksRef);
+  const { deckRepository } = useDIContext();
+  const decks = useAsyncData(() => deckRepository.getDecks());
 
   return (
     <AdminSubpage headerContent={<Toolbar />}>

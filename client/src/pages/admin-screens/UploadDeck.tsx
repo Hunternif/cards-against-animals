@@ -1,12 +1,14 @@
 import { ChangeEvent, useRef, useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { getDecks, loadDeck, mergeDecks, parseDeck, uploadDeck, uploadNewDeck } from "../../model/deck-api";
-import { AdminSubpage } from "./admin-components/AdminSubpage";
-import { Deck } from "../../shared/types";
 import { useEffectOnce } from "../../components/utils";
+import { useDIContext } from "../../di-context";
+import { mergeDecks, parseDeck } from "../../model/deck-api";
+import { Deck } from "../../shared/types";
+import { AdminSubpage } from "./admin-components/AdminSubpage";
 
 export function UploadDeck() {
+  const { deckRepository } = useDIContext();
   const [isUploading, setUploading] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -30,12 +32,12 @@ export function UploadDeck() {
         data.get('responses') as string,
       );
       if (targetDeck) {
-        const targetDeckFull = await loadDeck(targetDeck.id);
+        const targetDeckFull = await deckRepository.downloadDeck(targetDeck.id);
         const mergedDeck = await mergeDecks(targetDeckFull, deck);
-        await uploadDeck(mergedDeck);
+        await deckRepository.uploadDeck(mergedDeck);
         setInfo(`Merged into "${mergedDeck.title}"`);
       } else {
-        await uploadNewDeck(deck);
+        await deckRepository.uploadNewDeck(deck);
         setInfo(`Deck "${deck.title}" uploaded`);
       }
       setUploading(false);
@@ -48,8 +50,8 @@ export function UploadDeck() {
 
   useEffectOnce(() => {
     // Load decks:
-    getDecks().then((decks) => setDecks(decks))
-      .catch((e) => setError(e));
+    deckRepository.getDecks().then((decks) => setDecks(decks))
+      .catch((e: any) => setError(e));
   });
 
   function handleSelectTarget(event: ChangeEvent<HTMLSelectElement>) {

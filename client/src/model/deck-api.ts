@@ -1,62 +1,10 @@
 import {
-  collection,
-  doc,
-  getCountFromServer,
-  getDoc,
-  getDocs,
-  runTransaction,
-} from "firebase/firestore";
-import { db, decksRef } from "../firebase";
-import { deckTagConverter, promptDeckCardConverter, responseDeckCardConverter } from "../shared/firestore-converters";
-import {
   Deck,
   DeckCard,
   DeckTag,
-  GeneratedDeck,
-  PromptCardInGame,
   PromptDeckCard,
-  ResponseDeckCard,
+  ResponseDeckCard
 } from "../shared/types";
-
-/** Returns Firestore subcollection reference of prompt cards in deck. */
-function getPromptsRef(deckID: string) {
-  return collection(decksRef, deckID, 'prompts')
-    .withConverter(promptDeckCardConverter);
-}
-
-/** Returns Firestore subcollection reference of response cards in deck. */
-function getResponsesRef(deckID: string) {
-  return collection(decksRef, deckID, 'responses')
-    .withConverter(responseDeckCardConverter);
-}
-
-/**
- * Keeps the contents of the loaded decks, so there's no need to re-load it.
- * Maps deck ID to deck instance with its prompts and responses loaded.
- */
-const deckCache: Map<string, Deck> = new Map<string, Deck>();
-
-/**
- * Loads complete content of a deck, with prompts and responses, and stores it
- * in cache. Calling this multiple times for the same deck ID should not trigger
- * a network request.
- * Throws exception if the deck doesn't exist.
- */
-export async function loadDeck(deckID: string): Promise<Deck> {
-  const existingDeck = deckCache.get(deckID);
-  if (existingDeck) return existingDeck;
-  // Fetch deck from Firestore:
-  const deck = (await getDoc(doc(decksRef, deckID))).data();
-  if (!deck) throw new Error(`Deck "${deckID}" does not exist`);
-  const [proDocs, resDocs] = await Promise.all([
-    getDocs(getPromptsRef(deckID)),
-    getDocs(getResponsesRef(deckID))
-  ]);
-  deck.prompts = proDocs.docs.map((d) => d.data());
-  deck.responses = resDocs.docs.map((d) => d.data());
-  deckCache.set(deckID, deck);
-  return deck;
-}
 
 
 /**
@@ -215,39 +163,6 @@ export function isOnlyEmojis(str: string): boolean {
   return emojiRegex.test(stringToTest) && Number.isNaN(Number(stringToTest));
 }
 
-/** Verifies that deck ID does not exist, and uploads data. */
-export async function uploadNewDeck(deck: Deck) {
-  if ((await getDoc(doc(decksRef, deck.id))).exists()) {
-    throw new Error(`Deck "${deck.title}" already exists`);
-  }
-  await uploadDeck(deck);
-}
-
-/** Note: this is called both for uploading new and existing decks. */
-export async function uploadDeck(deck: Deck) {
-  await runTransaction(db, async (transaction) => {
-    const docRef = doc(decksRef, deck.id);
-    transaction.set(docRef, deck);
-    // Now upload all the cards, in sequence:
-    const promptsRef = collection(docRef, 'prompts')
-      .withConverter(promptDeckCardConverter);
-    deck.prompts.forEach(prompt => {
-      transaction.set(doc(promptsRef, prompt.id), prompt)
-    });
-    const responsesRef = collection(docRef, 'responses')
-      .withConverter(responseDeckCardConverter);
-    deck.responses.forEach(response => {
-      transaction.set(doc(responsesRef, response.id), response)
-    });
-    const tagsRef = collection(docRef, 'tags')
-      .withConverter(deckTagConverter);
-    deck.tags.forEach(tag => {
-      transaction.set(doc(tagsRef, tag.name), tag);
-    });
-  });
-  deckCache.set(deck.id, deck);
-}
-
 /**
  * Loads destination deck, appends new values from source deck, uploads data.
  * IDs of source deck will be changed to prevent collisions.
@@ -290,47 +205,3 @@ export async function mergeDecks(dest: Deck, source: Deck): Promise<Deck> {
   dest.tags = Array.from(tagMap.values());
   return dest;
 }
-
-export async function getDecks(): Promise<Array<Deck>> {
-  return (await getDocs(decksRef)).docs.map((p) => p.data());
-}
-
-export interface DeckWithCount {
-  id: string,
-  title: string,
-  promptCount: number,
-  responseCount: number,
-}
-
-/** Fetches all decks' data and counts cards in each. */
-export async function getDecksWithCount(): Promise<Array<DeckWithCount>> {
-  const decks = await getDecks();
-  const result = new Array<DeckWithCount>(decks.length);
-  for (const deck of decks) {
-    const promptCount = (await getCountFromServer(getPromptsRef(deck.id))).data().count;
-    const responseCount = (await getCountFromServer(getResponsesRef(deck.id))).data().count;
-    result.push({ ...deck, promptCount, responseCount });
-  }
-  return result;
-}
-
-export async function getPrompts(deckID: string): Promise<Array<PromptDeckCard>> {
-  return (await getDocs(getPromptsRef(deckID))).docs.map((p) => p.data());
-}
-
-export async function getResponses(deckID: string): Promise<Array<ResponseDeckCard>> {
-  return (await getDocs(getResponsesRef(deckID))).docs.map((p) => p.data());
-}
-
-export const haikuPrompt3 = new PromptCardInGame(
-  "haiku_3", GeneratedDeck.id, "haiku_3", 0, "Make a haiku:\n_\n_\n_", 3, 0, [],
-);
-export const haikuPrompt4 = new PromptCardInGame(
-  "haiku_4", GeneratedDeck.id, "haiku_4", 0, "Make a haiku:\n_\n_\n_\n_", 4, 0, [],
-);
-export const haikuPrompt5 = new PromptCardInGame(
-  "haiku_5", GeneratedDeck.id, "haiku_5", 0, "Make a haiku:\n_\n_\n_\n_\n_", 5, 0, [],
-);
-export const haikuPrompt6 = new PromptCardInGame(
-  "haiku_6", GeneratedDeck.id, "haiku_6", 0, "Make a haiku:\n_\n_\n_\n_\n_\n_", 6, 0, [],
-);

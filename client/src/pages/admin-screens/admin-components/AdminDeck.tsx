@@ -1,14 +1,14 @@
 import { CSSProperties, ReactNode, useContext, useState } from "react";
+import { GameButton } from "../../../components/Buttons";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { Twemoji } from "../../../components/Twemoji";
-import { useEffectOnce } from "../../../components/utils";
-import { isOnlyEmojis, loadDeck } from "../../../model/deck-api";
-import { Deck, DeckCard, PromptDeckCard } from "../../../shared/types";
 import { VirtualTable } from "../../../components/VirtualTable";
-import { Checkbox } from "../../../components/Checkbox";
+import { useEffectOnce } from "../../../components/utils";
+import { useDIContext } from "../../../di-context";
+import { isOnlyEmojis } from "../../../model/deck-api";
+import { Deck, DeckCard, PromptDeckCard } from "../../../shared/types";
 import { AdminDeckControlRow } from "./AdminDeckControlRow";
-import { GameButton } from "../../../components/Buttons";
 
 interface Props {
   deckID: string;
@@ -38,6 +38,7 @@ const rowStyle: CSSProperties = {
  * Renders all cards in the deck as a table.
  */
 export function AdminDeck({ deckID }: Props) {
+  const { deckRepository } = useDIContext();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [list, setList] = useState<DeckCard[]>([]);
   const { setError } = useContext(ErrorContext);
@@ -67,7 +68,7 @@ export function AdminDeck({ deckID }: Props) {
   // Load decks
   useEffectOnce(() => {
     if (!deck) {
-      loadDeck(deckID)
+      deckRepository.downloadDeck(deckID)
         .then((val) => {
           setDeck(val);
           setList(combinedCardList(val));

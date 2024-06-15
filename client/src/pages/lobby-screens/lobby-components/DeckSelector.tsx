@@ -1,11 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { DeckWithCount, getDecksWithCount } from "../../../model/deck-api";
 import { addDeck, removeDeck } from "../../../model/lobby-api";
 import { GameLobby } from "../../../shared/types";
 import { Checkbox } from "../../../components/Checkbox";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { useEffectOnce } from "../../../components/utils";
+import { useDIContext } from "../../../di-context";
+import { DeckWithCount } from "../../../api/deck-repository";
 
 interface DeckProps {
   deck: DeckWithCount,
@@ -51,9 +52,10 @@ export function DeckSelector({ lobby, readOnly }: SelectorProps) {
   const [loading, setLoading] = useState(true);
   const [decks, setDecks] = useState<Array<DeckWithCount>>([]);
   const { setError } = useContext(ErrorContext);
+  const { deckRepository } = useDIContext();
 
   async function loadDecks() {
-    await getDecksWithCount().then((d) => {
+    await deckRepository.getDecksWithCount().then((d) => {
       setDecks(d);
       setLoading(false);
     }).catch((e) => {

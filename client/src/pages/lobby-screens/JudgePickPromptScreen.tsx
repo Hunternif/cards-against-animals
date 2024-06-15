@@ -4,7 +4,6 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { GameLayout } from "../../components/layout/GameLayout";
 import { logInteraction } from "../../components/utils";
-import { haikuPrompt3 } from "../../model/deck-api";
 import { endLobby } from "../../model/lobby-api";
 import {
   discardPrompts,
@@ -16,6 +15,7 @@ import { PromptCardInGame } from "../../shared/types";
 import { CardPrompt } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { HaikuSizeSelector } from "./lobby-components/HaikuSizeSelector";
+import { haikuPrompt3 } from "../../api/deck-repository";
 
 export function JudgePickPromptScreen() {
   const { lobby, turn } = useGameContext();
