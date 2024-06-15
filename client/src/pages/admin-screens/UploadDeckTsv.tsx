@@ -3,9 +3,10 @@ import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { useDIContext } from "../../di-context";
 import { useEffectOnce } from "../../hooks/ui-hooks";
-import { mergeDecks, parseDeckTsv } from "../../api/deck-api";
+import { parseDeckTsv } from "../../api/deck-parser";
 import { Deck } from "../../shared/types";
 import { AdminSubpage } from "./admin-components/AdminSubpage";
+import { mergeDecks } from "../../api/deck-merger";
 
 export function UploadDeckTsv() {
   const { deckRepository } = useDIContext();
