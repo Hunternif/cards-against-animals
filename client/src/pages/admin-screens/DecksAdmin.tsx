@@ -1,6 +1,6 @@
 import { Accordion, AccordionItem } from '../../components/Accordion';
 import { GameButton } from '../../components/Buttons';
-import { useAsyncData } from '../../components/utils';
+import { useAsyncData } from '../../hooks/data-hooks';
 import { useDIContext } from '../../di-context';
 import { AdminDeck } from './admin-components/AdminDeck';
 import { AdminSubpage } from './admin-components/AdminSubpage';

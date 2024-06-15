@@ -13,7 +13,7 @@ import {
   useCollectionDataOnce,
   useDocumentData
 } from "react-firebase-hooks/firestore";
-import { FirestoreCollectionDataHookNullSafe, useCollectionDataNonNull } from "../components/utils";
+import { FirestoreCollectionDataHookNullSafe, useCollectionDataNonNull } from "../hooks/data-hooks";
 import { db, discardNowFun, lobbiesRef, newTurnFun } from "../firebase";
 import {
   playerDataConverter,

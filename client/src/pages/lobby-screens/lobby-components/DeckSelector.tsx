@@ -4,9 +4,9 @@ import { GameLobby } from "../../../shared/types";
 import { Checkbox } from "../../../components/Checkbox";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
-import { useEffectOnce } from "../../../components/utils";
 import { useDIContext } from "../../../di-context";
 import { DeckWithCount } from "../../../api/deck-repository";
+import { useEffectOnce } from "../../../hooks/ui-hooks";
 
 interface DeckProps {
   deck: DeckWithCount,

@@ -7,7 +7,6 @@ import { IconHeartInline, IconStarInline } from "../../components/Icons";
 import { PlayerAvatar } from "../../components/PlayerAvatar";
 import { Timer } from "../../components/Timer";
 import { GameLayout } from "../../components/layout/GameLayout";
-import { sleep, useEffectOnce } from "../../components/utils";
 import {
   checkIfShouldEndGame,
   endLobby,
@@ -19,6 +18,7 @@ import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
 import { ConfirmModal } from "../../components/ConfirmModal";
+import { useEffectOnce } from "../../hooks/ui-hooks";
 
 /** Displays winner of the turn */
 export function WinnerScreen() {

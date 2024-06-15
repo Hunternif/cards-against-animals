@@ -5,7 +5,6 @@ import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
-import { useEffectOnce } from "../../components/utils";
 import { firebaseAuth } from "../../firebase";
 import {
   findOrCreateLobbyAndJoin,
@@ -17,6 +16,7 @@ import {
 import { findPastLobbyID } from "../../model/users-api";
 import { CAAUser } from "../../shared/types";
 import { AnonymousLogin } from "./login-components/AnonymousLogin";
+import { useEffectOnce } from "../../hooks/ui-hooks";
 
 interface Props {
   existingLobbyID?: string,

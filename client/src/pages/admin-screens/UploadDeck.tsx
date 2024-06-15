@@ -1,8 +1,8 @@
 import { ChangeEvent, useRef, useState } from "react";
 import { Alert, Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { useEffectOnce } from "../../components/utils";
 import { useDIContext } from "../../di-context";
+import { useEffectOnce } from "../../hooks/ui-hooks";
 import { mergeDecks, parseDeck } from "../../model/deck-api";
 import { Deck } from "../../shared/types";
 import { AdminSubpage } from "./admin-components/AdminSubpage";

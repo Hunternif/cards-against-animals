@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 import { copyFields } from "../shared/utils";
 import { ModalBackdrop } from "./ModalBackdrop";
-import { useKeyDown } from "./utils";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useKeyDown } from "../hooks/ui-hooks";
 
 interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
   show: boolean,

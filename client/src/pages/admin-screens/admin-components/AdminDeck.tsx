@@ -1,14 +1,14 @@
-import { CSSProperties, ReactNode, useContext, useState } from "react";
-import { GameButton } from "../../../components/Buttons";
-import { ErrorContext } from "../../../components/ErrorContext";
-import { LoadingSpinner } from "../../../components/LoadingSpinner";
-import { Twemoji } from "../../../components/Twemoji";
-import { VirtualTable } from "../../../components/VirtualTable";
-import { useEffectOnce } from "../../../components/utils";
-import { useDIContext } from "../../../di-context";
-import { isOnlyEmojis } from "../../../model/deck-api";
-import { Deck, DeckCard, PromptDeckCard } from "../../../shared/types";
-import { AdminDeckControlRow } from "./AdminDeckControlRow";
+import { CSSProperties, ReactNode, useContext, useState } from 'react';
+import { GameButton } from '../../../components/Buttons';
+import { ErrorContext } from '../../../components/ErrorContext';
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { Twemoji } from '../../../components/Twemoji';
+import { VirtualTable } from '../../../components/VirtualTable';
+import { useDIContext } from '../../../di-context';
+import { useEffectOnce } from '../../../hooks/ui-hooks';
+import { isOnlyEmojis } from '../../../model/deck-api';
+import { Deck, DeckCard, PromptDeckCard } from '../../../shared/types';
+import { AdminDeckControlRow } from './AdminDeckControlRow';
 
 interface Props {
   deckID: string;
@@ -44,7 +44,7 @@ export function AdminDeck({ deckID }: Props) {
   const { setError } = useContext(ErrorContext);
   // Maps card 'typed id' to card
   const [selectedCards, setSelectedCards] = useState<Map<string, DeckCard>>(
-    new Map()
+    new Map(),
   );
 
   function isSelected(card: DeckCard): boolean {
@@ -68,7 +68,8 @@ export function AdminDeck({ deckID }: Props) {
   // Load decks
   useEffectOnce(() => {
     if (!deck) {
-      deckRepository.downloadDeck(deckID)
+      deckRepository
+        .downloadDeck(deckID)
         .then((val) => {
           setDeck(val);
           setList(combinedCardList(val));
@@ -108,9 +109,9 @@ interface RowProps {
 }
 
 function CardRow({ card, selected, onClick }: RowProps) {
-  const selectedClass = selected ? "selected" : "selectable";
+  const selectedClass = selected ? 'selected' : 'selectable';
   const isPrompt = card instanceof PromptDeckCard;
-  const cardClass = isPrompt ? "row-prompt" : "row-response";
+  const cardClass = isPrompt ? 'row-prompt' : 'row-response';
   return (
     <tr className={`card-row ${cardClass} ${selectedClass}`} onClick={onClick}>
       <td className="col-card-id" style={rowStyle}>
@@ -122,7 +123,7 @@ function CardRow({ card, selected, onClick }: RowProps) {
         {isPrompt && <div className="prompt-pick-number">{card.pick}</div>}
       </td>
       <td className="col-card-tags" style={rowStyle}>
-        {card.tags.join(", ")}
+        {card.tags.join(', ')}
       </td>
     </tr>
   );
@@ -132,8 +133,8 @@ interface CardContentRowProps {
   children: ReactNode;
 }
 function CardContentRow(props: CardContentRowProps) {
-  const content = props.children?.toString() ?? "";
-  const emojiClass = isOnlyEmojis(content) ? "emoji-only " : "";
+  const content = props.children?.toString() ?? '';
+  const emojiClass = isOnlyEmojis(content) ? 'emoji-only ' : '';
   return (
     <Twemoji {...props} className={`card-content-admin-row ${emojiClass}`} />
   );
