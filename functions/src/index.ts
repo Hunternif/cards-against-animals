@@ -12,8 +12,8 @@ import {
   assertLobbyCreator,
   assertLoggedIn,
   assertPlayerInLobby
-} from "./model/auth-api";
-import { logCardInteractions, logDownvotes } from "./model/deck-server-api";
+} from "./api/auth-api";
+import { logCardInteractions, logDownvotes } from "./api/deck-server-api";
 import {
   addPlayer,
   cleanUpEndedLobby,
@@ -26,7 +26,7 @@ import {
   startLobbyInternal,
   updateLobby,
   updatePlayer
-} from "./model/lobby-server-api";
+} from "./api/lobby-server-api";
 import {
   createNewTurn,
   discardNowAndDealCardsToPlayer,
@@ -37,8 +37,8 @@ import {
   logPlayedPrompt,
   updatePlayerScoresFromTurn,
   updateTurn
-} from "./model/turn-server-api";
-import { setUsersCurrentLobby } from "./model/user-server-api";
+} from "./api/turn-server-api";
+import { setUsersCurrentLobby } from "./api/user-server-api";
 import { lobbyConverter, playerConverter, turnConverter } from "./shared/firestore-converters";
 import { KickAction, LobbySettings, PromptCardInGame, ResponseCardInGame } from "./shared/types";
 import { assertExhaustive } from "./shared/utils";
