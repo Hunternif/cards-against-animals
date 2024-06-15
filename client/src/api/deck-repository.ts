@@ -30,9 +30,9 @@ export interface IDeckRepository {
   getDecksWithCount(): Promise<Array<DeckWithCount>>;
   /** Loads complete content of a deck, with prompts and responses. */
   downloadDeck(deckID: string): Promise<Deck>;
-  uploadDeck(deck: Deck): void;
+  uploadDeck(deck: Deck): Promise<void>;
   /** Verifies that deck ID does not exist, and uploads data. */
-  uploadNewDeck(deck: Deck): void;
+  uploadNewDeck(deck: Deck): Promise<void>;
 }
 
 export class FirestoreDeckRepository implements IDeckRepository {
