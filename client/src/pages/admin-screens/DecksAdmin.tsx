@@ -7,7 +7,7 @@ import { AdminSubpage } from './admin-components/AdminSubpage';
 
 export function DecksAdmin() {
   const { deckRepository } = useDIContext();
-  const decks = useAsyncData(() => deckRepository.getDecks());
+  const decks = useAsyncData(deckRepository.getDecks());
 
   return (
     <AdminSubpage headerContent={<Toolbar />}>
