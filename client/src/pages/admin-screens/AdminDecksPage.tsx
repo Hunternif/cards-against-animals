@@ -1,14 +1,12 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
+import { exportDecksToFile } from '../../api/deck-export';
 import { Accordion, AccordionItem } from '../../components/Accordion';
 import { GameButton } from '../../components/Buttons';
+import { useErrorContext } from '../../components/ErrorContext';
 import { useDIContext } from '../../di-context';
-import { exportDecksFun } from '../../firebase';
 import { useAsyncData } from '../../hooks/data-hooks';
-import { sleep } from '../../shared/utils';
 import { AdminDeck } from './admin-components/AdminDeck';
 import { AdminSubpage } from './admin-components/AdminSubpage';
-import { ErrorContext, useErrorContext } from '../../components/ErrorContext';
-import { saveAs } from 'file-saver';
 
 export function AdminDecksPage() {
   const { deckRepository } = useDIContext();
@@ -44,10 +42,7 @@ function Toolbar() {
   async function handleClickExportDecks() {
     setExporting(true);
     try {
-      const data = (await exportDecksFun()).data;
-      await sleep(1000);
-      const blob = new Blob([data], { type: 'application/json' });
-      saveAs(blob, 'caa_decks.json');
+      await exportDecksToFile();
     } catch (e: any) {
       setError(e);
     } finally {

@@ -1,12 +1,14 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { db } from "../firebase-server";
 import {
+  deckConverter,
   promptDeckCardConverter,
   responseDeckCardConverter,
 } from "../shared/firestore-converters";
 import { IRNG, RNG } from "../shared/rng";
 import {
   CardInGame,
+  Deck,
   DeckCard,
   GameLobby,
   GeneratedDeck,
@@ -18,14 +20,35 @@ import {
 } from "../shared/types";
 import { getPlayerDataRef, getPlayerHand, getTurnsRef } from "./turn-server-api";
 
-function getDeckPromptsRef(deckID: string) {
+export function getDecksRef() {
+  return db.collection(`decks`).withConverter(deckConverter);
+}
+
+export function getDeckPromptsRef(deckID: string) {
   return db.collection(`decks/${deckID}/prompts`)
     .withConverter(promptDeckCardConverter);
 }
 
-function getDeckResponsesRef(deckID: string) {
+export function getDeckResponsesRef(deckID: string) {
   return db.collection(`decks/${deckID}/responses`)
     .withConverter(responseDeckCardConverter);
+}
+
+export async function getAllDecks(): Promise<Deck[]> {
+  return (await getDecksRef().get()).docs.map((d) => d.data());
+}
+
+/** Loads complete content of a deck. with prompts and responses. */
+export async function downloadDeck(deckID: string): Promise<Deck> {
+  const deck = (await getDecksRef().doc(deckID).get()).data();
+  if (!deck) throw new Error(`Deck "${deckID}" does not exist`);
+  const [proDocs, resDocs] = await Promise.all([
+    getDeckPromptsRef(deckID).get(),
+    getDeckResponsesRef(deckID).get(),
+  ]);
+  deck.prompts = proDocs.docs.map((d) => d.data());
+  deck.responses = resDocs.docs.map((d) => d.data());
+  return deck;
 }
 
 /** Converts Prompt cards from a deck to a in-game Prompt cards. */

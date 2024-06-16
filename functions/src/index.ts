@@ -14,10 +14,10 @@ import { newTurnHandler } from './functions/turn/newTurn';
 import { onLobbyStatusChangeTrigger } from './triggers/onLobbyStatusChange';
 import { onPlayerStatusChangeTrigger } from './triggers/onPlayerStatusChange';
 import { onTurnPhaseChangeTrigger } from './triggers/onTurnPhaseChange';
+import { exportDecksHandler } from './functions/admin/exportDecks';
 
 // This import is copied during build
 import firebaseConfig from './firebase-config.json';
-import { exportDecksHandler } from './functions/admin/exportDecks';
 
 setGlobalOptions({
   region: firebaseConfig.region,

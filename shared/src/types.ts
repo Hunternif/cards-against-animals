@@ -386,3 +386,10 @@ export class CAAUser {
     public current_lobby_id: string | null | undefined = null,
   ) { }
 }
+
+export type DeckExportData = {
+  version: number,
+  /** ISO string */
+  date_created: string,
+  decks: Deck[],
+}
