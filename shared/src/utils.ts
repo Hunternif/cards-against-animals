@@ -19,7 +19,9 @@ export function copyFields<U>(data: U, except: string[] = ['id']): U {
 
 /** Copies all fields to a new object, except `id`, and undefined fields. */
 export function copyFields2<U, V>(
-  data: U, data2: V, except: string[] = ['id'],
+  data: U,
+  data2: V,
+  except: string[] = ['id'],
 ): U & V {
   const obj: any = Object.assign({}, data, data2);
   for (const key of except) {
@@ -32,3 +34,5 @@ export function copyFields2<U, V>(
 export function assertExhaustive(val: never) {
   throw new Error(`Unhandled value ${val}`);
 }
+
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
