@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { addDeck, removeDeck } from "../../../api/lobby-api";
+import { addDeck, removeDeck } from "../../../api/lobby-control-api";
 import { GameLobby } from "../../../shared/types";
 import { Checkbox } from "../../../components/Checkbox";
 import { ErrorContext } from "../../../components/ErrorContext";
@@ -58,7 +58,7 @@ export function DeckSelector({ lobby, readOnly }: SelectorProps) {
     await deckRepository.getDecksWithCount().then((d) => {
       setDecks(d);
       setLoading(false);
-    }).catch((e) => {
+    }).catch((e: any) => {
       setError(e);
       setLoading(false);
     });

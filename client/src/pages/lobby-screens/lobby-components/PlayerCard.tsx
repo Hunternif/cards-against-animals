@@ -1,11 +1,10 @@
 import { useContext, useState } from "react";
 import { Card } from "react-bootstrap";
-import { ConfirmModalFooter } from "../../../components/ConfirmModal";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { Modal, ModalBody } from "../../../components/Modal";
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Twemoji } from "../../../components/Twemoji";
-import { kickPlayer, updatePlayer } from "../../../api/lobby-api";
+import { kickPlayer, updatePlayer } from "../../../api/lobby-player-api";
 import { updateUserData } from "../../../api/users-api";
 import { GameLobby, KickAction, PlayerInLobby } from "../../../shared/types";
 import { AvatarSelector } from "./AvatarSelector";
@@ -36,7 +35,7 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
     try {
       await kickPlayer(lobby, player, action)
       setShowKickModal(false);
-    } catch (e) {
+    } catch (e: any) {
       setError(e);
     }
     finally {
@@ -58,7 +57,7 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
       player.avatar_id = avatarID;
       await updatePlayer(lobby.id, player);
       await updateUserData(player.uid, player.name, avatarID);
-    } catch (e) {
+    } catch (e: any) {
       setError(e);
     }
   }

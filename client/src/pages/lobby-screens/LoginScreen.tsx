@@ -1,22 +1,20 @@
 import { User, onAuthStateChanged } from "firebase/auth";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  findOrCreateLobbyAndJoin,
+  joinLobbyIfNeeded,
+  leaveLobby,
+} from "../../api/lobby-join-api";
+import { findPastLobbyID } from "../../api/users-api";
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { firebaseAuth } from "../../firebase";
-import {
-  findOrCreateLobbyAndJoin,
-  getPlayerInLobby,
-  joinLobbyIfNeeded,
-  setPlayerStatus,
-  updatePlayer
-} from "../../api/lobby-api";
-import { findPastLobbyID } from "../../api/users-api";
+import { useEffectOnce } from "../../hooks/ui-hooks";
 import { CAAUser } from "../../shared/types";
 import { AnonymousLogin } from "./login-components/AnonymousLogin";
-import { useEffectOnce } from "../../hooks/ui-hooks";
 
 interface Props {
   existingLobbyID?: string,
@@ -58,19 +56,7 @@ export function LoginScreen({ existingLobbyID }: Props) {
       setUser(user);
       setJoining(true);
       if (existingLobbyID) {
-        await joinLobbyIfNeeded(existingLobbyID, user);
-        // Check if already in this lobby:
-        const player = await getPlayerInLobby(existingLobbyID, user.uid);
-        if (player) {
-          // Update player data in game:
-          player.name = caaUser.name;
-          player.avatar_id = caaUser.avatar_id;
-          // If previously left, re-join:
-          if (player?.status === "left") {
-            player.status = "online";
-          }
-          await updatePlayer(existingLobbyID, player);
-        }
+        await joinLobbyIfNeeded(existingLobbyID, caaUser);
       } else {
         const lobbyID = await findOrCreateLobbyAndJoin(user);
         navigate(`/${lobbyID}`);
@@ -85,7 +71,7 @@ export function LoginScreen({ existingLobbyID }: Props) {
   /** Leave any current or past lobby */
   async function handleLeavePastLobby() {
     if (user && pastLobbyID) {
-      await setPlayerStatus(pastLobbyID, user.uid, "left");
+      await leaveLobby(pastLobbyID, user.uid);
       setPastLobbyID(null);
     }
   }

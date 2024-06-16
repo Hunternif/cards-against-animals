@@ -3,7 +3,7 @@ import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { GameLayout } from "../../components/layout/GameLayout";
-import { endLobby } from "../../api/lobby-api";
+import { endLobby } from "../../api/lobby-control-api";
 import {
   discardPrompts,
   getPromptCount,
@@ -74,7 +74,7 @@ export function JudgePickPromptScreen() {
     if (selectedPrompt) {
       // "Played" interaction will be logged on the server.
       setSubmitted(true);
-      await playPrompt(lobby, turn, selectedPrompt).catch((e) => {
+      await playPrompt(lobby, turn, selectedPrompt).catch((e: any) => {
         setError(e);
         setSubmitted(false);
       });
@@ -83,7 +83,7 @@ export function JudgePickPromptScreen() {
 
   async function handleEndGame() {
     setEnding(true);
-    await endLobby(lobby).catch((e) => {
+    await endLobby(lobby).catch((e: any) => {
       setError(e);
       setEnding(false);
     });

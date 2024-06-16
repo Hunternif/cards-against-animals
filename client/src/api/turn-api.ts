@@ -14,7 +14,7 @@ import {
   useDocumentData
 } from "react-firebase-hooks/firestore";
 import { FirestoreCollectionDataHookNullSafe, useCollectionDataNonNull } from "../hooks/data-hooks";
-import { db, discardNowFun, lobbiesRef, newTurnFun } from "../firebase";
+import { db, discardNowFun, newTurnFun } from "../firebase";
 import {
   playerDataConverter,
   playerResponseConverter,
@@ -36,6 +36,7 @@ import {
   VoteChoice
 } from "../shared/types";
 import { assertExhaustive } from "../shared/utils";
+import { lobbiesRef } from "./lobby-repository";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 function getTurnsRef(lobbyID: string) {

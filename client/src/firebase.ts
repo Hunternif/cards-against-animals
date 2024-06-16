@@ -19,7 +19,6 @@ export const firebaseAuth = getAuth();
 if (useEmulator) connectAuthEmulator(firebaseAuth, 'http://127.0.0.1:9099');
 
 // here we can export reusable database references
-export const lobbiesRef = collection(db, 'lobbies').withConverter(lobbyConverter)
 export const usersRef = collection(db, 'users').withConverter(userConverter)
 export const playersInGameRef = collectionGroup(db, 'players').withConverter(playerConverter);
 

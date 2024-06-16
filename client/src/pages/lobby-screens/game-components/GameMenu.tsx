@@ -10,7 +10,6 @@ import { IconHeartInline, IconPersonInlineSmall, IconStarInline } from "../../..
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Scoreboard } from "../../../components/Scoreboard";
 import { Twemoji } from "../../../components/Twemoji";
-import { endLobby, leaveLobby, updateLobbySettings, updatePlayer } from "../../../api/lobby-api";
 import { updateUserData } from "../../../api/users-api";
 import { LobbySettings } from "../../../shared/types";
 import { assertExhaustive, copyFields } from "../../../shared/utils";
@@ -18,6 +17,9 @@ import { AvatarSelector } from "../lobby-components/AvatarSelector";
 import { LobbySettingsPanel } from "../lobby-components/LobbySettingsPanel";
 import { useGameContext } from "./GameContext";
 import { GamePlayerList } from "./GamePlayerList";
+import { endLobby, updateLobbySettings } from "../../../api/lobby-control-api";
+import { leaveLobby } from "../../../api/lobby-join-api";
+import { updatePlayer } from "../../../api/lobby-player-api";
 
 
 /** Menu header on top of the game page */
@@ -41,7 +43,7 @@ export function GameMenu() {
   async function handleLeave() {
     await leaveLobby(lobby, player.uid)
       .then(() => navigate("/"))
-      .catch((e) => setError(e));
+      .catch((e: any) => setError(e));
   }
 
   async function handleEnd() {

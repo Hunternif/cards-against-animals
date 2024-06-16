@@ -6,7 +6,7 @@ import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { firebaseAuth } from "../firebase";
-import { useLobby, usePlayerInLobby, usePlayers } from "../api/lobby-api";
+import { useLobby, usePlayerInLobby, usePlayers } from "../api/lobby-hooks";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";

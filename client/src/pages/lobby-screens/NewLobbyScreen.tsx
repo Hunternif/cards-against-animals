@@ -10,7 +10,7 @@ import { ModalBackdrop } from "../../components/ModalBackdrop";
 import { FillLayout } from "../../components/layout/FillLayout";
 import { RowLayout } from "../../components/layout/RowLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
-import { leaveLobby } from "../../api/lobby-api";
+import { leaveLobby } from "../../api/lobby-join-api";
 import { GameLobby, PlayerInLobby } from "../../shared/types";
 import { LobbyCreationReadOnly } from "./lobby-components/LobbyCreationReadOnly";
 import { LobbyCreatorControls } from "./lobby-components/LobbyCreatorControls";
@@ -142,7 +142,7 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
     setLeaving(true);
     await leaveLobby(lobby, user.uid)
       .then(() => navigate("/"))
-      .catch((e) => {
+      .catch((e: any) => {
         setError(e);
         setLeaving(false);
       });
