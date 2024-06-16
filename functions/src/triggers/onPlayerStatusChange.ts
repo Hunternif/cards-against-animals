@@ -6,10 +6,12 @@ import { setUsersCurrentLobby } from '../api/user-server-api';
 import { playerConverter } from '../shared/firestore-converters';
 import { assertExhaustive } from '../shared/utils';
 
-/** Clean-up logic to run when a player changes their status. */
-export const onPlayerStatusChangeTrigger = onDocumentUpdated(
-  'lobbies/{lobbyID}/players/{userID}',
-  async (event) => {
+/**
+ * Clean-up logic to run when a player changes their status.
+ * This a function so it doesn't get called during import.
+ */
+export const createOnPlayerStatusChangeHandler = () =>
+  onDocumentUpdated('lobbies/{lobbyID}/players/{userID}', async (event) => {
     if (!event.data) return;
     const lobbyID = event.params.lobbyID;
     const userID = event.params.userID;
@@ -32,5 +34,4 @@ export const onPlayerStatusChangeTrigger = onDocumentUpdated(
           assertExhaustive(playerAfter.status);
       }
     }
-  },
-);
+  });

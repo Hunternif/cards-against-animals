@@ -4,10 +4,12 @@ import { logDownvotes } from '../api/deck-server-api';
 import { cleanUpEndedLobby } from '../api/lobby-server-api';
 import { lobbyConverter } from '../shared/firestore-converters';
 
-/** Logic to run after lobby status changes. */
-export const onLobbyStatusChangeTrigger = onDocumentUpdated(
-  'lobbies/{lobbyID}',
-  async (event) => {
+/**
+ * Logic to run after lobby status changes.
+ * This a function so it doesn't get called during import.
+ */
+export const createOnLobbyStatusChangeHandler = () =>
+  onDocumentUpdated('lobbies/{lobbyID}', async (event) => {
     if (!event.data) return;
     const lobbyBefore = lobbyConverter.fromFirestore(event.data.before);
     const lobbyAfter = lobbyConverter.fromFirestore(event.data.after);
@@ -19,5 +21,4 @@ export const onLobbyStatusChangeTrigger = onDocumentUpdated(
         await logDownvotes(lobbyAfter.id);
       }
     }
-  },
-);
+  });

@@ -8,12 +8,12 @@ import { joinLobbyHandler } from './functions/lobby/joinLobby';
 import { kickPlayerHandler } from './functions/lobby/kickPlayer';
 import { startLobbyHandler } from './functions/lobby/startLobby';
 import { updateLobbySettingsHandler } from './functions/lobby/updateLobbySettings';
-import { logInteractionHandler } from './functions/turn/logInteraction';
 import { discardNowHandler } from './functions/turn/discardNow';
+import { logInteractionHandler } from './functions/turn/logInteraction';
 import { newTurnHandler } from './functions/turn/newTurn';
-import { onLobbyStatusChangeTrigger } from './triggers/onLobbyStatusChange';
-import { onPlayerStatusChangeTrigger } from './triggers/onPlayerStatusChange';
-import { onTurnPhaseChangeTrigger } from './triggers/onTurnPhaseChange';
+import { createOnLobbyStatusChangeHandler } from './triggers/onLobbyStatusChange';
+import { createOnPlayerStatusChangeHandler } from './triggers/onPlayerStatusChange';
+import { createOnTurnPhaseChangeHandler } from './triggers/onTurnPhaseChange';
 
 // This import is copied during build
 import firebaseConfig from './firebase-config.json';
@@ -71,10 +71,10 @@ export const logInteraction = exportCallable(logInteractionHandler);
 export const discardNow = exportCallable(discardNowHandler);
 
 /** Logic to run after each turn phase. */
-export const onTurnPhaseChange = onTurnPhaseChangeTrigger;
+export const onTurnPhaseChange = createOnTurnPhaseChangeHandler();
 
 /** Clean-up logic to run when a player changes their status. */
-export const onPlayerStatusChange = onPlayerStatusChangeTrigger;
+export const onPlayerStatusChange = createOnPlayerStatusChangeHandler();
 
 /** Logic to run after lobby status changes. */
-export const onLobbyStatusChange = onLobbyStatusChangeTrigger;
+export const onLobbyStatusChange = createOnLobbyStatusChangeHandler();

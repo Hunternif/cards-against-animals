@@ -11,10 +11,12 @@ import {
 import { turnConverter } from '../shared/firestore-converters';
 import { assertExhaustive } from '../shared/utils';
 
-/** Logic to run after each turn phase. */
-export const onTurnPhaseChangeTrigger = onDocumentUpdated(
-  'lobbies/{lobbyID}/turns/{turnID}',
-  async (event) => {
+/**
+ * Logic to run after each turn phase.
+ * This a function so it doesn't get called during import.
+ */
+export const createOnTurnPhaseChangeHandler = () =>
+  onDocumentUpdated('lobbies/{lobbyID}/turns/{turnID}', async (event) => {
     if (!event.data) return;
     const lobbyID = event.params.lobbyID;
     const turnBefore = turnConverter.fromFirestore(event.data.before);
@@ -52,5 +54,4 @@ export const onTurnPhaseChangeTrigger = onDocumentUpdated(
         await updateTurn(lobbyID, turnAfter);
       }
     }
-  },
-);
+  });
