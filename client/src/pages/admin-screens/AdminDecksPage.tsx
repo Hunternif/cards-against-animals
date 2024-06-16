@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Accordion, AccordionItem } from '../../components/Accordion';
 import { GameButton } from '../../components/Buttons';
 import { useDIContext } from '../../di-context';
@@ -7,6 +7,8 @@ import { useAsyncData } from '../../hooks/data-hooks';
 import { sleep } from '../../shared/utils';
 import { AdminDeck } from './admin-components/AdminDeck';
 import { AdminSubpage } from './admin-components/AdminSubpage';
+import { ErrorContext, useErrorContext } from '../../components/ErrorContext';
+import { saveAs } from 'file-saver';
 
 export function AdminDecksPage() {
   const { deckRepository } = useDIContext();
@@ -38,12 +40,19 @@ export function AdminDecksPage() {
 
 function Toolbar() {
   const [exporting, setExporting] = useState(false);
+  const { setError } = useErrorContext();
   async function handleClickExportDecks() {
     setExporting(true);
-    const data = await exportDecksFun();
-    await sleep(1000);
-    setExporting(false);
-    console.log(data);
+    try {
+      const data = (await exportDecksFun()).data;
+      await sleep(1000);
+      const blob = new Blob([data], { type: 'application/json' });
+      saveAs(blob, 'caa_decks.json');
+    } catch (e: any) {
+      setError(e);
+    } finally {
+      setExporting(false);
+    }
   }
   return (
     <div className="admin-decks-toolbar">

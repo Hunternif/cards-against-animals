@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 
 interface ContextState {
   error?: any,
@@ -16,3 +16,7 @@ export const ErrorContext = createContext<ContextState>({
   error: null,
   setError: (e) => {},
 });
+
+export function useErrorContext() {
+  return useContext(ErrorContext);
+}
