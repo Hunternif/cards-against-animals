@@ -4,6 +4,7 @@ import { GameLobby } from "../shared/types";
 import { getPlayersRef } from "./lobby-server-api";
 import { getLastTurn } from "./turn-server-api";
 import { assertExhaustive } from "../shared/utils";
+import { getCAAUser } from "./user-server-api";
 
 /** Asserts that current user is logged in. Returns user ID. */
 export function assertLoggedIn(event: CallableRequest): string {
@@ -71,6 +72,15 @@ export function assertLobbyCreator(
   assertLoggedIn(event);
   if (!event.auth || event.auth.uid !== lobby.creator_uid) {
     throw new HttpsError("unauthenticated", "Must be lobby creator");
+  }
+}
+
+/** Asserts that current user is admin. */
+export async function assertAdmin(event: CallableRequest) {
+  const userID = assertLoggedIn(event);
+  const caaUser = await getCAAUser(userID);
+  if (caaUser?.is_admin !== true) {
+    throw new HttpsError("unauthenticated", "Must be admin");
   }
 }
 

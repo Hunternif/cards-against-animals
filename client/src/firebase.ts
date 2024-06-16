@@ -75,3 +75,6 @@ export const logInteractionFun = httpsCallable<
         won_responses: ResponseCardInGame[],
     }, void
 >(functions, 'logInteraction');
+
+export const exportDecksFun = httpsCallable<void, string>(
+    functions, 'exportDecks');
