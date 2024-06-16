@@ -5,7 +5,7 @@ import { useDIContext } from '../../di-context';
 import { AdminDeck } from './admin-components/AdminDeck';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 
-export function DecksAdmin() {
+export function AdminDecksPage() {
   const { deckRepository } = useDIContext();
   const decks = useAsyncData(deckRepository.getDecks());
 

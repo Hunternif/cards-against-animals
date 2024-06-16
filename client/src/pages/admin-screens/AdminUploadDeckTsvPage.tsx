@@ -3,12 +3,12 @@ import { Alert, Button, Col, Row } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { useDIContext } from '../../di-context';
 import { useEffectOnce } from '../../hooks/ui-hooks';
-import { parseDeck } from '../../api/deck-parser';
+import { parseDeckTsv } from '../../api/deck-parser';
 import { Deck } from '../../shared/types';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 import { mergeDecks } from '../../api/deck-merger';
 
-export function UploadDeck() {
+export function AdminUploadDeckTsvPage() {
   const { deckRepository } = useDIContext();
   const [isUploading, setUploading] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
@@ -28,11 +28,11 @@ export function UploadDeck() {
     try {
       const form = event.currentTarget as HTMLFormElement;
       const data = new FormData(form);
-      const deck = parseDeck(
+      const deck = parseDeckTsv(
         data.get('id') as string,
         data.get('title') as string,
-        data.get('prompts') as string,
-        data.get('responses') as string,
+        data.get('cardData') as string,
+        data.get('tagData') as string,
       );
       if (targetDeck) {
         const targetDeckFull = await deckRepository.downloadDeck(targetDeck.id);
@@ -83,7 +83,7 @@ export function UploadDeck() {
 
   return (
     <AdminSubpage
-      title="Upload new deck"
+      title="Upload new deck from TSV"
       headerContent={
         <>
           {info && <Alert variant="light">{info}</Alert>}
@@ -91,6 +91,9 @@ export function UploadDeck() {
         </>
       }
     >
+      <p className="light">
+        This is a special format for uploading cards with tags.
+      </p>
       <Form onSubmit={handleSubmit}>
         <Row className="mb-3">
           <Form.Group as={Col}>
@@ -131,29 +134,29 @@ export function UploadDeck() {
           </Form.Group>
         </Row>
         <Form.Group className="mb-3">
-          <Form.Label>Prompts</Form.Label>
+          <Form.Label>Card data, tab-separated</Form.Label>
           <Form.Control
             as="textarea"
-            name="prompts"
-            rows={10}
+            name="cardData"
+            rows={12}
             disabled={isUploading}
             style={{ fontFamily: 'monospace' }}
-            placeholder="Why did __ cross the road?
-I like big __
-..."
+            placeholder="Type     Text       tag1  tag2  ...
+Prompt   Hello, __  tag1           
+Response World            tag2     "
           />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Responses</Form.Label>
+          <Form.Label>Tag data, tab-separated</Form.Label>
           <Form.Control
             as="textarea"
-            name="responses"
-            rows={10}
+            name="tagData"
+            rows={6}
             disabled={isUploading}
             style={{ fontFamily: 'monospace' }}
-            placeholder="Chicken
-Egg
-Your mom
+            placeholder="Tag     Description
+tag1    My favorite tag
+tag2    ...
 ..."
           />
         </Form.Group>

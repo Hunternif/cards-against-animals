@@ -7,10 +7,10 @@ import { AdminPage } from './pages/AdminPage.tsx'
 import { ErrorPage } from './pages/ErrorPage.tsx'
 import { LobbyPage, lobbyLoader } from './pages/LobbyPage.tsx'
 import { WelcomePage } from './pages/WelcomePage.tsx'
-import { DecksAdmin } from './pages/admin-screens/DecksAdmin.tsx'
-import { LobbiesAdmin } from './pages/admin-screens/LobbiesAdmin.tsx'
-import { UploadDeck } from './pages/admin-screens/UploadDeck.tsx'
-import { UploadDeckTsv } from './pages/admin-screens/UploadDeckTsv.tsx'
+import { AdminDecksPage } from './pages/admin-screens/AdminDecksPage.tsx'
+import { AdminLobbiesPage } from './pages/admin-screens/AdminLobbiesPage.tsx'
+import { AdminUploadDeckPage } from './pages/admin-screens/AdminUploadDeckPage.tsx'
+import { AdminUploadDeckTsvPage } from './pages/admin-screens/AdminUploadDeckTsvPage.tsx'
 
 
 const router = createBrowserRouter([
@@ -32,19 +32,19 @@ const router = createBrowserRouter([
     children: [
       {
         path: "lobbies",
-        element: <LobbiesAdmin />,
+        element: <AdminLobbiesPage />,
       },
       {
         path: "decks",
-        element: <DecksAdmin />,
+        element: <AdminDecksPage />,
       },
       {
         path: "uploadDeck",
-        element: <UploadDeck />
+        element: <AdminUploadDeckPage />
       },
       {
         path: "uploadDeckTsv",
-        element: <UploadDeckTsv />
+        element: <AdminUploadDeckTsvPage />
       }
     ],
   }

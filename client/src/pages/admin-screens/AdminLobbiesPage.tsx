@@ -122,7 +122,7 @@ function PlayerInTurnData({ lobby, turn, data, responses }: PlayerProps) {
   );
 }
 
-export function LobbiesAdmin() {
+export function AdminLobbiesPage() {
   const [lobbies] = useCollection(lobbiesRef);
 
   return (
