@@ -14,7 +14,6 @@ import {
 import firebaseConfig from '../../firebase-config.json';
 import { playerConverter, userConverter } from './shared/firestore-converters';
 import {
-  DeckExportData,
   KickAction,
   LobbySettings,
   PromptCardInGame,

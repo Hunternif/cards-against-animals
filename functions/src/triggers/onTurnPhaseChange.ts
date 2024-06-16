@@ -24,19 +24,22 @@ export const onTurnPhaseChangeTrigger = onDocumentUpdated(
       switch (turnAfter.phase) {
         case 'new':
           break;
-        case 'answering':
+        case 'answering': {
           await logPlayedPrompt(lobbyID, turnAfter);
           break;
-        case 'reading':
+        }
+        case 'reading': {
           // All responses submitted: log interactions.
           await logInteractionsInReadingPhase(lobbyID, turnAfter);
           break;
-        case 'complete':
+        }
+        case 'complete': {
           // Turn completed: update all scores.
           const responses = await getAllPlayerResponses(lobbyID, turnAfter.id);
           await updatePlayerScoresFromTurn(lobbyID, turnAfter, responses);
           await logInteractionsInCompletePhase(lobbyID, turnAfter, responses);
           break;
+        }
         default:
           assertExhaustive(turnAfter.phase);
       }
