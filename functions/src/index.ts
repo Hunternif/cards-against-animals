@@ -14,7 +14,6 @@ import { newTurnHandler } from './functions/turn/newTurn';
 import { onLobbyStatusChangeTrigger } from './triggers/onLobbyStatusChange';
 import { onPlayerStatusChangeTrigger } from './triggers/onPlayerStatusChange';
 import { onTurnPhaseChangeTrigger } from './triggers/onTurnPhaseChange';
-import { exportDecksHandler } from './functions/admin/exportDecks';
 
 // This import is copied during build
 import firebaseConfig from './firebase-config.json';
@@ -70,11 +69,6 @@ export const logInteraction = exportCallable(logInteractionHandler);
  * and deal new cards.
  */
 export const discardNow = exportCallable(discardNowHandler);
-
-// TODO: enforce Cache-Control here, to prevent multiple exports.
-export const exportDecks = exportCallable(exportDecksHandler, {
-  maxInstances: 1,
-});
 
 /** Logic to run after each turn phase. */
 export const onTurnPhaseChange = onTurnPhaseChangeTrigger;

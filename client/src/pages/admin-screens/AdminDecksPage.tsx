@@ -37,12 +37,13 @@ export function AdminDecksPage() {
 }
 
 function Toolbar() {
+  const { deckRepository } = useDIContext();
   const [exporting, setExporting] = useState(false);
   const { setError } = useErrorContext();
   async function handleClickExportDecks() {
     setExporting(true);
     try {
-      await exportDecksToFile();
+      await exportDecksToFile(deckRepository);
     } catch (e: any) {
       setError(e);
     } finally {

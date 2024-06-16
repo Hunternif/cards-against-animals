@@ -101,8 +101,3 @@ export const logInteractionFun = httpsCallable<
   },
   void
 >(functions, 'logInteraction');
-
-export const exportDecksFun = httpsCallable<void, DeckExportData>(
-  functions,
-  'exportDecks',
-);

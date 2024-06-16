@@ -33,6 +33,7 @@ export interface IDeckRepository {
   uploadDeck(deck: Deck): Promise<void>;
   /** Verifies that deck ID does not exist, and uploads data. */
   uploadNewDeck(deck: Deck): Promise<void>;
+  clearCache(): void;
 }
 
 export class FirestoreDeckRepository implements IDeckRepository {
@@ -149,6 +150,10 @@ export class FirestoreDeckRepository implements IDeckRepository {
       });
     });
     this.deckCache.set(deck.id, deck);
+  }
+
+  clearCache() {
+    this.deckCache.clear();
   }
 }
 
