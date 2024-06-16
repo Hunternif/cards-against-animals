@@ -1,9 +1,12 @@
 import { CSSProperties, useContext } from "react";
-import { usePromptVotes, votePrompt } from "../../../api/turn-api";
+import { usePromptVotes } from "../../../api/turn-hooks";
+import { votePrompt } from "../../../api/turn-vote-card-api";
+import { ErrorContext } from "../../../components/ErrorContext";
+import { PlayerAvatar } from "../../../components/PlayerAvatar";
+import { Twemoji } from "../../../components/Twemoji";
 import { PromptCardInGame, VoteChoice } from "../../../shared/types";
 import { copyFields2 } from "../../../shared/utils";
 import { Downvote, Upvote } from "./CardVotes";
-import { ErrorContext } from "../../../components/ErrorContext";
 import { useGameContext } from "./GameContext";
 import {
   CardBottom,
@@ -13,8 +16,6 @@ import {
   CardContent,
   LargeCard,
 } from "./LargeCard";
-import { Twemoji } from "../../../components/Twemoji";
-import { PlayerAvatar } from "../../../components/PlayerAvatar";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
@@ -64,8 +65,8 @@ function KnownPrompt({
   const selectedClass = selected ? "selected" : "unselected";
 
   async function vote(choice?: VoteChoice) {
-    await votePrompt(lobby, turn, card, player, choice).catch((e) =>
-      setError(e)
+    await votePrompt(lobby, turn, card, player, choice).catch((e: any) =>
+      setError(e),
     );
   }
 

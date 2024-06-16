@@ -4,18 +4,13 @@ import { ErrorContext } from "../../components/ErrorContext";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { GameLayout } from "../../components/layout/GameLayout";
 import { endLobby } from "../../api/lobby-control-api";
-import {
-  discardPrompts,
-  getPromptCount,
-  pickNewPrompts,
-  playPrompt,
-} from "../../api/turn-api";
 import { PromptCardInGame } from "../../shared/types";
 import { CardPrompt } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { HaikuSizeSelector } from "./lobby-components/HaikuSizeSelector";
 import { haikuPrompt3 } from "../../api/deck-repository";
 import { logInteraction } from "../../api/log-api";
+import { discardPrompts, getPromptCount, pickNewPrompts, playPrompt } from "../../api/turn-prompt-api";
 
 export function JudgePickPromptScreen() {
   const { lobby, turn } = useGameContext();
@@ -37,7 +32,7 @@ export function JudgePickPromptScreen() {
         setPrompts(cards);
         setInitialLoaded(true);
       })
-      .catch((e) => setError(e));
+      .catch((e: any) => setError(e));
   }
 
   async function handleChange() {
@@ -50,7 +45,7 @@ export function JudgePickPromptScreen() {
       await discardPrompts(lobby, prompts)
         .then(() => pickNewPrompts(lobby))
         .then((cards) => setPrompts(cards))
-        .catch((e) => setError(e));
+        .catch((e: any) => setError(e));
     }
   }
 
@@ -92,7 +87,7 @@ export function JudgePickPromptScreen() {
   // Load the initial prompt when the screen loads:
   useEffect(() => {
     if (prompts.length === 0) {
-      getInitialPrompts().catch((e) => setError(e));
+      getInitialPrompts().catch((e: any) => setError(e));
     }
   }, [lobby, prompts, getInitialPrompts, setError]);
 

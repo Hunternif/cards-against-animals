@@ -2,13 +2,15 @@ import { useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { GameLayout } from "../../components/layout/GameLayout";
-import { chooseWinner, revealPlayerResponse, startNewTurn, toggleLikeResponse } from "../../api/turn-api";
+import { chooseWinner, startNewTurn } from "../../api/turn-control-api";
 import { PlayerResponse } from "../../shared/types";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
 import { assertExhaustive } from "../../shared/utils";
+import { revealPlayerResponse } from "../../api/turn-response-api";
+import { toggleLikeResponse } from "../../api/turn-like-api";
 
 
 // const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);
@@ -47,7 +49,7 @@ export function CardReadingScreen() {
     } else {
       // clicking to reveal:
       await revealPlayerResponse(lobby, turn, response.player_uid)
-        .catch((e) => setError(e));
+        .catch((e: any) => setError(e));
     }
   }
 
@@ -56,7 +58,7 @@ export function CardReadingScreen() {
     if (winner) {
       try {
         await chooseWinner(lobby, turn, winner.player_uid);
-      } catch (e) {
+      } catch (e: any) {
         setError(e);
       }
     }
@@ -65,7 +67,7 @@ export function CardReadingScreen() {
   async function handleSkipTurn() {
     setStartingNewTurn(true);
     await startNewTurn(lobby, turn)
-      .catch((e) => {
+      .catch((e: any) => {
         setError(e);
         setStartingNewTurn(false);
       });
@@ -74,7 +76,7 @@ export function CardReadingScreen() {
   /** When a player toggles "like" on the response */
   async function handleLike(response: PlayerResponse) {
     await toggleLikeResponse(lobby, turn, response, responses, player)
-      .catch((e) => setError(e));
+      .catch((e: any) => setError(e));
   }
 
   return <GameLayout className="card-reading-screen reading-layout-container">

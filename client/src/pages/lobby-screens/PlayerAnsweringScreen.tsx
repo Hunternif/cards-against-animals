@@ -4,10 +4,8 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import {
   cancelPlayerResponse,
-  discardCards,
-  discardImmediately,
   submitPlayerResponse
-} from "../../api/turn-api";
+} from "../../api/turn-response-api";
 import {
   ResponseCardInGame
 } from "../../shared/types";
@@ -18,6 +16,7 @@ import { GameHand } from "./game-components/GameHand";
 import { GameMiniResponses } from "./game-components/GameMiniResponses";
 import { ResponseCount } from "./game-components/ResponseCount";
 import { useSoundOnResponse } from "../../components/sounds";
+import { discardCards, discardImmediately } from "../../api/turn-discard-api";
 
 const containerStyle: CSSProperties = {
   display: "flex",
@@ -78,10 +77,10 @@ export function PlayerAnsweringScreen() {
     setSelectedCards(cards);
     if (cards.length === prompt?.pick) {
       await submitPlayerResponse(lobby, turn, player, cards)
-        .catch((e) => setError(e));
+        .catch((e: any) => setError(e));
     } else {
       await cancelPlayerResponse(lobby, turn, player)
-        .catch((e) => setError(e));
+        .catch((e: any) => setError(e));
     }
   }
 
@@ -113,7 +112,7 @@ export function PlayerAnsweringScreen() {
   async function handleMarkDiscarded(cards: ResponseCardInGame[]) {
     setDiscardedCards(cards);
     await discardCards(lobby, turn, player.uid, cards)
-      .catch((e) => setError(e));
+      .catch((e: any) => setError(e));
   }
 
   // Cancel discard if lobby settings change:

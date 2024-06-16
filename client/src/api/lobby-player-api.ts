@@ -37,7 +37,7 @@ export function getPlayersRef(lobbyID: string) {
 
 export async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
   await updateDoc(
-    doc(getPlayersRef(lobbyID), player.uid),
+    getPlayerRef(lobbyID, player.uid),
     playerConverter.toFirestore(player),
   );
 }
@@ -46,7 +46,7 @@ export async function getPlayerInLobby(
   lobbyID: string,
   userID: string,
 ): Promise<PlayerInLobby | null> {
-  return (await getDoc(doc(getPlayersRef(lobbyID), userID))).data() ?? null;
+  return (await getDoc(getPlayerRef(lobbyID, userID))).data() ?? null;
 }
 
 export async function getAllPlayersInLobby(

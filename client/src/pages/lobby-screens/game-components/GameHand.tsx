@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ErrorContext } from "../../../components/ErrorContext";
-import { toggleDownvoteCard } from "../../../api/turn-api";
+import { toggleDownvoteCard } from "../../../api/turn-vote-card-api";
 import { PlayerResponse, ResponseCardInGame, ResponseCardInHand } from "../../../shared/types";
 import { CardResponse } from "./CardResponse";
 import { useGameContext } from "./GameContext";
@@ -62,7 +62,7 @@ export function GameHand({
 
   async function handleDownvote(card: ResponseCardInHand, downvoted: boolean) {
     await toggleDownvoteCard(lobby, turn, player.uid, card, downvoted)
-      .catch((e) => setError(e));
+      .catch((e: any) => setError(e));
   }
 
   function getIsDiscarded(card: ResponseCardInHand): boolean {
