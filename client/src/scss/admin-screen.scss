@@ -46,11 +46,16 @@
   .col-card-id {
     width: 4em;
   }
-  .col-card-pick {
-    width: 1%;
-  }
   .col-card-tags {
     width: 20%;
+  }
+  .col-card-counter {
+    width: 5%;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    &.empty {
+      opacity: 0.4;
+    }
   }
   .col-card-content {
     // padding: 0.1em 0.5em;
@@ -133,5 +138,9 @@
     .number {
       font-weight: 400;
     }
+  }
+  td {
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }

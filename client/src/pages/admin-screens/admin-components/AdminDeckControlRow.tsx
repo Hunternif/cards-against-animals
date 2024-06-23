@@ -49,6 +49,11 @@ export function AdminDeckControlRow({
             </span>
           </td>
           <td className="col-card-tags">Tags</td>
+          <td className="col-card-counter">Views</td>
+          <td className="col-card-counter">Plays</td>
+          <td className="col-card-counter">Wins</td>
+          <td className="col-card-counter">Discards</td>
+          <td className="col-card-counter">Rating</td>
         </tr>
       </tbody>
     </table>
