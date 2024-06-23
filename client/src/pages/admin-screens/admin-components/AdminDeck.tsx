@@ -1,15 +1,13 @@
-import { CSSProperties, ReactNode, useContext, useState } from 'react';
-import { GameButton } from '../../../components/Buttons';
+import { useContext, useState } from 'react';
 import { ErrorContext } from '../../../components/ErrorContext';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
-import { Twemoji } from '../../../components/Twemoji';
+import { Modal } from '../../../components/Modal';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { useDIContext } from '../../../di-context';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
-import { isOnlyEmojis } from '../../../api/deck-parser';
-import { Deck, DeckCard, PromptDeckCard } from '../../../shared/types';
+import { Deck, DeckCard } from '../../../shared/types';
+import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
-import { Modal } from '../../../components/Modal';
 
 interface Props {
   deckID: string;
@@ -29,12 +27,6 @@ function combinedCardList(deck: Deck): DeckCard[] {
   return list.concat(deck.responses);
 }
 
-const rowHeight = 22;
-const borderWidth = 2;
-const rowStyle: CSSProperties = {
-  height: rowHeight,
-};
-
 /**
  * Renders all cards in the deck as a table.
  */
@@ -48,6 +40,7 @@ export function AdminDeck({ deckID }: Props) {
     new Map(),
   );
   const [showCopyDialog, setShowCopyDialog] = useState(false);
+  const selectedCardsArray = Array.from(selectedCards.values());
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(typedID(card));
@@ -90,16 +83,16 @@ export function AdminDeck({ deckID }: Props) {
       ></Modal>
       <AdminDeckControlRow
         deck={deck}
-        selected={Array.from(selectedCards.values())}
+        selected={selectedCardsArray}
         onToggleAll={toggleSelectAll}
         onClickCopy={() => setShowCopyDialog(true)}
       />
       <VirtualTable
         className="admin-deck-table"
-        rowHeight={rowHeight + borderWidth}
+        rowHeight={adminDeckRowHeight}
         data={list}
         render={(card) => (
-          <CardRow
+          <AdminDeckCardRow
             card={card}
             selected={isSelected(card)}
             onClick={() => toggleSelectedCard(card)}
@@ -107,69 +100,5 @@ export function AdminDeck({ deckID }: Props) {
         )}
       />
     </>
-  );
-}
-
-interface RowProps {
-  card: DeckCard;
-  selected?: boolean;
-  onClick?: () => void;
-}
-
-function CardRow({ card, selected, onClick }: RowProps) {
-  const selectedClass = selected ? 'selected' : 'selectable';
-  const isPrompt = card instanceof PromptDeckCard;
-  const cardClass = isPrompt ? 'row-prompt' : 'row-response';
-  // TODO: render column by column.
-  return (
-    <tr className={`card-row ${cardClass} ${selectedClass}`} onClick={onClick}>
-      <td className="col-card-id">{card.id}</td>
-      <td className="col-card-content" style={rowStyle}>
-        <CardContentRow>{card.content}</CardContentRow>
-        <EditButton />
-        {isPrompt && <div className="prompt-pick-number">{card.pick}</div>}
-      </td>
-      <td className="col-card-tags">{card.tags.join(', ')}</td>
-      <CounterRow val={card.views} />
-      <CounterRow val={card.plays} />
-      <CounterRow val={card.wins} />
-      <CounterRow val={card.discards} />
-      <CounterRow val={card.rating} />
-    </tr>
-  );
-}
-
-function CounterRow({ val }: { val: number }) {
-  const classes = new Array<string>();
-  classes.push('col-card-counter');
-  if (val === 0) classes.push('empty');
-  return <td className={classes.join(' ')}>{val}</td>;
-}
-
-interface CardContentRowProps {
-  children: ReactNode;
-}
-function CardContentRow(props: CardContentRowProps) {
-  const content = props.children?.toString() ?? '';
-  const emojiClass = isOnlyEmojis(content) ? 'emoji-only ' : '';
-  return (
-    <Twemoji {...props} className={`card-content-admin-row ${emojiClass}`} />
-  );
-}
-
-function EditButton({ onClick }: { onClick?: () => void }) {
-  return (
-    <div className="edit-button-container">
-      <GameButton
-        tiny
-        className="edit-button"
-        onClick={(e) => {
-          e.stopPropagation(); // prevent selecting the row
-          if (onClick) onClick();
-        }}
-      >
-        Edit
-      </GameButton>
-    </div>
   );
 }
