@@ -11,7 +11,7 @@ export function Accordion(props: ContainerProps) {
   return <div {...props} className={`accordion-container ${props.className ?? ""}`} />;
 }
 
-export function AccordionItem(props: ItemProps) {
+export function AccordionItem({header, ...props}: ItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const openClass = isOpen ? "open" : "closed";
   return (
@@ -19,7 +19,7 @@ export function AccordionItem(props: ItemProps) {
       <header
         className={openClass}
         onClick={() => setIsOpen(!isOpen)}>
-        {props.header}
+        {header}
       </header>
       {isOpen && <section>{props.children}</section>}
     </div>

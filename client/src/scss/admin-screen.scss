@@ -122,6 +122,7 @@
 }
 .admin-deck-control-row {
   position: sticky;
+  z-index: 1;
   top: 3em; //TODO: import accordion height
   padding: 0.5em 0;
   margin-top: -0.5em; // combat accordion section padding
