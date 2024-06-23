@@ -134,8 +134,13 @@
       margin: auto;
     }
   }
-  .deck-count {
+  .right {
     margin-left: auto;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5em;
+  }
+  .deck-count {
     .number {
       font-weight: 400;
     }

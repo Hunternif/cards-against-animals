@@ -9,6 +9,7 @@ import { useEffectOnce } from '../../../hooks/ui-hooks';
 import { isOnlyEmojis } from '../../../api/deck-parser';
 import { Deck, DeckCard, PromptDeckCard } from '../../../shared/types';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
+import { Modal } from '../../../components/Modal';
 
 interface Props {
   deckID: string;
@@ -46,6 +47,7 @@ export function AdminDeck({ deckID }: Props) {
   const [selectedCards, setSelectedCards] = useState<Map<string, DeckCard>>(
     new Map(),
   );
+  const [showCopyDialog, setShowCopyDialog] = useState(false);
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(typedID(card));
@@ -81,10 +83,16 @@ export function AdminDeck({ deckID }: Props) {
 
   return (
     <>
+      <Modal
+        show={showCopyDialog}
+        onHide={() => setShowCopyDialog(false)}
+        title="Copy cards to..."
+      ></Modal>
       <AdminDeckControlRow
         deck={deck}
         selected={Array.from(selectedCards.values())}
         onToggleAll={toggleSelectAll}
+        onClickCopy={() => setShowCopyDialog(true)}
       />
       <VirtualTable
         className="admin-deck-table"

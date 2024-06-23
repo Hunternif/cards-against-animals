@@ -138,7 +138,7 @@ export function getControlStyle({
   if (secondary) classes.push("secondary-control");
   if (small) classes.push("small-control");
   if (tiny) classes.push("tiny-control");
-  if (inline) classes.push("inline-contorl");
+  if (inline) classes.push("inline-control");
   return classes.join(" ");
 }
 
