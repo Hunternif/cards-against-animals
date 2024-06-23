@@ -9,7 +9,7 @@
 }
 .accordion-item {
   width: 100%;
-  header {
+  > header {
     padding: 0.5em 1em;
     display: flex;
     align-items: center;

@@ -82,6 +82,7 @@ export function AdminDeck({ deckID }: Props) {
         show={showCopyDialog}
         onHide={() => setShowCopyDialog(false)}
         title="Copy cards to..."
+        closeButton
       >
         <ModalBody longFormat>
           <AdminCopyCardsDialog cards={selectedCardsArray} />

@@ -8,6 +8,7 @@ interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
   noFade?: boolean;
   onHide?: () => void;
+  closeButton?: boolean;
 }
 
 /** Modal card centered over the screen. */
@@ -22,6 +23,7 @@ function ShownModal({
   noFade,
   onHide,
   children,
+  closeButton,
   ...props
 }: ModalProps) {
   useKeyDown(() => show && onHide && onHide(), ['Escape']);
@@ -35,7 +37,12 @@ function ShownModal({
           // Prevent clicking on the card from closing the modal:
           onClick={(e) => e.stopPropagation()}
         >
-          {title && <div className="modal-title">{title}</div>}
+          <header>
+            {title && <span className="modal-title">{title}</span>}
+            {closeButton && (
+              <button className="modal-close-button" onClick={onHide}></button>
+            )}
+          </header>
           {children}
         </div>
       </div>
