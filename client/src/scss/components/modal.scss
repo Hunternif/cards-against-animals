@@ -1,4 +1,4 @@
-@use "../colors.scss";
+@use '../colors.scss';
 
 /*------------------------- Modal component ------------------------*/
 
@@ -45,9 +45,15 @@
     font-weight: 600;
   }
   .modal-body {
-    text-align: center;
-    font-size: large;
-    font-weight: 600;
+    &:not(.long-format) {
+      text-align: center;
+      font-size: large;
+      font-weight: 600;
+    }
+    // Add vertical scrolling to all modals:
+    @extend .miniscrollbar;
+    @extend .miniscrollbar-light;
+    overflow-y: auto;
   }
   footer {
     display: flex;
@@ -72,10 +78,6 @@
       max-width: 95vw;
     }
     .modal-body {
-      // Add vertical scrolling:
-      @extend .miniscrollbar;
-      @extend .miniscrollbar-light;
-      overflow-y: auto;
       // Reset font
       font-size: medium;
       font-weight: 400;
@@ -88,7 +90,7 @@
 
   &.profile-modal {
     .player-name {
-      margin-top: .5em;
+      margin-top: 0.5em;
     }
   }
 }

@@ -1,14 +1,13 @@
-import { ReactNode } from "react";
-import { copyFields } from "../shared/utils";
-import { ModalBackdrop } from "./ModalBackdrop";
-import { LoadingSpinner } from "./LoadingSpinner";
-import { useKeyDown } from "../hooks/ui-hooks";
+import { ReactNode } from 'react';
+import { useKeyDown } from '../hooks/ui-hooks';
+import { LoadingSpinner } from './LoadingSpinner';
+import { ModalBackdrop } from './ModalBackdrop';
 
 interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
-  show: boolean,
-  title?: string,
-  noFade?: boolean,
-  onHide?: () => void,
+  show: boolean;
+  title?: string;
+  noFade?: boolean;
+  onHide?: () => void;
 }
 
 /** Modal card centered over the screen. */
@@ -17,33 +16,56 @@ export function Modal(props: ModalProps) {
   return <ShownModal {...props} />;
 }
 
-function ShownModal(props: ModalProps) {
-  useKeyDown(() => props.show && props.onHide && props.onHide(), ["Escape"]);
-  const newProps = copyFields(props, ["title", "show", "noFade", "onHide", "children"]);
-  return <>
-    {!props.noFade && <ModalBackdrop style={{ zIndex: "19" }} />}
-    <div className="modal-container" onClick={props.onHide}>
-      <div {...newProps} className={`modal-card ${props.className ?? ""}`}
-        // Prevent clicking on the card from closing the modal:
-        onClick={(e) => e.stopPropagation()}
-      >
-        {props.title && <div className="modal-title">{props.title}</div>}
-        {props.children}
+function ShownModal({
+  show,
+  title,
+  noFade,
+  onHide,
+  children,
+  ...props
+}: ModalProps) {
+  useKeyDown(() => show && onHide && onHide(), ['Escape']);
+  return (
+    <>
+      {!noFade && <ModalBackdrop style={{ zIndex: '19' }} />}
+      <div className="modal-container" onClick={onHide}>
+        <div
+          {...props}
+          className={`modal-card ${props.className ?? ''}`}
+          // Prevent clicking on the card from closing the modal:
+          onClick={(e) => e.stopPropagation()}
+        >
+          {title && <div className="modal-title">{title}</div>}
+          {children}
+        </div>
       </div>
-    </div>
-  </>;
+    </>
+  );
 }
 
 interface BodyProps {
-  children: ReactNode,
-  loading?: boolean,
-  loadingText?: string,
+  children: ReactNode;
+  loading?: boolean;
+  loadingText?: string;
+  /**
+   * The default "short format" is used for small pop-up messages
+   * with little text. Short text is styled: e.g. made bigger and centered.
+   * "Long format" doesn't apply extra styling to text.
+   */
+  longFormat?: boolean;
 }
 
 export function ModalBody({
-  children, loadingText, loading,
+  children,
+  loadingText,
+  loading,
+  longFormat,
 }: BodyProps) {
-  return <div className="modal-body">
-    {loading ? <LoadingSpinner text={loadingText} /> : children}
-  </div>;
+  const classes = ['modal-body'];
+  if (longFormat) classes.push('long-format');
+  return (
+    <div className={classes.join(' ')}>
+      {loading ? <LoadingSpinner text={loadingText} /> : children}
+    </div>
+  );
 }

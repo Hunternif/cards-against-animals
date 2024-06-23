@@ -3,29 +3,40 @@ import { GameButton } from '../../../components/Buttons';
 import { Checkbox } from '../../../components/Checkbox';
 import { Deck, DeckCard } from '../../../shared/types';
 
+interface Props {
+  cards: DeckCard[];
+  onToggleAll?: (checked: boolean) => void;
+  onClickCopy?: () => void;
+  selected?: DeckCard[];
+  readOnly?: boolean;
+}
+
+/**
+ * Advanced header with extra controls on each column
+ */
 export function AdminDeckControlRow({
-  deck,
+  cards,
   onToggleAll,
   onClickCopy,
   selected,
-}: {
-  deck: Deck;
-  onToggleAll: (checked: boolean) => void;
-  onClickCopy: () => void;
-  selected: DeckCard[];
-}) {
-  const promptCount = deck.prompts.length;
-  const resCount = deck.responses.length;
-  const promptSelCount = selected.filter((c) => c.type === 'prompt').length;
-  const resSelCount = selected.filter((c) => c.type === 'response').length;
-  const isAnySelected = selected.length > 0;
+  readOnly,
+}: Props) {
+  const promptCount = cards.filter((c) => c.type === 'prompt').length;
+  const resCount = cards.filter((c) => c.type === 'response').length;
+  const promptSelCount = selected?.filter((c) => c.type === 'prompt').length;
+  const resSelCount = selected?.filter((c) => c.type === 'response').length;
+  const isAnySelected = selected && selected.length > 0;
 
   return (
     <table className="admin-deck-table admin-deck-control-row">
       <tbody>
         <tr>
           <td className="col-card-id">
-            <Checkbox onToggle={onToggleAll} checked={isAnySelected} />
+            {readOnly ? (
+              'ID'
+            ) : (
+              <Checkbox onToggle={onToggleAll} checked={isAnySelected} />
+            )}
           </td>
           <td className="col-card-content">
             Content

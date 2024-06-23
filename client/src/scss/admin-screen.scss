@@ -1,4 +1,4 @@
-@use "colors.scss";
+@use 'colors.scss';
 
 .admin-subpage {
   display: flex;
@@ -45,6 +45,8 @@
   }
   .col-card-id {
     width: 4em;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
   }
   .col-card-tags {
     width: 20%;
@@ -148,5 +150,13 @@
   td {
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+}
+
+.copy-cards-dialog {
+  .admin-deck-control-row {
+    top: 0;
+    background-color: colors.$panel-bg; // bg color
+    margin: 0;
   }
 }

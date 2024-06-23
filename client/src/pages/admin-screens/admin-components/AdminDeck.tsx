@@ -1,11 +1,12 @@
 import { useContext, useState } from 'react';
 import { ErrorContext } from '../../../components/ErrorContext';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
-import { Modal } from '../../../components/Modal';
+import { Modal, ModalBody } from '../../../components/Modal';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { useDIContext } from '../../../di-context';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
 import { Deck, DeckCard } from '../../../shared/types';
+import { AdminCopyCardsDialog } from './AdminCopyCardsDialog';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
 
@@ -77,12 +78,17 @@ export function AdminDeck({ deckID }: Props) {
   return (
     <>
       <Modal
+        className="copy-cards-dialog"
         show={showCopyDialog}
         onHide={() => setShowCopyDialog(false)}
         title="Copy cards to..."
-      ></Modal>
+      >
+        <ModalBody longFormat>
+          <AdminCopyCardsDialog cards={selectedCardsArray} />
+        </ModalBody>
+      </Modal>
       <AdminDeckControlRow
-        deck={deck}
+        cards={list}
         selected={selectedCardsArray}
         onToggleAll={toggleSelectAll}
         onClickCopy={() => setShowCopyDialog(true)}
