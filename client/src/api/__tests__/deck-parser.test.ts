@@ -142,6 +142,15 @@ lol\tDuplicate tag`);
   expect(deck).toEqual(expected);
 });
 
+test('parse TSV deck with empty rows', () => {
+  const parse = () => parseDeckTsv("my_deck", "My deck",
+    `Type\tText\tTags...
+Prompt\tHello, __\tlol\t\t\t
+Prompt
+Response\tPoop`, "");
+  expect(parse).toThrow('Error parsing Prompt card row 2');
+});
+
 test('detect special words', () => {
   expect(detectDeer("кот это не олн")).toBe(false);
   expect(detectDeer("🦌🦌🦌")).toBe(true);

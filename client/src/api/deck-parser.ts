@@ -2,7 +2,7 @@ import {
   Deck,
   DeckTag,
   PromptDeckCard,
-  ResponseDeckCard
+  ResponseDeckCard,
 } from '../shared/types';
 
 /**
@@ -21,10 +21,16 @@ export function parseDeck(
     .map((line) => line.trim())
     .filter((line) => line != '')
     .map((line, i) => {
-      const id = cardOrdinalToID(i + 1);
-      const pick = parsePromptPick(line);
-      const text = processPromptText(processCardText(line));
-      return new PromptDeckCard(id, text, pick, 0, 0, 0, 0, [], 0, 0);
+      try {
+        const id = cardOrdinalToID(i + 1);
+        const pick = parsePromptPick(line);
+        const text = processPromptText(processCardText(line));
+        return new PromptDeckCard(id, text, pick, 0, 0, 0, 0, [], 0, 0);
+      } catch (e: any) {
+        const error = new Error(`Error parsing prompt card row ${i + 1}`);
+        error.stack += `\nCaused by: ${e}`;
+        throw error;
+      }
     });
   const promptCount = deck.prompts.length;
   deck.responses = responseList
@@ -32,9 +38,15 @@ export function parseDeck(
     .map((line) => line.trim())
     .filter((line) => line != '')
     .map((line, i) => {
-      const id = cardOrdinalToID(promptCount + i + 1);
-      const text = processCardText(line);
-      return new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, []);
+      try {
+        const id = cardOrdinalToID(promptCount + i + 1);
+        const text = processCardText(line);
+        return new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, []);
+      } catch (e: any) {
+        const error = new Error(`Error parsing response card row ${i + 1}`);
+        error.stack += `\nCaused by: ${e}`;
+        throw error;
+      }
     });
   return deck;
 }
@@ -59,23 +71,30 @@ export function parseDeckTsv(
     cardLines.splice(0, 1);
   }
   cardLines.forEach((line, i) => {
-    const id = cardOrdinalToID(i + 1);
-    const items = line.split('\t');
-    const type = items[0];
-    const rawText = items[1];
-    const tags = items.splice(2).filter((c) => c != '');
-    tagsInCards.push(...tags);
-    if (type === 'Prompt') {
-      const text = processPromptText(processCardText(rawText));
-      const pick = parsePromptPick(text);
-      deck.prompts.push(
-        new PromptDeckCard(id, text, pick, 0, 0, 0, 0, tags, 0, 0),
-      );
-    } else if (type === 'Response') {
-      const text = processCardText(items[1]);
-      deck.responses.push(
-        new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, tags),
-      );
+    let type = 'unknown';
+    try {
+      const id = cardOrdinalToID(i + 1);
+      const items = line.split('\t');
+      type = items[0];
+      const rawText = items[1];
+      const tags = items.splice(2).filter((c) => c != '');
+      tagsInCards.push(...tags);
+      if (type === 'Prompt') {
+        const text = processPromptText(processCardText(rawText));
+        const pick = parsePromptPick(text);
+        deck.prompts.push(
+          new PromptDeckCard(id, text, pick, 0, 0, 0, 0, tags, 0, 0),
+        );
+      } else if (type === 'Response') {
+        const text = processCardText(items[1]);
+        deck.responses.push(
+          new ResponseDeckCard(id, text, 0, 0, 0, 0, 0, 0, tags),
+        );
+      }
+    } catch (e: any) {
+      const error = new Error(`Error parsing ${type} card row ${i + 1}`);
+      error.stack += `\nCaused by: ${e}`;
+      throw error;
     }
   });
 
