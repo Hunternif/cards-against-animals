@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
 import { ErrorContext } from '../../../components/ErrorContext';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { Modal, ModalBody } from '../../../components/Modal';
@@ -9,7 +10,6 @@ import { Deck, DeckCard } from '../../../shared/types';
 import { AdminCopyCardsDialog } from './AdminCopyCardsDialog';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
-import { combinedCardList } from '../../../shared/deck-utils';
 
 interface Props {
   deckID: string;
@@ -30,14 +30,15 @@ function typedID(card: DeckCard): string {
 export function AdminDeck({ deckID }: Props) {
   const { deckRepository } = useDIContext();
   const [deck, setDeck] = useState<Deck | null>(null);
-  const [list, setList] = useState<DeckCard[]>([]);
+  const [deckCardset, setDeckCardset] = useState(emptySet);
   const { setError } = useContext(ErrorContext);
   // Maps card 'typed id' to card
   const [selectedCards, setSelectedCards] = useState<Map<string, DeckCard>>(
     new Map(),
   );
   const [showCopyDialog, setShowCopyDialog] = useState(false);
-  const selectedCardsArray = Array.from(selectedCards.values());
+  // TODO: optimize, retain the same instance between renders.
+  const selectedCardset = new DeckCardSet(selectedCards.values());
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(typedID(card));
@@ -51,7 +52,7 @@ export function AdminDeck({ deckID }: Props) {
   }
   function toggleSelectAll(checked: boolean) {
     if (checked) {
-      setSelectedCards(new Map(list.map((c) => [typedID(c), c])));
+      setSelectedCards(new Map(deckCardset.cards.map((c) => [typedID(c), c])));
     } else {
       setSelectedCards(new Map());
     }
@@ -64,7 +65,7 @@ export function AdminDeck({ deckID }: Props) {
         .downloadDeck(deckID)
         .then((val) => {
           setDeck(val);
-          setList(combinedCardList(val));
+          setDeckCardset(DeckCardSet.fromDeck(val));
         })
         .catch((e) => setError(e));
     }
@@ -83,20 +84,20 @@ export function AdminDeck({ deckID }: Props) {
         <ModalBody longFormat>
           <AdminCopyCardsDialog
             sourceDeck={deck}
-            copiedCards={selectedCardsArray}
+            copiedCards={selectedCardset}
           />
         </ModalBody>
       </Modal>
       <AdminDeckControlRow
-        cards={list}
-        selected={selectedCardsArray}
+        cards={deckCardset}
+        selected={selectedCardset}
         onToggleAll={toggleSelectAll}
         onClickCopy={() => setShowCopyDialog(true)}
       />
       <VirtualTable
         className="admin-deck-table"
         rowHeight={adminDeckRowHeight}
-        data={list}
+        data={deckCardset.cards}
         render={(card) => (
           <AdminDeckCardRow
             card={card}

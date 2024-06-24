@@ -6,6 +6,7 @@ import {
   filterResponseDeckCard,
 } from '../../shared/deck-utils';
 import { Deck, DeckCard, DeckTag } from '../../shared/types';
+import { DeckCardSet } from './deck-card-set';
 import { cardOrdinalToID } from './deck-parser';
 
 /**
@@ -14,12 +15,10 @@ import { cardOrdinalToID } from './deck-parser';
  * IDs of source deck will be changed to prevent collisions.
  */
 export async function mergeDecks(dest: Deck, source: Deck): Promise<Deck> {
-  const updatedCards = updateCardsForMerge(dest, combinedCardList(source));
-  const sourcePrompts = updatedCards.filter(filterPromptDeckCard);
-  const sourceResponses = updatedCards.filter(filterResponseDeckCard);
+  const updatedCards = updateCardsForMerge(dest, DeckCardSet.fromDeck(source));
   const destCopy = copyDeck(dest);
-  destCopy.prompts.push(...sourcePrompts);
-  destCopy.responses.push(...sourceResponses);
+  destCopy.prompts.push(...updatedCards.prompts);
+  destCopy.responses.push(...updatedCards.responses);
   // Merge tags:
   const tagMap = new Map<string, DeckTag>(
     destCopy.tags.map((tag) => [tag.name, tag]),
@@ -35,7 +34,10 @@ export async function mergeDecks(dest: Deck, source: Deck): Promise<Deck> {
  * Returns copies of the given cards, with updated IDs to prevent
  * collisions with the source deck.
  */
-export function updateCardsForMerge(dest: Deck, cards: DeckCard[]): DeckCard[] {
+export function updateCardsForMerge(
+  dest: Deck,
+  cardset: DeckCardSet,
+): DeckCardSet {
   // Assuming card ID format to be '0001'.
   const idRegex = /^\d{4}$/;
   let topID = -1;
@@ -68,5 +70,5 @@ export function updateCardsForMerge(dest: Deck, cards: DeckCard[]): DeckCard[] {
   }
   dest.prompts.forEach((card) => processExistingID(card.id));
   dest.responses.forEach((card) => processExistingID(card.id));
-  return cards.map((card) => updateCardID(card));
+  return new DeckCardSet(cardset.cards.map((card) => updateCardID(card)));
 }

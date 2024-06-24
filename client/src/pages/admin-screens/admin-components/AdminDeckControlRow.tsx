@@ -1,14 +1,14 @@
 import { ReactNode } from 'react';
+import { DeckCardSet } from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
 import { Checkbox } from '../../../components/Checkbox';
 import { useScreenSize } from '../../../components/layout/ScreenSizeSwitch';
-import { DeckCard } from '../../../shared/types';
 
 interface Props {
-  cards: DeckCard[];
+  cards: DeckCardSet;
   onToggleAll?: (checked: boolean) => void;
   onClickCopy?: () => void;
-  selected?: DeckCard[];
+  selected?: DeckCardSet;
   readOnly?: boolean;
 }
 
@@ -22,7 +22,7 @@ export function AdminDeckControlRow({
   selected,
   readOnly,
 }: Props) {
-  const isAnySelected = selected && selected.length > 0;
+  const isAnySelected = selected && selected.size > 0;
 
   return (
     <table className="admin-deck-table admin-deck-control-row">
@@ -59,15 +59,15 @@ export function AdminDeckControlRow({
 }
 
 function DeckStats({ cards, selected }: Props) {
-  const promptCount = cards.filter((c) => c.type === 'prompt').length;
-  const resCount = cards.filter((c) => c.type === 'response').length;
-  const promptSelCount = selected?.filter((c) => c.type === 'prompt').length;
-  const resSelCount = selected?.filter((c) => c.type === 'response').length;
-  const isAnySelected = selected && selected.length > 0;
+  const promptCount = cards.prompts.length;
+  const resCount = cards.responses.length;
+  const promptSelCount = selected?.prompts.length;
+  const resSelCount = selected?.responses.length;
+  const isAnySelected = selected && selected.size > 0;
   const { width: screenWidth } = useScreenSize();
   if (isAnySelected) {
     return screenWidth < 1200 ? (
-      `Sel: ${selected.length}/${cards.length}`
+      `Sel: ${selected.size}/${cards.size}`
     ) : (
       <>
         Selected:{' '}

@@ -10,25 +10,26 @@ import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
 import { AdminDeckSelector } from './AdminDeckSelector';
 import { useErrorContext } from '../../../components/ErrorContext';
+import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
 
 interface Props {
   sourceDeck: Deck;
-  copiedCards: DeckCard[];
+  copiedCards: DeckCardSet;
 }
 
 export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
-  const [updatedCards, setUpdatedCards] = useState<DeckCard[]>([]);
-  const [combinedList, setCombinedList] = useState<DeckCard[]>(copiedCards);
+  const [updatedCards, setUpdatedCards] = useState<DeckCardSet>(emptySet);
+  const [combinedSet, setCombinedSet] = useState<DeckCardSet>(copiedCards);
   const [merging, setMerging] = useState(false);
 
   async function handleSelectDeck(deck: Deck | null) {
     if (deck == null) {
       setTargetDeck(null);
-      setUpdatedCards([]);
-      setCombinedList(copiedCards);
+      setUpdatedCards(emptySet);
+      setCombinedSet(copiedCards);
     } else {
       setMerging(true);
       try {
@@ -36,7 +37,7 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
         const updatedCards = updateCardsForMerge(fullDeck, copiedCards);
         setTargetDeck(fullDeck);
         setUpdatedCards(updatedCards);
-        setCombinedList(combinedCardList(fullDeck).concat(updatedCards));
+        setCombinedSet(DeckCardSet.fromDeck(fullDeck).append(updatedCards));
       } catch (e: any) {
         setError(e);
       } finally {
@@ -52,12 +53,12 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
         onSelectDeck={handleSelectDeck}
         exceptIDs={[sourceDeck.id]}
       />
-      <AdminDeckControlRow readOnly cards={combinedList} />
+      <AdminDeckControlRow readOnly cards={combinedSet} />
       <ScrollContainer scrollLight className="table-container">
         <VirtualTable
           className="admin-deck-table"
           rowHeight={adminDeckRowHeight}
-          data={combinedList}
+          data={combinedSet.cards}
           render={(card) => <AdminDeckCardRow card={card} />}
         />
       </ScrollContainer>
