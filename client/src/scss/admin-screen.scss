@@ -37,6 +37,7 @@
   table-layout: fixed; // this is important for text ellipsis...
   border-collapse: separate;
   border-spacing: 0 2px;
+  text-wrap: nowrap;
   tr {
     font-size: 13px;
   }
@@ -50,6 +51,7 @@
   }
   .col-card-tags {
     width: 20%;
+    overflow: hidden;
   }
   .col-card-counter {
     width: 5%;
@@ -63,6 +65,7 @@
     // padding: 0.1em 0.5em;
     border-radius: 0.4em;
     display: flex;
+    gap: 0.5em;
     align-items: center;
     .prompt-pick-number {
       align-self: flex-end;
@@ -136,13 +139,9 @@
       margin: auto;
     }
   }
-  .right {
-    margin-left: auto;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.5em;
-  }
   .deck-count {
+    margin-left: auto;
+    overflow: hidden;
     .number {
       font-weight: 400;
     }

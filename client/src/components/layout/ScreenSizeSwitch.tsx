@@ -1,9 +1,9 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from 'react';
 
 interface Props {
-  widthBreakpoint: number,
-  bigScreen: ReactNode,
-  smallScreen: ReactNode,
+  widthBreakpoint: number;
+  bigScreen: ReactNode;
+  smallScreen: ReactNode;
 }
 
 /**
@@ -11,16 +11,11 @@ interface Props {
  * Thanks to https://stackoverflow.com/a/62954922/1093712
  */
 export function ScreenSizeSwitch({
-  widthBreakpoint, bigScreen, smallScreen,
+  widthBreakpoint,
+  bigScreen,
+  smallScreen,
 }: Props) {
-  const [width, setWidth] = useState(window.innerWidth);
-  useEffect(() => {
-    const handleResizeWindow = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handleResizeWindow);
-    return () => {
-      window.removeEventListener("resize", handleResizeWindow);
-    };
-  }, []);
+  const { width } = useScreenSize();
   if (width > widthBreakpoint) {
     return bigScreen;
   }
@@ -28,17 +23,23 @@ export function ScreenSizeSwitch({
 }
 
 /** Returns true if the screen is wider than the breakpoint. */
-export function useScreenWiderThan<T>(widthBreakpoint: number): boolean {
+export function useScreenWiderThan(widthBreakpoint: number): boolean {
+  const { width } = useScreenSize();
+  return width > widthBreakpoint;
+}
+
+export function useScreenSize(): { width: number; height: number } {
   const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
   useEffect(() => {
-    const handleResizeWindow = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handleResizeWindow);
+    const handleResizeWindow = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    };
+    window.addEventListener('resize', handleResizeWindow);
     return () => {
-      window.removeEventListener("resize", handleResizeWindow);
+      window.removeEventListener('resize', handleResizeWindow);
     };
   }, []);
-  if (width > widthBreakpoint) {
-    return true;
-  }
-  return false;
+  return { width, height };
 }
