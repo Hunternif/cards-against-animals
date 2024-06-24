@@ -62,7 +62,7 @@ interface SelectInputProps<T extends string> extends ControlProps {
   disabled?: boolean;
   onChange: (newValue: T) => void | Promise<void>;
 }
-type SelectOption<T> = [value: T, label: ReactNode];
+export type SelectOption<T> = [value: T, label: ReactNode];
 
 /** Form input: dropdown list of enum type T. */
 export function SelectInput<T extends string>({

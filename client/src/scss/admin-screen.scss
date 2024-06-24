@@ -154,9 +154,17 @@
 }
 
 .copy-cards-dialog {
+  .table-container {
+    // TODO: figure out a better way to fit within the screen and allow scroll
+    max-height: 60vh;
+  }
   .admin-deck-control-row {
     top: 0;
     background-color: colors.$panel-bg; // bg color
     margin: 0;
   }
+}
+
+.admin-deck-selector {
+  max-width: 20em;
 }
