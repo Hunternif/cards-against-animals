@@ -40,7 +40,7 @@
       opacity: 0.3;
     }
   }
-  input[type=checkbox] {
+  input[type='checkbox'] {
     visibility: hidden;
     &:checked + label:after {
       opacity: 1;
@@ -52,5 +52,14 @@
     &:not(:checked):disabled + label:hover:after {
       opacity: 0;
     }
+  }
+}
+
+.checkbox-label-group {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  label.label {
+    cursor: pointer;
   }
 }

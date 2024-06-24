@@ -17,6 +17,8 @@ import { Deck } from '../../../shared/types';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
 import { AdminDeckSelector } from './AdminDeckSelector';
+import { Checkbox } from '../../../components/Checkbox';
+import { saveDeckMigrations } from '../../../api/deck/deck-migration-repository';
 
 interface Props {
   sourceDeck: Deck;
@@ -51,6 +53,7 @@ export function AdminCopyCardsDialog({
 
   const [merging, setMerging] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [saveMig, setSaveMig] = useState(false);
 
   const [newDeckTitle, setNewDeckTitle] = useState('');
   const [newDeckID, setNewDeckID] = useState('');
@@ -111,6 +114,9 @@ export function AdminCopyCardsDialog({
       onComplete(
         `Merged ${copiedCards.size} cards into deck '${mergedDeck.title}'`,
       );
+      if (saveMig) {
+        // TODO: await saveDeckMigrations()
+      }
     } catch (e: any) {
       setError(e);
     } finally {
@@ -142,6 +148,11 @@ export function AdminCopyCardsDialog({
             />
           </>
         )}
+        <Checkbox
+          label="Save migration"
+          checked={saveMig}
+          onToggle={(checked) => setSaveMig(checked)}
+        />
       </div>
       {warnMsg && <div className="warn-msg">{warnMsg}</div>}
       <AdminDeckControlRow readOnly cards={combinedSet} />
