@@ -7,26 +7,28 @@ import {
   getDoc,
   getDocs,
   runTransaction,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 import {
   deckConverter,
   deckTagConverter,
   promptDeckCardConverter,
   responseDeckCardConverter,
-} from "../../shared/firestore-converters";
+} from '../../shared/firestore-converters';
 import {
   Deck,
   GeneratedDeck,
   PromptCardInGame,
   PromptDeckCard,
   ResponseDeckCard,
-} from "../../shared/types";
+} from '../../shared/types';
 
 /** For accessing decks and cards from the server. */
 export interface IDeckRepository {
   getPrompts(deckID: string): Promise<Array<PromptDeckCard>>;
   getResponses(deckID: string): Promise<Array<ResponseDeckCard>>;
+  /** Sorted by creation time. */
   getDecks(): Promise<Array<Deck>>;
+  /** Sorted by creation time. */
   getDecksWithCount(): Promise<Array<DeckWithCount>>;
   /** Loads complete content of a deck, with prompts and responses. */
   downloadDeck(deckID: string): Promise<Deck>;
@@ -40,37 +42,43 @@ export interface IDeckRepository {
 export class FirestoreDeckRepository implements IDeckRepository {
   private decksRef: CollectionReference<Deck>;
   constructor(private db: Firestore) {
-    this.decksRef = collection(db, "decks").withConverter(deckConverter);
+    this.decksRef = collection(db, 'decks').withConverter(deckConverter);
   }
 
   /** Returns Firestore subcollection reference of prompt cards in deck. */
   private getPromptsRef(deckID: string) {
-    return collection(this.decksRef, deckID, "prompts").withConverter(
-      promptDeckCardConverter
+    return collection(this.decksRef, deckID, 'prompts').withConverter(
+      promptDeckCardConverter,
     );
   }
 
   /** Returns Firestore subcollection reference of response cards in deck. */
   private getResponsesRef(deckID: string) {
-    return collection(this.decksRef, deckID, "responses").withConverter(
-      responseDeckCardConverter
+    return collection(this.decksRef, deckID, 'responses').withConverter(
+      responseDeckCardConverter,
     );
   }
 
   async getPrompts(deckID: string): Promise<Array<PromptDeckCard>> {
     return (await getDocs(this.getPromptsRef(deckID))).docs.map((p) =>
-      p.data()
+      p.data(),
     );
   }
 
   async getResponses(deckID: string): Promise<Array<ResponseDeckCard>> {
     return (await getDocs(this.getResponsesRef(deckID))).docs.map((p) =>
-      p.data()
+      p.data(),
     );
   }
 
   async getDecks(): Promise<Array<Deck>> {
-    return (await getDocs(this.decksRef)).docs.map((p) => p.data());
+    return (await getDocs(this.decksRef)).docs
+      .map((p) => p.data())
+      .sort(
+        (d1, d2) =>
+          (d1.time_created?.getMilliseconds() ?? 0) -
+          (d2.time_created?.getMilliseconds() ?? 0),
+      );
   }
 
   /**
@@ -131,20 +139,20 @@ export class FirestoreDeckRepository implements IDeckRepository {
       const docRef = doc(this.decksRef, deck.id);
       transaction.set(docRef, deck);
       // Now upload all the cards, in sequence:
-      const promptsRef = collection(docRef, "prompts").withConverter(
-        promptDeckCardConverter
+      const promptsRef = collection(docRef, 'prompts').withConverter(
+        promptDeckCardConverter,
       );
       deck.prompts.forEach((prompt) => {
         transaction.set(doc(promptsRef, prompt.id), prompt);
       });
-      const responsesRef = collection(docRef, "responses").withConverter(
-        responseDeckCardConverter
+      const responsesRef = collection(docRef, 'responses').withConverter(
+        responseDeckCardConverter,
       );
       deck.responses.forEach((response) => {
         transaction.set(doc(responsesRef, response.id), response);
       });
-      const tagsRef = collection(docRef, "tags").withConverter(
-        deckTagConverter
+      const tagsRef = collection(docRef, 'tags').withConverter(
+        deckTagConverter,
       );
       deck.tags.forEach((tag) => {
         transaction.set(doc(tagsRef, tag.name), tag);
@@ -166,42 +174,42 @@ export interface DeckWithCount {
 }
 
 export const haikuPrompt3 = new PromptCardInGame(
-  "haiku_3",
+  'haiku_3',
   GeneratedDeck.id,
-  "haiku_3",
+  'haiku_3',
   0,
-  "Make a haiku:\n_\n_\n_",
+  'Make a haiku:\n_\n_\n_',
   3,
   0,
-  []
+  [],
 );
 export const haikuPrompt4 = new PromptCardInGame(
-  "haiku_4",
+  'haiku_4',
   GeneratedDeck.id,
-  "haiku_4",
+  'haiku_4',
   0,
-  "Make a haiku:\n_\n_\n_\n_",
+  'Make a haiku:\n_\n_\n_\n_',
   4,
   0,
-  []
+  [],
 );
 export const haikuPrompt5 = new PromptCardInGame(
-  "haiku_5",
+  'haiku_5',
   GeneratedDeck.id,
-  "haiku_5",
+  'haiku_5',
   0,
-  "Make a haiku:\n_\n_\n_\n_\n_",
+  'Make a haiku:\n_\n_\n_\n_\n_',
   5,
   0,
-  []
+  [],
 );
 export const haikuPrompt6 = new PromptCardInGame(
-  "haiku_6",
+  'haiku_6',
   GeneratedDeck.id,
-  "haiku_6",
+  'haiku_6',
   0,
-  "Make a haiku:\n_\n_\n_\n_\n_\n_",
+  'Make a haiku:\n_\n_\n_\n_\n_\n_',
   6,
   0,
-  []
+  [],
 );

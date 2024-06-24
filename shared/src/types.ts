@@ -31,8 +31,8 @@ export class GameLobby {
     public id: string,
     public creator_uid: string,
     public settings: LobbySettings,
-    public status: LobbyStatus = "new",
-  ) { }
+    public status: LobbyStatus = 'new',
+  ) {}
 }
 
 export interface LobbySettings {
@@ -64,7 +64,7 @@ export interface LobbySettings {
 
 export function defaultLobbySettings(): LobbySettings {
   return {
-    play_until: "max_turns_per_person",
+    play_until: 'max_turns_per_person',
     max_turns: 10,
     max_score: 5,
     turns_per_person: 3,
@@ -74,24 +74,31 @@ export function defaultLobbySettings(): LobbySettings {
     allow_join_mid_game: true,
     enable_likes: true,
     freeze_stats: false,
-    show_likes_to: "all_except_czar",
-    likes_limit: "none",
-    discard_cost: "1_free_then_1_star",
-    lobby_control: "players",
+    show_likes_to: 'all_except_czar',
+    likes_limit: 'none',
+    discard_cost: '1_free_then_1_star',
+    lobby_control: 'players',
     next_turn_time_sec: 4.0,
   };
 }
 
-export type PlayUntil = "forever" | "max_turns" | "max_turns_per_person" | "max_score";
-export type ShowLikes = "all" | "all_except_czar";
-export type LikesLimit = "1_pp_per_turn" | "none";
-export type DiscardCost = "free" | "1_star" | "1_free_then_1_star" |
+export type PlayUntil =
+  | 'forever'
+  | 'max_turns'
+  | 'max_turns_per_person'
+  | 'max_score';
+export type ShowLikes = 'all' | 'all_except_czar';
+export type LikesLimit = '1_pp_per_turn' | 'none';
+export type DiscardCost =
+  | 'free'
+  | '1_star'
+  | '1_free_then_1_star'
   // "progress_hearts" | // 0 hearts, then 1 heart, then 2 hearts...
   // "1_free_then_5_hearts" |
   // "1_free_then_1_heart_per_card" | // each card costs 1 heart
-  "no_discard";
+  | 'no_discard';
 // "anyone" includes spectators
-export type LobbyContol = "creator" | "czar" | "players" | "anyone";
+export type LobbyContol = 'creator' | 'czar' | 'players' | 'anyone';
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {
@@ -115,7 +122,7 @@ export class PlayerInLobby {
     /** Current number of likes accumulated over the entire game. */
     public likes: number,
     public discards_used: number,
-  ) { }
+  ) {}
 }
 
 /** One turn, containing the entire state of the game board. */
@@ -143,7 +150,7 @@ export class GameTurn {
   prompts: Array<PromptCardInGame> = [];
 
   //================== Technical stuff ==================
-  phase: TurnPhase = "new";
+  phase: TurnPhase = 'new';
   /** Time when the last phase bagan. */
   phase_start_time: Date = this.time_created;
 
@@ -154,7 +161,7 @@ export class GameTurn {
     /** UID of the player who will judge the winner. */
     public judge_uid: string,
     public time_created: Date = new Date(),
-  ) { }
+  ) {}
 }
 
 /** State of the player in a turn. */
@@ -169,7 +176,7 @@ export class PlayerDataInTurn {
   constructor(
     public player_uid: string,
     public player_name: string, // Copied from 'Players' for convenience.
-  ) { }
+  ) {}
 }
 
 /** Player's submitted cards in a turn. */
@@ -188,7 +195,7 @@ export class PlayerResponse {
     public reveal_count: number,
     /** Will be updated after the turn completes. */
     public like_count: number | undefined,
-  ) { }
+  ) {}
 }
 
 /** Represents a player who voted on a card, e.g. like or dislike. */
@@ -197,10 +204,10 @@ export class Vote {
     public player_uid: string,
     public player_name: string, // Copied from 'Players' for convenience.
     public choice: VoteChoice,
-  ) { }
+  ) {}
 }
 
-export type VoteChoice = "yes" | "no";
+export type VoteChoice = 'yes' | 'no';
 
 /** Deck as an immutable collection that can be loaded into a game lobby. */
 export class Deck {
@@ -211,11 +218,15 @@ export class Deck {
   /** Must be fetched separately from a Firebase subcollection. */
   tags: DeckTag[] = [];
 
-  constructor(public id: string, public title: string) { }
+  constructor(
+    public id: string,
+    public title: string,
+    public time_created?: Date,
+  ) {}
 }
 
 export class DeckTag {
-  constructor(public name: string, public description?: string) { }
+  constructor(public name: string, public description?: string) {}
 }
 
 /** Card in deck */
@@ -237,7 +248,6 @@ export interface DeckCard {
   type: CardType;
 }
 
-
 /** Prompt card in deck */
 export class PromptDeckCard implements DeckCard {
   wins = 0; // doesn't apply to prompts
@@ -254,10 +264,10 @@ export class PromptDeckCard implements DeckCard {
     public upvotes: number,
     public downvotes: number,
     public time_created?: Date,
-  ) { }
+  ) {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  prompt() { } // hack to prevent duck typing
-  type: CardType = "prompt";
+  prompt() {} // hack to prevent duck typing
+  type: CardType = 'prompt';
 }
 
 /** Response card in deck */
@@ -274,10 +284,10 @@ export class ResponseDeckCard implements DeckCard {
     public likes: number,
     public tags: string[],
     public time_created?: Date,
-  ) { }
+  ) {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  response() { } // hack to prevent duck typing
-  type: CardType = "response";
+  response() {} // hack to prevent duck typing
+  type: CardType = 'response';
 }
 
 /**
@@ -314,10 +324,10 @@ export class PromptCardInGame implements CardInGame {
     public pick: number,
     public rating: number,
     public tags: string[],
-  ) { }
+  ) {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  prompt() { } // hack to prevent duck typing
-  type: CardType = "prompt";
+  prompt() {} // hack to prevent duck typing
+  type: CardType = 'prompt';
 }
 
 /** An instance of a Response card in game */
@@ -336,10 +346,10 @@ export class ResponseCardInGame implements CardInGame {
      */
     public downvoted: boolean,
     public tags: string[],
-  ) { }
+  ) {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  response() { } // hack to prevent duck typing
-  type: CardType = "response";
+  response() {} // hack to prevent duck typing
+  type: CardType = 'response';
 }
 
 /** An instance of a Response card in player's hand. */
@@ -348,35 +358,41 @@ export class ResponseCardInHand extends ResponseCardInGame {
   time_received: Date = new Date();
   static create(from: ResponseCardInGame, time: Date): ResponseCardInHand {
     const ret = new ResponseCardInHand(
-      from.id, from.deck_id, from.card_id_in_deck, from.random_index,
-      from.content, from.rating, from.downvoted, from.tags
+      from.id,
+      from.deck_id,
+      from.card_id_in_deck,
+      from.random_index,
+      from.content,
+      from.rating,
+      from.downvoted,
+      from.tags,
     );
     ret.time_received = time;
     return ret;
   }
 }
 
-export type PlayerRole = "player" | "spectator";
+export type PlayerRole = 'player' | 'spectator';
 
-export type PlayerStatus = "online" | "left" | "banned";
+export type PlayerStatus = 'online' | 'left' | 'banned';
 
-export type TurnPhase = "new" | "answering" | "reading" | "complete";
+export type TurnPhase = 'new' | 'answering' | 'reading' | 'complete';
 
-export type LobbyStatus = "new" | "in_progress" | "ended";
+export type LobbyStatus = 'new' | 'in_progress' | 'ended';
 
-export type CardType = "prompt" | "response";
+export type CardType = 'prompt' | 'response';
 
 /** "kick" is re-joinable, "ban" is forever. */
-export type KickAction = "kick" | "ban";
+export type KickAction = 'kick' | 'ban';
 
 /** Used for cards created during a game, e.g haiku. */
-export const GeneratedDeck = new Deck("@@generated", "Generated cards");
+export const GeneratedDeck = new Deck('@@generated', 'Generated cards');
 
 /**
  * User data stored in the database.
  * Users should only be referenced by their UIDs.
  * Multiple users are allowed to have the same name!
-*/
+ */
 export class CAAUser {
   constructor(
     public uid: string,
@@ -385,5 +401,5 @@ export class CAAUser {
     public avatar_id: string | null | undefined = null,
     public is_admin: boolean = false,
     public current_lobby_id: string | null | undefined = null,
-  ) { }
+  ) {}
 }

@@ -93,11 +93,15 @@ export const deckConverter: FConverter<Deck> = {
   toFirestore: (deck: Deck) => {
     return {
       title: deck.title,
+      time_created: deck.time_created ?
+        FTimestamp.fromDate(deck.time_created) :
+        fServerTimestamp(),
     };
   },
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new Deck(snapshot.id, data.title);
+    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     // all cards must be fetched separately as a subcollection
     return ret;
   },
