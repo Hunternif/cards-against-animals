@@ -1,14 +1,21 @@
-import { copyFields } from "../../shared/utils";
-
 interface Props extends React.HTMLAttributes<HTMLElement> {
-  scrollLight?: boolean,
-  scrollDark?: boolean,
+  scrollLight?: boolean;
+  scrollDark?: boolean;
 }
 
-export function ScrollContainer(props: Props) {
-  const newProps = copyFields(props, ['scrollLight', 'scrollDark']);
-  const lightStyle = props.scrollLight ? "miniscrollbar-light" : "";
-  const darkStyle = props.scrollDark ? "miniscrollbar-dark" : "";
-  return <div {...newProps}
-    className={`layout-scroll-container miniscrollbar miniscrollbar-auto ${lightStyle} ${darkStyle} ${props.className ?? ""}`} />
+export function ScrollContainer({
+  scrollLight,
+  scrollDark,
+  className,
+  ...props
+}: Props) {
+  const classes = [
+    'layout-scroll-container',
+    'miniscrollbar',
+    'miniscrollbar-auto',
+  ];
+  if (className) classes.push(className);
+  if (scrollLight) classes.push('miniscrollbar-light');
+  if (scrollDark) classes.push('miniscrollbar-dark');
+  return <div {...props} className={classes.join(' ')} />;
 }

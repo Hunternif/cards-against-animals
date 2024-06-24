@@ -21,6 +21,13 @@
   height: 100%;
 }
 
+.layout-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+
 .layout-game {
   // Centered on the page:
   margin: auto;

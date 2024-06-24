@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-interface Props extends React.HTMLAttributes<HTMLDivElement> { }
+interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 /**
  * A simple container, its styling is defined in CSS files.
@@ -12,6 +12,8 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> { }
  * <footer />
  * ```
  */
-export function GameLayout(props: Props) {
-  return <div {...props} className={`layout-game ${props.className ?? ""}`} />;
+export function GameLayout({ className, ...props }: Props) {
+  const classes = ['layout-game'];
+  if (className) classes.push(className);
+  return <div {...props} className={classes.join(' ')} />;
 }

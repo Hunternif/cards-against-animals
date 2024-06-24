@@ -1,18 +1,8 @@
-import { CSSProperties, ReactNode } from "react";
-
-interface LayoutProps {
-  children: ReactNode,
-  className?: string,
-  style?: CSSProperties,
-}
+interface LayoutProps extends React.HTMLAttributes<HTMLElement> {}
 
 /** Horizontal row that takes 100% height */
-export function RowLayout({ children, className, style }: LayoutProps) {
-  return (
-    <div style={style}
-      className={`layout-row ${className ?? ""}`}
-    >
-      {children}
-    </div>
-  );
+export function RowLayout({ className, ...props }: LayoutProps) {
+  const classes = ['layout-row'];
+  if (className) classes.push(className);
+  return <div {...props} className={classes.join(' ')} />;
 }
