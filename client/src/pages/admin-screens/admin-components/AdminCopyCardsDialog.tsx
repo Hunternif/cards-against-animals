@@ -1,16 +1,20 @@
-import { useState } from 'react';
-import { updateCardsForMerge } from '../../../api/deck/deck-merger';
-import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { useMemo, useState } from 'react';
+import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
+import {
+  mergeIntoDeck,
+  normalizeCardset,
+  updateCardsForMerge,
+} from '../../../api/deck/deck-merger';
+import { GameButton } from '../../../components/Buttons';
+import { useErrorContext } from '../../../components/ErrorContext';
+import { TextInput } from '../../../components/FormControls';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
 import { useDIContext } from '../../../di-context';
-import { combinedCardList } from '../../../shared/deck-utils';
-import { Deck, DeckCard } from '../../../shared/types';
+import { Deck } from '../../../shared/types';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
 import { AdminDeckSelector } from './AdminDeckSelector';
-import { useErrorContext } from '../../../components/ErrorContext';
-import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
 
 interface Props {
   sourceDeck: Deck;
@@ -18,18 +22,28 @@ interface Props {
 }
 
 export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
+  const normalizedCopiedCards = useMemo(
+    () => normalizeCardset(copiedCards),
+    [copiedCards],
+  );
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
   const [updatedCards, setUpdatedCards] = useState<DeckCardSet>(emptySet);
-  const [combinedSet, setCombinedSet] = useState<DeckCardSet>(copiedCards);
+  const [combinedSet, setCombinedSet] = useState<DeckCardSet>(
+    normalizedCopiedCards,
+  );
   const [merging, setMerging] = useState(false);
+
+  const [newDeckTitle, setNewDeckTitle] = useState('');
+  const [newDeckID, setNewDeckID] = useState('');
+  const valid = targetDeck != null || (newDeckTitle != '' && newDeckID != '');
 
   async function handleSelectDeck(deck: Deck | null) {
     if (deck == null) {
       setTargetDeck(null);
       setUpdatedCards(emptySet);
-      setCombinedSet(copiedCards);
+      setCombinedSet(normalizedCopiedCards);
     } else {
       setMerging(true);
       try {
@@ -49,10 +63,26 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
 
   return (
     <>
-      <AdminDeckSelector
-        onSelectDeck={handleSelectDeck}
-        exceptIDs={[sourceDeck.id]}
-      />
+      <div className="deck-form">
+        <AdminDeckSelector
+          onSelectDeck={handleSelectDeck}
+          exceptIDs={[sourceDeck.id]}
+        />
+        {/* spacer */}
+        <div />
+        {targetDeck == null && (
+          <>
+            <TextInput
+              placeholder="Title: My new deck"
+              onChange={async (val) => setNewDeckTitle(val)}
+            />
+            <TextInput
+              placeholder="ID: my_deck_id"
+              onChange={async (val) => setNewDeckID(val)}
+            />
+          </>
+        )}
+      </div>
       <AdminDeckControlRow readOnly cards={combinedSet} />
       <ScrollContainer scrollLight className="table-container">
         <VirtualTable
@@ -62,6 +92,11 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
           render={(card) => <AdminDeckCardRow card={card} />}
         />
       </ScrollContainer>
+      <footer>
+        <GameButton accent className="btn-submit" disabled={!valid || merging}>
+          Submit
+        </GameButton>
+      </footer>
     </>
   );
 }

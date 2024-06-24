@@ -1,6 +1,6 @@
-import { ChangeEvent, ReactNode, useContext } from "react";
-import { Checkbox } from "./Checkbox";
-import { ErrorContext } from "./ErrorContext";
+import { ChangeEvent, ReactNode, useContext } from 'react';
+import { Checkbox } from './Checkbox';
+import { ErrorContext } from './ErrorContext';
 
 export interface ControlProps {
   className?: string;
@@ -120,6 +120,38 @@ export function ToggleInput({ value, disabled, onChange }: ToggleInputProps) {
   );
 }
 
+interface TextInputProps extends ControlProps {
+  value?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  onChange: (newValue: string) => Promise<void>;
+}
+
+/** Form input: text */
+export function TextInput({
+  value,
+  placeholder,
+  disabled,
+  onChange,
+  ...props
+}: TextInputProps) {
+  const { setError } = useContext(ErrorContext);
+  const controlClass = getControlStyle(props);
+  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    await onChange(event.currentTarget.value).catch((e) => setError(e));
+  }
+  return (
+    <input
+      type="text"
+      className={`control ${controlClass}`}
+      value={value}
+      placeholder={placeholder}
+      disabled={disabled}
+      onChange={handleChange}
+    />
+  );
+}
+
 export function getControlStyle({
   className,
   accent,
@@ -132,14 +164,14 @@ export function getControlStyle({
 }: ControlProps): string {
   const classes = new Array<string>();
   if (className) classes.push(className);
-  if (accent) classes.push("accent-control");
-  if (light) classes.push("light-control");
-  if (lighter) classes.push("lighter-control");
-  if (secondary) classes.push("secondary-control");
-  if (small) classes.push("small-control");
-  if (tiny) classes.push("tiny-control");
-  if (inline) classes.push("inline-control");
-  return classes.join(" ");
+  if (accent) classes.push('accent-control');
+  if (light) classes.push('light-control');
+  if (lighter) classes.push('lighter-control');
+  if (secondary) classes.push('secondary-control');
+  if (small) classes.push('small-control');
+  if (tiny) classes.push('tiny-control');
+  if (inline) classes.push('inline-control');
+  return classes.join(' ');
 }
 
 export function stripControlProps<T>({

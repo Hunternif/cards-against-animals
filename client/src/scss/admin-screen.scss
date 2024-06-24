@@ -155,15 +155,25 @@
 .copy-cards-dialog {
   .table-container {
     // TODO: figure out a better way to fit within the screen and allow scroll
-    max-height: 60vh;
+    max-height: 50vh;
   }
   .admin-deck-control-row {
     top: 0;
     background-color: colors.$panel-bg; // bg color
     margin: 0;
   }
+  .deck-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1em;
+    row-gap: 1em;
+    margin-bottom: 0.5em;
+  }
+  footer {
+    margin-top: 1em;
+  }
 }
 
 .admin-deck-selector {
-  max-width: 20em;
+  min-width: 0; // This ignores extra long values and fits in the grid
 }
