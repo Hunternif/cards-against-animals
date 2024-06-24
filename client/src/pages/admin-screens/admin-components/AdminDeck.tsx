@@ -85,7 +85,10 @@ export function AdminDeck({ deckID }: Props) {
         closeButton
       >
         <ModalBody longFormat>
-          <AdminCopyCardsDialog copiedCards={selectedCardsArray} />
+          <AdminCopyCardsDialog
+            sourceDeck={deck}
+            copiedCards={selectedCardsArray}
+          />
         </ModalBody>
       </Modal>
       <AdminDeckControlRow

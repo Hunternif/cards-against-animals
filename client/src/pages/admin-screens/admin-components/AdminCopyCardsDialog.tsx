@@ -8,6 +8,7 @@ import { AdminDeckControlRow } from './AdminDeckControlRow';
 import { AdminDeckSelector } from './AdminDeckSelector';
 
 interface Props {
+  sourceDeck: Deck;
   copiedCards: DeckCard[];
 }
 
@@ -16,7 +17,7 @@ function combinedCardList(deck: Deck): DeckCard[] {
   return list.concat(deck.responses);
 }
 
-export function AdminCopyCardsDialog({ copiedCards }: Props) {
+export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
   const { deckRepository } = useDIContext();
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
   const [combinedList, setCombinedList] = useState<DeckCard[]>(copiedCards);
@@ -35,7 +36,10 @@ export function AdminCopyCardsDialog({ copiedCards }: Props) {
 
   return (
     <>
-      <AdminDeckSelector onSelectDeck={handleSelectDeck} />
+      <AdminDeckSelector
+        onSelectDeck={handleSelectDeck}
+        exceptIDs={[sourceDeck.id]}
+      />
       <AdminDeckControlRow readOnly cards={combinedList} />
       <ScrollContainer scrollLight className="table-container">
         <VirtualTable

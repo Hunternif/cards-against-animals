@@ -6,11 +6,12 @@ import { useAsyncData } from '../../../hooks/data-hooks';
 import { Deck } from '../../../shared/types';
 
 interface Props {
+  exceptIDs?: string[];
   onSelectDeck: (deck: Deck | null) => void;
 }
 
 /** A dropdown control to choose a target deck for modification. */
-export function AdminDeckSelector({ onSelectDeck }: Props) {
+export function AdminDeckSelector({ exceptIDs, onSelectDeck }: Props) {
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
@@ -20,7 +21,11 @@ export function AdminDeckSelector({ onSelectDeck }: Props) {
 
   const deckOptions = new Array<SelectOption<string>>();
   deckOptions.push(['', 'New deck...']);
-  decks?.forEach((d) => deckOptions.push([d.id, d.title]));
+  decks?.forEach((d) => {
+    if (!exceptIDs || exceptIDs.indexOf(d.id) === -1) {
+      deckOptions.push([d.id, d.title]);
+    }
+  });
 
   function handleSelectTarget(targetID: string) {
     if (targetID === '') {
