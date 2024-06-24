@@ -1,6 +1,6 @@
-import { FirestoreError, Query, QuerySnapshot } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { useCollectionData } from "react-firebase-hooks/firestore";
+import { FirestoreError, Query, QuerySnapshot } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 export type FirestoreCollectionDataHook<T> = [
   value: T[] | undefined,
@@ -24,7 +24,9 @@ export function useCollectionDataNonNull<T>(
 }
 
 /** Convenience hook to get async data. */
-export function useAsyncData<T>(promise: Promise<T>): T | null {
+export function useAsyncData<T>(
+  promise: Promise<T>,
+): [data: T | null, error: any] {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<any>(null);
   useEffect(() => {
@@ -42,6 +44,5 @@ export function useAsyncData<T>(promise: Promise<T>): T | null {
       }
     }
   }, []); // Don't depend on identity of the promise!
-  if (error) throw error;
-  return data;
+  return [data, error];
 }
