@@ -9,6 +9,7 @@ import { Deck, DeckCard } from '../../../shared/types';
 import { AdminCopyCardsDialog } from './AdminCopyCardsDialog';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
+import { combinedCardList } from '../../../shared/deck-utils';
 
 interface Props {
   deckID: string;
@@ -21,11 +22,6 @@ interface Props {
  */
 function typedID(card: DeckCard): string {
   return card.type + card.id;
-}
-
-function combinedCardList(deck: Deck): DeckCard[] {
-  const list: DeckCard[] = deck.prompts;
-  return list.concat(deck.responses);
 }
 
 /**

@@ -241,7 +241,6 @@ export interface DeckCard {
 /** Prompt card in deck */
 export class PromptDeckCard implements DeckCard {
   wins = 0; // doesn't apply to prompts
-  time_created?: Date;
   constructor(
     public id: string,
     public content: string,
@@ -254,6 +253,7 @@ export class PromptDeckCard implements DeckCard {
     public tags: string[],
     public upvotes: number,
     public downvotes: number,
+    public time_created?: Date,
   ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prompt() { } // hack to prevent duck typing
@@ -261,8 +261,8 @@ export class PromptDeckCard implements DeckCard {
 }
 
 /** Response card in deck */
+//TODO: use marker field and merge Response and Prompt types into one.
 export class ResponseDeckCard implements DeckCard {
-  time_created?: Date;
   constructor(
     public id: string,
     public content: string,
@@ -273,6 +273,7 @@ export class ResponseDeckCard implements DeckCard {
     public wins: number,
     public likes: number,
     public tags: string[],
+    public time_created?: Date,
   ) { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() { } // hack to prevent duck typing
