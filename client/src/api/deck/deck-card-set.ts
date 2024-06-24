@@ -25,10 +25,12 @@ export class DeckCardSet {
     this.responses = this.cards.filter(filterResponseDeckCard);
   }
 
+  static fromList(...items: (DeckCard | DeckCard[])[]) {
+    return new DeckCardSet(new Array<DeckCard>().concat(...items));
+  }
+
   static fromDeck(deck: Deck): DeckCardSet {
-    return new DeckCardSet(
-      new Array<DeckCard>().concat(deck.prompts, deck.responses),
-    );
+    return DeckCardSet.fromList(deck.prompts, deck.responses);
   }
 
   get size(): number {

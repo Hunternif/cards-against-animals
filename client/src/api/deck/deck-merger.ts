@@ -2,8 +2,6 @@ import {
   combinedCardList,
   copyDeck,
   copyDeckCard,
-  filterPromptDeckCard,
-  filterResponseDeckCard,
 } from '../../shared/deck-utils';
 import { Deck, DeckCard, DeckTag } from '../../shared/types';
 import { DeckCardSet } from './deck-card-set';
@@ -38,9 +36,25 @@ export function updateCardsForMerge(
   dest: Deck,
   cardset: DeckCardSet,
 ): DeckCardSet {
+  // TODO: maybe refactor cards so that prompts and resposnes have unique IDs?
+  const normalizedSet = normalizeCardset(cardset);
+  return new DeckCardSet(
+    normalizeCardIDs(combinedCardList(dest), normalizedSet.cards),
+  );
+}
+
+/**
+ * Returns copies of `sourceCards`, with updated IDs to prevent
+ * collisions with `destCards`.
+ */
+function normalizeCardIDs<T extends DeckCard>(
+  destCards: DeckCard[],
+  sourceCards: T[],
+): T[] {
   // Assuming card ID format to be '0001'.
   const idRegex = /^\d{4}$/;
-  let topID = -1;
+  let topID = destCards.length;
+  let collisionCount = 0;
   const usedIDs = new Set<string>();
   function processExistingID(idStr: string) {
     usedIDs.add(idStr);
@@ -51,24 +65,29 @@ export function updateCardsForMerge(
       }
     }
   }
-  function updateCardID<T extends DeckCard>(card: T): T {
-    if (topID > -1 && idRegex.test(card.id)) {
-      const iCardID = parseInt(card.id);
-      if (!isNaN(iCardID)) {
-        const newCard = copyDeckCard(card);
-        let newID = cardOrdinalToID(topID + iCardID);
-        if (usedIDs.has(newID)) {
-          // Possibly the same prompt ID and response ID within a deck.
-          throw Error(`Couldn't merge. Duplicate ID ${newID}`);
-        }
-        usedIDs.add(newID);
-        newCard.id = newID;
-        return newCard;
+  function updateCardID(card: T): T {
+    if (usedIDs.has(card.id)) {
+      collisionCount++;
+      const newCard = copyDeckCard(card);
+      let newID = cardOrdinalToID(topID + collisionCount);
+      if (usedIDs.has(newID)) {
+        throw Error(`Couldn't merge. Duplicate ID ${newID}`);
       }
+      usedIDs.add(newID);
+      newCard.id = newID;
+      return newCard;
     }
     return card;
   }
-  dest.prompts.forEach((card) => processExistingID(card.id));
-  dest.responses.forEach((card) => processExistingID(card.id));
-  return new DeckCardSet(cardset.cards.map((card) => updateCardID(card)));
+  destCards.forEach((card) => processExistingID(card.id));
+  return sourceCards.map((card) => updateCardID(card));
+}
+
+/**
+ * Returns copies of the given cards, with updated IDs to prevent collisions
+ * between prompts and responses. Prompt IDs go before response IDs.
+ */
+export function normalizeCardset(cardset: DeckCardSet): DeckCardSet {
+  const updatedResponses = normalizeCardIDs(cardset.prompts, cardset.responses);
+  return DeckCardSet.fromList(cardset.prompts, updatedResponses);
 }
