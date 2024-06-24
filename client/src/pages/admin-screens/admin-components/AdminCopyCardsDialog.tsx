@@ -97,7 +97,6 @@ export function AdminCopyCardsDialog({
   async function handleSubmit() {
     try {
       setSubmitting(true);
-      // TODO: highlight new cards
       // TODO: create migration table
       const mergedDeck = mergeIntoDeck(
         targetDeck ?? new Deck(newDeckID, newDeckTitle),
@@ -154,6 +153,7 @@ export function AdminCopyCardsDialog({
           render={(card) => (
             <AdminDeckCardRow
               card={card}
+              selected={updatedCards.cards.indexOf(card) > -1}
               isErrored={duplicateIDs.has(cardTypedID(card))}
             />
           )}
