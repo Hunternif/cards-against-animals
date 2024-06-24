@@ -403,3 +403,25 @@ export class CAAUser {
     public current_lobby_id: string | null | undefined = null,
   ) {}
 }
+
+/**
+ * When migrating legacy decks, this temp table can be created to store
+ * mapped card IDs: from old deck to new deck.
+ * This can be useful when calculating historical usage statistics.
+ */
+export class DeckMigrationItem {
+  constructor(
+    /** Includes deck and type, e.g. 'my_deck_prompt_0001 */
+    public old_card_unique_id: string,
+    /** Includes deck and type, e.g. 'my_deck_prompt_0001 */
+    public new_card_unique_id: string,
+    public type: CardType,
+    public old_deck_id: string,
+    /** card id in deck */
+    public old_card_id: string,
+    public new_deck_id: string,
+    /** card id in deck */
+    public new_card_id: string,
+    public time_created?: Date,
+  ) {}
+}

@@ -7,6 +7,7 @@ import {
 import {
   CAAUser,
   Deck,
+  DeckMigrationItem,
   DeckTag,
   GameLobby,
   GameTurn,
@@ -257,3 +258,25 @@ export const responseCardInHandConverter: FConverter<ResponseCardInHand> = {
     return ResponseCardInHand.create(baseCard, time_received);
   },
 };
+
+export const deckMigrationConverter: FConverter<DeckMigrationItem> = {
+  toFirestore: (row: DeckMigrationItem) => copyFields2(row, {
+    time_created: row.time_created ?
+        FTimestamp.fromDate(row.time_created) :
+        fServerTimestamp(),
+  }),
+  fromFirestore: (snapshot: FDocSnapshot) => {
+    const data = snapshot.data();
+    const time_created = (data.time_created as FTimestamp | null)?.toDate();
+    return new DeckMigrationItem(
+      data.old_card_unique_id,
+      data.new_card_unique_id,
+      data.type,
+      data.old_deck_id,
+      data.old_card_id,
+      data.new_deck_id,
+      data.new_card_id,
+      time_created,
+    );
+  },
+}
