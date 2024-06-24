@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode } from 'react';
-import { isOnlyEmojis } from '../../../api/deck-parser';
+import { isOnlyEmojis } from '../../../api/deck/deck-parser';
 import { GameButton } from '../../../components/Buttons';
 import { Twemoji } from '../../../components/Twemoji';
 import { DeckCard, PromptDeckCard } from '../../../shared/types';

@@ -2,15 +2,15 @@ import { useContext, useState } from "react";
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";
 import { GameLayout } from "../../components/layout/GameLayout";
-import { chooseWinner, startNewTurn } from "../../api/turn-control-api";
+import { chooseWinner, startNewTurn } from "../../api/turn/turn-control-api";
 import { PlayerResponse } from "../../shared/types";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { ResponseReading } from "./game-components/ResponseReading";
 import { assertExhaustive } from "../../shared/utils";
-import { revealPlayerResponse } from "../../api/turn-response-api";
-import { toggleLikeResponse } from "../../api/turn-like-api";
+import { revealPlayerResponse } from "../../api/turn/turn-response-api";
+import { toggleLikeResponse } from "../../api/turn/turn-like-api";
 
 
 // const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);

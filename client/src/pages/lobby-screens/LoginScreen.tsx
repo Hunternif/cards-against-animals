@@ -5,7 +5,7 @@ import {
   findOrCreateLobbyAndJoin,
   joinLobbyIfNeeded,
   leaveLobby,
-} from "../../api/lobby-join-api";
+} from "../../api/lobby/lobby-join-api";
 import { findPastLobbyID } from "../../api/users-api";
 import { GameButton } from "../../components/Buttons";
 import { ErrorContext } from "../../components/ErrorContext";

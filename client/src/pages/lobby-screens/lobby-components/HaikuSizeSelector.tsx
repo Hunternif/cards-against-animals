@@ -6,7 +6,7 @@ import {
   haikuPrompt4,
   haikuPrompt5,
   haikuPrompt6,
-} from "../../../api/deck-repository";
+} from "../../../api/deck/deck-repository";
 
 interface Props {
   onNewHaiku: (card: PromptCardInGame) => void;

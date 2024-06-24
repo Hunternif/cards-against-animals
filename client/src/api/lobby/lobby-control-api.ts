@@ -2,14 +2,14 @@ import {
   endLobbyFun,
   startLobbyFun,
   updateLobbySettingsFun,
-} from "../firebase";
+} from "../../firebase";
 import {
   GameLobby,
   GameTurn,
   LobbySettings,
   PlayerInLobby,
-} from "../shared/types";
-import { assertExhaustive } from "../shared/utils";
+} from "../../shared/types";
+import { assertExhaustive } from "../../shared/utils";
 import { updateLobby } from "./lobby-repository";
 
 ///////////////////////////////////////////////////////////////////////////////

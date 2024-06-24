@@ -4,7 +4,7 @@ import {
   DeckTag,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../shared/types';
+} from '../../../shared/types';
 import { parseDeckTsv } from '../deck-parser';
 import { mergeDecks } from '../deck-merger';
 

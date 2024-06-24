@@ -4,7 +4,7 @@ import {
   DeckTag,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../shared/types';
+} from '../../shared/types';
 import { IDeckRepository } from './deck-repository';
 
 /**

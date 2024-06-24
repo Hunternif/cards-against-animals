@@ -13,14 +13,14 @@ import {
   deckTagConverter,
   promptDeckCardConverter,
   responseDeckCardConverter,
-} from "../shared/firestore-converters";
+} from "../../shared/firestore-converters";
 import {
   Deck,
   GeneratedDeck,
   PromptCardInGame,
   PromptDeckCard,
   ResponseDeckCard,
-} from "../shared/types";
+} from "../../shared/types";
 
 /** For accessing decks and cards from the server. */
 export interface IDeckRepository {

@@ -1,5 +1,5 @@
 import { collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
-import { voteConverter } from "../shared/firestore-converters";
+import { voteConverter } from "../../shared/firestore-converters";
 import {
   GameLobby,
   GameTurn,
@@ -8,7 +8,7 @@ import {
   ResponseCardInGame,
   Vote,
   VoteChoice,
-} from "../shared/types";
+} from "../../shared/types";
 import { getTurnRef, updateHandCard } from "./turn-repository";
 
 ///////////////////////////////////////////////////////////////////////////////

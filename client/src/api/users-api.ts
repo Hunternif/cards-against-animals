@@ -2,12 +2,12 @@ import { deleteField, doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 import { firebaseAuth, usersRef } from "../firebase";
 import { CAAUser } from "../shared/types";
 import { User, updateProfile } from "firebase/auth";
-import { getLobby } from "./lobby-repository";
+import { getLobby } from "./lobby/lobby-repository";
 import { useDocumentData, useDocumentDataOnce } from "react-firebase-hooks/firestore";
 import { avatarMap } from "./avatars";
 import { userConverter } from "../shared/firestore-converters";
-import { leaveLobby } from "./lobby-join-api";
-import { getPlayerInLobby } from "./lobby-player-api";
+import { leaveLobby } from "./lobby/lobby-join-api";
+import { getPlayerInLobby } from "./lobby/lobby-player-api";
 
 /** Finds user data by ID */
 export async function getCAAUser(userID: string): Promise<CAAUser | null> {

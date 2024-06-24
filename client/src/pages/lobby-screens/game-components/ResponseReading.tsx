@@ -3,8 +3,8 @@ import { IconCat, IconHeadshot, IconHeart, IconStarOfDavid } from "../../../comp
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Twemoji } from "../../../components/Twemoji";
 import { useScreenWiderThan } from "../../../components/layout/ScreenSizeSwitch";
-import { detectCat, detectDeer, detectLenich } from "../../../api/deck-parser";
-import { useResponseLikes } from "../../../api/turn-hooks";
+import { detectCat, detectDeer, detectLenich } from "../../../api/deck/deck-parser";
+import { useResponseLikes } from "../../../api/turn/turn-hooks";
 import { PlayerInLobby, PlayerResponse, ResponseCardInGame, Vote } from "../../../shared/types";
 import { CardOffsetContext } from "./CardOffsetContext";
 import { useGameContext } from "./GameContext";

@@ -5,11 +5,11 @@ import { ErrorContext } from "../../../components/ErrorContext";
 import { IconLink, IconPlay } from "../../../components/Icons";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { ScrollContainer } from "../../../components/layout/ScrollContainer";
-import { updateLobby } from "../../../api/lobby-repository";
+import { updateLobby } from "../../../api/lobby/lobby-repository";
 import { GameLobby } from "../../../shared/types";
 import { DeckSelector } from "./DeckSelector";
 import { LobbySettingsPanel } from "./LobbySettingsPanel";
-import { startLobby } from "../../../api/lobby-control-api";
+import { startLobby } from "../../../api/lobby/lobby-control-api";
 
 interface Props {
   lobby: GameLobby,

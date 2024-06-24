@@ -3,8 +3,8 @@ import {
   findOrCreateLobbyAndJoinFun,
   findOrCreateLobbyFun,
   joinLobbyFun,
-} from "../firebase";
-import { CAAUser, GameLobby } from "../shared/types";
+} from "../../firebase";
+import { CAAUser, GameLobby } from "../../shared/types";
 import {
   getPlayerInLobby,
   setPlayerStatus,

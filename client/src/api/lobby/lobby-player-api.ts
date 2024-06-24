@@ -5,14 +5,14 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { kickPlayerFun } from "../firebase";
-import { playerConverter } from "../shared/firestore-converters";
+import { kickPlayerFun } from "../../firebase";
+import { playerConverter } from "../../shared/firestore-converters";
 import {
   GameLobby,
   KickAction,
   PlayerInLobby,
   PlayerStatus,
-} from "../shared/types";
+} from "../../shared/types";
 import { lobbiesRef } from "./lobby-repository";
 
 ///////////////////////////////////////////////////////////////////////////////

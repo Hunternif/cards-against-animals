@@ -1,13 +1,13 @@
 import { useCollection } from "react-firebase-hooks/firestore";
-import { usePlayers } from "../../api/lobby-hooks";
-import { lobbiesRef } from "../../api/lobby-repository";
+import { usePlayers } from "../../api/lobby/lobby-hooks";
+import { lobbiesRef } from "../../api/lobby/lobby-repository";
 import {
   useAllPlayerDataOnce,
   useAllPlayerResponsesOnce,
   useAllTurnPrompts,
   useAllTurnsOnce,
   usePlayerHandOnce,
-} from "../../api/turn-hooks";
+} from "../../api/turn/turn-hooks";
 import { Accordion, AccordionItem } from "../../components/Accordion";
 import {
   GameLobby,

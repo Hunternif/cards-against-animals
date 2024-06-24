@@ -9,10 +9,10 @@ import {
   runTransaction,
   setDoc,
 } from "firebase/firestore";
-import { db } from "../firebase";
-import { promptCardInGameConverter } from "../shared/firestore-converters";
-import { GameLobby, GameTurn, PromptCardInGame } from "../shared/types";
-import { lobbiesRef } from "./lobby-repository";
+import { db } from "../../firebase";
+import { promptCardInGameConverter } from "../../shared/firestore-converters";
+import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
+import { lobbiesRef } from "../lobby/lobby-repository";
 import { getTurnRef, updateTurn } from "./turn-repository";
 
 ///////////////////////////////////////////////////////////////////////////////

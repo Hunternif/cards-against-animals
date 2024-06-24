@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { exportDecksToFile } from '../../api/deck-export';
+import { exportDecksToFile } from '../../api/deck/deck-export';
 import { Accordion, AccordionItem } from '../../components/Accordion';
 import { GameButton } from '../../components/Buttons';
 import { useErrorContext } from '../../components/ErrorContext';

@@ -2,9 +2,9 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import {
   responseCardInGameConverter,
   turnConverter,
-} from "../shared/firestore-converters";
-import { GameTurn, ResponseCardInGame } from "../shared/types";
-import { lobbiesRef } from "./lobby-repository";
+} from "../../shared/firestore-converters";
+import { GameTurn, ResponseCardInGame } from "../../shared/types";
+import { lobbiesRef } from "../lobby/lobby-repository";
 
 ///////////////////////////////////////////////////////////////////////////////
 //

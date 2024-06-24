@@ -1,8 +1,8 @@
 import { collection, doc, getDocs, runTransaction } from "firebase/firestore";
-import { db, discardNowFun } from "../firebase";
-import { GameLobby, GameTurn, ResponseCardInGame } from "../shared/types";
+import { db, discardNowFun } from "../../firebase";
+import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
 import { getTurnRef } from "./turn-repository";
-import { responseCardInGameConverter } from "../shared/firestore-converters";
+import { responseCardInGameConverter } from "../../shared/firestore-converters";
 
 ///////////////////////////////////////////////////////////////////////////////
 //

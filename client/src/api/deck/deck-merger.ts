@@ -4,8 +4,8 @@ import {
   copyDeckCard,
   filterPromptDeckCard,
   filterResponseDeckCard,
-} from '../shared/deck-utils';
-import { Deck, DeckCard, DeckTag } from '../shared/types';
+} from '../../shared/deck-utils';
+import { Deck, DeckCard, DeckTag } from '../../shared/types';
 import { cardOrdinalToID } from './deck-parser';
 
 /**
@@ -56,6 +56,7 @@ export function updateCardsForMerge(dest: Deck, cards: DeckCard[]): DeckCard[] {
         const newCard = copyDeckCard(card);
         let newID = cardOrdinalToID(topID + iCardID);
         if (usedIDs.has(newID)) {
+          // Possibly the same prompt ID and response ID within a deck.
           throw Error(`Couldn't merge. Duplicate ID ${newID}`);
         }
         usedIDs.add(newID);

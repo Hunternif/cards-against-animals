@@ -9,7 +9,7 @@ import {
   useLastTurn,
   usePlayerDiscard,
   usePlayerHand
-} from "../../api/turn-hooks";
+} from "../../api/turn/turn-hooks";
 import {
   GameLobby,
   GameTurn,

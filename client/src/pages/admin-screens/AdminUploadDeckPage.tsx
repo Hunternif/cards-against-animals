@@ -3,10 +3,10 @@ import { Alert, Button, Col, Row } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { useDIContext } from '../../di-context';
 import { useEffectOnce } from '../../hooks/ui-hooks';
-import { parseDeck } from '../../api/deck-parser';
+import { parseDeck } from '../../api/deck/deck-parser';
 import { Deck } from '../../shared/types';
 import { AdminSubpage } from './admin-components/AdminSubpage';
-import { mergeDecks } from '../../api/deck-merger';
+import { mergeDecks } from '../../api/deck/deck-merger';
 
 export function AdminUploadDeckPage() {
   const { deckRepository } = useDIContext();

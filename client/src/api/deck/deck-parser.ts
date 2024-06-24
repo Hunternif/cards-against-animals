@@ -3,7 +3,7 @@ import {
   DeckTag,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../shared/types';
+} from '../../shared/types';
 
 /**
  * Parses collection data. `promptList` and `responseList` are strings where
@@ -147,7 +147,7 @@ export function processPromptText(text: string): string {
   return text;
 }
 
-export function cardOrdinalToID(ordinal: number) {
+export function cardOrdinalToID(ordinal: number): string {
   return String(ordinal).padStart(4, '0');
 }
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { updateCardsForMerge } from '../../../api/deck-merger';
+import { updateCardsForMerge } from '../../../api/deck/deck-merger';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
@@ -9,6 +9,7 @@ import { Deck, DeckCard } from '../../../shared/types';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
 import { AdminDeckSelector } from './AdminDeckSelector';
+import { useErrorContext } from '../../../components/ErrorContext';
 
 interface Props {
   sourceDeck: Deck;
@@ -17,6 +18,7 @@ interface Props {
 
 export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
   const { deckRepository } = useDIContext();
+  const { setError } = useErrorContext();
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
   const [updatedCards, setUpdatedCards] = useState<DeckCard[]>([]);
   const [combinedList, setCombinedList] = useState<DeckCard[]>(copiedCards);
@@ -35,6 +37,8 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
         setTargetDeck(fullDeck);
         setUpdatedCards(updatedCards);
         setCombinedList(combinedCardList(fullDeck).concat(updatedCards));
+      } catch (e: any) {
+        setError(e);
       } finally {
         setMerging(false);
       }
@@ -49,18 +53,14 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
         exceptIDs={[sourceDeck.id]}
       />
       <AdminDeckControlRow readOnly cards={combinedList} />
-      {merging ? (
-        <LoadingSpinner />
-      ) : (
-        <ScrollContainer scrollLight className="table-container">
-          <VirtualTable
-            className="admin-deck-table"
-            rowHeight={adminDeckRowHeight}
-            data={combinedList}
-            render={(card) => <AdminDeckCardRow card={card} />}
-          />
-        </ScrollContainer>
-      )}
+      <ScrollContainer scrollLight className="table-container">
+        <VirtualTable
+          className="admin-deck-table"
+          rowHeight={adminDeckRowHeight}
+          data={combinedList}
+          render={(card) => <AdminDeckCardRow card={card} />}
+        />
+      </ScrollContainer>
     </>
   );
 }

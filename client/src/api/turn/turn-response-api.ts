@@ -7,16 +7,16 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { RNG } from "../shared/rng";
+import { RNG } from "../../shared/rng";
 import {
   GameLobby,
   GameTurn,
   PlayerInLobby,
   PlayerResponse,
   ResponseCardInGame,
-} from "../shared/types";
+} from "../../shared/types";
 import { getTurnRef } from "./turn-repository";
-import { playerResponseConverter } from "../shared/firestore-converters";
+import { playerResponseConverter } from "../../shared/firestore-converters";
 
 ///////////////////////////////////////////////////////////////////////////////
 //

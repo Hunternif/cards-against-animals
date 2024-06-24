@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ErrorContext } from "../../../components/ErrorContext";
-import { toggleDownvoteCard } from "../../../api/turn-vote-card-api";
+import { toggleDownvoteCard } from "../../../api/turn/turn-vote-card-api";
 import { PlayerResponse, ResponseCardInGame, ResponseCardInHand } from "../../../shared/types";
 import { CardResponse } from "./CardResponse";
 import { useGameContext } from "./GameContext";

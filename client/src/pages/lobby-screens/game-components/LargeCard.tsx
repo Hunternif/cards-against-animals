@@ -1,6 +1,6 @@
 import { Twemoji } from "../../../components/Twemoji";
 import { FillLayout } from "../../../components/layout/FillLayout";
-import { isOnlyEmojis } from "../../../api/deck-parser";
+import { isOnlyEmojis } from "../../../api/deck/deck-parser";
 
 interface ComponentProps extends React.HTMLAttributes<HTMLElement> { }
 

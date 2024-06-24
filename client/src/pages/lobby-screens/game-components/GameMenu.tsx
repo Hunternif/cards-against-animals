@@ -17,9 +17,9 @@ import { AvatarSelector } from "../lobby-components/AvatarSelector";
 import { LobbySettingsPanel } from "../lobby-components/LobbySettingsPanel";
 import { useGameContext } from "./GameContext";
 import { GamePlayerList } from "./GamePlayerList";
-import { endLobby, updateLobbySettings } from "../../../api/lobby-control-api";
-import { leaveLobby } from "../../../api/lobby-join-api";
-import { updatePlayer } from "../../../api/lobby-player-api";
+import { endLobby, updateLobbySettings } from "../../../api/lobby/lobby-control-api";
+import { leaveLobby } from "../../../api/lobby/lobby-join-api";
+import { updatePlayer } from "../../../api/lobby/lobby-player-api";
 
 
 /** Menu header on top of the game page */

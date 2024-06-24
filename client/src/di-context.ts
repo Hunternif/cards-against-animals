@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import {
   FirestoreDeckRepository,
   IDeckRepository,
-} from "./api/deck-repository";
+} from "./api/deck/deck-repository";
 import { db } from "./firebase";
 
 interface DIContextState {

@@ -11,8 +11,8 @@ import {
   checkIfShouldEndGame,
   endLobby,
   updateLobbySettings,
-} from "../../api/lobby-control-api";
-import { startNewTurn } from "../../api/turn-control-api";
+} from "../../api/lobby/lobby-control-api";
+import { startNewTurn } from "../../api/turn/turn-control-api";
 import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
 import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";

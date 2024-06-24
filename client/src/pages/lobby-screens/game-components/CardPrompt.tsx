@@ -1,6 +1,6 @@
 import { CSSProperties, useContext } from "react";
-import { usePromptVotes } from "../../../api/turn-hooks";
-import { votePrompt } from "../../../api/turn-vote-card-api";
+import { usePromptVotes } from "../../../api/turn/turn-hooks";
+import { votePrompt } from "../../../api/turn/turn-vote-card-api";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Twemoji } from "../../../components/Twemoji";

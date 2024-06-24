@@ -4,7 +4,7 @@ import { ErrorContext } from "../../../components/ErrorContext";
 import { Modal, ModalBody } from "../../../components/Modal";
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Twemoji } from "../../../components/Twemoji";
-import { kickPlayer, updatePlayer } from "../../../api/lobby-player-api";
+import { kickPlayer, updatePlayer } from "../../../api/lobby/lobby-player-api";
 import { updateUserData } from "../../../api/users-api";
 import { GameLobby, KickAction, PlayerInLobby } from "../../../shared/types";
 import { AvatarSelector } from "./AvatarSelector";

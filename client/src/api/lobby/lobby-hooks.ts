@@ -5,7 +5,7 @@ import {
   useCollectionData,
   useDocumentData,
 } from "react-firebase-hooks/firestore";
-import { CAAUser } from "../shared/types";
+import { CAAUser } from "../../shared/types";
 import { joinLobbyIfNeeded } from "./lobby-join-api";
 import { getPlayerRef, getPlayersRef } from "./lobby-player-api";
 import { getLobbyRef } from "./lobby-repository";

@@ -8,7 +8,7 @@ import {
 import {
   FirestoreCollectionDataHookNullSafe,
   useCollectionDataNonNull,
-} from "../hooks/data-hooks";
+} from "../../hooks/data-hooks";
 import {
   playerDataConverter,
   playerResponseConverter,
@@ -17,14 +17,14 @@ import {
   responseCardInHandConverter,
   turnConverter,
   voteConverter,
-} from "../shared/firestore-converters";
+} from "../../shared/firestore-converters";
 import {
   GameLobby,
   GameTurn,
   PlayerResponse,
   PromptCardInGame,
-} from "../shared/types";
-import { lobbiesRef } from "./lobby-repository";
+} from "../../shared/types";
+import { lobbiesRef } from "../lobby/lobby-repository";
 import { getTurnsRef } from "./turn-repository";
 
 type LastTurnHook = [

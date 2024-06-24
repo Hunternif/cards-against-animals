@@ -1,5 +1,5 @@
-import { newTurnFun } from "../firebase";
-import { GameLobby, GameTurn } from "../shared/types";
+import { newTurnFun } from "../../firebase";
+import { GameLobby, GameTurn } from "../../shared/types";
 import { getResponseLikeCount } from "./turn-like-api";
 import { updateTurn } from "./turn-repository";
 import { getAllPlayerResponses } from "./turn-response-api";

@@ -5,7 +5,7 @@ import { ScreenSizeSwitch } from "../../components/layout/ScreenSizeSwitch";
 import {
   cancelPlayerResponse,
   submitPlayerResponse
-} from "../../api/turn-response-api";
+} from "../../api/turn/turn-response-api";
 import {
   ResponseCardInGame
 } from "../../shared/types";
@@ -16,7 +16,7 @@ import { GameHand } from "./game-components/GameHand";
 import { GameMiniResponses } from "./game-components/GameMiniResponses";
 import { ResponseCount } from "./game-components/ResponseCount";
 import { useSoundOnResponse } from "../../components/sounds";
-import { discardCards, discardImmediately } from "../../api/turn-discard-api";
+import { discardCards, discardImmediately } from "../../api/turn/turn-discard-api";
 
 const containerStyle: CSSProperties = {
   display: "flex",
