@@ -7,11 +7,16 @@ import { Deck } from '../../../shared/types';
 
 interface Props {
   exceptIDs?: string[];
+  disabled?: boolean;
   onSelectDeck: (deck: Deck | null) => void;
 }
 
 /** A dropdown control to choose a target deck for modification. */
-export function AdminDeckSelector({ exceptIDs, onSelectDeck }: Props) {
+export function AdminDeckSelector({
+  exceptIDs,
+  disabled,
+  onSelectDeck,
+}: Props) {
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
@@ -46,6 +51,7 @@ export function AdminDeckSelector({ exceptIDs, onSelectDeck }: Props) {
       value={targetDeck?.id ?? ''}
       options={deckOptions}
       onChange={handleSelectTarget}
+      disabled={disabled}
     />
   );
 }

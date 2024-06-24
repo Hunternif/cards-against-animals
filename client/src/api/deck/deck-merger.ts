@@ -13,7 +13,18 @@ import { cardOrdinalToID } from './deck-parser';
  * IDs of source deck will be changed to prevent collisions.
  */
 export async function mergeDecks(dest: Deck, source: Deck): Promise<Deck> {
-  const updatedCards = updateCardsForMerge(dest, DeckCardSet.fromDeck(source));
+  return mergeIntoDeck(dest, DeckCardSet.fromDeck(source), source.tags);
+}
+
+/**
+ * Returns a new deck with new cards added to destination deck.
+ */
+export function mergeIntoDeck(
+  dest: Deck,
+  cardset: DeckCardSet,
+  extraTags: DeckTag[] = [],
+): Deck {
+  const updatedCards = updateCardsForMerge(dest, cardset);
   const destCopy = copyDeck(dest);
   destCopy.prompts.push(...updatedCards.prompts);
   destCopy.responses.push(...updatedCards.responses);
@@ -21,7 +32,8 @@ export async function mergeDecks(dest: Deck, source: Deck): Promise<Deck> {
   const tagMap = new Map<string, DeckTag>(
     destCopy.tags.map((tag) => [tag.name, tag]),
   );
-  source.tags.forEach((newTag) => {
+  // TODO: filter out only relevant tags.
+  extraTags.forEach((newTag) => {
     tagMap.set(newTag.name, newTag);
   });
   destCopy.tags = Array.from(tagMap.values());

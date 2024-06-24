@@ -19,21 +19,32 @@ import { AdminDeckSelector } from './AdminDeckSelector';
 interface Props {
   sourceDeck: Deck;
   copiedCards: DeckCardSet;
+  onComplete: (message: string) => void;
 }
 
-export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
-  const normalizedCopiedCards = useMemo(
+export function AdminCopyCardsDialog({
+  sourceDeck,
+  copiedCards,
+  onComplete,
+}: Props) {
+  const normalCopiedCards = useMemo(
     () => normalizeCardset(copiedCards),
     [copiedCards],
   );
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
-  const [updatedCards, setUpdatedCards] = useState<DeckCardSet>(emptySet);
-  const [combinedSet, setCombinedSet] = useState<DeckCardSet>(
-    normalizedCopiedCards,
-  );
+
+  // Only new cards, with updated IDs:
+  const [updatedCards, setUpdatedCards] =
+    useState<DeckCardSet>(normalCopiedCards);
+
+  // All cards in the tentative merged target deck:
+  const [combinedSet, setCombinedSet] =
+    useState<DeckCardSet>(normalCopiedCards);
+
   const [merging, setMerging] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const [newDeckTitle, setNewDeckTitle] = useState('');
   const [newDeckID, setNewDeckID] = useState('');
@@ -42,8 +53,8 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
   async function handleSelectDeck(deck: Deck | null) {
     if (deck == null) {
       setTargetDeck(null);
-      setUpdatedCards(emptySet);
-      setCombinedSet(normalizedCopiedCards);
+      setUpdatedCards(normalCopiedCards);
+      setCombinedSet(normalCopiedCards);
     } else {
       setMerging(true);
       try {
@@ -61,12 +72,39 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
     }
   }
 
+  async function handleSubmit() {
+    try {
+      setSubmitting(true);
+      // TODO: highlight duplicates
+      // TODO: highlight new cards
+      // TODO: create migration table
+      const mergedDeck = mergeIntoDeck(
+        targetDeck ?? new Deck(newDeckID, newDeckTitle),
+        updatedCards,
+        sourceDeck.tags,
+      );
+      if (targetDeck == null) {
+        await deckRepository.uploadNewDeck(mergedDeck);
+      } else {
+        await deckRepository.uploadDeck(mergedDeck);
+      }
+      onComplete(
+        `Merged ${copiedCards.size} cards into deck '${mergedDeck.title}'`,
+      );
+    } catch (e: any) {
+      setError(e);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <>
       <div className="deck-form">
         <AdminDeckSelector
           onSelectDeck={handleSelectDeck}
           exceptIDs={[sourceDeck.id]}
+          disabled={submitting}
         />
         {/* spacer */}
         <div />
@@ -75,10 +113,12 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
             <TextInput
               placeholder="Title: My new deck"
               onChange={async (val) => setNewDeckTitle(val)}
+              disabled={submitting}
             />
             <TextInput
               placeholder="ID: my_deck_id"
               onChange={async (val) => setNewDeckID(val)}
+              disabled={submitting}
             />
           </>
         )}
@@ -93,7 +133,12 @@ export function AdminCopyCardsDialog({ sourceDeck, copiedCards }: Props) {
         />
       </ScrollContainer>
       <footer>
-        <GameButton accent className="btn-submit" disabled={!valid || merging}>
+        <GameButton
+          accent
+          className="btn-submit"
+          disabled={!valid || merging || submitting}
+          onClick={handleSubmit}
+        >
           Submit
         </GameButton>
       </footer>

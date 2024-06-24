@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react';
 import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
+import { GameButton } from '../../../components/Buttons';
 import { ErrorContext } from '../../../components/ErrorContext';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { Modal, ModalBody } from '../../../components/Modal';
@@ -37,6 +38,8 @@ export function AdminDeck({ deckID }: Props) {
     new Map(),
   );
   const [showCopyDialog, setShowCopyDialog] = useState(false);
+  const [copyStatusMsg, setCopyStatusMsg] = useState('');
+
   // TODO: optimize, retain the same instance between renders.
   const selectedCardset = new DeckCardSet(selectedCards.values());
 
@@ -85,9 +88,20 @@ export function AdminDeck({ deckID }: Props) {
           <AdminCopyCardsDialog
             sourceDeck={deck}
             copiedCards={selectedCardset}
+            onComplete={(msg) => {
+              setShowCopyDialog(false);
+              setCopyStatusMsg(msg);
+            }}
           />
         </ModalBody>
       </Modal>
+      <Modal show={copyStatusMsg != ''} onHide={() => setCopyStatusMsg('')}>
+        {copyStatusMsg}
+        <footer>
+          <GameButton onClick={() => setCopyStatusMsg('')}>OK</GameButton>
+        </footer>
+      </Modal>
+
       <AdminDeckControlRow
         cards={deckCardset}
         selected={selectedCardset}

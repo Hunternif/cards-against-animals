@@ -6,7 +6,7 @@ import {
   ResponseDeckCard,
 } from '../../../shared/types';
 import { parseDeckTsv } from '../deck-parser';
-import { mergeDecks, normalizeCardset } from '../deck-merger';
+import { mergeDecks, mergeIntoDeck, normalizeCardset } from '../deck-merger';
 import { DeckCardSet } from '../deck-card-set';
 
 //TODO: add test for custom-formatted IDs
@@ -47,11 +47,11 @@ test('merge decks', async () => {
   expect(merged).toEqual(expected);
 });
 
-function makePrompt(id: string): PromptDeckCard {
-  return new PromptDeckCard(id, 'Prompt', 0, 0, 0, 0, 0, [], 0, 0);
+function makePrompt(id: string, text: string = 'Prompt'): PromptDeckCard {
+  return new PromptDeckCard(id, text, 0, 0, 0, 0, 0, [], 0, 0);
 }
-function makeResponse(id: string): ResponseDeckCard {
-  return new ResponseDeckCard(id, 'Response', 0, 0, 0, 0, 8, 0, []);
+function makeResponse(id: string, text: string = 'Response'): ResponseDeckCard {
+  return new ResponseDeckCard(id, text, 0, 0, 0, 0, 8, 0, []);
 }
 
 test('normalize cardset without collisions does nothing', () => {
@@ -81,4 +81,19 @@ test('normalize cardset with collisions updates IDs', () => {
   expect(newIDs).toEqual(['0010', '0011', '0012', '0013', '0014']);
   expect(resp11.id).toBe('0011');
   expect(newRespIDs).toEqual(['0012', '0013', '0014']);
+});
+
+test('merge into empty deck', () => {
+  const newDeck = new Deck('new_deck', 'My new deck');
+  newDeck.tags.push(new DeckTag('old_tag'));
+  const set1 = new DeckCardSet([
+    makePrompt('0001', 'New prompt'),
+    makeResponse('0001', 'New response'),
+  ]);
+  const tag1 = new DeckTag('new_tag');
+  
+  const merged = mergeIntoDeck(newDeck, set1, [tag1]);
+  expect(merged.prompts[0]).toEqual(makePrompt('0001', 'New prompt'));
+  expect(merged.responses[0]).toEqual(makeResponse('0002', 'New response'));
+  expect(merged.tags).toEqual([new DeckTag('old_tag'), new DeckTag('new_tag')]);
 });

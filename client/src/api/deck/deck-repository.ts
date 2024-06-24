@@ -30,6 +30,7 @@ export interface IDeckRepository {
   getDecksWithCount(): Promise<Array<DeckWithCount>>;
   /** Loads complete content of a deck, with prompts and responses. */
   downloadDeck(deckID: string): Promise<Deck>;
+  /** Uploads new or update an existing deck. */
   uploadDeck(deck: Deck): Promise<void>;
   /** Verifies that deck ID does not exist, and uploads data. */
   uploadNewDeck(deck: Deck): Promise<void>;
@@ -119,7 +120,7 @@ export class FirestoreDeckRepository implements IDeckRepository {
   /** Verifies that deck ID does not exist, and uploads data. */
   async uploadNewDeck(deck: Deck) {
     if ((await getDoc(doc(this.decksRef, deck.id))).exists()) {
-      throw new Error(`Deck "${deck.title}" already exists`);
+      throw new Error(`Deck "${deck.id}" already exists`);
     }
     await this.uploadDeck(deck);
   }
