@@ -37,3 +37,17 @@ test('append DeckCardSet', () => {
   expect(set1.prompts).toEqual([prompt1, prompt2]);
   expect(set1.responses).toEqual([resp1, resp2]);
 });
+
+test('add to DeckCardSet', () => {
+  const set1 = new DeckCardSet([prompt1, resp1]);
+
+  set1.add(prompt2);
+  expect(set1.cards).toEqual([prompt1, resp1, prompt2]);
+  expect(set1.prompts).toEqual([prompt1, prompt2]);
+  expect(set1.responses).toEqual([resp1]);
+
+  set1.add(resp2);
+  expect(set1.cards).toEqual([prompt1, resp1, prompt2, resp2]);
+  expect(set1.prompts).toEqual([prompt1, prompt2]);
+  expect(set1.responses).toEqual([resp1, resp2]);
+});

@@ -65,3 +65,13 @@ export function copyDeckCard<
     // TODO: there must be a way to do this cleanly.
   }
 }
+
+/**
+ * Prompts and responses can have the same ID.
+ * This function returns a prefixed ID that is unique in a list containing
+ * both prompts and responses.
+ * TODO: move this to the DeckCard class.
+ */
+export function cardTypedID(card: DeckCard): string {
+  return card.type + card.id;
+}

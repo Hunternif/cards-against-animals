@@ -103,3 +103,25 @@ export function normalizeCardset(cardset: DeckCardSet): DeckCardSet {
   const updatedResponses = normalizeCardIDs(cardset.prompts, cardset.responses);
   return DeckCardSet.fromList(cardset.prompts, updatedResponses);
 }
+
+/** Returns cards from the deck which exactly match the content of new cards. */
+export async function findDuplicates(
+  deck: Deck,
+  query: DeckCardSet,
+): Promise<DeckCardSet> {
+  const out = new DeckCardSet([]);
+  for (let prompt of query.prompts) {
+    const match = findMatch(deck.prompts, prompt.content);
+    if (match) out.add(match);
+  }
+  for (let res of query.responses) {
+    const match = findMatch(deck.responses, res.content);
+    if (match) out.add(match);
+  }
+  return out;
+}
+
+/** Returns the first card that exactly matches the content. */
+function findMatch(cards: DeckCard[], content: string): DeckCard | null {
+  return cards.find((c) => c.content === content) ?? null;
+}

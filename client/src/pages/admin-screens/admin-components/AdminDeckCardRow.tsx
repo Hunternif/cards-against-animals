@@ -8,6 +8,7 @@ interface RowProps {
   card: DeckCard;
   selected?: boolean;
   onClick?: () => void;
+  isErrored?: boolean;
 }
 
 const rowHeight = 22;
@@ -17,13 +18,20 @@ const rowStyle: CSSProperties = {
   height: rowHeight,
 };
 
-export function AdminDeckCardRow({ card, selected, onClick }: RowProps) {
-  const selectedClass = selected ? 'selected' : 'selectable';
+export function AdminDeckCardRow({
+  card,
+  selected,
+  onClick,
+  isErrored,
+}: RowProps) {
   const isPrompt = card instanceof PromptDeckCard;
-  const cardClass = isPrompt ? 'row-prompt' : 'row-response';
+  const classes = ['card-row'];
+  classes.push(selected ? 'selected' : 'selectable');
+  classes.push(isPrompt ? 'row-prompt' : 'row-response');
+  if (isErrored) classes.push('errored')
   // TODO: render column by column.
   return (
-    <tr className={`card-row ${cardClass} ${selectedClass}`} onClick={onClick}>
+    <tr className={classes.join(' ')} onClick={onClick}>
       <td className="col-card-id">{card.id}</td>
       <td className="col-card-content" style={rowStyle}>
         <CardContentRow>{card.content}</CardContentRow>

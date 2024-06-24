@@ -11,18 +11,10 @@ import { Deck, DeckCard } from '../../../shared/types';
 import { AdminCopyCardsDialog } from './AdminCopyCardsDialog';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
+import { cardTypedID } from '../../../shared/deck-utils';
 
 interface Props {
   deckID: string;
-}
-
-/**
- * Prompts and responses can have the same ID.
- * This function returns a prefixed ID that is unique in a list containing
- * both prompts and responses.
- */
-function typedID(card: DeckCard): string {
-  return card.type + card.id;
 }
 
 /**
@@ -44,10 +36,10 @@ export function AdminDeck({ deckID }: Props) {
   const selectedCardset = new DeckCardSet(selectedCards.values());
 
   function isSelected(card: DeckCard): boolean {
-    return selectedCards.has(typedID(card));
+    return selectedCards.has(cardTypedID(card));
   }
   function toggleSelectedCard(card: DeckCard) {
-    const id = typedID(card);
+    const id = cardTypedID(card);
     const copy = new Map(selectedCards.entries());
     if (selectedCards.has(id)) copy.delete(id);
     else copy.set(id, card);
@@ -55,7 +47,9 @@ export function AdminDeck({ deckID }: Props) {
   }
   function toggleSelectAll(checked: boolean) {
     if (checked) {
-      setSelectedCards(new Map(deckCardset.cards.map((c) => [typedID(c), c])));
+      setSelectedCards(
+        new Map(deckCardset.cards.map((c) => [cardTypedID(c), c])),
+      );
     } else {
       setSelectedCards(new Map());
     }

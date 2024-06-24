@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
+import { DeckCardSet } from '../../../api/deck/deck-card-set';
 import {
+  findDuplicates,
   mergeIntoDeck,
   normalizeCardset,
   updateCardsForMerge,
@@ -11,6 +12,7 @@ import { TextInput } from '../../../components/FormControls';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
 import { useDIContext } from '../../../di-context';
+import { cardTypedID } from '../../../shared/deck-utils';
 import { Deck } from '../../../shared/types';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
@@ -43,6 +45,10 @@ export function AdminCopyCardsDialog({
   const [combinedSet, setCombinedSet] =
     useState<DeckCardSet>(normalCopiedCards);
 
+  // Card IDs in the deck that were found as duplicates.
+  const [duplicateIDs, setDuplicateIDs] = useState(new Set<string>());
+  const warnMsg = checkErrors();
+
   const [merging, setMerging] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -55,6 +61,7 @@ export function AdminCopyCardsDialog({
       setTargetDeck(null);
       setUpdatedCards(normalCopiedCards);
       setCombinedSet(normalCopiedCards);
+      setDuplicateIDs(new Set());
     } else {
       setMerging(true);
       try {
@@ -63,6 +70,8 @@ export function AdminCopyCardsDialog({
         setTargetDeck(fullDeck);
         setUpdatedCards(updatedCards);
         setCombinedSet(DeckCardSet.fromDeck(fullDeck).append(updatedCards));
+        // don't await, run it in the background:
+        highlightDuplicates(fullDeck, updatedCards);
       } catch (e: any) {
         setError(e);
       } finally {
@@ -72,10 +81,22 @@ export function AdminCopyCardsDialog({
     }
   }
 
+  async function highlightDuplicates(deck: Deck, cards: DeckCardSet) {
+    const dupes = await findDuplicates(deck, cards);
+    const dupeIDs = dupes.cards.map((c) => cardTypedID(c));
+    setDuplicateIDs(new Set(dupeIDs));
+  }
+
+  function checkErrors(): string {
+    if (duplicateIDs.size > 0) {
+      return `Found ${duplicateIDs.size} duplicates`;
+    }
+    return '';
+  }
+
   async function handleSubmit() {
     try {
       setSubmitting(true);
-      // TODO: highlight duplicates
       // TODO: highlight new cards
       // TODO: create migration table
       const mergedDeck = mergeIntoDeck(
@@ -123,13 +144,19 @@ export function AdminCopyCardsDialog({
           </>
         )}
       </div>
+      {warnMsg && <div className="warn-msg">{warnMsg}</div>}
       <AdminDeckControlRow readOnly cards={combinedSet} />
       <ScrollContainer scrollLight className="table-container">
         <VirtualTable
           className="admin-deck-table"
           rowHeight={adminDeckRowHeight}
           data={combinedSet.cards}
-          render={(card) => <AdminDeckCardRow card={card} />}
+          render={(card) => (
+            <AdminDeckCardRow
+              card={card}
+              isErrored={duplicateIDs.has(cardTypedID(card))}
+            />
+          )}
         />
       </ScrollContainer>
       <footer>

@@ -49,6 +49,13 @@ export class DeckCardSet {
     this.responses.push(...other.responses);
     return this;
   }
+
+  /** Adds new cards to the set. */
+  add(...cards: DeckCard[]) {
+    this.cards.push(...cards);
+    this.prompts.push(...cards.filter(filterPromptDeckCard));
+    this.responses.push(...cards.filter(filterResponseDeckCard));
+  }
 }
 
 export const emptySet = new DeckCardSet([]);

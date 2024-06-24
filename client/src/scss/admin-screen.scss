@@ -100,6 +100,9 @@
     &:hover .edit-button {
       display: block; // visible on hover
     }
+    &.errored {
+      background-color: colors.$error-red;
+    }
   }
   .card-row.selected {
     background-color: colors.$accent;
@@ -171,6 +174,10 @@
   }
   footer {
     margin-top: 1em;
+  }
+  .warn-msg {
+    color: colors.$error-red;
+    font-weight: bold;
   }
 }
 
