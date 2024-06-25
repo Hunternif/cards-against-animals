@@ -64,17 +64,17 @@ export async function leaveLobby(
 export async function joinLobbyIfNeeded(lobbyID: string, caaUser: CAAUser) {
   if (!(await isUserInLobby(lobbyID, caaUser.uid))) {
     await joinLobby(lobbyID, caaUser.uid);
-    // Update player name & avatar:
-    const player = await getPlayerInLobby(lobbyID, caaUser.uid);
-    if (player) {
-      player.name = caaUser.name;
-      player.avatar_id = caaUser.avatar_id;
-      // If previously left, re-join:
-      if (player?.status === "left") {
-        player.status = "online";
-      }
-      await updatePlayer(lobbyID, player);
+  }
+  // Update player name & avatar:
+  const player = await getPlayerInLobby(lobbyID, caaUser.uid);
+  if (player) {
+    player.name = caaUser.name;
+    player.avatar_id = caaUser.avatar_id;
+    // If previously left, re-join:
+    if (player?.status === "left") {
+      player.status = "online";
     }
+    await updatePlayer(lobbyID, player);
   }
 }
 
