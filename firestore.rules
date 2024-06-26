@@ -148,6 +148,9 @@ service cloud.firestore {
       // allow creating & changing your data, except admin fields:
       allow write: if isLoggedIn() && request.auth.uid == userID && isAdminInfoUnchanged(userID);
     }
+    match /deck_migrations/{document=**} {
+      allow read, write: if userIsAdmin();
+    }
     match /{document=**} {
       allow read, write: if false;
     }

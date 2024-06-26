@@ -6,7 +6,9 @@ import {
   normalizeCardset,
   updateCardsForMerge,
 } from '../../../api/deck/deck-merger';
+import { saveDeckMigrations } from '../../../api/deck/deck-migration-repository';
 import { GameButton } from '../../../components/Buttons';
+import { Checkbox } from '../../../components/Checkbox';
 import { useErrorContext } from '../../../components/ErrorContext';
 import { TextInput } from '../../../components/FormControls';
 import { VirtualTable } from '../../../components/VirtualTable';
@@ -17,8 +19,6 @@ import { Deck, DeckCard } from '../../../shared/types';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
 import { AdminDeckSelector } from './AdminDeckSelector';
-import { Checkbox } from '../../../components/Checkbox';
-import { saveDeckMigrations } from '../../../api/deck/deck-migration-repository';
 
 interface Props {
   sourceDeck: Deck;
@@ -61,7 +61,7 @@ export function AdminCopyCardsDialog({
 
   const [merging, setMerging] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [saveMig, setSaveMig] = useState(false);
+  const [saveMig, setSaveMig] = useState(true);
 
   const [newDeckTitle, setNewDeckTitle] = useState('');
   const [newDeckID, setNewDeckID] = useState('');
@@ -121,11 +121,12 @@ export function AdminCopyCardsDialog({
       } else {
         await deckRepository.uploadDeck(mergedDeck);
       }
-      onComplete(
-        `Merged ${copiedCards.size} cards into deck '${mergedDeck.title}'`,
-      );
+      let statusMsg = `Merged ${copiedCards.size} cards into deck '${mergedDeck.title}'.`;
+      onComplete(statusMsg);
       if (saveMig) {
-        // TODO: await saveDeckMigrations(sourceDeck, mergedDeck, updatedCardMap);
+        await saveDeckMigrations(sourceDeck, mergedDeck, updatedCardMap);
+        statusMsg += '\nSaved migration records.';
+        onComplete(statusMsg);
       }
     } catch (e: any) {
       setError(e);

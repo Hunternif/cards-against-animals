@@ -3,7 +3,7 @@ import { db } from '../../firebase';
 import { deckMigrationConverter } from '../../shared/firestore-converters';
 import { Deck, DeckCard, DeckMigrationItem } from '../../shared/types';
 
-const deckMigRef = collection(db, 'deck-migration').withConverter(
+const deckMigRef = collection(db, 'deck_migrations').withConverter(
   deckMigrationConverter,
 );
 
