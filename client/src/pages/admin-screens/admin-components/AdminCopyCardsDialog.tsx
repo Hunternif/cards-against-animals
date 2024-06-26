@@ -13,7 +13,7 @@ import { VirtualTable } from '../../../components/VirtualTable';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
 import { useDIContext } from '../../../di-context';
 import { cardTypedID } from '../../../shared/deck-utils';
-import { Deck } from '../../../shared/types';
+import { Deck, DeckCard } from '../../../shared/types';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
 import { AdminDeckControlRow } from './AdminDeckControlRow';
 import { AdminDeckSelector } from './AdminDeckSelector';
@@ -31,14 +31,22 @@ export function AdminCopyCardsDialog({
   copiedCards,
   onComplete,
 }: Props) {
-  const normalCopiedCards = useMemo(
+  // Normalize the copied cards so they always have updated IDs:
+  const normalCopiedCardMap = useMemo(
     () => normalizeCardset(copiedCards),
     [copiedCards],
   );
+  const normalCopiedCards = useMemo(
+    () => DeckCardSet.fromMap(normalCopiedCardMap),
+    [normalCopiedCardMap],
+  );
+
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
 
+  const [updatedCardMap, setUpdatedCardMap] =
+    useState<Map<DeckCard, DeckCard>>(normalCopiedCardMap);
   // Only new cards, with updated IDs:
   const [updatedCards, setUpdatedCards] =
     useState<DeckCardSet>(normalCopiedCards);
@@ -69,12 +77,14 @@ export function AdminCopyCardsDialog({
       setMerging(true);
       try {
         const fullDeck = await deckRepository.downloadDeck(deck.id);
-        const updatedCards = updateCardsForMerge(fullDeck, copiedCards);
         setTargetDeck(fullDeck);
-        setUpdatedCards(updatedCards);
-        setCombinedSet(DeckCardSet.fromDeck(fullDeck).append(updatedCards));
+        const newUpdatedCardMap = updateCardsForMerge(fullDeck, copiedCards);
+        const newUpdatedCards = DeckCardSet.fromMap(newUpdatedCardMap);
+        setUpdatedCardMap(newUpdatedCardMap);
+        setUpdatedCards(newUpdatedCards);
+        setCombinedSet(DeckCardSet.fromDeck(fullDeck).append(newUpdatedCards));
         // don't await, run it in the background:
-        highlightDuplicates(fullDeck, updatedCards);
+        highlightDuplicates(fullDeck, newUpdatedCards);
       } catch (e: any) {
         setError(e);
       } finally {
@@ -115,7 +125,7 @@ export function AdminCopyCardsDialog({
         `Merged ${copiedCards.size} cards into deck '${mergedDeck.title}'`,
       );
       if (saveMig) {
-        // TODO: await saveDeckMigrations()
+        // TODO: await saveDeckMigrations(sourceDeck, mergedDeck, updatedCardMap);
       }
     } catch (e: any) {
       setError(e);

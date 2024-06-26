@@ -33,6 +33,11 @@ export class DeckCardSet {
     return DeckCardSet.fromList(deck.prompts, deck.responses);
   }
 
+  /** Assuming it's a map from old cards to new cards */
+  static fromMap(map: Map<DeckCard, DeckCard>) {
+    return new DeckCardSet(map.values());
+  }
+
   get size(): number {
     return this.cards.length;
   }

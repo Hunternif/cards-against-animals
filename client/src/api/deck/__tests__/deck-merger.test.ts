@@ -6,7 +6,12 @@ import {
   ResponseDeckCard,
 } from '../../../shared/types';
 import { parseDeckTsv } from '../deck-parser';
-import { mergeDecks, mergeIntoDeck, normalizeCardset } from '../deck-merger';
+import {
+  mergeDecks,
+  mergeIntoDeck,
+  normalizeCardset,
+  updateCardsForMerge,
+} from '../deck-merger';
 import { DeckCardSet } from '../deck-card-set';
 
 //TODO: add test for custom-formatted IDs
@@ -61,7 +66,8 @@ test('normalize cardset without collisions does nothing', () => {
     makeResponse('0002'),
     makeResponse('0004'),
   ]);
-  const normalized = normalizeCardset(set1);
+  const normalizedMap = normalizeCardset(set1);
+  const normalized = new DeckCardSet(normalizedMap.values());
   const newIDs = normalized.cards.map((c) => c.id);
   expect(newIDs).toEqual(['0001', '0003', '0002', '0004']);
   expect(normalized.responses[0].id).toBe('0002');
@@ -75,12 +81,37 @@ test('normalize cardset with collisions updates IDs', () => {
   const resp12 = makeResponse('0012');
   const set2 = new DeckCardSet([prompt10, prompt11, resp10, resp11, resp12]);
 
-  const normalized = normalizeCardset(set2);
+  const normalizedMap = normalizeCardset(set2);
+  const normalized = new DeckCardSet(normalizedMap.values());
   const newIDs = normalized.cards.map((c) => c.id);
   const newRespIDs = normalized.responses.map((c) => c.id);
   expect(newIDs).toEqual(['0010', '0011', '0012', '0013', '0014']);
   expect(resp11.id).toBe('0011');
   expect(newRespIDs).toEqual(['0012', '0013', '0014']);
+  expect(normalizedMap.get(resp10)!.id).toBe('0012');
+  expect(normalizedMap.get(resp11)!.id).toBe('0013');
+  expect(normalizedMap.get(resp12)!.id).toBe('0014');
+});
+
+test('update card IDs for merge', () => {
+  const prompt10 = makePrompt('0010');
+  const prompt11 = makePrompt('0011');
+  const resp10 = makeResponse('0010');
+  const resp11 = makeResponse('0011');
+  const resp12 = makeResponse('0012');
+
+  const deck = new Deck('test_deck', 'Test deck');
+  deck.prompts.push(makePrompt('0010'));
+  deck.responses.push(makeResponse('0010'));
+  const set1 = new DeckCardSet([prompt10, prompt11, resp10, resp11, resp12]);
+
+  const updatedMap = updateCardsForMerge(deck, set1);
+  expect(Array.from(updatedMap.keys())).toEqual(set1.cards);
+  expect(updatedMap.get(prompt10)!.id).toBe('0011');
+  expect(updatedMap.get(prompt11)!.id).toBe('0012');
+  expect(updatedMap.get(resp10)!.id).toBe('0013');
+  expect(updatedMap.get(resp11)!.id).toBe('0014');
+  expect(updatedMap.get(resp12)!.id).toBe('0015');
 });
 
 test('merge into empty deck', () => {
@@ -91,7 +122,7 @@ test('merge into empty deck', () => {
     makeResponse('0001', 'New response'),
   ]);
   const tag1 = new DeckTag('new_tag');
-  
+
   const merged = mergeIntoDeck(newDeck, set1, [tag1]);
   expect(merged.prompts[0]).toEqual(makePrompt('0001', 'New prompt'));
   expect(merged.responses[0]).toEqual(makeResponse('0002', 'New response'));

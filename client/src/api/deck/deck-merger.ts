@@ -24,7 +24,8 @@ export function mergeIntoDeck(
   cardset: DeckCardSet,
   extraTags: DeckTag[] = [],
 ): Deck {
-  const updatedCards = updateCardsForMerge(dest, cardset);
+  const updatedCardMap = updateCardsForMerge(dest, cardset);
+  const updatedCards = new DeckCardSet(updatedCardMap.values());
   const destCopy = copyDeck(dest);
   destCopy.prompts.push(...updatedCards.prompts);
   destCopy.responses.push(...updatedCards.responses);
@@ -43,26 +44,38 @@ export function mergeIntoDeck(
 /**
  * Returns copies of the given cards, with updated IDs to prevent
  * collisions with the source deck.
+ * Returns a mapping of old cards to new cards.
  */
 export function updateCardsForMerge(
   dest: Deck,
   cardset: DeckCardSet,
-): DeckCardSet {
-  // TODO: maybe refactor cards so that prompts and resposnes have unique IDs?
-  const normalizedSet = normalizeCardset(cardset);
-  return new DeckCardSet(
-    normalizeCardIDs(combinedCardList(dest), normalizedSet.cards),
+): Map<DeckCard, DeckCard> {
+  // TODO: maybe refactor cards so that prompts and responses have unique IDs?
+  // 1st mapping to update response IDs within the given cardset:
+  const updatedMap = normalizeCardset(cardset);
+  // 2nd mapping to update all IDs to merge into the deck:
+  const mappedToDeck = normalizeCardIDs(
+    combinedCardList(dest),
+    Array.from(updatedMap.values()),
   );
+  // Reuse the map instance to update results:
+  for (const origCard of updatedMap.keys()) {
+    let newCard = updatedMap.get(origCard)!;
+    newCard = mappedToDeck.get(newCard)!;
+    updatedMap.set(origCard, newCard);
+  }
+  return updatedMap;
 }
 
 /**
  * Returns copies of `sourceCards`, with updated IDs to prevent
  * collisions with `destCards`.
+ * Returns a mapping from old cards to new cards.
  */
 function normalizeCardIDs<T extends DeckCard>(
   destCards: DeckCard[],
   sourceCards: T[],
-): T[] {
+): Map<T, T> {
   // Assuming card ID format to be '0001'.
   const idRegex = /^\d{4}$/;
   let topID = destCards.length;
@@ -92,16 +105,30 @@ function normalizeCardIDs<T extends DeckCard>(
     return card;
   }
   destCards.forEach((card) => processExistingID(card.id));
-  return sourceCards.map((card) => updateCardID(card));
+  return new Map(sourceCards.map((card) => [card, updateCardID(card)]));
 }
 
 /**
  * Returns copies of the given cards, with updated IDs to prevent collisions
  * between prompts and responses. Prompt IDs go before response IDs.
+ * Returns a mapping from old cards to new cards.
  */
-export function normalizeCardset(cardset: DeckCardSet): DeckCardSet {
-  const updatedResponses = normalizeCardIDs(cardset.prompts, cardset.responses);
-  return DeckCardSet.fromList(cardset.prompts, updatedResponses);
+export function normalizeCardset(
+  cardset: DeckCardSet,
+): Map<DeckCard, DeckCard> {
+  // Prompts are unchanged:
+  const updatedMap: Map<DeckCard, DeckCard> = new Map(
+    cardset.prompts.map((p) => [p, p]),
+  );
+  // Responses could change:
+  const updatedResponseMap = normalizeCardIDs(
+    cardset.prompts,
+    cardset.responses,
+  );
+  for (const [origCard, newCard] of updatedResponseMap) {
+    updatedMap.set(origCard, newCard);
+  }
+  return updatedMap;
 }
 
 /** Returns cards from the deck which exactly match the content of new cards. */
