@@ -39,5 +39,6 @@ module.exports = {
     "camelcase": 0,
     "spaced-comment": 0,
     "comma-dangle": 0,
+    "operator-linebreak": ["warn"],
   },
 };
