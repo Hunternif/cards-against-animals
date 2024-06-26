@@ -76,8 +76,8 @@ export class FirestoreDeckRepository implements IDeckRepository {
       .map((p) => p.data())
       .sort(
         (d1, d2) =>
-          (d1.time_created?.getMilliseconds() ?? 0) -
-          (d2.time_created?.getMilliseconds() ?? 0),
+          (d1.time_created?.getTime() ?? 0) -
+          (d2.time_created?.getTime() ?? 0),
       );
   }
 

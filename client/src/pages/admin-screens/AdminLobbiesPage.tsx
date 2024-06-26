@@ -59,7 +59,7 @@ function TurnsData({ lobby }: LobbyProps) {
   const sortedTurns =
     turns &&
     turns.sort(
-      (t1, t2) => t1.time_created?.getSeconds() - t2.time_created?.getSeconds(),
+      (t1, t2) => t1.time_created?.getTime() - t2.time_created?.getTime(),
     );
   return (
     <>

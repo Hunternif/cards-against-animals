@@ -22,8 +22,8 @@ export function GameHand({
 }: HandProps) {
   const { lobby, turn, player, hand, prompt } = useGameContext();
   const handSorted = hand.sort((c1, c2) =>
-    c1.random_index + c1.time_received.getMilliseconds() -
-    (c2.random_index + c2.time_received.getMilliseconds()));
+    c1.random_index + c1.time_received.getTime() -
+    (c2.random_index + c2.time_received.getTime()));
   const pick = prompt?.pick ?? 0;
   const isHandSelectable = pick > 0;
   const { setError } = useContext(ErrorContext);
