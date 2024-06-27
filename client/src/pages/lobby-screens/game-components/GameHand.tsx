@@ -1,12 +1,11 @@
 import { useContext } from "react";
 import { ErrorContext } from "../../../components/ErrorContext";
 import { toggleDownvoteCard } from "../../../api/turn/turn-vote-card-api";
-import { PlayerResponse, ResponseCardInGame, ResponseCardInHand } from "../../../shared/types";
+import { ResponseCardInGame, ResponseCardInHand } from "../../../shared/types";
 import { CardResponse } from "./CardResponse";
 import { useGameContext } from "./GameContext";
 
 interface HandProps {
-  response?: PlayerResponse,
   selectedCards: ResponseCardInGame[],
   setSelectedCards: (cards: ResponseCardInGame[]) => void,
   discarding: boolean,
@@ -16,7 +15,6 @@ interface HandProps {
 
 /** Displays cards that the player has on hand */
 export function GameHand({
-  response,
   selectedCards, setSelectedCards,
   discarding, discardedCards, setDiscardedCards,
 }: HandProps) {
@@ -33,12 +31,7 @@ export function GameHand({
   }
 
   function getSelectedIndex(card: ResponseCardInHand): number {
-    // check card by ID, because the response instance could be unequal:
-    if (response) {
-      return response.cards.findIndex((c) => c.id === card.id);
-    } else {
-      return selectedCards.findIndex((c) => c.id === card.id);
-    }
+    return selectedCards.findIndex((c) => c.id === card.id);
   }
 
   function selectCard(card: ResponseCardInHand) {
@@ -90,8 +83,14 @@ export function GameHand({
     const isSelected = selectedIndex >= 0;
     const isDiscarded = getIsDiscarded(card);
     const isNew = getIsNew(card);
+    let isSelectable: boolean;
+    if (discarding) {
+      isSelectable = !isSelected;
+    } else {
+      isSelectable = isHandSelectable;
+    }
     return <CardResponse key={card.id} card={card} justIn={isNew}
-      selectable={(discarding || isHandSelectable) && !(discarding && isSelected)}
+      selectable={isSelectable}
       selectedIndex={getSelectedIndex(card)}
       showIndex={pick > 1}
       onToggle={(selected) => {
