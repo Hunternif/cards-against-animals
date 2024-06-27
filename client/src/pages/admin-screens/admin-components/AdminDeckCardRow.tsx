@@ -2,7 +2,11 @@ import { CSSProperties, ReactNode } from 'react';
 import { isOnlyEmojis } from '../../../api/deck/deck-parser';
 import { GameButton } from '../../../components/Buttons';
 import { Twemoji } from '../../../components/Twemoji';
-import { DeckCard, PromptDeckCard } from '../../../shared/types';
+import {
+  DeckCard,
+  PromptDeckCard,
+  ResponseDeckCard,
+} from '../../../shared/types';
 
 interface RowProps {
   card: DeckCard;
@@ -25,10 +29,16 @@ export function AdminDeckCardRow({
   isErrored,
 }: RowProps) {
   const isPrompt = card instanceof PromptDeckCard;
+  const likeCount =
+    card instanceof ResponseDeckCard
+      ? card.likes
+      : card instanceof PromptDeckCard
+      ? card.upvotes - card.downvotes
+      : 0;
   const classes = ['card-row'];
   classes.push(selected ? 'selected' : 'selectable');
   classes.push(isPrompt ? 'row-prompt' : 'row-response');
-  if (isErrored) classes.push('errored')
+  if (isErrored) classes.push('errored');
   // TODO: render column by column.
   return (
     <tr className={classes.join(' ')} onClick={onClick}>
@@ -41,6 +51,7 @@ export function AdminDeckCardRow({
       <td className="col-card-tags">{card.tags.join(', ')}</td>
       <CounterRow val={card.views} />
       <CounterRow val={card.plays} />
+      <CounterRow val={likeCount} />
       <CounterRow val={card.wins} />
       <CounterRow val={card.discards} />
       <CounterRow val={card.rating} />
