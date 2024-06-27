@@ -1,12 +1,11 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { GameButton } from '../../../components/Buttons';
 import { IconStarInline } from '../../../components/Icons';
-import { ResponseCardInGame } from '../../../shared/types';
+import { DiscardCost, ResponseCardInGame } from '../../../shared/types';
 import { useGameContext } from './GameContext';
 
 interface ControlProps {
   selection: ResponseCardInGame[];
-  submitted: boolean;
   discarding: boolean;
   onBeginDiscard: () => void;
   onSubmitDiscard: () => void;
@@ -57,125 +56,136 @@ const buttonGroupStyle: CSSProperties = {
   gap: '0.4em',
 };
 
-export function GameControlRow({
+export function GameControlRow(props: ControlProps) {
+  const { selection, discarding } = props;
+  const { cost } = useDiscardCost();
+  const canDiscard = cost !== 'no_discard';
+
+  if (discarding) {
+    return (
+      <ControlRowLayout
+        center={<DiscardStatusMessage />}
+        right={<DiscardControls {...props} />}
+      />
+    );
+  } else {
+    return (
+      <ControlRowLayout
+        center={<SubmitStatusMessage picked={selection.length} />}
+        right={canDiscard && <BeginDiscardButton {...props} />}
+      />
+    );
+  }
+}
+
+interface RowLayoutProps {
+  left?: ReactNode;
+  center?: ReactNode;
+  right?: ReactNode;
+}
+
+function ControlRowLayout({ left, center, right }: RowLayoutProps) {
+  return (
+    <div style={containerStyle}>
+      <div className="layout-side-column" style={leftStyle}>
+        {left}
+      </div>
+      <div className="layout-side-column" style={midStyle}>
+        <span className="light" style={discardInfoStyle}>
+          {center}
+        </span>
+      </div>
+      <div className="layout-side-column" style={rightStyle}>
+        {right}
+      </div>
+    </div>
+  );
+}
+
+function DiscardStatusMessage() {
+  const { isDiscardFree } = useDiscardCost();
+  return isDiscardFree ? (
+    <>Select cards to discard.</>
+  ) : (
+    <>
+      Select cards to discard for <Cost b />.
+    </>
+  );
+}
+
+function SubmitStatusMessage({ picked }: { picked: number }) {
+  const { player, prompt, responses } = useGameContext();
+  const response = responses.find((r) => r.player_uid === player.uid);
+  const submitted = response !== undefined;
+  const total = prompt?.pick ?? 1;
+  if (submitted) return 'Submitted!';
+  return prompt ? `Picked ${picked} out of ${total}` : 'Waiting for prompt...';
+}
+
+/** Button to start the discarding process. */
+function BeginDiscardButton({ onBeginDiscard }: ControlProps) {
+  const { isDiscardFree } = useDiscardCost();
+  if (isDiscardFree) {
+    return (
+      <GameButton
+        secondary
+        small
+        onClick={() => onBeginDiscard()}
+        title="Discard any number of cards for free"
+      >
+        Free discard
+      </GameButton>
+    );
+  } else {
+    return (
+      <GameButton
+        secondary
+        small
+        onClick={() => onBeginDiscard()}
+        title="Discard any number of cards for ⭐ points"
+      >
+        Discard: <Cost />
+      </GameButton>
+    );
+  }
+}
+
+/** Controls when in the middle of the discarding process. */
+function DiscardControls({
   selection,
-  submitted,
-  discarding,
   discardedCards,
-  onBeginDiscard,
   onSubmitDiscard,
   onSetDiscardAll,
   onCancelDiscard,
 }: ControlProps) {
-  const { lobby, hand, prompt, player } = useGameContext();
-  const picked = selection.length;
-  const total = prompt?.pick ?? 1;
-
-  // Discards:
-  const cost = lobby.settings.discard_cost;
-  const canDiscard = cost !== 'no_discard';
+  const { hand } = useGameContext();
   const totalDiscardable = hand.filter(
     (c1) => !selection.find((c2) => c1.id === c2.id),
   ).length;
   const discardCount = discardedCards.length;
-  const isDiscardFree =
-    cost === 'free' ||
-    (cost === '1_free_then_1_star' && player.discards_used === 0);
-
   return (
-    <div style={containerStyle}>
-      <div className="layout-side-column" style={leftStyle}></div>
-      <div className="layout-side-column" style={midStyle}>
-        <span className="light" style={discardInfoStyle}>
-          {discarding ? (
-            isDiscardFree ? (
-              <>Select cards to discard.</>
-            ) : (
-              <>
-                Select cards to discard for <Cost b />.
-              </>
-            )
-          ) : submitted ? (
-            'Submitted!'
-          ) : prompt ? (
-            `Picked ${picked} out of ${total}`
-          ) : (
-            'Waiting for prompt...'
-          )}
-        </span>
-      </div>
-      <div className="layout-side-column" style={rightStyle}>
-        {canDiscard && (
-          <>
-            {discarding ? (
-              <span className="light" style={discardCountSmallStyle}>
-                <>
-                  <b>{discardCount}</b> selected
-                </>
-              </span>
-            ) : (
-              discardCount > 0 && (
-                <span className="light" style={discardCountStyle}>
-                  <>
-                    Discarding <b>{discardCount}</b> cards
-                    {isDiscardFree ? (
-                      <></>
-                    ) : (
-                      <>
-                        for <Cost b />
-                      </>
-                    )}
-                    ...
-                  </>
-                </span>
-              )
-            )}
-            {discarding ? (
-              <div style={buttonGroupStyle}>
-                {discardCount < totalDiscardable && (
-                  <GameButton small secondary onClick={onSetDiscardAll}>
-                    Select all
-                  </GameButton>
-                )}
-                {discardCount > 0 && (
-                  <GameButton small secondary onClick={onCancelDiscard}>
-                    Cancel
-                  </GameButton>
-                )}
-                <GameButton
-                  small
-                  onClick={() => onSubmitDiscard()}
-                  disabled={discardCount == 0}
-                >
-                  Discard
-                </GameButton>
-              </div>
-            ) : (
-              <GameButton
-                secondary
-                small
-                onClick={() => onBeginDiscard()}
-                title={
-                  isDiscardFree
-                    ? 'Discard any number of cards for free'
-                    : 'Discard any number of cards for ⭐ points'
-                }
-              >
-                {discardCount > 0 ? (
-                  'Edit'
-                ) : isDiscardFree ? (
-                  'Free discard'
-                ) : (
-                  <>
-                    Discard: <Cost />
-                  </>
-                )}
-              </GameButton>
-            )}
-          </>
+    <>
+      <span className="light" style={discardCountSmallStyle}>
+        <b>{discardCount}</b> selected
+      </span>
+      <div style={buttonGroupStyle}>
+        {discardCount < totalDiscardable && (
+          <GameButton small secondary onClick={onSetDiscardAll}>
+            Select all
+          </GameButton>
         )}
+        <GameButton small secondary onClick={onCancelDiscard}>
+          Cancel
+        </GameButton>
+        <GameButton
+          small
+          onClick={() => onSubmitDiscard()}
+          disabled={discardCount == 0}
+        >
+          Discard
+        </GameButton>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -189,4 +199,14 @@ function Cost({ b }: CostProps) {
       <IconStarInline />
     </i>
   );
+}
+
+/** Helper hook to get the current discard cost for this player. */
+function useDiscardCost(): { cost: DiscardCost; isDiscardFree: boolean } {
+  const { lobby, player } = useGameContext();
+  const cost = lobby.settings.discard_cost;
+  const isDiscardFree =
+    cost === 'free' ||
+    (cost === '1_free_then_1_star' && player.discards_used === 0);
+  return { cost, isDiscardFree };
 }

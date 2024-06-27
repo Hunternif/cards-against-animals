@@ -60,7 +60,6 @@ const miniResponsesContainerStyle: CSSProperties = {
 export function PlayerAnsweringScreen() {
   const { lobby, turn, player, prompt, responses, hand } = useGameContext();
   const response = responses.find((r) => r.player_uid === player.uid);
-  const submitted = response !== undefined;
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>(
     response?.cards?.slice() ?? [],
   );
@@ -153,7 +152,6 @@ export function PlayerAnsweringScreen() {
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
         <GameControlRow
           selection={selectedCards}
-          submitted={submitted}
           discarding={discarding}
           discardedCards={discardedCards}
           onBeginDiscard={() => setDiscarding(true)}
