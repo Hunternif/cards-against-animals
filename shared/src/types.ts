@@ -222,6 +222,7 @@ export class Deck {
     public id: string,
     public title: string,
     public time_created?: Date,
+    public visibility: DeckVisibility = 'public',
   ) {}
 }
 
@@ -384,6 +385,8 @@ export type CardType = 'prompt' | 'response';
 
 /** "kick" is re-joinable, "ban" is forever. */
 export type KickAction = 'kick' | 'ban';
+
+export type DeckVisibility = 'public' | 'hidden';
 
 /** Used for cards created during a game, e.g haiku. */
 export const GeneratedDeck = new Deck('@@generated', 'Generated cards');

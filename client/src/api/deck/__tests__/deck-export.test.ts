@@ -73,7 +73,8 @@ test('export deck', () => {
         }
       ],
       "id": "my_deck",
-      "title": "My deck"
+      "title": "My deck",
+      "visibility": "public"
     },
     {
       "responses": [
@@ -84,7 +85,8 @@ test('export deck', () => {
         }
       ],
       "id": "no_tags",
-      "title": "No tags"
+      "title": "No tags",
+      "visibility": "public"
     }
   ]
 }`);

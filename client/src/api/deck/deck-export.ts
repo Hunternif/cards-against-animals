@@ -12,7 +12,7 @@ import { IDeckRepository } from './deck-repository';
  */
 export async function exportDecksToFile(repo: IDeckRepository) {
   repo.clearCache();
-  const decks = await repo.getDecks();
+  const decks = await repo.getDecks([]);
   const completeDecks = await Promise.all(
     decks.map((d) => repo.downloadDeck(d.id)),
   );

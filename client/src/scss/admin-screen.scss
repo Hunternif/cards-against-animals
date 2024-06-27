@@ -23,6 +23,9 @@
     width: 15em;
     margin-right: 1em;
   }
+  &.visibility-hidden {
+    opacity: 0.5;
+  }
 }
 
 .admin-decks-toolbar {

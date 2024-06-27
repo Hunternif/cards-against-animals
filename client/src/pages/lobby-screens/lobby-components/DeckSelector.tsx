@@ -55,7 +55,7 @@ export function DeckSelector({ lobby, readOnly }: SelectorProps) {
   const { deckRepository } = useDIContext();
 
   async function loadDecks() {
-    await deckRepository.getDecksWithCount().then((d) => {
+    await deckRepository.getDecksWithCount(['public']).then((d) => {
       setDecks(d);
       setLoading(false);
     }).catch((e: any) => {

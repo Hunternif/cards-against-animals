@@ -120,6 +120,8 @@ export const deckConverter: FConverter<Deck> = {
     const data = snapshot.data();
     const ret = new Deck(snapshot.id, data.title);
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
+    // All decks are public by default, unless specified:
+    ret.visibility = data.visibility ?? 'public';
     // all cards must be fetched separately as a subcollection
     return ret;
   },

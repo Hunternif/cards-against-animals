@@ -20,7 +20,7 @@ export function AdminDeckSelector({
   const [targetDeck, setTargetDeck] = useState<Deck | null>(null);
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
-  const [decks, decksError] = useAsyncData(deckRepository.getDecks());
+  const [decks, decksError] = useAsyncData(deckRepository.getDecks([]));
 
   if (decksError) setError(decksError);
 

@@ -54,7 +54,7 @@ export function AdminUploadDeckPage() {
   useEffectOnce(() => {
     // Load decks:
     deckRepository
-      .getDecks()
+      .getDecks([])
       .then((decks) => setDecks(decks))
       .catch((e: any) => setError(e));
   });

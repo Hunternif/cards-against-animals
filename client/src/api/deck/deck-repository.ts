@@ -16,6 +16,7 @@ import {
 } from '../../shared/firestore-converters';
 import {
   Deck,
+  DeckVisibility,
   GeneratedDeck,
   PromptCardInGame,
   PromptDeckCard,
@@ -26,10 +27,18 @@ import {
 export interface IDeckRepository {
   getPrompts(deckID: string): Promise<Array<PromptDeckCard>>;
   getResponses(deckID: string): Promise<Array<ResponseDeckCard>>;
-  /** Sorted by creation time. */
-  getDecks(): Promise<Array<Deck>>;
-  /** Sorted by creation time. */
-  getDecksWithCount(): Promise<Array<DeckWithCount>>;
+  /**
+   * Decks by visiblity, sorted by creation time.
+   * @param visibility filters by visibilty. Empty array allows all.
+   */
+  getDecks(visibility: DeckVisibility[]): Promise<Array<Deck>>;
+  /**
+   * Decks by visiblity, with card counts, sorted by creation time.
+   * @param visibility filters by visibilty. Empty array allows all.
+   */
+  getDecksWithCount(
+    visibility: DeckVisibility[],
+  ): Promise<Array<DeckWithCount>>;
   /** Loads complete content of a deck, with prompts and responses. */
   downloadDeck(deckID: string): Promise<Deck>;
   /** Uploads new or update an existing deck. */
@@ -71,14 +80,19 @@ export class FirestoreDeckRepository implements IDeckRepository {
     );
   }
 
-  async getDecks(): Promise<Array<Deck>> {
-    return (await getDocs(this.decksRef)).docs
-      .map((p) => p.data())
-      .sort(
-        (d1, d2) =>
-          (d1.time_created?.getTime() ?? 0) -
-          (d2.time_created?.getTime() ?? 0),
-      );
+  async getDecks(visibility: DeckVisibility[]): Promise<Array<Deck>> {
+    const visSet = new Set(visibility);
+    return (
+      (await getDocs(this.decksRef)).docs
+        .map((p) => p.data())
+        // Filter on the client side because Firestore doesn't support undefined fields:
+        .filter((d) => visSet.size == 0 || visSet.has(d.visibility))
+        .sort(
+          (d1, d2) =>
+            (d1.time_created?.getTime() ?? 0) -
+            (d2.time_created?.getTime() ?? 0),
+        )
+    );
   }
 
   /**
@@ -110,8 +124,10 @@ export class FirestoreDeckRepository implements IDeckRepository {
   }
 
   /** Fetches all decks' data and counts cards in each. */
-  async getDecksWithCount(): Promise<Array<DeckWithCount>> {
-    const decks = await this.getDecks();
+  async getDecksWithCount(
+    visibility: DeckVisibility[],
+  ): Promise<Array<DeckWithCount>> {
+    const decks = await this.getDecks(visibility);
     const result = new Array<DeckWithCount>(decks.length);
     for (const deck of decks) {
       const promptCount = (

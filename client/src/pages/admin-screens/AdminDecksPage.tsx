@@ -10,7 +10,7 @@ import { AdminSubpage } from './admin-components/AdminSubpage';
 
 export function AdminDecksPage() {
   const { deckRepository } = useDIContext();
-  const [decks] = useAsyncData(deckRepository.getDecks());
+  const [decks] = useAsyncData(deckRepository.getDecks([]));
 
   return (
     <AdminSubpage headerContent={<Toolbar />}>
@@ -21,8 +21,11 @@ export function AdminDecksPage() {
               <AccordionItem
                 key={deck.id}
                 header={
-                  <div className="deck-header">
-                    <span className="deck-title">{deck.title}</span>
+                  <div className={`deck-header visibility-${deck.visibility}`}>
+                    <span className="deck-title">
+                      {deck.title}
+                      {deck.visibility === 'hidden' && <> (hidden)</>}
+                    </span>
                     <span className="deck-id">id: {deck.id}</span>
                   </div>
                 }
