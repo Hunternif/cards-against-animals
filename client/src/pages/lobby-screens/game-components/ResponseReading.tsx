@@ -90,6 +90,7 @@ function ResponseReadingWithoutName({
   ) : (
     <div className={`${canRevealClass} ${canSelectClass} ${selectedClass}`} onClick={handleClick}>
       <CardResponseReading card={response.cards[0]}
+        content={response.cards[0].content}
         revealed={response.reveal_count > 0}
         selectable={canSelect} selected={selected}
         likable={canLike} onClickLike={handleClickLike}
@@ -190,8 +191,13 @@ function ManyCardsStack({
           without interfering with the flow of the rest of the page. */}
       {response.cards.map((card, i) => {
         const isLastCard = i === response.cards.length - 1;
+        let content = card.content;
+        if (card.action === 'repeat_last' && i > 0) {
+          content = response.cards[i-1].content;
+        }
         return <CardResponseReading
           key={card.id} card={card}
+          content={content}
           isOverlaid={i > 0}
           index={i}
           offset={offsets[i]}
@@ -215,6 +221,7 @@ function ManyCardsStack({
 
 interface CardProps {
   card: ResponseCardInGame,
+  content: string,
   revealed: boolean,
   selectable?: boolean,
   selected?: boolean,
@@ -231,7 +238,7 @@ interface CardProps {
 
 /** Individual response card (not a stack of cards)  */
 function CardResponseReading({
-  card, revealed, selectable, selected, likable, onClickLike, likes, likeIcon,
+  content, revealed, selectable, selected, likable, onClickLike, likes, likeIcon,
   isOverlaid, index, offset,
   setContentHeight,
 }: CardProps) {
@@ -280,7 +287,7 @@ function CardResponseReading({
       <LargeCard className={`card-response response-reading ${selectedClass} ${overlayClass} ${revealedClass}`}
         style={overlayStyle}
       >
-        <span ref={contentRef}><CardContent>{card.content}</CardContent></span>
+        <span ref={contentRef}><CardContent>{content}</CardContent></span>
         {likable && (
           <CardCenterIcon className="like-response-container">
             <div className="like-response-button">

@@ -293,7 +293,10 @@ export class ResponseDeckCard implements DeckCard {
 }
 
 /** Custom actions for response cards. */
-export type ResponseAction = 'none' | 'repeat_last';
+export type ResponseAction =
+  | 'none'
+  // Repeats the previous card
+  | 'repeat_last';
 
 /**
  * An instance of a card in game. Contains a reference to the
