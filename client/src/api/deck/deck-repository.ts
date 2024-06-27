@@ -68,6 +68,13 @@ export class FirestoreDeckRepository implements IDeckRepository {
     );
   }
 
+  /** Returns Firestore subcollection reference of tags in deck. */
+  private getTagsRef(deckID: string) {
+    return collection(this.decksRef, deckID, 'tags').withConverter(
+      deckTagConverter,
+    );
+  }
+
   async getPrompts(deckID: string): Promise<Array<PromptDeckCard>> {
     return (await getDocs(this.getPromptsRef(deckID))).docs.map((p) =>
       p.data(),
@@ -113,12 +120,14 @@ export class FirestoreDeckRepository implements IDeckRepository {
     // Fetch deck from Firestore:
     const deck = (await getDoc(doc(this.decksRef, deckID))).data();
     if (!deck) throw new Error(`Deck "${deckID}" does not exist`);
-    const [proDocs, resDocs] = await Promise.all([
+    const [proDocs, resDocs, tagDocs] = await Promise.all([
       getDocs(this.getPromptsRef(deckID)),
       getDocs(this.getResponsesRef(deckID)),
+      getDocs(this.getTagsRef(deckID)),
     ]);
     deck.prompts = proDocs.docs.map((d) => d.data());
     deck.responses = resDocs.docs.map((d) => d.data());
+    deck.tags = tagDocs.docs.map((d) => d.data());
     this.deckCache.set(deckID, deck);
     return deck;
   }
