@@ -1,25 +1,32 @@
-import { useContext, useEffect, useState } from "react";
-import { GameButton } from "../../components/Buttons";
-import { ErrorContext } from "../../components/ErrorContext";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
-import { GameLayout } from "../../components/layout/GameLayout";
-import { endLobby } from "../../api/lobby/lobby-control-api";
-import { PromptCardInGame } from "../../shared/types";
-import { CardPrompt } from "./game-components/CardPrompt";
-import { useGameContext } from "./game-components/GameContext";
-import { HaikuSizeSelector } from "./lobby-components/HaikuSizeSelector";
-import { haikuPrompt3 } from "../../api/deck/deck-repository";
-import { logInteraction } from "../../api/log-api";
-import { discardPrompts, getPromptCount, pickNewPrompts, playPrompt } from "../../api/turn/turn-prompt-api";
+import { useContext, useEffect, useState } from 'react';
+import { GameButton } from '../../components/Buttons';
+import { ErrorContext } from '../../components/ErrorContext';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
+import { GameLayout } from '../../components/layout/GameLayout';
+import { endLobby } from '../../api/lobby/lobby-control-api';
+import { PromptCardInGame } from '../../shared/types';
+import { CardPrompt } from './game-components/CardPrompt';
+import { useGameContext } from './game-components/GameContext';
+import { HaikuSizeSelector } from './lobby-components/HaikuSizeSelector';
+import { haikuPrompt3 } from '../../api/deck/deck-repository';
+import { logInteraction } from '../../api/log-api';
+import pop_3 from '../../assets/sounds/pop_3.mp3';
+import {
+  discardPrompts,
+  getPromptCount,
+  pickNewPrompts,
+  playPrompt,
+} from '../../api/turn/turn-prompt-api';
 
 export function JudgePickPromptScreen() {
   const { lobby, turn } = useGameContext();
   const [prompts, setPrompts] = useState<PromptCardInGame[]>([]);
   const [haikuPrompt, setHaikuPrompt] = useState(haikuPrompt3);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptCardInGame | null>(
-    null
+    null,
   );
   const [cardCount, setCardCount] = useState(-1);
+  const [notified, setNotified] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [ending, setEnding] = useState(false);
@@ -95,6 +102,13 @@ export function JudgePickPromptScreen() {
     getPromptCount(lobby).then((c) => setCardCount(c));
   }, [lobby, prompts]);
 
+  useEffect(() => {
+    if (!notified) {
+      new Audio(pop_3).play();
+      setNotified(true);
+    }
+  }, [notified]);
+
   return (
     <GameLayout className="pick-prompt-screen">
       <header>
@@ -136,7 +150,7 @@ export function JudgePickPromptScreen() {
                         className="haiku-button"
                         title="Play a haiku prompt with 3 phrases."
                       >
-                        {!isHaiku ? "Play Haiku" : "Cancel haiku"}
+                        {!isHaiku ? 'Play Haiku' : 'Cancel haiku'}
                       </GameButton>
                       <GameButton
                         secondary
@@ -153,7 +167,7 @@ export function JudgePickPromptScreen() {
                   ) : (
                     <span
                       className="extra-dim"
-                      style={{ whiteSpace: "nowrap" }}
+                      style={{ whiteSpace: 'nowrap' }}
                     >
                       Last card
                     </span>
@@ -165,8 +179,8 @@ export function JudgePickPromptScreen() {
                 {cardCount > 0
                   ? `Oops! ${cardCount} cards remaining, but couldn't load any`
                   : cardCount == 0
-                  ? "No more cards left :("
-                  : ""}
+                  ? 'No more cards left :('
+                  : ''}
               </>
             )}
           </>
