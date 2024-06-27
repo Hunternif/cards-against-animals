@@ -109,6 +109,9 @@
     background-color: colors.$accent;
     color: colors.$button-accent-text;
   }
+  .card-row.action-card .col-card-content {
+    color: colors.$special-blue;
+  }
   .card-content-admin-row {
     padding: 0 0.25rem;
     overflow: hidden;

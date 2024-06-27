@@ -324,3 +324,7 @@
   background-color: colors.$discarded-bg-hover;
   box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.1);
 }
+.card-response.action-card,
+.card-response.selected.action-card {
+  color: colors.$special-blue;
+}

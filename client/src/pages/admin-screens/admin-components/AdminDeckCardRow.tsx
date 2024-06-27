@@ -38,6 +38,8 @@ export function AdminDeckCardRow({
   const classes = ['card-row'];
   classes.push(selected ? 'selected' : 'selectable');
   classes.push(isPrompt ? 'row-prompt' : 'row-response');
+  if (card instanceof ResponseDeckCard && card.action)
+    classes.push('action-card');
   if (isErrored) classes.push('errored');
   // TODO: render column by column.
   return (

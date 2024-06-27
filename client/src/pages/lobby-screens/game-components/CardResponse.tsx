@@ -1,38 +1,49 @@
-import { ResponseCardInGame } from "../../../shared/types";
-import { Downvote } from "./CardVotes";
-import { IconTrash } from "../../../components/Icons";
-import { CardBottomRight, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
+import { ResponseCardInGame } from '../../../shared/types';
+import { Downvote } from './CardVotes';
+import { IconTrash } from '../../../components/Icons';
+import {
+  CardBottomRight,
+  CardCenterIcon,
+  CardContent,
+  LargeCard,
+} from './LargeCard';
 
 interface ResponseCardProps {
-  card: ResponseCardInGame,
-  justIn?: boolean, // Card was just dealt
-  selectable?: boolean,
+  card: ResponseCardInGame;
+  justIn?: boolean; // Card was just dealt
+  selectable?: boolean;
   /** Which card it is in your submission: #1, #2 etc. Starts from 0. */
-  selectedIndex?: number,
+  selectedIndex?: number;
   /** Whether to show the above index. Doesn't make sense for 1 card. */
-  showIndex?: boolean,
-  onToggle?: (selected: boolean) => void,
-  onToggleDownvote?: (downvoted: boolean) => void,
-  discarding?: boolean,
-  discarded?: boolean,
-  onToggleDiscard?: (discarded: boolean) => void,
+  showIndex?: boolean;
+  onToggle?: (selected: boolean) => void;
+  onToggleDownvote?: (downvoted: boolean) => void;
+  discarding?: boolean;
+  discarded?: boolean;
+  onToggleDiscard?: (discarded: boolean) => void;
 }
 
-export function CardResponse(
-  {
-    card, justIn,
-    selectable, selectedIndex, showIndex, onToggle, onToggleDownvote,
-    discarding, discarded, onToggleDiscard,
-  }: ResponseCardProps
-) {
+export function CardResponse({
+  card,
+  justIn,
+  selectable,
+  selectedIndex,
+  showIndex,
+  onToggle,
+  onToggleDownvote,
+  discarding,
+  discarded,
+  onToggleDiscard,
+}: ResponseCardProps) {
   const selected = selectedIndex != undefined && selectedIndex > -1;
-  const newStyle = justIn ? "just-in" : "";
-  const selectableStyle = selectable ? "hoverable-card" : "locked-card";
-  const selectedStyle = selected ? "selected" : "unselected";
-  const discardingStyle = discarding ? "discarding" : "";
-  const discardedStyle = discarded ? "discarded" : "";
-  const voteStyle = card.downvoted ? "downvoted" : "";
-  const className = `card-response ${newStyle} ${selectableStyle} ${selectedStyle} ${voteStyle} ${discardingStyle} ${discardedStyle}`;
+  const classes = ['card-response'];
+  if (justIn) classes.push('just-in');
+  classes.push(selectable ? 'hoverable-card' : 'locked-card');
+  classes.push(selected ? 'selected' : 'unselected');
+  if (discarding) classes.push('discarding');
+  if (discarded) classes.push('discarded');
+  if (card.downvoted) classes.push('downvoted');
+  if (card.action) classes.push('action-card');
 
   function handleClick() {
     if (discarding) {
@@ -47,7 +58,7 @@ export function CardResponse(
   }
 
   return (
-    <LargeCard className={className} onClick={handleClick}>
+    <LargeCard className={classes.join(' ')} onClick={handleClick}>
       <CardContent>{card.content}</CardContent>
       {showIndex && selected && (
         <CardCenterIcon className="selected-response-index">
@@ -55,7 +66,7 @@ export function CardResponse(
         </CardCenterIcon>
       )}
       <CardBottomRight>
-        {(discarding || discarded) ? (
+        {discarding || discarded ? (
           <IconTrash width={24} height={24} className="card-discard-icon" />
         ) : (
           <Downvote onClick={handleDownvote} />
