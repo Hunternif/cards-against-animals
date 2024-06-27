@@ -82,7 +82,11 @@ export function AdminCopyCardsDialog({
         const newUpdatedCards = DeckCardSet.fromMap(newUpdatedCardMap);
         setUpdatedCardMap(newUpdatedCardMap);
         setUpdatedCards(newUpdatedCards);
-        setCombinedSet(DeckCardSet.fromDeck(fullDeck).append(newUpdatedCards));
+        setCombinedSet(
+          DeckCardSet.fromDeck(fullDeck)
+            .sortByIDs()
+            .append(newUpdatedCards.sortByIDs()),
+        );
         // don't await, run it in the background:
         highlightDuplicates(fullDeck, newUpdatedCards);
       } catch (e: any) {

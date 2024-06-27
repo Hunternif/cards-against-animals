@@ -9,6 +9,7 @@ import {
   PromptDeckCard,
   ResponseDeckCard,
 } from '../../shared/types';
+import { stringComparator } from '../../shared/utils';
 
 /**
  * Convenience class for handling collections of cards which are not decks.
@@ -45,6 +46,12 @@ export class DeckCardSet {
   /** Creates deep copies of all cards in this set. */
   deepCopy(): DeckCardSet {
     return new DeckCardSet(this.cards.map((c) => copyDeckCard(c)));
+  }
+
+  /** Sorts cards by ID, modifies this cardset in place. */
+  sortByIDs(): DeckCardSet {
+    this.cards.sort((a, b) => stringComparator(a.id, b.id));
+    return this;
   }
 
   /** Modifies this set by adding all cards from another set. Returns this. */

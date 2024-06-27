@@ -62,7 +62,7 @@ export function AdminDeck({ deckID }: Props) {
         .downloadDeck(deckID)
         .then((val) => {
           setDeck(val);
-          setDeckCardset(DeckCardSet.fromDeck(val));
+          setDeckCardset(DeckCardSet.fromDeck(val).sortByIDs());
         })
         .catch((e) => setError(e));
     }
