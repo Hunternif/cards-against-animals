@@ -92,37 +92,29 @@ export function PlayerAnsweringScreen() {
     }
   }
 
-  /** When discarding mode is turned on/off. */
-  async function toggleDiscard(on: boolean) {
-    if (on) {
-      setDiscarding(true);
-    } else {
-      setDiscarding(false);
-      if (discardedCards.length > 0) {
+  async function handleSubmitDiscard() {
+    if (discardedCards.length > 0) {
+      try {
+        // TODO: combine discard and discardImmediately
+        await discardCards(lobby, turn, player.uid, discardedCards);
         await discardImmediately(lobby);
+      } catch (e: any) {
+        setError(e);
+      } finally {
+        setDiscarding(false);
         setDiscardedCards([]);
       }
     }
   }
-
-  /** Selecting to discard all / none. */
-  function selectDiscardAll(shouldDiscard: boolean) {
-    if (shouldDiscard) {
-      const allDiscardable = hand.filter(
-        (c1) => !selectedCards.find((c2) => c1.id === c2.id),
-      );
-      handleMarkDiscarded(allDiscardable);
-    } else {
-      handleMarkDiscarded([]);
-    }
-  }
-
-  /** When new discarded cards are clicked, automatically update firestore. */
-  async function handleMarkDiscarded(cards: ResponseCardInGame[]) {
-    setDiscardedCards(cards);
-    await discardCards(lobby, turn, player.uid, cards).catch((e: any) =>
-      setError(e),
+  function selectDiscardAll() {
+    const allDiscardable = hand.filter(
+      (c1) => !selectedCards.find((c2) => c1.id === c2.id),
     );
+    setDiscardedCards(allDiscardable);
+  }
+  function handleCancelDiscard() {
+    setDiscardedCards([]);
+    setDiscarding(false);
   }
 
   // Cancel discard if lobby settings change:
@@ -164,9 +156,10 @@ export function PlayerAnsweringScreen() {
           submitted={submitted}
           discarding={discarding}
           discardedCards={discardedCards}
-          onToggleDiscard={toggleDiscard}
-          onDiscardAll={() => selectDiscardAll(true)}
-          onUndiscardAll={() => selectDiscardAll(false)}
+          onBeginDiscard={() => setDiscarding(true)}
+          onSubmitDiscard={() => handleSubmitDiscard()}
+          onCancelDiscard={() => handleCancelDiscard()}
+          onSetDiscardAll={() => selectDiscardAll()}
         />
       </div>
       <div className="game-bottom-row" style={{ ...rowStyle, ...botRowStyle }}>
@@ -175,7 +168,7 @@ export function PlayerAnsweringScreen() {
           setSelectedCards={handleSelect}
           discarding={discarding}
           discardedCards={discardedCards}
-          setDiscardedCards={handleMarkDiscarded}
+          setDiscardedCards={setDiscardedCards}
         />
       </div>
     </CenteredLayout>
