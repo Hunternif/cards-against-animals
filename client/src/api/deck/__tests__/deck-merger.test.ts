@@ -114,6 +114,24 @@ test('update card IDs for merge', () => {
   expect(updatedMap.get(resp12)!.id).toBe('0015');
 });
 
+test('maintain relative ID order', () => {
+  const prompt1 = makePrompt('0001');
+  const resp2 = makeResponse('0002');
+  const prompt3 = makePrompt('0003');
+  const resp4 = makeResponse('0004');
+
+  const deck = new Deck('test_deck', 'Test deck');
+  deck.prompts.push(makePrompt('0001'));
+  deck.responses.push(makeResponse('0002'));
+  const set1 = new DeckCardSet([prompt1, resp2, prompt3, resp4]);
+
+  const updatedMap = updateCardsForMerge(deck, set1);
+  expect(updatedMap.get(prompt1)!.id).toBe('0003');
+  expect(updatedMap.get(resp2)!.id).toBe('0004');
+  expect(updatedMap.get(prompt3)!.id).toBe('0005');
+  expect(updatedMap.get(resp4)!.id).toBe('0006');
+});
+
 test('merge into empty deck', () => {
   const newDeck = new Deck('new_deck', 'My new deck');
   newDeck.tags.push(new DeckTag('old_tag'));

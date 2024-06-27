@@ -4,6 +4,7 @@ import {
   copyDeckCard,
 } from '../../shared/deck-utils';
 import { Deck, DeckCard, DeckTag } from '../../shared/types';
+import { stringComparator } from '../../shared/utils';
 import { DeckCardSet } from './deck-card-set';
 import { cardOrdinalToID } from './deck-parser';
 
@@ -105,6 +106,8 @@ function normalizeCardIDs<T extends DeckCard>(
     return card;
   }
   destCards.forEach((card) => processExistingID(card.id));
+  // Sort source cards by ID to preserve order:
+  sourceCards.sort((a, b) => stringComparator(a.id, b.id));
   return new Map(sourceCards.map((card) => [card, updateCardID(card)]));
 }
 
