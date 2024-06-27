@@ -285,11 +285,15 @@ export class ResponseDeckCard implements DeckCard {
     public likes: number,
     public tags: string[],
     public time_created?: Date,
+    public action?: ResponseAction,
   ) {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() {} // hack to prevent duck typing
   type: CardType = 'response';
 }
+
+/** Custom actions for response cards. */
+export type ResponseAction = 'none' | 'repeat_last';
 
 /**
  * An instance of a card in game. Contains a reference to the
@@ -347,6 +351,7 @@ export class ResponseCardInGame implements CardInGame {
      */
     public downvoted: boolean,
     public tags: string[],
+    public action?: ResponseAction,
   ) {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   response() {} // hack to prevent duck typing
@@ -367,6 +372,7 @@ export class ResponseCardInHand extends ResponseCardInGame {
       from.rating,
       from.downvoted,
       from.tags,
+      from.action,
     );
     ret.time_received = time;
     return ret;

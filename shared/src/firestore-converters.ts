@@ -233,6 +233,7 @@ function mapResponseCardInGame(data: any): ResponseCardInGame {
     data.rating ?? 0,
     data.downvoted ?? false,
     data.tags ?? [],
+    data.action,
   );
 }
 
@@ -304,8 +305,9 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
       data.wins ?? 0,
       data.likes ?? 0,
       data.tags || [],
+      (data.time_created as FTimestamp | null)?.toDate(),
+      data.action,
     );
-    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },
 };
@@ -340,6 +342,7 @@ export const responseCardInGameConverter: FConverter<ResponseCardInGame> = {
       data.rating ?? 0,
       data.downvoted ?? false,
       data.tags ?? [],
+      data.action,
     );
   },
 };

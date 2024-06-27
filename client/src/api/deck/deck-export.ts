@@ -54,6 +54,7 @@ export function deserializeDecks(json: string): Deck[] {
             c.tags ?? [],
             c.upvotes ?? 0,
             c.downvotes ?? 0,
+            c.time_created,
           ),
       ) ?? [];
     deck.responses =
@@ -69,6 +70,8 @@ export function deserializeDecks(json: string): Deck[] {
             c.wins ?? 0,
             c.likes ?? 0,
             c.tags ?? [],
+            c.time_created,
+            c.action,
           ),
       ) ?? [];
     deck.tags = d.tags?.map((t) => new DeckTag(t.name, t.description)) ?? [];

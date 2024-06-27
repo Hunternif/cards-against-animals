@@ -59,6 +59,7 @@ export function copyDeckCard<
       card.likes,
       card.tags.slice(),
       card.time_created,
+      card.action,
     ) as T;
   } else {
     throw new Error(`Unsupported card class. Card id ${card.id}`);
