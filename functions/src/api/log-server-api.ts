@@ -1,15 +1,15 @@
 import * as logger from 'firebase-functions/logger';
 import { assertExhaustive } from '../shared/utils';
-import { getLobby } from './lobby-server-repository';
 import {
-  getAllPlayerData,
+  getLobby,
+  getOnlinePlayers,
+  getPlayersRef,
+} from './lobby-server-repository';
+import {
   getAllPlayerResponses,
-  getPlayerDataRef,
-  getPlayerDiscard,
   getPlayerHand,
   getPromptVotes,
   getTurnPrompt,
-  getTurnsRef,
 } from './turn-server-repository';
 
 import { FieldValue } from 'firebase-admin/firestore';
@@ -64,7 +64,7 @@ export async function logPlayedPrompt(lobbyID: string, turn: GameTurn) {
  * Log interactions from the turn in the "reading" phase:
  * - viewed hand
  * - played responses
- * - discards
+ * Does not log discards, these are logged immediately.
  */
 export async function logInteractionsInReadingPhase(
   lobbyID: string,
@@ -78,27 +78,19 @@ export async function logInteractionsInReadingPhase(
     return array;
   }, new Array<ResponseCardInGame>());
   // Discarded cards:
-  const playerData = await getAllPlayerData(lobbyID, turn.id);
-  const discardedResponses = new Array<ResponseCardInGame>();
+  const onlinePlayers = await getOnlinePlayers(lobbyID);
   const viewedResponses = new Array<ResponseCardInGame>();
-  for (const pData of playerData) {
-    if (pData.player_uid === turn.judge_uid) {
+  for (const player of onlinePlayers) {
+    if (player.uid === turn.judge_uid) {
       // Skip judge, they didn't see their hand:
       continue;
     }
-    const hand = await getPlayerHand(lobbyID, turn.id, pData.player_uid);
+    const hand = await getPlayerHand(lobbyID, player.uid);
     viewedResponses.push(...hand);
-    const discarded = await getPlayerDiscard(
-      lobbyID,
-      turn.id,
-      pData.player_uid,
-    );
-    discardedResponses.push(...discarded);
   }
   await logCardInteractions(lobby, {
     viewedResponses,
     playedResponses,
-    discardedResponses,
   });
 }
 
@@ -240,17 +232,13 @@ export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
  * and updates ratings on the card in deck. */
 export async function logDownvotes(lobbyID: string) {
   const downvotedCards = new Array<ResponseCardInGame>();
-  // get turn IDs without loading them:
-  const turnSnaps = (await getTurnsRef(lobbyID).get()).docs;
-  for (const turnSnap of turnSnaps) {
-    const playerDataSnaps = (await getPlayerDataRef(lobbyID, turnSnap.id).get())
-      .docs;
-    for (const playerDataSnap of playerDataSnaps) {
-      const hand = await getPlayerHand(lobbyID, turnSnap.id, playerDataSnap.id);
-      for (const card of hand) {
-        if (card.downvoted && !downvotedCards.find((c) => c.id === card.id)) {
-          downvotedCards.push(card);
-        }
+  // get player IDs without loading them:
+  const playerSnaps = (await getPlayersRef(lobbyID).get()).docs;
+  for (const playerSnap of playerSnaps) {
+    const hand = await getPlayerHand(lobbyID, playerSnap.id);
+    for (const card of hand) {
+      if (card.downvoted && !downvotedCards.find((c) => c.id === card.id)) {
+        downvotedCards.push(card);
       }
     }
   }

@@ -33,13 +33,12 @@ function getPromptVotesRef(
  * and recorded at the end of the game. */
 export async function toggleDownvoteCard(
   lobby: GameLobby,
-  turn: GameTurn,
   userID: string,
   card: ResponseCardInGame,
   downvoted: boolean,
 ) {
   card.downvoted = downvoted;
-  await updateHandCard(lobby.id, turn.id, userID, card);
+  await updateHandCard(lobby.id, userID, card);
 }
 
 /** Create/delete a "yes"/"no" vote for the given prompt from the current player.

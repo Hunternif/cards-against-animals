@@ -107,6 +107,13 @@ export class PlayerInLobby {
    * This helps keep track of new cards. */
   time_dealt_cards: Date = new Date();
 
+  /** Cards in the player's hand, including `current_response`.
+   * Must be fetched separately from a Firebase subcollection. */
+  hand: Array<ResponseCardInHand> = [];
+  /** Cards that were discarded throughout the game.
+   * Must be fetched separately from a Firebase subcollection. */
+  discarded: Array<ResponseCardInHand> = [];
+
   constructor(
     public uid: string,
     public name: string,
@@ -130,9 +137,6 @@ export class GameTurn {
   //================= Main game stuff ===================
   /** DEPRECATED. Use subcollection 'prompts' instead. */
   legacy_prompt?: PromptCardInGame;
-  /** Maps player UID to what cards they have on hand in this turn.
-   * Must be fetched separately from a Firebase subcollection. */
-  player_data: Map<string, PlayerDataInTurn> = new Map();
   /** Maps player UID to what cards they played in this turn.
    * Must be fetched separately from a Firebase subcollection.
    * Making this a separate collection makes it secure for players to submit
@@ -161,21 +165,6 @@ export class GameTurn {
     /** UID of the player who will judge the winner. */
     public judge_uid: string,
     public time_created: Date = new Date(),
-  ) {}
-}
-
-/** State of the player in a turn. */
-export class PlayerDataInTurn {
-  /** Cards in the player's hand, including `current_response`.
-   * Must be fetched separately from a Firebase subcollection. */
-  hand: Array<ResponseCardInHand> = [];
-  /** Cards that were discarded this turn.
-   * Must be fetched separately from a Firebase subcollection. */
-  discarded: Array<ResponseCardInHand> = [];
-
-  constructor(
-    public player_uid: string,
-    public player_name: string, // Copied from 'Players' for convenience.
   ) {}
 }
 

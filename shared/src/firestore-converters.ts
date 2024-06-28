@@ -12,7 +12,6 @@ import {
   GameLobby,
   GameTurn,
   LobbySettings,
-  PlayerDataInTurn,
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
@@ -84,7 +83,7 @@ export const playerConverter: FConverter<PlayerInLobby> = {
     copyFields2(player, {
       time_joined: FTimestamp.fromDate(player.time_joined),
       time_dealt_cards: FTimestamp.fromDate(player.time_dealt_cards),
-    }),
+    }, ['hand', 'discarded']),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PlayerInLobby(
@@ -145,7 +144,7 @@ export const turnConverter: FConverter<GameTurn> = {
         // if legacy prompt exists, keep it:
         prompt: turn.legacy_prompt && copyFields(turn.legacy_prompt, []),
       },
-      ['id', 'player_data', 'player_responses', 'legacy_prompt', 'prompts'],
+      ['id', 'player_responses', 'legacy_prompt', 'prompts'],
     ),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
@@ -163,17 +162,6 @@ export const turnConverter: FConverter<GameTurn> = {
     ret.winner_uid = data.winner_uid;
     ret.audience_award_uids = data.audience_award_uids ?? [];
     ret.legacy_prompt = data.prompt && mapPromptCardInGame(data.prompt);
-    return ret;
-  },
-};
-
-export const playerDataConverter: FConverter<PlayerDataInTurn> = {
-  toFirestore: (pdata: PlayerDataInTurn) =>
-    copyFields(pdata, ['hand', 'discarded']),
-  fromFirestore: (snapshot: FDocSnapshot) => {
-    const data = snapshot.data();
-    const player_uid = snapshot.id;
-    const ret = new PlayerDataInTurn(player_uid, data.player_name);
     return ret;
   },
 };

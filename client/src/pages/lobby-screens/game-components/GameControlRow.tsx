@@ -177,6 +177,7 @@ function DiscardControls({
         <GameButton small secondary onClick={onCancelDiscard}>
           Cancel
         </GameButton>
+        {/* TODO: loading animation while discard is in flight */}
         <GameButton
           small
           onClick={() => onSubmitDiscard()}

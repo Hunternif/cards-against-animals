@@ -1,31 +1,30 @@
-import { collection, doc } from "firebase/firestore";
-import { useState } from "react";
+import { collection, doc } from 'firebase/firestore';
+import { useState } from 'react';
 import {
   useCollectionData,
   useCollectionDataOnce,
   useDocumentData,
-} from "react-firebase-hooks/firestore";
+} from 'react-firebase-hooks/firestore';
 import {
   FirestoreCollectionDataHookNullSafe,
   useCollectionDataNonNull,
-} from "../../hooks/data-hooks";
+} from '../../hooks/data-hooks';
 import {
-  playerDataConverter,
   playerResponseConverter,
   promptCardInGameConverter,
   responseCardInGameConverter,
   responseCardInHandConverter,
   turnConverter,
-  voteConverter,
-} from "../../shared/firestore-converters";
+  voteConverter
+} from '../../shared/firestore-converters';
 import {
   GameLobby,
   GameTurn,
   PlayerResponse,
   PromptCardInGame,
-} from "../../shared/types";
-import { lobbiesRef } from "../lobby/lobby-repository";
-import { getTurnsRef } from "./turn-repository";
+} from '../../shared/types';
+import { lobbiesRef } from '../lobby/lobby-repository';
+import { getTurnsRef } from './turn-repository';
 
 type LastTurnHook = [
   lastTurn: GameTurn | undefined,
@@ -55,99 +54,33 @@ export function useLastTurn(lobby: GameLobby): LastTurnHook {
 /** Returns and subscribes to all turns in the lobby. */
 export function useAllTurns(lobby: GameLobby) {
   return useCollectionData(
-    collection(lobbiesRef, lobby.id, "turns").withConverter(turnConverter),
+    collection(lobbiesRef, lobby.id, 'turns').withConverter(turnConverter),
   );
 }
 
 /** Returns to all turns in the lobby. */
 export function useAllTurnsOnce(lobby: GameLobby) {
   return useCollectionDataOnce(
-    collection(lobbiesRef, lobby.id, "turns").withConverter(turnConverter),
-  );
-}
-
-/** Returns and subscribes to current user's player data in the current turn
- * in the lobby. */
-export function usePlayerData(
-  lobby: GameLobby,
-  turn: GameTurn,
-  userID: string,
-) {
-  return useDocumentData(
-    doc(
-      lobbiesRef,
-      lobby.id,
-      "turns",
-      turn.id,
-      "player_data",
-      userID,
-    ).withConverter(playerDataConverter),
-  );
-}
-
-/** Returns and subscribes to all users's player data in the current turn
- * in the lobby. */
-export function useAllPlayerData(lobby: GameLobby, turn: GameTurn) {
-  return useCollectionDataNonNull(
-    collection(
-      lobbiesRef,
-      lobby.id,
-      "turns",
-      turn.id,
-      "player_data",
-    ).withConverter(playerDataConverter),
-  );
-}
-
-/** Returns all users's player data in the current turn in the lobby. */
-export function useAllPlayerDataOnce(lobby: GameLobby, turn: GameTurn) {
-  return useCollectionDataOnce(
-    collection(
-      lobbiesRef,
-      lobby.id,
-      "turns",
-      turn.id,
-      "player_data",
-    ).withConverter(playerDataConverter),
+    collection(lobbiesRef, lobby.id, 'turns').withConverter(turnConverter),
   );
 }
 
 /** Returns and subscribes to current user's player hand in the current turn
  * in the lobby. */
-export function usePlayerHand(
-  lobby: GameLobby,
-  turnID: string,
-  userID: string,
-) {
+export function usePlayerHand(lobby: GameLobby, userID: string) {
   return useCollectionData(
-    collection(
-      lobbiesRef,
-      lobby.id,
-      "turns",
-      turnID,
-      "player_data",
-      userID,
-      "hand",
-    ).withConverter(responseCardInHandConverter),
+    collection(lobbiesRef, lobby.id, 'players', userID, 'hand').withConverter(
+      responseCardInHandConverter,
+    ),
   );
 }
 
 /** Returns to current user's player hand in the current turn in the lobby. */
-export function usePlayerHandOnce(
-  lobby: GameLobby,
-  turnID: string,
-  userID: string,
-) {
+export function usePlayerHandOnce(lobby: GameLobby, userID: string) {
   return useCollectionDataOnce(
-    collection(
-      lobbiesRef,
-      lobby.id,
-      "turns",
-      turnID,
-      "player_data",
-      userID,
-      "hand",
-    ).withConverter(responseCardInHandConverter),
+    collection(lobbiesRef, lobby.id, 'players', userID, 'hand').withConverter(
+      responseCardInHandConverter,
+    ),
   );
 }
 
@@ -162,9 +95,9 @@ export function usePlayerResponse(
     doc(
       lobbiesRef,
       lobby.id,
-      "turns",
+      'turns',
       turn.id,
-      "player_responses",
+      'player_responses',
       userID,
     ).withConverter(playerResponseConverter),
   );
@@ -177,9 +110,9 @@ export function useAllPlayerResponses(lobby: GameLobby, turn: GameTurn) {
     collection(
       lobbiesRef,
       lobby.id,
-      "turns",
+      'turns',
       turn.id,
-      "player_responses",
+      'player_responses',
     ).withConverter(playerResponseConverter),
   );
 }
@@ -191,9 +124,9 @@ export function useAllPlayerResponsesOnce(lobby: GameLobby, turn: GameTurn) {
     collection(
       lobbiesRef,
       lobby.id,
-      "turns",
+      'turns',
       turn.id,
-      "player_responses",
+      'player_responses',
     ).withConverter(playerResponseConverter),
   );
 }
@@ -209,11 +142,9 @@ export function usePlayerDiscard(
     collection(
       lobbiesRef,
       lobby.id,
-      "turns",
-      turn.id,
-      "player_data",
+      'players',
       userID,
-      "discarded",
+      'discarded',
     ).withConverter(responseCardInGameConverter),
   );
 }
@@ -229,11 +160,11 @@ export function useResponseLikes(
     collection(
       lobbiesRef,
       lobby.id,
-      "turns",
+      'turns',
       turn.id,
-      "player_responses",
+      'player_responses',
       response.player_uid,
-      "likes",
+      'likes',
     ).withConverter(voteConverter),
   );
 }
@@ -244,7 +175,7 @@ export function useAllTurnPrompts(
   turn: GameTurn,
 ): FirestoreCollectionDataHookNullSafe<PromptCardInGame> {
   const promptsHook = useCollectionDataNonNull(
-    collection(lobbiesRef, lobby.id, "turns", turn.id, "prompts").withConverter(
+    collection(lobbiesRef, lobby.id, 'turns', turn.id, 'prompts').withConverter(
       promptCardInGameConverter,
     ),
   );
@@ -264,11 +195,11 @@ export function usePromptVotes(
     collection(
       lobbiesRef,
       lobby.id,
-      "turns",
+      'turns',
       turn.id,
-      "prompts",
+      'prompts',
       prompt.id,
-      "votes",
+      'votes',
     ).withConverter(voteConverter),
   );
 }

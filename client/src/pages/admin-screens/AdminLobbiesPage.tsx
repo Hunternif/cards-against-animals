@@ -1,60 +1,64 @@
-import { useCollection } from "react-firebase-hooks/firestore";
-import { usePlayers } from "../../api/lobby/lobby-hooks";
-import { lobbiesRef } from "../../api/lobby/lobby-repository";
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { usePlayers } from '../../api/lobby/lobby-hooks';
+import { lobbiesRef } from '../../api/lobby/lobby-repository';
 import {
-  useAllPlayerDataOnce,
   useAllPlayerResponsesOnce,
   useAllTurnPrompts,
   useAllTurnsOnce,
-  usePlayerHandOnce,
-} from "../../api/turn/turn-hooks";
-import { Accordion, AccordionItem } from "../../components/Accordion";
+} from '../../api/turn/turn-hooks';
+import { Accordion, AccordionItem } from '../../components/Accordion';
 import {
   GameLobby,
   GameTurn,
-  PlayerDataInTurn,
+  PlayerInLobby,
   PlayerResponse,
-} from "../../shared/types";
-import { AdminSubpage } from "./admin-components/AdminSubpage";
+} from '../../shared/types';
+import { AdminSubpage } from './admin-components/AdminSubpage';
 
 interface LobbyProps {
   lobby: GameLobby;
 }
 
+interface InLobbyProps {
+  lobby: GameLobby;
+  players: PlayerInLobby[];
+}
+
 interface TurnProps {
   lobby: GameLobby;
   turn: GameTurn;
+  players: PlayerInLobby[];
 }
 
 function LobbyData({ lobby }: LobbyProps) {
+  const [players] = usePlayers(lobby.id);
   return (
     <AccordionItem key={lobby.id} header={lobby.id}>
       <ul>
         <div className="data-subsection">
           <li>Creator: {lobby.creator_uid}</li>
-          <li>Created: {lobby.time_created?.toLocaleDateString() ?? "-"}</li>
+          <li>Created: {lobby.time_created?.toLocaleDateString() ?? '-'}</li>
           <li>Status: {lobby.status}</li>
         </div>
-        <PlayersData lobby={lobby} />
+        <PlayersData lobby={lobby} players={players ?? []} />
       </ul>
       <AccordionItem header="Turns">
-        <TurnsData lobby={lobby} />
+        <TurnsData lobby={lobby} players={players ?? []} />
       </AccordionItem>
     </AccordionItem>
   );
 }
 
-function PlayersData({ lobby }: LobbyProps) {
-  const [players] = usePlayers(lobby.id);
+function PlayersData({ players }: InLobbyProps) {
   return (
     <>
       <b>Players: </b>
-      {players && players.map((p) => p.name).join(", ")}
+      {players && players.map((p) => p.name).join(', ')}
     </>
   );
 }
 
-function TurnsData({ lobby }: LobbyProps) {
+function TurnsData({ lobby, players }: InLobbyProps) {
   const [turns] = useAllTurnsOnce(lobby);
   const sortedTurns =
     turns &&
@@ -65,14 +69,13 @@ function TurnsData({ lobby }: LobbyProps) {
     <>
       {sortedTurns &&
         sortedTurns.map((turn) => (
-          <TurnData lobby={lobby} turn={turn} key={turn.id} />
+          <TurnData lobby={lobby} turn={turn} key={turn.id} players={players} />
         ))}
     </>
   );
 }
 
-function TurnData({ lobby, turn }: TurnProps) {
-  const [playerData] = useAllPlayerDataOnce(lobby, turn);
+function TurnData({ lobby, turn, players }: TurnProps) {
   const [playerResponses] = useAllPlayerResponsesOnce(lobby, turn);
   const [prompts] = useAllTurnPrompts(lobby, turn);
   return (
@@ -81,42 +84,36 @@ function TurnData({ lobby, turn }: TurnProps) {
         {turn.id}: {prompts?.at(0)?.content}
       </div>
       <ul>
-        {playerData &&
-          playerData.map((pdata) => (
-            <PlayerInTurnData
-              key={pdata.player_uid}
-              lobby={lobby}
-              turn={turn}
-              data={pdata}
-              responses={playerResponses}
-            />
-          ))}
+        {players.map((player) => (
+          <PlayerInTurnData
+            key={player.uid}
+            turn={turn}
+            player={player}
+            responses={playerResponses}
+          />
+        ))}
       </ul>
     </div>
   );
 }
 
 interface PlayerProps {
-  lobby: GameLobby;
   turn: GameTurn;
-  data: PlayerDataInTurn;
+  player: PlayerInLobby;
   responses?: PlayerResponse[];
 }
-function PlayerInTurnData({ lobby, turn, data, responses }: PlayerProps) {
-  const [hand] = usePlayerHandOnce(lobby, turn.id, data.player_uid);
+function PlayerInTurnData({ turn, player, responses }: PlayerProps) {
   const played =
     responses
-      ?.find((r) => r.player_uid === data.player_uid)
+      ?.find((r) => r.player_uid === player.uid)
       ?.cards?.map((card) => card.content)
-      .join(", ") ?? null;
-  const isJudge = turn.judge_uid == data.player_uid;
-  const isWinner = turn.winner_uid == data.player_uid;
-  const handStr = hand?.map((c) => c.content).join(", ");
+      .join(', ') ?? null;
+  const isJudge = turn.judge_uid == player.uid;
+  const isWinner = turn.winner_uid == player.uid;
   return (
-    <li key={data.player_uid}>
-      {data.player_name}:{isJudge && " 💬 "}
-      {isWinner && " 🏆 "}
-      {` [${handStr}]`}
+    <li key={player.uid}>
+      {player.name}:{isJudge && ' 💬 '}
+      {isWinner && ' 🏆 '}
       {played && `, played "${played}"`}
     </li>
   );

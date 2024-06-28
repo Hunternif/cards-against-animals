@@ -1,7 +1,6 @@
 import { HttpsError } from 'firebase-functions/v2/https';
 import { db } from '../firebase-server';
 import {
-  playerDataConverter,
   playerResponseConverter,
   promptCardInGameConverter,
   responseCardInGameConverter,
@@ -12,7 +11,6 @@ import {
 import {
   GameLobby,
   GameTurn,
-  PlayerDataInTurn,
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame,
@@ -41,20 +39,9 @@ function getTurnPromptsRef(lobbyID: string, turnID: string) {
 }
 
 /** Returns Firestore subcollection reference. */
-export function getPlayerDataRef(lobbyID: string, turnID: string) {
+export function getPlayerHandRef(lobbyID: string, userID: string) {
   return db
-    .collection(`lobbies/${lobbyID}/turns/${turnID}/player_data`)
-    .withConverter(playerDataConverter);
-}
-
-/** Returns Firestore subcollection reference. */
-export function getPlayerHandRef(
-  lobbyID: string,
-  turnID: string,
-  userID: string,
-) {
-  return db
-    .collection(`lobbies/${lobbyID}/turns/${turnID}/player_data/${userID}/hand`)
+    .collection(`lobbies/${lobbyID}/players/${userID}/hand`)
     .withConverter(responseCardInHandConverter);
 }
 
@@ -66,11 +53,9 @@ function getPlayerResponsesRef(lobbyID: string, turnID: string) {
 }
 
 /** Returns Firestore subcollection reference. */
-function getPlayerDiscardRef(lobbyID: string, turnID: string, userID: string) {
+function getPlayerDiscardRef(lobbyID: string, userID: string) {
   return db
-    .collection(
-      `lobbies/${lobbyID}/turns/${turnID}/player_data/${userID}/discarded`,
-    )
+    .collection(`lobbies/${lobbyID}/players/${userID}/discarded`)
     .withConverter(responseCardInGameConverter);
 }
 
@@ -125,7 +110,7 @@ export async function getLastTurn(lobby: GameLobby): Promise<GameTurn | null> {
 
 /**
  * Updates turn state in Firestore.
- * Does not update subcollections! (player_data, player_resposnes etc)
+ * Does not update subcollections! (player_resposnes etc)
  */
 export async function updateTurn(
   lobbyID: string,
@@ -154,59 +139,33 @@ export async function getTurnPrompt(
   return promptDocs[0].data();
 }
 
-/** Data from a specific player, from a specific turn. */
-export async function getPlayerData(
-  lobbyID: string,
-  turnID: string,
-  uid: string,
-): Promise<PlayerDataInTurn | null> {
-  return (
-    (await getPlayerDataRef(lobbyID, turnID).doc(uid).get()).data() ?? null
-  );
-}
-
-/** Data from all players, from a specific turn. */
-export async function getAllPlayerData(
-  lobbyID: string,
-  turnID: string,
-): Promise<PlayerDataInTurn[]> {
-  return (await getPlayerDataRef(lobbyID, turnID).get()).docs.map((d) =>
-    d.data(),
-  );
-}
-
-/** Hand from a specific player, from a specific turn. */
+/** Hand from a specific player. */
 export async function getPlayerHand(
   lobbyID: string,
-  turnID: string,
   uid: string,
 ): Promise<ResponseCardInHand[]> {
-  return (await getPlayerHandRef(lobbyID, turnID, uid).get()).docs.map((t) =>
-    t.data(),
-  );
+  return (await getPlayerHandRef(lobbyID, uid).get()).docs.map((t) => t.data());
 }
 
-/** ALL discarded cards from a specific player, from a specific turn. */
+/** ALL discarded cards from a specific player, in the last turn. */
 export async function getPlayerDiscard(
   lobbyID: string,
-  turnID: string,
   uid: string,
 ): Promise<ResponseCardInGame[]> {
-  return (await getPlayerDiscardRef(lobbyID, turnID, uid).get()).docs.map((t) =>
+  return (await getPlayerDiscardRef(lobbyID, uid).get()).docs.map((t) =>
     t.data(),
   );
 }
 
-/** NEW discarded cards from a specific player, from a specific turn.
+/** NEW discarded cards from a specific player.
  * Excludes cards that were discarded during previous "discard" moves. */
 export async function getNewPlayerDiscard(
   lobbyID: string,
-  turnID: string,
   uid: string,
 ): Promise<ResponseCardInGame[]> {
-  const discardDocs = (await getPlayerDiscardRef(lobbyID, turnID, uid).get())
-    .docs;
-  const handDocs = (await getPlayerHandRef(lobbyID, turnID, uid).get()).docs;
+  // TODO: maybe optimize this, don't iterate over all past discards and hand?
+  const discardDocs = (await getPlayerDiscardRef(lobbyID, uid).get()).docs;
+  const handDocs = (await getPlayerHandRef(lobbyID, uid).get()).docs;
   // Filter out cards that were removed from hand, during previous discards:
   return discardDocs
     .filter((d) => handDocs.findIndex((h) => h.id === d.id) > -1)

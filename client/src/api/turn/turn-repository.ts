@@ -10,6 +10,7 @@ import {
   turnConverter,
 } from '../../shared/firestore-converters';
 import { GameTurn, ResponseCardInGame } from '../../shared/types';
+import { getPlayerRef } from '../lobby/lobby-player-api';
 import { lobbiesRef } from '../lobby/lobby-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,13 +31,9 @@ export function getTurnRef(lobbyID: string, turnID: string) {
 }
 
 /** Returns Firestore subcollection reference of player responses in turn. */
-export function getPlayerHandRef(
-  lobbyID: string,
-  turnID: string,
-  userID: string,
-) {
-  const turnRef = getTurnRef(lobbyID, turnID);
-  return collection(turnRef, 'player_data', userID, 'hand').withConverter(
+export function getPlayerHandRef(lobbyID: string, userID: string) {
+  const playerRef = getPlayerRef(lobbyID, userID);
+  return collection(playerRef, 'hand').withConverter(
     responseCardInGameConverter,
   );
 }
@@ -66,12 +63,11 @@ export async function updateTurn(
  * Doesn't update subcollections! */
 export async function updateHandCard(
   lobbyID: string,
-  turnID: string,
   userID: string,
   card: ResponseCardInGame,
 ) {
   await updateDoc(
-    doc(getPlayerHandRef(lobbyID, turnID, userID), card.id),
+    doc(getPlayerHandRef(lobbyID, userID), card.id),
     responseCardInGameConverter.toFirestore(card),
   );
 }

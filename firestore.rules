@@ -30,14 +30,14 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)).data.judge_uid == request.auth.uid;
     }
     // Checks that the user actually has the cards they want to submit.
-    function userHasCards(lobby, turn) {
+    function userHasCards(lobby) {
       // Can't iterate arrays, so will only check the first card:
       let card = request.resource.data.cards[0];
       // TODO: users could potentially hack their 2nd & 3rd card, lol.
-      return exists(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)/player_data/$(request.auth.uid)/hand/$(card.id));
+      return exists(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid)/hand/$(card.id));
     }
-    function isCardContentUnmodified(lobby, turn, userID, cardID) {
-      let card = get(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)/player_data/$(userID)/hand/$(cardID)).data;
+    function isCardContentUnmodified(lobby, userID, cardID) {
+      let card = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID)/hand/$(cardID)).data;
       return request.resource.data['content'] == card['content'];
     }
     // Don't allow changing a player's score
@@ -89,6 +89,16 @@ service cloud.firestore {
         allow read: if isLoggedIn() && request.auth.uid == userID;
         allow update: if isLoggedIn() && request.auth.uid == userID
                       && isScoreUnchanged(lobby, userID) && userIsNotKicked(lobby, userID);
+
+        match /hand/{cardID} {
+          // Allow players to update some fields:
+          allow update: if isLoggedIn() && request.auth.uid == userID
+                        && isCardContentUnmodified(lobby, userID, cardID);
+        }
+        match /discarded/{cardID} {
+          // Allow players to read & write their own discard:
+          allow read, write: if isLoggedIn() && request.auth.uid == userID;
+        }
       }
 
       match /deck_prompts/{document=**} {
@@ -116,21 +126,12 @@ service cloud.firestore {
           }
         }
 
-        match /player_data/{userID}/hand/{cardID} {
-          // Allow players to update some fields:
-          allow update: if isLoggedIn() && request.auth.uid == userID
-                        && isCardContentUnmodified(lobby, turn, userID, cardID);
-        }
-        match /player_data/{userID}/discarded/{cardID} {
-          // Allow players to read & write their own discard:
-          allow read, write: if isLoggedIn() && request.auth.uid == userID;
-        }
         match /player_responses/{userID} {
           // Judge can reveal:
           allow update: if isLoggedIn() && userIsJudge(lobby, turn);
           // Allow players to submit as many times as needed:
           allow create, update: if isLoggedIn() && request.auth.uid == userID
-                                && userIsActivePlayer(lobby) && userHasCards(lobby, turn)
+                                && userIsActivePlayer(lobby) && userHasCards(lobby)
                                 // Only allow submitting responses during 'answering' phase:
                                 && isTurnPhase(lobby, turn, 'answering');
                                 // Should also forbid changing like count, but who cares.

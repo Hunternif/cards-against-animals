@@ -18,7 +18,7 @@ export function GameHand({
   selectedCards, setSelectedCards,
   discarding, discardedCards, setDiscardedCards,
 }: HandProps) {
-  const { lobby, turn, player, hand, prompt } = useGameContext();
+  const { lobby, player, hand, prompt } = useGameContext();
   const handSorted = hand.sort((c1, c2) =>
     c1.random_index + c1.time_received.getTime() -
     (c2.random_index + c2.time_received.getTime()));
@@ -54,7 +54,7 @@ export function GameHand({
   }
 
   async function handleDownvote(card: ResponseCardInHand, downvoted: boolean) {
-    await toggleDownvoteCard(lobby, turn, player.uid, card, downvoted)
+    await toggleDownvoteCard(lobby, player.uid, card, downvoted)
       .catch((e: any) => setError(e));
   }
 

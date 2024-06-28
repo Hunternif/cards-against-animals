@@ -68,7 +68,7 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   const [prompts, loadingPrompts, error] = useAllTurnPrompts(lobby, turn);
   const [responses, loadingResponses, error2] = useAllPlayerResponses(lobby, turn);
   const [playerDiscard, loadingDiscard, error3] = usePlayerDiscard(lobby, turn, user.uid);
-  const [newHand, loadingHand, error4] = usePlayerHand(lobby, turn.id, user.uid);
+  const [newHand, loadingHand, error4] = usePlayerHand(lobby, user.uid);
 
   // Remember hand from the previous turn:
   const [prevHand, setPrevHand] = useState<ResponseCardInHand[]>([]);

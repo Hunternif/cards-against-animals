@@ -109,7 +109,7 @@ export function PlayerAnsweringScreen() {
     if (discardedCards.length > 0) {
       try {
         // TODO: combine discard and discardImmediately
-        await discardCards(lobby, turn, player.uid, discardedCards);
+        await discardCards(lobby, player.uid, discardedCards);
         await discardImmediately(lobby);
         await restoreResponse();
       } catch (e: any) {

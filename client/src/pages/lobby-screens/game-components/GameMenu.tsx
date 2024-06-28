@@ -25,7 +25,7 @@ import { updatePlayer } from "../../../api/lobby/lobby-player-api";
 /** Menu header on top of the game page */
 export function GameMenu() {
   const navigate = useNavigate();
-  const { lobby, turn, player, players, activePlayers, isSpectator, isJudge,
+  const { lobby, player, players, activePlayers, isSpectator, isJudge,
     canControlLobby } = useGameContext();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);

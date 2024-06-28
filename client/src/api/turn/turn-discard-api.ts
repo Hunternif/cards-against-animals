@@ -1,8 +1,8 @@
-import { collection, doc, getDocs, runTransaction } from "firebase/firestore";
-import { db, discardNowFun } from "../../firebase";
-import { GameLobby, GameTurn, ResponseCardInGame } from "../../shared/types";
-import { getTurnRef } from "./turn-repository";
-import { responseCardInGameConverter } from "../../shared/firestore-converters";
+import { collection, doc, getDocs, runTransaction } from 'firebase/firestore';
+import { db, discardNowFun } from '../../firebase';
+import { responseCardInGameConverter } from '../../shared/firestore-converters';
+import { GameLobby, ResponseCardInGame } from '../../shared/types';
+import { getPlayerRef } from '../lobby/lobby-player-api';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -10,26 +10,23 @@ import { responseCardInGameConverter } from "../../shared/firestore-converters";
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-/** Returns Firestore subcollection reference of player's discarded cards in turn. */
-function getPlayerDiscardRef(
-  lobbyID: string,
-  turnID: string,
-  userID: string,
-) {
-  const turnRef = getTurnRef(lobbyID, turnID);
-  return collection(turnRef, "player_data", userID, "discarded")
-    .withConverter(responseCardInGameConverter);
+/** Returns Firestore subcollection reference of player's discarded cards
+ * in the last turn. */
+function getPlayerDiscardRef(lobbyID: string, userID: string) {
+  const playerRef = getPlayerRef(lobbyID, userID);
+  return collection(playerRef, 'discarded').withConverter(
+    responseCardInGameConverter,
+  );
 }
 
 /** Set cards as discarded. When the next turn begins, these cards will be
  * removed from the player's hand, and their final score will decrease by 1. */
 export async function discardCards(
   lobby: GameLobby,
-  turn: GameTurn,
   userID: string,
   cards: ResponseCardInGame[],
 ) {
-  const discardRef = getPlayerDiscardRef(lobby.id, turn.id, userID);
+  const discardRef = getPlayerDiscardRef(lobby.id, userID);
   const currentDiscard = (await getDocs(discardRef)).docs;
   await runTransaction(db, async (transaction) => {
     // Delete old discard:
