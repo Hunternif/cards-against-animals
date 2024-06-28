@@ -189,16 +189,9 @@ function DiscardControls({
   );
 }
 
-interface CostProps {
-  b?: boolean;
-}
-function Cost({ b }: CostProps) {
-  return (
-    <i>
-      {b ? <b>1</b> : <>1</>}
-      <IconStarInline />
-    </i>
-  );
+/** b for bold */
+function Cost({ b }: { b?: boolean }) {
+  return <i>{b ? <b>1</b> : <>1</>}★</i>;
 }
 
 /** Helper hook to get the current discard cost for this player. */
