@@ -2,9 +2,9 @@ import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
 import { firebaseAuth } from "../firebase-server";
 import { GameLobby } from "../shared/types";
 import { getPlayersRef } from "./lobby-server-api";
-import { getLastTurn } from "./turn-server-api";
 import { assertExhaustive } from "../shared/utils";
 import { getCAAUser } from "./user-server-api";
+import { getLastTurn } from "./turn-server-repository";
 
 /** Asserts that current user is logged in. Returns user ID. */
 export function assertLoggedIn(event: CallableRequest): string {

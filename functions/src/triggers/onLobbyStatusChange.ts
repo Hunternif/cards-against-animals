@@ -1,7 +1,6 @@
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
-
-import { logDownvotes } from '../api/deck-server-api';
 import { cleanUpEndedLobby } from '../api/lobby-server-api';
+import { logDownvotes } from '../api/log-server-api';
 import { lobbyConverter } from '../shared/firestore-converters';
 
 /**

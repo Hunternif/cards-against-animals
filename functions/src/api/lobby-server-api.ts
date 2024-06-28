@@ -21,13 +21,14 @@ import {
   getAllPromptsForGame,
   getAllResponsesForGame
 } from "./deck-server-api";
-import { createNewTurn, dealCardsToPlayer, getLastTurn, updateTurn } from "./turn-server-api";
+import { createNewTurn, dealCardsToPlayer } from "./turn-server-api";
 import {
   getCAAUser,
   getOrCreateCAAUser,
   setUsersCurrentLobby,
   updateCAAUser
 } from "./user-server-api";
+import { getLastTurn, updateTurn } from "./turn-server-repository";
 
 export function getPlayersRef(lobbyID: string) {
   return db.collection(`lobbies/${lobbyID}/players`)

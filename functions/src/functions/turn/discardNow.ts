@@ -1,9 +1,7 @@
 import { assertLoggedIn, assertPlayerInLobby } from '../../api/auth-api';
 import { getLobby } from '../../api/lobby-server-api';
-import {
-  discardNowAndDealCardsToPlayer,
-  getLastTurn,
-} from '../../api/turn-server-api';
+import { discardNowAndDealCardsToPlayer } from '../../api/turn-server-api';
+import { getLastTurn } from '../../api/turn-server-repository';
 import { CallableHandler } from '../function-utils';
 
 /**

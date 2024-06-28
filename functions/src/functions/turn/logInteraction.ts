@@ -1,7 +1,7 @@
 import * as logger from 'firebase-functions/logger';
 
 import { assertLoggedIn, assertPlayerInLobby } from '../../api/auth-api';
-import { logCardInteractions } from '../../api/deck-server-api';
+import { logCardInteractions } from '../../api/log-server-api';
 import { getLobby } from '../../api/lobby-server-api';
 import { PromptCardInGame, ResponseCardInGame } from '../../shared/types';
 import { CallableHandler } from '../function-utils';

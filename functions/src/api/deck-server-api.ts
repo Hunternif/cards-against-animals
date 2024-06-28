@@ -1,4 +1,3 @@
-import { FieldValue } from 'firebase-admin/firestore';
 import { db } from '../firebase-server';
 import {
   deckConverter,
@@ -7,22 +6,14 @@ import {
 } from '../shared/firestore-converters';
 import { IRNG, RNG } from '../shared/rng';
 import {
-  CardInGame,
   Deck,
   DeckCard,
-  GameLobby,
-  GeneratedDeck,
   LobbySettings,
   PromptCardInGame,
   PromptDeckCard,
   ResponseCardInGame,
   ResponseDeckCard,
 } from '../shared/types';
-import {
-  getPlayerDataRef,
-  getPlayerHand,
-  getTurnsRef,
-} from './turn-server-api';
 
 export function getDecksRef() {
   return db.collection(`decks`).withConverter(deckConverter);
@@ -157,132 +148,4 @@ export function getCardIndex(
 
   // logger.debug(`Shuffle: base ${base} * factor ${factor} = ${result}`);
   return result;
-}
-
-export interface LogData {
-  viewedPrompts?: PromptCardInGame[];
-  viewedResponses?: ResponseCardInGame[];
-  playedPrompts?: PromptCardInGame[];
-  playedResponses?: ResponseCardInGame[];
-  discardedPrompts?: PromptCardInGame[];
-  discardedResponses?: ResponseCardInGame[];
-  wonResponses?: ResponseCardInGame[];
-  // Cards that were liked multiple times will be added multiple times.
-  likedResponses?: ResponseCardInGame[];
-  promptVotes?: CardVoteData[];
-}
-
-export interface CardVoteData {
-  card: CardInGame;
-  upvotes: number;
-  downvotes: number;
-}
-
-/**
- * Increments the "views" and "plays" counts on the given cards.
- * GameLobby is passed to validate settings: if it's a test game, don't log.
- * TODO: log interactions for `@@generated` cards too.
- */
-export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
-  if (lobby.settings.freeze_stats) return;
-  await db.runTransaction(async (transaction) => {
-    for (const prompt of logData.viewedPrompts || []) {
-      if (prompt.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(
-        prompt.card_id_in_deck,
-      );
-      transaction.update(cardRef, { views: FieldValue.increment(1) });
-    }
-    for (const prompt of logData.playedPrompts || []) {
-      if (prompt.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(
-        prompt.card_id_in_deck,
-      );
-      transaction.update(cardRef, { plays: FieldValue.increment(1) });
-    }
-    for (const prompt of logData.discardedPrompts || []) {
-      if (prompt.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(
-        prompt.card_id_in_deck,
-      );
-      transaction.update(cardRef, { discards: FieldValue.increment(1) });
-    }
-    for (const response of logData.viewedResponses || []) {
-      if (response.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckResponsesRef(response.deck_id).doc(
-        response.card_id_in_deck,
-      );
-      transaction.update(cardRef, { views: FieldValue.increment(1) });
-    }
-    for (const response of logData.playedResponses || []) {
-      if (response.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckResponsesRef(response.deck_id).doc(
-        response.card_id_in_deck,
-      );
-      transaction.update(cardRef, { plays: FieldValue.increment(1) });
-    }
-    for (const response of logData.discardedResponses || []) {
-      if (response.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckResponsesRef(response.deck_id).doc(
-        response.card_id_in_deck,
-      );
-      transaction.update(cardRef, { discards: FieldValue.increment(1) });
-    }
-    for (const response of logData.wonResponses || []) {
-      if (response.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckResponsesRef(response.deck_id).doc(
-        response.card_id_in_deck,
-      );
-      transaction.update(cardRef, { wins: FieldValue.increment(1) });
-    }
-    for (const response of logData.likedResponses || []) {
-      if (response.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckResponsesRef(response.deck_id).doc(
-        response.card_id_in_deck,
-      );
-      transaction.update(cardRef, { likes: FieldValue.increment(1) });
-    }
-    for (const promptVotes of logData.promptVotes || []) {
-      const prompt = promptVotes.card;
-      if (prompt.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckPromptsRef(prompt.deck_id).doc(
-        prompt.card_id_in_deck,
-      );
-      transaction.update(cardRef, {
-        upvotes: FieldValue.increment(promptVotes.upvotes),
-      });
-      transaction.update(cardRef, {
-        downvotes: FieldValue.increment(promptVotes.downvotes),
-      });
-    }
-  });
-}
-
-/** Iterates through all turns and all player's cards, checks for downvotes,
- * and updates ratings on the card in deck. */
-export async function logDownvotes(lobbyID: string) {
-  const downvotedCards = new Array<ResponseCardInGame>();
-  // get turn IDs without loading them:
-  const turnSnaps = (await getTurnsRef(lobbyID).get()).docs;
-  for (const turnSnap of turnSnaps) {
-    const playerDataSnaps = (await getPlayerDataRef(lobbyID, turnSnap.id).get())
-      .docs;
-    for (const playerDataSnap of playerDataSnaps) {
-      const hand = await getPlayerHand(lobbyID, turnSnap.id, playerDataSnap.id);
-      for (const card of hand) {
-        if (card.downvoted && !downvotedCards.find((c) => c.id === card.id)) {
-          downvotedCards.push(card);
-        }
-      }
-    }
-  }
-  await db.runTransaction(async (transaction) => {
-    for (const card of downvotedCards) {
-      if (card.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckResponsesRef(card.deck_id).doc(
-        card.card_id_in_deck,
-      );
-      transaction.update(cardRef, { rating: FieldValue.increment(-1) });
-    }
-  });
 }

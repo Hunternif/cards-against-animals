@@ -1,13 +1,15 @@
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 
 import {
-  getAllPlayerResponses,
   logInteractionsInCompletePhase,
   logInteractionsInReadingPhase,
   logPlayedPrompt,
-  updatePlayerScoresFromTurn,
+} from '../api/log-server-api';
+import { updatePlayerScoresFromTurn } from '../api/turn-server-api';
+import {
+  getAllPlayerResponses,
   updateTurn,
-} from '../api/turn-server-api';
+} from '../api/turn-server-repository';
 import { turnConverter } from '../shared/firestore-converters';
 import { assertExhaustive } from '../shared/utils';
 
