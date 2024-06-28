@@ -1,7 +1,7 @@
 import * as logger from 'firebase-functions/logger';
 
 import { assertLoggedIn, assertPlayerInLobby } from '../../api/auth-api';
-import { getLobby } from '../../api/lobby-server-api';
+import { getLobby } from '../../api/lobby-server-repository';
 import { createNewTurn } from '../../api/turn-server-api';
 import { CallableHandler } from '../function-utils';
 

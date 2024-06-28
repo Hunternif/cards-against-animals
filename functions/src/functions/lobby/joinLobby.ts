@@ -1,5 +1,6 @@
 import { assertLoggedIn } from '../../api/auth-api';
-import { addPlayer, getLobby } from '../../api/lobby-server-api';
+import { addPlayer } from '../../api/lobby-server-api';
+import { getLobby } from '../../api/lobby-server-repository';
 import { CallableHandler } from '../function-utils';
 
 /**

@@ -20,13 +20,15 @@ import {
 import { assertExhaustive } from '../shared/utils';
 import {
   findNextPlayer,
-  getLobby,
   getPlayerSequence,
+} from './lobby-server-api';
+import {
+  getLobby,
   getPlayerThrows,
   getPlayers,
   updateLobby,
   updatePlayer,
-} from './lobby-server-api';
+} from './lobby-server-repository';
 import {
   getLastTurn,
   getNewPlayerDiscard,

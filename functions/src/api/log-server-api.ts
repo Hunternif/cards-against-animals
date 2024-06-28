@@ -1,6 +1,6 @@
 import * as logger from 'firebase-functions/logger';
 import { assertExhaustive } from '../shared/utils';
-import { getLobby } from './lobby-server-api';
+import { getLobby } from './lobby-server-repository';
 import {
   getAllPlayerData,
   getAllPlayerResponses,

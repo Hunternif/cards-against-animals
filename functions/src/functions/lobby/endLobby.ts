@@ -1,5 +1,6 @@
 import { assertLobbyControl, assertLoggedIn } from '../../api/auth-api';
-import { getLobby, setLobbyEnded } from '../../api/lobby-server-api';
+import { endLobby } from '../../api/lobby-server-api';
+import { getLobby } from '../../api/lobby-server-repository';
 import { CallableHandler } from '../function-utils';
 
 /**
@@ -13,5 +14,5 @@ export const endLobbyHandler: CallableHandler<
   assertLoggedIn(event);
   const lobby = await getLobby(event.data.lobby_id);
   await assertLobbyControl(event, lobby);
-  await setLobbyEnded(lobby);
+  await endLobby(lobby);
 };

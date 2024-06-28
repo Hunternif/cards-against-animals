@@ -1,7 +1,7 @@
 import * as logger from 'firebase-functions/logger';
 
 import { assertLobbyControl, assertLoggedIn } from '../../api/auth-api';
-import { getLobby, updateLobby } from '../../api/lobby-server-api';
+import { getLobby, updateLobby } from '../../api/lobby-server-repository';
 import { LobbySettings } from '../../shared/types';
 import { CallableHandler } from '../function-utils';
 
