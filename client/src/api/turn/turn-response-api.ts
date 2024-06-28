@@ -25,7 +25,7 @@ import { playerResponseConverter } from "../../shared/firestore-converters";
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Returns Firestore subcollection reference of player responses in turn. */
-function getPlayerResponsesRef(lobbyID: string, turnID: string) {
+export function getPlayerResponsesRef(lobbyID: string, turnID: string) {
   const turnRef = getTurnRef(lobbyID, turnID);
   return collection(turnRef, "player_responses").withConverter(
     playerResponseConverter,

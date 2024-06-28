@@ -1,10 +1,16 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  Transaction,
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+} from 'firebase/firestore';
 import {
   responseCardInGameConverter,
   turnConverter,
-} from "../../shared/firestore-converters";
-import { GameTurn, ResponseCardInGame } from "../../shared/types";
-import { lobbiesRef } from "../lobby/lobby-repository";
+} from '../../shared/firestore-converters';
+import { GameTurn, ResponseCardInGame } from '../../shared/types';
+import { lobbiesRef } from '../lobby/lobby-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -16,7 +22,7 @@ import { lobbiesRef } from "../lobby/lobby-repository";
 
 /** Returns Firestore subcollection reference of turns in lobby. */
 export function getTurnsRef(lobbyID: string) {
-  return collection(lobbiesRef, lobbyID, "turns").withConverter(turnConverter);
+  return collection(lobbiesRef, lobbyID, 'turns').withConverter(turnConverter);
 }
 
 export function getTurnRef(lobbyID: string, turnID: string) {
@@ -30,7 +36,7 @@ export function getPlayerHandRef(
   userID: string,
 ) {
   const turnRef = getTurnRef(lobbyID, turnID);
-  return collection(turnRef, "player_data", userID, "hand").withConverter(
+  return collection(turnRef, 'player_data', userID, 'hand').withConverter(
     responseCardInGameConverter,
   );
 }
@@ -45,11 +51,15 @@ export async function getAllTurns(lobbyID: string): Promise<Array<GameTurn>> {
 export async function updateTurn(
   lobbyID: string,
   turn: GameTurn,
+  transaction?: Transaction,
 ): Promise<void> {
-  await updateDoc(
-    doc(getTurnsRef(lobbyID), turn.id),
-    turnConverter.toFirestore(turn),
-  );
+  const ref = getTurnRef(lobbyID, turn.id);
+  const data = turnConverter.toFirestore(turn);
+  if (transaction) {
+    transaction.update(ref, data);
+  } else {
+    await updateDoc(ref, data);
+  }
 }
 
 /** Updates Firestore document with this turn data.

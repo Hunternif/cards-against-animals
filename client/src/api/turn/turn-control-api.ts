@@ -1,8 +1,14 @@
-import { newTurnFun } from "../../firebase";
-import { GameLobby, GameTurn } from "../../shared/types";
-import { getResponseLikeCount } from "./turn-like-api";
-import { updateTurn } from "./turn-repository";
-import { getAllPlayerResponses } from "./turn-response-api";
+import { doc, runTransaction } from 'firebase/firestore';
+import { db, newTurnFun } from '../../firebase';
+import { GameLobby, GameTurn } from '../../shared/types';
+import { getActivePlayerCount } from '../lobby/lobby-player-api';
+import { getResponseLikeCount } from './turn-like-api';
+import { updateTurn } from './turn-repository';
+import {
+  getAllPlayerResponses,
+  getPlayerResponsesRef,
+} from './turn-response-api';
+import { sleep } from '../../shared/utils';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -15,13 +21,39 @@ export async function startNewTurn(lobby: GameLobby, currentTurn: GameTurn) {
   await newTurnFun({ lobby_id: lobby.id, current_turn_id: currentTurn.id });
 }
 
-/** Proceeds turn to reading phase. */
+/**
+ * Proceeds turn to reading phase.
+ * If not all players responded, throws an exception.
+ */
 export async function startReadingPhase(lobby: GameLobby, turn: GameTurn) {
-  if (turn.phase !== "answering") {
-    throw new Error(`Invalid turn phase to play prompt: ${turn.phase}`);
+  if (turn.phase !== 'answering') {
+    throw new Error(`Invalid turn phase to start reading: ${turn.phase}`);
   }
-  turn.phase = "reading";
-  await updateTurn(lobby.id, turn);
+  // TODO: throw a special error class
+  const notAllRespondedError = new Error('Not all players responded');
+  const responses = await getAllPlayerResponses(lobby.id, turn.id);
+  const playerCount = await getActivePlayerCount(lobby.id);
+  // -1 because of judge
+  if (responses.length < playerCount - 1) {
+    throw notAllRespondedError;
+  }
+  await runTransaction(db, async (transaction) => {
+    // Ensure responses have not been modified:
+    const updatedResponses = await Promise.all(
+      responses.map((resp) =>
+        transaction.get(
+          doc(getPlayerResponsesRef(lobby.id, turn.id), resp.player_uid),
+        ),
+      ),
+    );
+    for (let updatedResp of updatedResponses) {
+      if (!updatedResp.exists()) {
+        throw notAllRespondedError;
+      }
+    }
+    turn.phase = 'reading';
+    await updateTurn(lobby.id, turn, transaction);
+  });
 }
 
 /**
@@ -35,7 +67,7 @@ export async function chooseWinner(
 ) {
   turn.winner_uid = winnerID;
   await selectAudienceAwardWinners(lobby.id, turn);
-  turn.phase = "complete";
+  turn.phase = 'complete';
   await updateTurn(lobby.id, turn);
 }
 

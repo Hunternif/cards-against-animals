@@ -1,19 +1,20 @@
 import {
   collection,
   doc,
+  getCountFromServer,
   getDoc,
   getDocs,
   updateDoc,
-} from "firebase/firestore";
-import { kickPlayerFun } from "../../firebase";
-import { playerConverter } from "../../shared/firestore-converters";
+} from 'firebase/firestore';
+import { kickPlayerFun } from '../../firebase';
+import { playerConverter } from '../../shared/firestore-converters';
 import {
   GameLobby,
   KickAction,
   PlayerInLobby,
   PlayerStatus,
-} from "../../shared/types";
-import { lobbiesRef } from "./lobby-repository";
+} from '../../shared/types';
+import { lobbiesRef } from './lobby-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -30,7 +31,7 @@ export function getPlayerRef(lobbyID: string, userID: string) {
 
 /** Firestore ref to list of players in a lobby. */
 export function getPlayersRef(lobbyID: string) {
-  return collection(lobbiesRef, lobbyID, "players").withConverter(
+  return collection(lobbiesRef, lobbyID, 'players').withConverter(
     playerConverter,
   );
 }
@@ -53,6 +54,18 @@ export async function getAllPlayersInLobby(
   lobbyID: string,
 ): Promise<Array<PlayerInLobby>> {
   return (await getDocs(getPlayersRef(lobbyID))).docs.map((p) => p.data());
+}
+
+export async function getAllActivePlayersInLobby(
+  lobbyID: string,
+): Promise<Array<PlayerInLobby>> {
+  return (await getAllPlayersInLobby(lobbyID)).filter(
+    (p) => p.role === 'player' && p.status === 'online',
+  );
+}
+
+export async function getActivePlayerCount(lobbyID: string): Promise<number> {
+  return (await getCountFromServer(getPlayersRef(lobbyID))).data().count;
 }
 
 /** Updates player status in the current game. */

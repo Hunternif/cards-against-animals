@@ -62,6 +62,9 @@ service cloud.firestore {
         request.resource.data['uid'] == doc.data['uid']
       );
     }
+    function isTurnPhase(lobby, turn, phase) {
+      return get(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)).data.phase == phase;
+    }
 
   	match /decks/{document=**} {
     	allow read;
@@ -127,9 +130,12 @@ service cloud.firestore {
           allow update: if isLoggedIn() && userIsJudge(lobby, turn);
           // Allow players to submit as many times as needed:
           allow create, update: if isLoggedIn() && request.auth.uid == userID
-                                && userIsActivePlayer(lobby) && userHasCards(lobby, turn);
+                                && userIsActivePlayer(lobby) && userHasCards(lobby, turn)
+                                // Only allow submitting responses during 'answering' phase:
+                                && isTurnPhase(lobby, turn, 'answering');
                                 // Should also forbid changing like count, but who cares.
-          allow delete: if isLoggedIn() && request.auth.uid == userID;
+          allow delete: if isLoggedIn() && request.auth.uid == userID
+                        && isTurnPhase(lobby, turn, 'answering');
 
           match /likes/{likerID} {
             // Anyone can read likes, only yourself can add or remove likes.
