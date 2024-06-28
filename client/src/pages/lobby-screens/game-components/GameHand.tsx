@@ -88,6 +88,9 @@ export function GameHand({
       isSelectable = !isSelected;
     } else {
       isSelectable = isHandSelectable;
+      if (card.action === 'repeat_last' && selectedCards.length == 0) {
+        isSelectable = false;
+      }
     }
     return <CardResponse key={card.id} card={card} justIn={isNew}
       selectable={isSelectable}
