@@ -13,7 +13,7 @@ import { GameControlRow } from './game-components/GameControlRow';
 import { GameHand } from './game-components/GameHand';
 import { GameMiniResponses } from './game-components/GameMiniResponses';
 import { ResponseCount } from './game-components/ResponseCount';
-import { useSoundOnResponse } from '../../components/sounds';
+import { useSoundOnResponse } from '../../hooks/sound-hooks';
 import {
   discardCards,
   discardImmediately,
