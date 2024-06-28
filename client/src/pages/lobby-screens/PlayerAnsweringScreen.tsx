@@ -6,7 +6,7 @@ import {
   cancelPlayerResponse,
   submitPlayerResponse,
 } from '../../api/turn/turn-response-api';
-import { ResponseCardInGame } from '../../shared/types';
+import { PlayerResponse, ResponseCardInGame } from '../../shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
 import { GameControlRow } from './game-components/GameControlRow';
@@ -66,6 +66,9 @@ export function PlayerAnsweringScreen() {
   const [discardedCards, setDiscardedCards] = useState<ResponseCardInGame[]>(
     [],
   );
+  // "temp response" is used to remember the response while it's cancelled
+  // during discard.
+  const [tempRsponse, setTempResponse] = useState<PlayerResponse | null>(null);
   const [discarding, setDiscarding] = useState(false);
   const { setError } = useContext(ErrorContext);
 
@@ -80,14 +83,25 @@ export function PlayerAnsweringScreen() {
   /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {
     setSelectedCards(cards);
-    if (cards.length === prompt?.pick) {
-      await submitPlayerResponse(lobby, turn, player, cards).catch((e: any) =>
-        setError(e),
-      );
-    } else {
-      await cancelPlayerResponse(lobby, turn, player).catch((e: any) =>
-        setError(e),
-      );
+    try {
+      if (cards.length === prompt?.pick) {
+        await submitPlayerResponse(lobby, turn, player, cards);
+      } else {
+        await cancelPlayerResponse(lobby, turn, player);
+      }
+    } catch (e: any) {
+      setError(e);
+    }
+  }
+
+  async function handleBeginDiscard() {
+    // cancel the current response while we are discarding:
+    setDiscarding(true);
+    if (response) setTempResponse(response);
+    try {
+      await cancelPlayerResponse(lobby, turn, player);
+    } catch (e: any) {
+      setError(e);
     }
   }
 
@@ -97,6 +111,7 @@ export function PlayerAnsweringScreen() {
         // TODO: combine discard and discardImmediately
         await discardCards(lobby, turn, player.uid, discardedCards);
         await discardImmediately(lobby);
+        await restoreResponse();
       } catch (e: any) {
         setError(e);
       } finally {
@@ -105,15 +120,30 @@ export function PlayerAnsweringScreen() {
       }
     }
   }
+
   function selectDiscardAll() {
     const allDiscardable = hand.filter(
       (c1) => !selectedCards.find((c2) => c1.id === c2.id),
     );
     setDiscardedCards(allDiscardable);
   }
-  function handleCancelDiscard() {
+
+  async function handleCancelDiscard() {
     setDiscardedCards([]);
     setDiscarding(false);
+    await restoreResponse();
+  }
+
+  /** Restore response that was temporarily cancelled during discard. */
+  async function restoreResponse() {
+    if (tempRsponse) {
+      try {
+        await submitPlayerResponse(lobby, turn, player, tempRsponse.cards);
+        setTempResponse(null);
+      } catch (e: any) {
+        setError(e);
+      }
+    }
   }
 
   // Cancel discard if lobby settings change:
@@ -154,7 +184,7 @@ export function PlayerAnsweringScreen() {
           selection={selectedCards}
           discarding={discarding}
           discardedCards={discardedCards}
-          onBeginDiscard={() => setDiscarding(true)}
+          onBeginDiscard={() => handleBeginDiscard()}
           onSubmitDiscard={() => handleSubmitDiscard()}
           onCancelDiscard={() => handleCancelDiscard()}
           onSetDiscardAll={() => selectDiscardAll()}
