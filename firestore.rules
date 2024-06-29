@@ -31,14 +31,20 @@ service cloud.firestore {
     }
     // Checks that the user actually has the cards they want to submit.
     function userHasCards(lobby) {
-      // Can't iterate arrays, so will only check the first card:
-      let card = request.resource.data.cards[0];
-      // TODO: users could potentially hack their 2nd & 3rd card, lol.
-      return exists(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid)/hand/$(card.id));
+      let player = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid));
+      let hand = player.data['hand'];
+      // Can't iterate arrays, so will only check the first few cards:
+      let cards = request.resource.data.cards;
+      return (hand[cards[0].id].content == cards[0].content) &&
+             (cards.size() < 2 || hand[cards[1].id].content == cards[1].content) &&
+             (cards.size() < 3 || hand[cards[2].id].content == cards[2].content) &&
+             (cards.size() < 4 || hand[cards[3].id].content == cards[3].content) &&
+             (cards.size() < 5 || hand[cards[4].id].content == cards[4].content) &&
+             (cards.size() < 6 || hand[cards[5].id].content == cards[5].content);
     }
-    function isCardContentUnmodified(lobby, userID, cardID) {
-      let card = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID)/hand/$(cardID)).data;
-      return request.resource.data['content'] == card['content'];
+    function isHandContentUnmodified(lobby, userID) {
+      let player = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
+      return request.resource.data['hand'] == player.data['hand'];
     }
     // Don't allow changing a player's score
     function isScoreUnchanged(lobby, userID) {
@@ -88,17 +94,8 @@ service cloud.firestore {
         // Don't allow creating or deleting, to preserve history.
         allow read: if isLoggedIn() && request.auth.uid == userID;
         allow update: if isLoggedIn() && request.auth.uid == userID
-                      && isScoreUnchanged(lobby, userID) && userIsNotKicked(lobby, userID);
-
-        match /hand/{cardID} {
-          // Allow players to update some fields:
-          allow update: if isLoggedIn() && request.auth.uid == userID
-                        && isCardContentUnmodified(lobby, userID, cardID);
-        }
-        match /discarded/{cardID} {
-          // Allow players to read & write their own discard:
-          allow read, write: if isLoggedIn() && request.auth.uid == userID;
-        }
+                      && isScoreUnchanged(lobby, userID) && userIsNotKicked(lobby, userID)
+                      && isHandContentUnmodified(lobby, userID);
       }
 
       match /deck_prompts/{document=**} {

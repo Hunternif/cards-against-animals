@@ -12,10 +12,8 @@ import {
 import {
   playerResponseConverter,
   promptCardInGameConverter,
-  responseCardInGameConverter,
-  responseCardInHandConverter,
   turnConverter,
-  voteConverter
+  voteConverter,
 } from '../../shared/firestore-converters';
 import {
   GameLobby,
@@ -65,25 +63,6 @@ export function useAllTurnsOnce(lobby: GameLobby) {
   );
 }
 
-/** Returns and subscribes to current user's player hand in the current turn
- * in the lobby. */
-export function usePlayerHand(lobby: GameLobby, userID: string) {
-  return useCollectionData(
-    collection(lobbiesRef, lobby.id, 'players', userID, 'hand').withConverter(
-      responseCardInHandConverter,
-    ),
-  );
-}
-
-/** Returns to current user's player hand in the current turn in the lobby. */
-export function usePlayerHandOnce(lobby: GameLobby, userID: string) {
-  return useCollectionDataOnce(
-    collection(lobbiesRef, lobby.id, 'players', userID, 'hand').withConverter(
-      responseCardInHandConverter,
-    ),
-  );
-}
-
 /** Returns and subscribes to current user's player response that they played
  * in the current turn in the lobby. */
 export function usePlayerResponse(
@@ -128,24 +107,6 @@ export function useAllPlayerResponsesOnce(lobby: GameLobby, turn: GameTurn) {
       turn.id,
       'player_responses',
     ).withConverter(playerResponseConverter),
-  );
-}
-
-/** Returns and subscribes to current user's player discarded cards
- * in the current turn in the lobby. */
-export function usePlayerDiscard(
-  lobby: GameLobby,
-  turn: GameTurn,
-  userID: string,
-) {
-  return useCollectionDataNonNull(
-    collection(
-      lobbiesRef,
-      lobby.id,
-      'players',
-      userID,
-      'discarded',
-    ).withConverter(responseCardInGameConverter),
   );
 }
 

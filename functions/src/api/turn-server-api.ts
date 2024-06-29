@@ -31,7 +31,6 @@ import {
   getNewPlayerDiscard,
   getPlayerDiscard,
   getPlayerHand,
-  getPlayerHandRef,
   getPlayerResponse,
   getResponseLikeCount,
   getTurn,
@@ -132,7 +131,7 @@ export async function discardNowAndDealCardsToPlayer(
   // 2. Remove discarded cards from hand;
   // 3. Deal new cards.
   const player = await getPlayerThrows(lobby.id, userID);
-  const newDiscard = await getNewPlayerDiscard(lobby.id, userID);
+  const newDiscard = await getNewPlayerDiscard(lobby.id, player);
   if (!(await payDiscardCost(lobby.id, turn, player, newDiscard))) {
     return;
   }
@@ -161,15 +160,15 @@ export async function dealCardsToPlayer(
     .collection(`lobbies/${lobby.id}/deck_responses`)
     .withConverter(responseCardInGameConverter);
   const player = await getPlayerThrows(lobby.id, userID);
-  const newHand = new Array<ResponseCardInGame>();
-  const oldHand = await getPlayerHand(lobby.id, userID);
+  const newHand = new Array<ResponseCardInHand>();
+  const oldHand = await getPlayerHand(lobby.id, player);
   const handToDiscard = new Array<ResponseCardInGame>();
   const isNewTurn = lastTurn?.id !== newTurn.id;
   if (lastTurn) {
     const lastResponse = await getPlayerResponse(lobby.id, lastTurn.id, userID);
     // TODO: optimize this, remove discards outside of this function.
     // TODO: maybe store all pool of discarded cards in a game somewhere.
-    const lastDiscard = await getPlayerDiscard(lobby.id, userID);
+    const lastDiscard = await getPlayerDiscard(lobby.id, player);
     for (const oldCard of oldHand) {
       if (lastDiscard.find((c) => c.id === oldCard.id)) {
         // discard cards that are still in the hand:
@@ -192,41 +191,33 @@ export async function dealCardsToPlayer(
   const cardsPerPerson = lobby.settings.cards_per_person;
   const totalCardsNeeded = Math.max(0, cardsPerPerson - newHand.length);
 
-  // Fetch new cards:
-  const dealTime = new Date();
-  const newCards =
-    totalCardsNeeded <= 0
-      ? []
-      : (
-          await deckResponsesRef
-            .orderBy('random_index', 'desc')
-            .limit(totalCardsNeeded)
-            .get()
-        ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
-  // If we ran out of cards, sorry!
-  if (newCards.length > 0) {
-    player.time_dealt_cards = dealTime;
-    await updatePlayer(lobby.id, player);
-  }
-
-  // Remove dealt cards from the deck and upload player data & hand:
-  const handRef = getPlayerHandRef(lobby.id, userID);
   await db.runTransaction(async (transaction) => {
+    // Fetch new cards:
+    const dealTime = new Date();
+    const newCards =
+      totalCardsNeeded <= 0
+        ? []
+        : (
+            await transaction.get(
+              deckResponsesRef
+                .orderBy('random_index', 'desc')
+                .limit(totalCardsNeeded),
+            )
+          ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
+    // Add cards to the new player hand
+    newHand.push(...newCards);
+    player.hand = new Map(newHand.map((c) => [c.id, c]));
+    // If we ran out of cards, sorry!
+    if (newCards.length > 0) {
+      player.time_dealt_cards = dealTime;
+    }
+    // Remove dealt cards from the deck and upload player data & hand:
     for (const card of newCards) {
       transaction.delete(deckResponsesRef.doc(card.id));
     }
-    for (const card of handToDiscard) {
-      transaction.delete(handRef.doc(card.id));
-    }
+    await updatePlayer(lobby.id, player, transaction);
+    logger.info(`Dealt ${newCards.length} cards to player ${userID}`);
   });
-  // Firebase Bug?? Doing it in 1 transaction is not atomic.
-  // See https://stackoverflow.com/questions/78523307
-  await db.runTransaction(async (transaction) => {
-    for (const card of newCards) {
-      transaction.set(handRef.doc(card.id), card);
-    }
-  });
-  logger.info(`Dealt ${newCards.length} cards to player ${userID}`);
 }
 
 /** Updates all player's scores and likes from this turn, if it has ended. */

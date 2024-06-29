@@ -81,7 +81,7 @@ export async function logInteractionsInReadingPhase(
       // Skip judge, they didn't see their hand:
       continue;
     }
-    const hand = await getPlayerHand(lobbyID, player.uid);
+    const hand = await getPlayerHand(lobbyID, player);
     viewedResponses.push(...hand);
   }
   await logCardInteractions(lobby, {

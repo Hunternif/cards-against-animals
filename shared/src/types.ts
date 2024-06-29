@@ -107,12 +107,11 @@ export class PlayerInLobby {
    * This helps keep track of new cards. */
   time_dealt_cards: Date = new Date();
 
-  /** Cards in the player's hand, including `current_response`.
-   * Must be fetched separately from a Firebase subcollection. */
-  hand: Array<ResponseCardInHand> = [];
-  /** Cards that were discarded throughout the game.
-   * Must be fetched separately from a Firebase subcollection. */
-  discarded: Array<ResponseCardInHand> = [];
+  /** Cards in the player's hand. Maps card id to data. */
+  hand: Map<string, ResponseCardInHand> = new Map();
+  /** Cards that were discarded throughout the game. Maps card id to data. */
+
+  discarded: Map<string, ResponseCardInGame> = new Map();
 
   /** Whenever the player downvotes a card, it goes here.
    * Map field on the document, maps unique card id to card data. */

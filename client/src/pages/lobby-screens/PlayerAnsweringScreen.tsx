@@ -1,11 +1,13 @@
 import { CSSProperties, useContext, useEffect, useState } from 'react';
-import { ErrorContext } from '../../components/ErrorContext';
-import { CenteredLayout } from '../../components/layout/CenteredLayout';
-import { ScreenSizeSwitch } from '../../components/layout/ScreenSizeSwitch';
+import { discardImmediately } from '../../api/turn/turn-discard-api';
 import {
   cancelPlayerResponse,
   submitPlayerResponse,
 } from '../../api/turn/turn-response-api';
+import { ErrorContext } from '../../components/ErrorContext';
+import { CenteredLayout } from '../../components/layout/CenteredLayout';
+import { ScreenSizeSwitch } from '../../components/layout/ScreenSizeSwitch';
+import { useSoundOnResponse } from '../../hooks/sound-hooks';
 import { PlayerResponse, ResponseCardInGame } from '../../shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
@@ -13,11 +15,6 @@ import { GameControlRow } from './game-components/GameControlRow';
 import { GameHand } from './game-components/GameHand';
 import { GameMiniResponses } from './game-components/GameMiniResponses';
 import { ResponseCount } from './game-components/ResponseCount';
-import { useSoundOnResponse } from '../../hooks/sound-hooks';
-import {
-  discardCards,
-  discardImmediately,
-} from '../../api/turn/turn-discard-api';
 
 const containerStyle: CSSProperties = {
   display: 'flex',
@@ -108,9 +105,7 @@ export function PlayerAnsweringScreen() {
   async function handleSubmitDiscard() {
     if (discardedCards.length > 0) {
       try {
-        // TODO: combine discard and discardImmediately
-        await discardCards(lobby, player.uid, discardedCards);
-        await discardImmediately(lobby);
+        await discardImmediately(lobby, player, discardedCards);
         await restoreResponse();
       } catch (e: any) {
         setError(e);

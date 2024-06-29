@@ -1,3 +1,4 @@
+import { Transaction } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { db, lobbiesRef } from '../firebase-server';
 import {
@@ -35,10 +36,18 @@ export async function updateLobby(lobby: GameLobby): Promise<void> {
 }
 
 /** Updates player data in lobby in Firestore. */
-export async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
-  await getPlayersRef(lobbyID)
-    .doc(player.uid)
-    .update(playerConverter.toFirestore(player));
+export async function updatePlayer(
+  lobbyID: string,
+  player: PlayerInLobby,
+  transaction?: Transaction,
+) {
+  const ref = getPlayersRef(lobbyID).doc(player.uid);
+  const data = playerConverter.toFirestore(player);
+  if (transaction) {
+    transaction.update(ref, data);
+  } else {
+    await ref.update(data);
+  }
 }
 
 /** Find player in this lobby. */

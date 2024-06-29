@@ -6,8 +6,7 @@ import {
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
-  ResponseCardInGame,
-  ResponseCardInHand,
+  ResponseCardInHand
 } from "../../../shared/types";
 
 /** State of the game in progress. */
@@ -38,8 +37,6 @@ export interface GameContextState {
   canControlLobby: boolean,
   /** Responses submitted by all players this turn. */
   responses: PlayerResponse[],
-  /** Cards discarded by the current player this turn. */
-  playerDiscard: ResponseCardInGame[],
 }
 
 export const GameContext = createContext<GameContextState | undefined>(

@@ -30,14 +30,6 @@ export function getTurnRef(lobbyID: string, turnID: string) {
   return doc(getTurnsRef(lobbyID), turnID);
 }
 
-/** Returns Firestore subcollection reference of player responses in turn. */
-export function getPlayerHandRef(lobbyID: string, userID: string) {
-  const playerRef = getPlayerRef(lobbyID, userID);
-  return collection(playerRef, 'hand').withConverter(
-    responseCardInGameConverter,
-  );
-}
-
 /** Fetches all turns that occurred in the lobby. */
 export async function getAllTurns(lobbyID: string): Promise<Array<GameTurn>> {
   return (await getDocs(getTurnsRef(lobbyID))).docs.map((d) => d.data());
@@ -57,17 +49,4 @@ export async function updateTurn(
   } else {
     await updateDoc(ref, data);
   }
-}
-
-/** Updates Firestore document with this turn data.
- * Doesn't update subcollections! */
-export async function updateHandCard(
-  lobbyID: string,
-  userID: string,
-  card: ResponseCardInGame,
-) {
-  await updateDoc(
-    doc(getPlayerHandRef(lobbyID, userID), card.id),
-    responseCardInGameConverter.toFirestore(card),
-  );
 }

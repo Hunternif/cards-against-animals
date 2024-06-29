@@ -86,15 +86,13 @@ function mapSettings(data: any): LobbySettings {
 
 export const playerConverter: FConverter<PlayerInLobby> = {
   toFirestore: (player: PlayerInLobby) =>
-    copyFields2(
-      player,
-      {
-        time_joined: FTimestamp.fromDate(player.time_joined),
-        time_dealt_cards: FTimestamp.fromDate(player.time_dealt_cards),
-        downvoted: mapToObject(player.downvoted, (c) => copyFields(c, [])),
-      },
-      ['hand', 'discarded'],
-    ),
+    copyFields2(player, {
+      time_joined: FTimestamp.fromDate(player.time_joined),
+      time_dealt_cards: FTimestamp.fromDate(player.time_dealt_cards),
+      hand: mapToObject(player.hand, (c) => copyFields(c, [])),
+      discarded: mapToObject(player.discarded, (c) => copyFields(c, [])),
+      downvoted: mapToObject(player.downvoted, (c) => copyFields(c, [])),
+    }),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PlayerInLobby(
@@ -114,6 +112,8 @@ export const playerConverter: FConverter<PlayerInLobby> = {
     ret.time_dealt_cards =
       (data.time_dealt_cards as FTimestamp | null)?.toDate() ?? new Date();
     // The 'Map' field type is a plain JS object:
+    ret.hand = objectToMap(data.hand ?? {}, mapResponseCardInHand);
+    ret.discarded = objectToMap(data.discarded ?? {}, mapResponseCardInGame);
     ret.downvoted = objectToMap(data.downvoted ?? {}, mapResponseCardInGame);
     return ret;
   },
@@ -237,6 +237,13 @@ function mapResponseCardInGame(data: any): ResponseCardInGame {
   );
 }
 
+function mapResponseCardInHand(data: any): ResponseCardInHand {
+  const baseCard = mapResponseCardInGame(data);
+  const time_received =
+    (data.time_received as FTimestamp | null)?.toDate() ?? new Date();
+  return ResponseCardInHand.create(baseCard, time_received);
+}
+
 export const userConverter: FConverter<CAAUser> = {
   toFirestore: (user: CAAUser) => copyFields(user),
   fromFirestore: (snapshot: FDocSnapshot) => {
@@ -356,11 +363,7 @@ export const responseCardInHandConverter: FConverter<ResponseCardInHand> = {
       ['type'],
     ),
   fromFirestore: (snapshot: FDocSnapshot) => {
-    const data = snapshot.data();
-    const baseCard = mapResponseCardInGame(data);
-    const time_received =
-      (data.time_received as FTimestamp | null)?.toDate() ?? new Date();
-    return ResponseCardInHand.create(baseCard, time_received);
+    return mapResponseCardInHand(snapshot.data());
   },
 };
 
