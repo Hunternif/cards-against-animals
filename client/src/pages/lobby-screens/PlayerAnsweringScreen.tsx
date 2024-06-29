@@ -107,12 +107,12 @@ export function PlayerAnsweringScreen() {
   async function handleSubmitDiscard() {
     if (discardedCards.length > 0) {
       try {
+        setDiscarding(false);
         await discardImmediately(lobby, player, discardedCards);
         await restoreResponse();
       } catch (e: any) {
         setError(e);
       } finally {
-        setDiscarding(false);
         setDiscardedCards([]);
       }
     }
