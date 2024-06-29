@@ -25,7 +25,10 @@ export function useSoundboardSound() {
   // TODO: play only new sounds on page reload
   useEffect(() => {
     if (sounds && sounds.length > 0) {
-      const lastSound = sounds[sounds.length - 1];
+      const soundsByTime = sounds
+        .slice()
+        .sort((a, b) => a.time.getTime() - b.time.getTime());
+      const lastSound = soundsByTime[soundsByTime.length - 1];
       const url = getSoundUrl(lastSound.sound_id);
       if (url) {
         const audio = new Audio(url);
