@@ -83,7 +83,7 @@ export function PlayerAnsweringScreen() {
     try {
       if (cards.length === prompt?.pick) {
         await submitPlayerResponse(lobby, turn, player, cards);
-      } else {
+      } else if (response) {
         await cancelPlayerResponse(lobby, turn, player);
       }
     } catch (e: any) {
@@ -94,11 +94,13 @@ export function PlayerAnsweringScreen() {
   async function handleBeginDiscard() {
     // cancel the current response while we are discarding:
     setDiscarding(true);
-    if (response) setTempResponse(response);
-    try {
-      await cancelPlayerResponse(lobby, turn, player);
-    } catch (e: any) {
-      setError(e);
+    if (response) {
+      setTempResponse(response);
+      try {
+        await cancelPlayerResponse(lobby, turn, player);
+      } catch (e: any) {
+        setError(e);
+      }
     }
   }
 
