@@ -11,6 +11,7 @@ import {
 interface ResponseCardProps {
   card: ResponseCardInGame;
   justIn?: boolean; // Card was just dealt
+  downvoted?: boolean;
   selectable?: boolean;
   /** Which card it is in your submission: #1, #2 etc. Starts from 0. */
   selectedIndex?: number;
@@ -26,6 +27,7 @@ interface ResponseCardProps {
 export function CardResponse({
   card,
   justIn,
+  downvoted,
   selectable,
   selectedIndex,
   showIndex,
@@ -42,7 +44,7 @@ export function CardResponse({
   classes.push(selected ? 'selected' : 'unselected');
   if (discarding) classes.push('discarding');
   if (discarded) classes.push('discarded');
-  if (card.downvoted) classes.push('downvoted');
+  if (downvoted) classes.push('downvoted');
   if (card.action) classes.push('action-card');
 
   function handleClick() {
@@ -54,7 +56,7 @@ export function CardResponse({
   }
 
   async function handleDownvote() {
-    if (onToggleDownvote && selectable) onToggleDownvote(!card.downvoted);
+    if (onToggleDownvote && selectable) onToggleDownvote(!downvoted);
   }
 
   return (

@@ -1,10 +1,6 @@
 import * as logger from 'firebase-functions/logger';
 import { assertExhaustive } from '../shared/utils';
-import {
-  getLobby,
-  getOnlinePlayers,
-  getPlayersRef,
-} from './lobby-server-repository';
+import { getLobby, getOnlinePlayers } from './lobby-server-repository';
 import {
   getAllPlayerResponses,
   getPlayerHand,
@@ -228,27 +224,19 @@ export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
   });
 }
 
-/** Iterates through all turns and all player's cards, checks for downvotes,
+/** Iterates through all of player's downvoted cards
  * and updates ratings on the card in deck. */
 export async function logDownvotes(lobbyID: string) {
-  const downvotedCards = new Array<ResponseCardInGame>();
-  // get player IDs without loading them:
-  const playerSnaps = (await getPlayersRef(lobbyID).get()).docs;
-  for (const playerSnap of playerSnaps) {
-    const hand = await getPlayerHand(lobbyID, playerSnap.id);
-    for (const card of hand) {
-      if (card.downvoted && !downvotedCards.find((c) => c.id === card.id)) {
-        downvotedCards.push(card);
-      }
-    }
-  }
+  const players = await getOnlinePlayers(lobbyID);
   await db.runTransaction(async (transaction) => {
-    for (const card of downvotedCards) {
-      if (card.deck_id === GeneratedDeck.id) continue;
-      const cardRef = getDeckResponsesRef(card.deck_id).doc(
-        card.card_id_in_deck,
-      );
-      transaction.update(cardRef, { rating: FieldValue.increment(-1) });
+    for (const player of players) {
+      for (const card of player.downvoted.values()) {
+        if (card.deck_id === GeneratedDeck.id) continue;
+        const cardRef = getDeckResponsesRef(card.deck_id).doc(
+          card.card_id_in_deck,
+        );
+        transaction.update(cardRef, { rating: FieldValue.increment(-1) });
+      }
     }
   });
 }

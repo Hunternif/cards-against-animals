@@ -22,7 +22,13 @@ import {
   Vote,
   defaultLobbySettings,
 } from './types';
-import { copyFields, copyFields2, removeUndefined } from './utils';
+import {
+  copyFields,
+  copyFields2,
+  mapToObject,
+  objectToMap,
+  removeUndefined,
+} from './utils';
 
 export const lobbyConverter: FConverter<GameLobby> = {
   toFirestore: (lobby: GameLobby) => {
@@ -80,10 +86,15 @@ function mapSettings(data: any): LobbySettings {
 
 export const playerConverter: FConverter<PlayerInLobby> = {
   toFirestore: (player: PlayerInLobby) =>
-    copyFields2(player, {
-      time_joined: FTimestamp.fromDate(player.time_joined),
-      time_dealt_cards: FTimestamp.fromDate(player.time_dealt_cards),
-    }, ['hand', 'discarded']),
+    copyFields2(
+      player,
+      {
+        time_joined: FTimestamp.fromDate(player.time_joined),
+        time_dealt_cards: FTimestamp.fromDate(player.time_dealt_cards),
+        downvoted: mapToObject(player.downvoted, (c) => copyFields(c, [])),
+      },
+      ['hand', 'discarded'],
+    ),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PlayerInLobby(
@@ -102,6 +113,8 @@ export const playerConverter: FConverter<PlayerInLobby> = {
       (data.time_joined as FTimestamp | null)?.toDate() ?? new Date();
     ret.time_dealt_cards =
       (data.time_dealt_cards as FTimestamp | null)?.toDate() ?? new Date();
+    // The 'Map' field type is a plain JS object:
+    ret.downvoted = objectToMap(data.downvoted ?? {}, mapResponseCardInGame);
     return ret;
   },
 };
@@ -219,7 +232,6 @@ function mapResponseCardInGame(data: any): ResponseCardInGame {
     data.random_index ?? 0,
     data.content,
     data.rating ?? 0,
-    data.downvoted ?? false,
     data.tags ?? [],
     data.action,
   );
@@ -328,7 +340,6 @@ export const responseCardInGameConverter: FConverter<ResponseCardInGame> = {
       data.random_index ?? 0,
       data.content,
       data.rating ?? 0,
-      data.downvoted ?? false,
       data.tags ?? [],
       data.action,
     );

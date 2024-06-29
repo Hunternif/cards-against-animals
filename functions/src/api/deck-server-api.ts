@@ -86,7 +86,6 @@ export async function getAllResponsesForGame(
       getCardIndex(card, rng, settings),
       card.content,
       card.rating,
-      false,
       card.tags,
       card.action,
     );

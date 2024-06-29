@@ -114,6 +114,10 @@ export class PlayerInLobby {
    * Must be fetched separately from a Firebase subcollection. */
   discarded: Array<ResponseCardInHand> = [];
 
+  /** Whenever the player downvotes a card, it goes here.
+   * Map field on the document, maps unique card id to card data. */
+  downvoted: Map<string, ResponseCardInGame> = new Map();
+
   constructor(
     public uid: string,
     public name: string,
@@ -336,12 +340,6 @@ export class ResponseCardInGame implements CardInGame {
     public random_index: number,
     public content: string,
     public rating: number,
-    /**
-     * True if downvoted by the player who owns this card.
-     * Can be downvoted once per game. Downvoting decreases rating.
-     * TODO: maybe convert this downvote to a subcollection of Votes.
-     */
-    public downvoted: boolean,
     public tags: string[],
     public action?: ResponseAction,
   ) {}
@@ -362,7 +360,6 @@ export class ResponseCardInHand extends ResponseCardInGame {
       from.random_index,
       from.content,
       from.rating,
-      from.downvoted,
       from.tags,
       from.action,
     );

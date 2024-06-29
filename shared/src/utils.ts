@@ -48,3 +48,37 @@ export function stringComparator(a: string, b: string): number {
   if (a > b) return 1;
   return 0;
 }
+
+/**
+ * Maps plain JS object to a ES6 Map.
+ * @param obj
+ * @param mapper optional mapper function to convert values.
+ */
+export function objectToMap<T>(
+  obj: any,
+  mapper?: (val: any) => T,
+): Map<string, T> {
+  const map = new Map<string, T>();
+  for (const [key, val] of Object.entries(obj)) {
+    if (mapper) map.set(key, mapper(val));
+    else map.set(key, val as T);
+  }
+  return map;
+}
+
+/**
+ * Maps ES6 Map to a plain JS object.
+ * @param map must have string keys.
+ * @param mapper optional mapper function to convert values.
+ */
+export function mapToObject<T>(
+  map: Map<string, T>,
+  mapper?: (val: T) => any,
+): any {
+  const out: any = {};
+  for (const [key, val] of map) {
+    if (mapper) out[key] = mapper(val);
+    else out[key] = val;
+  }
+  return out;
+}

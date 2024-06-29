@@ -1,5 +1,5 @@
-import { collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
-import { voteConverter } from "../../shared/firestore-converters";
+import { collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import { voteConverter } from '../../shared/firestore-converters';
 import {
   GameLobby,
   GameTurn,
@@ -8,8 +8,9 @@ import {
   ResponseCardInGame,
   Vote,
   VoteChoice,
-} from "../../shared/types";
-import { getTurnRef, updateHandCard } from "./turn-repository";
+} from '../../shared/types';
+import { updatePlayer } from '../lobby/lobby-player-api';
+import { getTurnRef } from './turn-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -24,7 +25,7 @@ function getPromptVotesRef(
   promptCardID: string,
 ) {
   const turnRef = getTurnRef(lobbyID, turnID);
-  return collection(turnRef, "prompts", promptCardID, "votes").withConverter(
+  return collection(turnRef, 'prompts', promptCardID, 'votes').withConverter(
     voteConverter,
   );
 }
@@ -33,12 +34,16 @@ function getPromptVotesRef(
  * and recorded at the end of the game. */
 export async function toggleDownvoteCard(
   lobby: GameLobby,
-  userID: string,
+  player: PlayerInLobby,
   card: ResponseCardInGame,
   downvoted: boolean,
 ) {
-  card.downvoted = downvoted;
-  await updateHandCard(lobby.id, userID, card);
+  if (downvoted) {
+    player.downvoted.set(card.id, card);
+  } else {
+    player.downvoted.delete(card.id);
+  }
+  await updatePlayer(lobby.id, player);
 }
 
 /** Create/delete a "yes"/"no" vote for the given prompt from the current player.

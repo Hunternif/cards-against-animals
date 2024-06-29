@@ -114,7 +114,6 @@ export function AdminCopyCardsDialog({
   async function handleSubmit() {
     try {
       setSubmitting(true);
-      // TODO: create migration table
       const mergedDeck = mergeIntoDeck(
         targetDeck ?? new Deck(newDeckID, newDeckTitle),
         updatedCards,

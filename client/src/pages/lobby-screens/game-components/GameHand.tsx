@@ -1,27 +1,33 @@
-import { useContext } from "react";
-import { ErrorContext } from "../../../components/ErrorContext";
-import { toggleDownvoteCard } from "../../../api/turn/turn-vote-card-api";
-import { ResponseCardInGame, ResponseCardInHand } from "../../../shared/types";
-import { CardResponse } from "./CardResponse";
-import { useGameContext } from "./GameContext";
+import { useContext } from 'react';
+import { ErrorContext } from '../../../components/ErrorContext';
+import { toggleDownvoteCard } from '../../../api/turn/turn-vote-card-api';
+import { ResponseCardInGame, ResponseCardInHand } from '../../../shared/types';
+import { CardResponse } from './CardResponse';
+import { useGameContext } from './GameContext';
 
 interface HandProps {
-  selectedCards: ResponseCardInGame[],
-  setSelectedCards: (cards: ResponseCardInGame[]) => void,
-  discarding: boolean,
-  discardedCards: ResponseCardInGame[],
-  setDiscardedCards: (cards: ResponseCardInGame[]) => void,
+  selectedCards: ResponseCardInGame[];
+  setSelectedCards: (cards: ResponseCardInGame[]) => void;
+  discarding: boolean;
+  discardedCards: ResponseCardInGame[];
+  setDiscardedCards: (cards: ResponseCardInGame[]) => void;
 }
 
 /** Displays cards that the player has on hand */
 export function GameHand({
-  selectedCards, setSelectedCards,
-  discarding, discardedCards, setDiscardedCards,
+  selectedCards,
+  setSelectedCards,
+  discarding,
+  discardedCards,
+  setDiscardedCards,
 }: HandProps) {
   const { lobby, player, hand, prompt } = useGameContext();
-  const handSorted = hand.sort((c1, c2) =>
-    c1.random_index + c1.time_received.getTime() -
-    (c2.random_index + c2.time_received.getTime()));
+  const handSorted = hand.sort(
+    (c1, c2) =>
+      c1.random_index +
+      c1.time_received.getTime() -
+      (c2.random_index + c2.time_received.getTime()),
+  );
   const pick = prompt?.pick ?? 0;
   const isHandSelectable = pick > 0;
   const { setError } = useContext(ErrorContext);
@@ -54,8 +60,9 @@ export function GameHand({
   }
 
   async function handleDownvote(card: ResponseCardInHand, downvoted: boolean) {
-    await toggleDownvoteCard(lobby, player.uid, card, downvoted)
-      .catch((e: any) => setError(e));
+    await toggleDownvoteCard(lobby, player, card, downvoted).catch((e: any) =>
+      setError(e),
+    );
   }
 
   function getIsDiscarded(card: ResponseCardInHand): boolean {
@@ -92,29 +99,33 @@ export function GameHand({
         isSelectable = false;
       }
     }
-    return <CardResponse key={card.id} card={card} justIn={isNew}
-      selectable={isSelectable}
-      selectedIndex={getSelectedIndex(card)}
-      showIndex={pick > 1}
-      onToggle={(selected) => {
-        if (isHandSelectable) {
-          if (selected) {
-            selectCard(card);
-            if (isDiscarded) {
-              undiscardCard(card);
-            }
+    return (
+      <CardResponse
+        key={card.id}
+        card={card}
+        justIn={isNew}
+        downvoted={player.downvoted.has(card.id)}
+        selectable={isSelectable}
+        selectedIndex={getSelectedIndex(card)}
+        showIndex={pick > 1}
+        onToggle={(selected) => {
+          if (isHandSelectable) {
+            if (selected) {
+              selectCard(card);
+              if (isDiscarded) {
+                undiscardCard(card);
+              }
+            } else deselectCard(card);
           }
-          else deselectCard(card);
-        }
-      }}
-      onToggleDownvote={(downvoted) => handleDownvote(card, downvoted)}
-      discarding={!isSelected && discarding}
-      discarded={isDiscarded}
-      onToggleDiscard={(discarded) => {
-        if (discarded) discardCard(card);
-        else undiscardCard(card);
-      }}
-    />
-  }
-  );
+        }}
+        onToggleDownvote={(downvoted) => handleDownvote(card, downvoted)}
+        discarding={!isSelected && discarding}
+        discarded={isDiscarded}
+        onToggleDiscard={(discarded) => {
+          if (discarded) discardCard(card);
+          else undiscardCard(card);
+        }}
+      />
+    );
+  });
 }
