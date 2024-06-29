@@ -144,7 +144,7 @@ service cloud.firestore {
         }
         
         match /sounds/{document=**} {
-          allow create: if isLoggedIn() && userIsActivePlayer(lobby);
+          allow create, update: if isLoggedIn() && userIsActivePlayer(lobby);
         }
       }
     }

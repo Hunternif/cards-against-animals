@@ -402,7 +402,7 @@ export const soundEventConverter: FConverter<SoundEvent> = {
       data.player_uid,
       data.player_name,
       data.sound_id,
-      (data.time as FTimestamp).toDate(),
+      (data.time as FTimestamp | null)?.toDate(),
     );
   },
 };

@@ -1,6 +1,6 @@
 import { CSSProperties, useContext } from 'react';
 import {
-  postSound,
+  postSoundEvent,
   soundBruh,
   soundClownHonk,
   soundCum,
@@ -16,6 +16,7 @@ import { Twemoji } from '../../../components/Twemoji';
 const style: CSSProperties = {
   display: 'flex',
   gap: '0.5em',
+  opacity: '50%',
 };
 
 export function Soundboard() {
@@ -24,7 +25,7 @@ export function Soundboard() {
 
   async function handleSound(soundID: string) {
     try {
-      await postSound(lobby, turn, player, soundID);
+      await postSoundEvent(lobby, turn, player, soundID);
     } catch (e: any) {
       setError(e);
     }

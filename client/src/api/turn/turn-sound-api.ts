@@ -30,15 +30,14 @@ export async function getSounds(
 }
 
 /** Sends a soundboard sound to everyone in the turn. */
-export async function postSound(
+export async function postSoundEvent(
   lobby: GameLobby,
   turn: GameTurn,
   player: PlayerInLobby,
   soundID: string,
 ) {
-  const sound = new SoundEvent(player.uid, player.name, soundID, new Date());
-  const id = `${soundID}_${sound.time.getTime()}`;
-  await setDoc(doc(getSoundsRef(lobby.id, turn.id), id), sound);
+  const sound = new SoundEvent(player.uid, player.name, soundID);
+  await setDoc(doc(getSoundsRef(lobby.id, turn.id), player.uid), sound);
 }
 
 export const soundBruh = 'bruh';
@@ -58,6 +57,11 @@ const sounds = new Map<string, string>([
   [soundYikes, yikes],
 ]);
 
-export function getSoundUrl(soundID: string): string | null {
-  return sounds.get(soundID) ?? null;
+export function playSoundEvent(event: SoundEvent, volume: number = 0.1) {
+  const url = sounds.get(event.sound_id) ?? null;
+  if (url) {
+    const audio = new Audio(url);
+    audio.volume = volume;
+    audio.play();
+  }
 }
