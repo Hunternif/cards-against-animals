@@ -15,8 +15,10 @@ import { Twemoji } from '../../../components/Twemoji';
 
 const style: CSSProperties = {
   display: 'flex',
+  justifyContent: 'center',
   gap: '0.5em',
-  opacity: '50%',
+  opacity: '0.3',
+  flexBasis: '100%',
 };
 
 export function Soundboard() {

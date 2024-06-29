@@ -22,6 +22,7 @@ import { PlayerAnsweringScreen } from './PlayerAnsweringScreen';
 import { WinnerScreen } from './WinnerScreen';
 import { GameContext, GameContextState } from './game-components/GameContext';
 import { GameMenu } from './game-components/GameMenu';
+import { useSoundboardSound } from '../../hooks/sound-hooks';
 
 interface ScreenProps {
   lobby: GameLobby;
@@ -147,6 +148,7 @@ interface TurnProps {
 }
 
 function JudgeScreen({ turn }: TurnProps) {
+  useSoundboardSound();
   switch (turn.phase) {
     case 'new':
       return <JudgePickPromptScreen />;
@@ -162,6 +164,7 @@ function JudgeScreen({ turn }: TurnProps) {
 }
 
 function PlayerScreen({ turn }: TurnProps) {
+  useSoundboardSound();
   switch (turn.phase) {
     case 'new':
     case 'answering':
@@ -176,6 +179,7 @@ function PlayerScreen({ turn }: TurnProps) {
 }
 
 function SpectatorScreen({ turn }: TurnProps) {
+  useSoundboardSound();
   switch (turn.phase) {
     case 'new':
     case 'answering':

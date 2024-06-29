@@ -15,11 +15,11 @@ import { GameControlRow } from './game-components/GameControlRow';
 import { GameHand } from './game-components/GameHand';
 import { GameMiniResponses } from './game-components/GameMiniResponses';
 import { ResponseCount } from './game-components/ResponseCount';
+import { Soundboard } from './game-components/Soundboard';
 
 const containerStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'flex-start',
   justifyContent: 'space-between',
 };
 const rowStyle: CSSProperties = {
@@ -196,6 +196,7 @@ export function PlayerAnsweringScreen() {
           setDiscardedCards={setDiscardedCards}
         />
       </div>
+      <Soundboard />
     </CenteredLayout>
   );
 }

@@ -5,7 +5,6 @@ import { revealPlayerResponse } from '../../api/turn/turn-response-api';
 import { GameButton } from '../../components/Buttons';
 import { ErrorContext } from '../../components/ErrorContext';
 import { GameLayout } from '../../components/layout/GameLayout';
-import { useSoundboardSound } from '../../hooks/sound-hooks';
 import { PlayerResponse } from '../../shared/types';
 import { assertExhaustive } from '../../shared/utils';
 import { CardOffsetContextProvider } from './game-components/CardOffsetContext';
@@ -90,9 +89,6 @@ export function CardReadingScreen() {
     );
   }
 
-  // Play soundboard sounds:
-  useSoundboardSound();
-
   return (
     <GameLayout className="card-reading-screen reading-layout-container">
       <header className="reading-control-row">
@@ -152,7 +148,7 @@ export function CardReadingScreen() {
             </GameButton>
           </>
         )}
-        {!isJudge && <Soundboard />}
+        <Soundboard />
       </footer>
     </GameLayout>
   );

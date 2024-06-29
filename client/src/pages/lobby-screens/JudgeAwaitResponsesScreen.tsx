@@ -11,6 +11,7 @@ import { CardPromptWithCzar } from "./game-components/CardPrompt";
 import { useGameContext } from "./game-components/GameContext";
 import { MiniCardResponse } from "./game-components/MiniCardResponse";
 import { ResponseCount } from "./game-components/ResponseCount";
+import { Soundboard } from "./game-components/Soundboard";
 
 
 // const dummyPlayer = new PlayerInLobby("01", "Dummy");
@@ -66,6 +67,7 @@ export function JudgeAwaitResponsesScreen() {
         <span>All players responded!</span>
         <GameButton accent onClick={handleNext}>Next</GameButton>
       </>)}
+      <Soundboard />
     </footer>
   </GameLayout>;
 }

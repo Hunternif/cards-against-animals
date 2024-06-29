@@ -1,26 +1,25 @@
 import confetti from 'canvas-confetti';
 import { useContext, useState } from 'react';
-import { GameButton } from '../../components/Buttons';
-import { Delay } from '../../components/Delay';
-import { ErrorContext } from '../../components/ErrorContext';
-import { IconHeartInline, IconStarInline } from '../../components/Icons';
-import { PlayerAvatar } from '../../components/PlayerAvatar';
-import { Timer } from '../../components/Timer';
-import { GameLayout } from '../../components/layout/GameLayout';
 import {
   checkIfShouldEndGame,
   endLobby,
   updateLobbySettings,
 } from '../../api/lobby/lobby-control-api';
 import { startNewTurn } from '../../api/turn/turn-control-api';
+import { GameButton } from '../../components/Buttons';
+import { ConfirmModal } from '../../components/ConfirmModal';
+import { Delay } from '../../components/Delay';
+import { ErrorContext } from '../../components/ErrorContext';
+import { IconHeartInline, IconStarInline } from '../../components/Icons';
+import { PlayerAvatar } from '../../components/PlayerAvatar';
+import { Timer } from '../../components/Timer';
+import { GameLayout } from '../../components/layout/GameLayout';
+import { useEffectOnce } from '../../hooks/ui-hooks';
 import { CardOffsetContextProvider } from './game-components/CardOffsetContext';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
 import { ResponseReading } from './game-components/ResponseReading';
-import { ConfirmModal } from '../../components/ConfirmModal';
-import { useEffectOnce } from '../../hooks/ui-hooks';
 import { Soundboard } from './game-components/Soundboard';
-import { useSoundboardSound } from '../../hooks/sound-hooks';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -72,9 +71,6 @@ export function WinnerScreen() {
   useEffectOnce(() => {
     confetti();
   });
-
-  // Play soundboard sounds:
-  useSoundboardSound();
 
   return (
     <>
