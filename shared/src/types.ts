@@ -422,3 +422,13 @@ export class DeckMigrationItem {
     public time_created?: Date,
   ) {}
 }
+
+/** When someone uses the soundboard */
+export class SoundEvent {
+  constructor(
+    public player_uid: string,
+    public player_name: string,
+    public sound_id: string,
+    public time: Date,
+  ) {}
+}

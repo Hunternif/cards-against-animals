@@ -19,6 +19,7 @@ import {
   ResponseCardInGame,
   ResponseCardInHand,
   ResponseDeckCard,
+  SoundEvent,
   Vote,
   defaultLobbySettings,
 } from './types';
@@ -386,6 +387,22 @@ export const deckMigrationConverter: FConverter<DeckMigrationItem> = {
       data.new_deck_id,
       data.new_card_id,
       time_created,
+    );
+  },
+};
+
+export const soundEventConverter: FConverter<SoundEvent> = {
+  toFirestore: (event: SoundEvent) =>
+    copyFields2(event, {
+      time: event.time ? FTimestamp.fromDate(event.time) : fServerTimestamp(),
+    }),
+  fromFirestore: (snapshot: FDocSnapshot) => {
+    const data = snapshot.data();
+    return new SoundEvent(
+      data.player_uid,
+      data.player_name,
+      data.sound_id,
+      (data.time as FTimestamp).toDate(),
     );
   },
 };
