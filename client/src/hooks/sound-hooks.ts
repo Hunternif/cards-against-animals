@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-import pop from '../assets/sounds/pop.mp3';
-import { useGameContext } from '../pages/lobby-screens/game-components/GameContext';
+import { useEffect, useRef, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { getSoundsRef, playSoundEvent } from '../api/turn/turn-sound-api';
-import { onSnapshot } from 'firebase/firestore';
+import pop from '../assets/sounds/pop.mp3';
+import { useGameContext } from '../pages/lobby-screens/game-components/GameContext';
 
 /** Plays a sound whenever a new response is added */
 export function useSoundOnResponse() {
@@ -23,15 +22,18 @@ export function useSoundOnResponse() {
 export function useSoundboardSound() {
   const { lobby, turn } = useGameContext();
   const [sounds] = useCollectionData(getSoundsRef(lobby.id, turn.id));
-  // TODO: stop playing previous sound form the current player.
+  const audioPerPlayer = useRef(new Map<string, HTMLAudioElement | null>());
+
   // TODO: play only new sounds on page reload
   useEffect(() => {
     if (sounds && sounds.length > 0) {
       const soundsByTime = sounds
         .slice()
         .sort((a, b) => (a.time?.getTime() ?? 0) - (b.time?.getTime() ?? 0));
-      const lastSound = soundsByTime[soundsByTime.length - 1];
-      playSoundEvent(lastSound);
+      const newSound = soundsByTime[soundsByTime.length - 1];
+      audioPerPlayer.current.get(newSound.player_uid)?.pause();
+      const audio = playSoundEvent(newSound);
+      audioPerPlayer.current.set(newSound.player_uid, audio);
     }
   }, [sounds]);
 }

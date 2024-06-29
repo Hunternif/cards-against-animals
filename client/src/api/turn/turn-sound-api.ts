@@ -57,11 +57,16 @@ const sounds = new Map<string, string>([
   [soundYikes, yikes],
 ]);
 
-export function playSoundEvent(event: SoundEvent, volume: number = 0.1) {
+export function playSoundEvent(
+  event: SoundEvent,
+  volume: number = 0.1,
+): HTMLAudioElement | null {
   const url = sounds.get(event.sound_id) ?? null;
   if (url) {
     const audio = new Audio(url);
     audio.volume = volume;
     audio.play();
+    return audio;
   }
+  return null;
 }
