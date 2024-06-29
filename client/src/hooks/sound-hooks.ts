@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { getSoundsRef, playSoundEvent } from '../api/turn/turn-sound-api';
+import { getSoundsRef, playSoundEvent } from '../api/sound-api';
 import pop from '../assets/sounds/pop.mp3';
 import { useGameContext } from '../pages/lobby-screens/game-components/GameContext';
 
@@ -20,8 +20,8 @@ export function useSoundOnResponse() {
 
 /** Plays a sound whenever someone uses the soundoard */
 export function useSoundboardSound() {
-  const { lobby, turn } = useGameContext();
-  const [sounds] = useCollectionData(getSoundsRef(lobby.id, turn.id));
+  const { lobby } = useGameContext();
+  const [sounds] = useCollectionData(getSoundsRef(lobby.id));
   const audioPerPlayer = useRef(new Map<string, HTMLAudioElement | null>());
 
   // TODO: play only new sounds on page reload

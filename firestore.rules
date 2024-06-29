@@ -142,10 +142,9 @@ service cloud.firestore {
                           // Liking yourself is allowed
           }
         }
-        
-        match /sounds/{document=**} {
-          allow create, update: if isLoggedIn() && userIsActivePlayer(lobby);
-        }
+      }
+      match /sounds/{document=**} {
+        allow create, update: if isLoggedIn() && userIsActivePlayer(lobby);
       }
     }
     match /users/{userID} {

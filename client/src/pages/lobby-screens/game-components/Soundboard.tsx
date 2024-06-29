@@ -7,11 +7,11 @@ import {
   soundMcUh,
   soundWow,
   soundYikes,
-} from '../../../api/turn/turn-sound-api';
+} from '../../../api/sound-api';
 import { GameButton } from '../../../components/Buttons';
-import { useGameContext } from './GameContext';
 import { ErrorContext } from '../../../components/ErrorContext';
 import { Twemoji } from '../../../components/Twemoji';
+import { useGameContext } from './GameContext';
 
 const style: CSSProperties = {
   display: 'flex',
@@ -22,12 +22,12 @@ const style: CSSProperties = {
 };
 
 export function Soundboard() {
-  const { lobby, turn, player } = useGameContext();
+  const { lobby, player } = useGameContext();
   const { setError } = useContext(ErrorContext);
 
   async function handleSound(soundID: string) {
     try {
-      await postSoundEvent(lobby, turn, player, soundID);
+      await postSoundEvent(lobby, player, soundID);
     } catch (e: any) {
       setError(e);
     }
