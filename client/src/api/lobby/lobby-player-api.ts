@@ -4,7 +4,9 @@ import {
   getCountFromServer,
   getDoc,
   getDocs,
+  query,
   updateDoc,
+  where,
 } from 'firebase/firestore';
 import { kickPlayerFun } from '../../firebase';
 import { playerConverter } from '../../shared/firestore-converters';
@@ -65,7 +67,15 @@ export async function getAllActivePlayersInLobby(
 }
 
 export async function getActivePlayerCount(lobbyID: string): Promise<number> {
-  return (await getCountFromServer(getPlayersRef(lobbyID))).data().count;
+  return (
+    await getCountFromServer(
+      query(
+        getPlayersRef(lobbyID),
+        where('role', '==', 'player'),
+        where('status', '==', 'online'),
+      ),
+    )
+  ).data().count;
 }
 
 /** Updates player status in the current game. */
