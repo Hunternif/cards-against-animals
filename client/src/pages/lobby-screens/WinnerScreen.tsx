@@ -1,24 +1,26 @@
-import confetti from "canvas-confetti";
-import { useContext, useState } from "react";
-import { GameButton } from "../../components/Buttons";
-import { Delay } from "../../components/Delay";
-import { ErrorContext } from "../../components/ErrorContext";
-import { IconHeartInline, IconStarInline } from "../../components/Icons";
-import { PlayerAvatar } from "../../components/PlayerAvatar";
-import { Timer } from "../../components/Timer";
-import { GameLayout } from "../../components/layout/GameLayout";
+import confetti from 'canvas-confetti';
+import { useContext, useState } from 'react';
+import { GameButton } from '../../components/Buttons';
+import { Delay } from '../../components/Delay';
+import { ErrorContext } from '../../components/ErrorContext';
+import { IconHeartInline, IconStarInline } from '../../components/Icons';
+import { PlayerAvatar } from '../../components/PlayerAvatar';
+import { Timer } from '../../components/Timer';
+import { GameLayout } from '../../components/layout/GameLayout';
 import {
   checkIfShouldEndGame,
   endLobby,
   updateLobbySettings,
-} from "../../api/lobby/lobby-control-api";
-import { startNewTurn } from "../../api/turn/turn-control-api";
-import { CardOffsetContextProvider } from "./game-components/CardOffsetContext";
-import { CardPromptWithCzar } from "./game-components/CardPrompt";
-import { useGameContext } from "./game-components/GameContext";
-import { ResponseReading } from "./game-components/ResponseReading";
-import { ConfirmModal } from "../../components/ConfirmModal";
-import { useEffectOnce } from "../../hooks/ui-hooks";
+} from '../../api/lobby/lobby-control-api';
+import { startNewTurn } from '../../api/turn/turn-control-api';
+import { CardOffsetContextProvider } from './game-components/CardOffsetContext';
+import { CardPromptWithCzar } from './game-components/CardPrompt';
+import { useGameContext } from './game-components/GameContext';
+import { ResponseReading } from './game-components/ResponseReading';
+import { ConfirmModal } from '../../components/ConfirmModal';
+import { useEffectOnce } from '../../hooks/ui-hooks';
+import { Soundboard } from './game-components/Soundboard';
+import { useSoundboardSound } from '../../hooks/sound-hooks';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -31,7 +33,7 @@ export function WinnerScreen() {
   const winner = players.find((p) => p.uid === turn.winner_uid);
 
   const winnerResponse = responses.find(
-    (r) => r.player_uid === turn.winner_uid
+    (r) => r.player_uid === turn.winner_uid,
   );
   const shouldEndNow = checkIfShouldEndGame(lobby, turn, players);
   const audienceAwardResponses = responses
@@ -54,7 +56,7 @@ export function WinnerScreen() {
     setExtending(true);
     lobby.settings.max_turns += Math.min(5, players.length);
     await updateLobbySettings(lobby.id, lobby.settings).catch((e) =>
-      setError(e)
+      setError(e),
     );
     await handleNewTurn();
   }
@@ -71,9 +73,11 @@ export function WinnerScreen() {
     confetti();
   });
 
+  // Play soundboard sounds:
+  useSoundboardSound();
+
   return (
     <>
-      
       {/* Add context to share offsets between responses */}
       <CardOffsetContextProvider>
         <GameLayout className="winner-screen">
@@ -130,15 +134,15 @@ export function WinnerScreen() {
               <Delay>
                 {extending || shouldEndNow ? (
                   <>
-                  <ConfirmModal
-        show={showEndModal}
-        onCancel={() => setShowEndModal(false)}
-        onConfirm={handleEndGame}
-        loading={ending}
-        loadingText="Ending game..."
-      >
-        End the game for everyone?
-      </ConfirmModal>
+                    <ConfirmModal
+                      show={showEndModal}
+                      onCancel={() => setShowEndModal(false)}
+                      onConfirm={handleEndGame}
+                      loading={ending}
+                      loadingText="Ending game..."
+                    >
+                      End the game for everyone?
+                    </ConfirmModal>
                     <GameButton
                       onClick={() => setShowEndModal(true)}
                       disabled={ending}
@@ -160,10 +164,10 @@ export function WinnerScreen() {
                     disabled={startingNewTurn}
                   >
                     {startingNewTurn ? (
-                      "Next turn..."
+                      'Next turn...'
                     ) : shouldAutoContinue ? (
                       <>
-                        Next turn in{" "}
+                        Next turn in{' '}
                         <b>
                           <Timer
                             onlySeconds
@@ -173,12 +177,13 @@ export function WinnerScreen() {
                         </b>
                       </>
                     ) : (
-                      "Next turn"
+                      'Next turn'
                     )}
                   </GameButton>
                 )}
               </Delay>
             )}
+            <Soundboard />
           </footer>
         </GameLayout>
       </CardOffsetContextProvider>

@@ -1,18 +1,18 @@
 import { useContext, useState } from 'react';
+import { chooseWinner, startNewTurn } from '../../api/turn/turn-control-api';
+import { toggleLikeResponse } from '../../api/turn/turn-like-api';
+import { revealPlayerResponse } from '../../api/turn/turn-response-api';
 import { GameButton } from '../../components/Buttons';
 import { ErrorContext } from '../../components/ErrorContext';
 import { GameLayout } from '../../components/layout/GameLayout';
-import { chooseWinner, startNewTurn } from '../../api/turn/turn-control-api';
+import { useSoundboardSound } from '../../hooks/sound-hooks';
 import { PlayerResponse } from '../../shared/types';
+import { assertExhaustive } from '../../shared/utils';
 import { CardOffsetContextProvider } from './game-components/CardOffsetContext';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
 import { ResponseReading } from './game-components/ResponseReading';
-import { assertExhaustive } from '../../shared/utils';
-import { revealPlayerResponse } from '../../api/turn/turn-response-api';
-import { toggleLikeResponse } from '../../api/turn/turn-like-api';
-import { postSound } from '../../api/turn/turn-sound-api';
-import { useSoundboardSound } from '../../hooks/sound-hooks';
+import { Soundboard } from './game-components/Soundboard';
 
 // const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);
 // const dummyResponse = new PlayerResponse("01", "Dummy", [dummyCard, dummyCard], 123, true);
@@ -90,14 +90,6 @@ export function CardReadingScreen() {
     );
   }
 
-  async function handleSoundYikes() {
-    try {
-      await postSound(lobby, turn, player, 'yikes');
-    } catch (e: any) {
-      setError(e);
-    }
-  }
-
   // Play soundboard sounds:
   useSoundboardSound();
 
@@ -160,7 +152,7 @@ export function CardReadingScreen() {
             </GameButton>
           </>
         )}
-        {!isJudge && <GameButton onClick={handleSoundYikes}>Yikes!</GameButton>}
+        {!isJudge && <Soundboard />}
       </footer>
     </GameLayout>
   );
