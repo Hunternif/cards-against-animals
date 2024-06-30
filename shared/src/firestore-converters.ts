@@ -394,7 +394,10 @@ export const deckMigrationConverter: FConverter<DeckMigrationItem> = {
 export const soundEventConverter: FConverter<SoundEvent> = {
   toFirestore: (event: SoundEvent) =>
     copyFields2(event, {
-      time: event.time ? FTimestamp.fromDate(event.time) : fServerTimestamp(),
+      time:
+        event.time.getTime() > 0
+          ? FTimestamp.fromDate(event.time)
+          : fServerTimestamp(),
     }),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();

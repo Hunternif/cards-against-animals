@@ -429,7 +429,8 @@ export class SoundEvent {
     public player_uid: string,
     public player_name: string,
     public sound_id: string,
-    public time?: Date,
+    /** 0 time means the server will populate it */
+    public time: Date = new Date(0),
   ) {}
 }
 

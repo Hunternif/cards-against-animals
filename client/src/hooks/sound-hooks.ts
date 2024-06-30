@@ -25,7 +25,7 @@ const deerConfetti = confetti.shapeFromText({ text: '🦌', scalar: deerSize });
 
 /** Plays a sound whenever someone uses the soundoard */
 export function useSoundboardSound() {
-  const { lobby } = useGameContext();
+  const { lobby, turn } = useGameContext();
   const [sounds] = useCollectionData(getSoundsRef(lobby.id));
   const audioPerPlayer = useRef(new Map<string, HTMLAudioElement | null>());
   const lastDeerTime = useRef(new Date());
@@ -35,8 +35,14 @@ export function useSoundboardSound() {
     if (sounds && sounds.length > 0) {
       const soundsByTime = sounds
         .slice()
-        .sort((a, b) => (a.time?.getTime() ?? 0) - (b.time?.getTime() ?? 0));
+        .sort((a, b) => a.time.getTime() - b.time.getTime());
       const newSound = soundsByTime[soundsByTime.length - 1];
+
+      // Ignore sounds from previous turns or phases:
+      if (newSound.time.getTime() < turn.phase_start_time.getTime()) {
+        return;
+      }
+
       audioPerPlayer.current.get(newSound.player_uid)?.pause();
       const audio = playSoundEvent(newSound);
       audioPerPlayer.current.set(newSound.player_uid, audio);
