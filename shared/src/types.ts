@@ -442,5 +442,5 @@ export type DBPresence = {
 /** Used in Firebase RTDB to report user's online status.
  * This type is used for writing the change, with a placeholder for time. */
 export type DBPresenceToWrite = Omit<DBPresence, 'last_changed'> & {
-  last_changed: Object; // placeholder for server timestamp
+  last_changed: object; // placeholder for server timestamp
 };
