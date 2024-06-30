@@ -31,6 +31,7 @@ Firebase requires a Firebase project, even when developing locally. To create a 
 To develop locally with emulators, you only need the feature `Emulators`. Otherwise, to deploy to production, you will need all these:
 ```
  (*) Firestore
+ (*) Realtime database
  (*) Functions
  (*) Hosting (Firebase hosting)
  (*) Emulators
@@ -45,6 +46,7 @@ The following emulators must be enabled:
  (*) Authentication Emulator
  (*) Functions Emulator
  (*) Firestore Emulator
+ (*) Database Emulator
  (*) Hosting Emulator
 ```
 
