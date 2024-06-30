@@ -1,31 +1,16 @@
-import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
+import { User } from "firebase/auth";
 import { useContext, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { signOut, useCAAUserOnce } from "../api/users-api";
 import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { CenteredLayout } from "../components/layout/CenteredLayout";
 import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth } from "../firebase";
-import { getOrCreateCAAUser, signOut, useCAAUserOnce } from "../api/users-api";
 import { AdminUserPill } from "./admin-screens/admin-components/AdminUserPill";
-
-function LogInBox() {
-  const { setError } = useContext(ErrorContext);
-  async function signInWithGoogle() {
-    try {
-      const provider = new GoogleAuthProvider();
-      const cred = await signInWithPopup(firebaseAuth, provider);
-      await getOrCreateCAAUser(cred.user.uid, cred.user.displayName ?? "New user");
-    } catch (e) {
-      setError(e);
-    }
-  }
-  return <CenteredLayout>
-    <button onClick={signInWithGoogle}>Sign in with Google</button>
-  </CenteredLayout>;
-}
+import { GoogleLogin } from "./lobby-screens/login-components/GoogleLogin";
 
 interface UserProps {
   user: User;
@@ -47,7 +32,7 @@ function AnonymousLoggedInView({ user }: UserProps) {
   return <CenteredLayout>
     <AccessDeniedView user={user} />
     <br />
-    <LogInBox />
+    <GoogleLogin />
   </CenteredLayout>;
 }
 
@@ -106,5 +91,5 @@ function AdminPageThrows() {
   const [user, loading] = useAuthState(firebaseAuth);
   if (loading) return <LoadingSpinner />
   if (user) return <LoggedInView user={user} />;
-  return <LogInBox />;
+  return <GoogleLogin />;
 }
