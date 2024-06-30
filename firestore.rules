@@ -44,7 +44,9 @@ service cloud.firestore {
     }
     function isHandContentUnmodified(lobby, userID) {
       let player = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
-      return request.resource.data['hand'] == player.data['hand'];
+      // When the player is first dealt cards, that could happen in parallel:
+      return request.resource.data['hand'].size() == 0 ||
+             request.resource.data['hand'] == player.data['hand'];
     }
     // Don't allow changing a player's score
     function isScoreUnchanged(lobby, userID) {
