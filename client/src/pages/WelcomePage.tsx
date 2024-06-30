@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ErrorContext } from '../components/ErrorContext';
 import { ErrorModal } from '../components/ErrorModal';
-import { LoginScreen } from './lobby-screens/LoginScreen';
+import { HomeScreen } from './lobby-screens/HomeScreen';
 import { CenteredLayout } from '../components/layout/CenteredLayout';
 import { GoogleLogin } from './lobby-screens/login-components/GoogleLogin';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -19,7 +19,7 @@ export function WelcomePage() {
         {loading ? (
           <LoadingSpinner />
         ) : user?.isAnonymous === false ? (
-          <LoginScreen />
+          <HomeScreen />
         ) : (
           <CreatorLoginScreen />
         )}

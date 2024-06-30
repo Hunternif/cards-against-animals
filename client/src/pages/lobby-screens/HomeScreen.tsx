@@ -20,7 +20,16 @@ interface Props {
   existingLobbyID?: string,
 }
 
-export function LoginScreen({ existingLobbyID }: Props) {
+/**
+ * The main home screen outside of a game lobby. Allows multiple things:
+ * 1. Select your avatar and user name.
+ * 2. If given lobby ID, offers to join this lobby.
+ * 3. If no lobby ID, finds your last active lobby and offers to re-join it.
+ * 4. Else, create new game (only enabled if you are logged in via Google).
+ * 
+ * As you proceed to the lobby, it will log you in anonymously.
+ */
+export function HomeScreen({ existingLobbyID }: Props) {
   const [joining, setJoining] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [pastLobbyID, setPastLobbyID] = useState<string | null>(null);

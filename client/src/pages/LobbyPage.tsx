@@ -8,7 +8,7 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { useAuthWithPresence } from "../hooks/auth-hooks";
 import { assertExhaustive } from "../shared/utils";
 import { GameScreen } from "./lobby-screens/GameScreen";
-import { LoginScreen } from "./lobby-screens/LoginScreen";
+import { HomeScreen } from "./lobby-screens/HomeScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
 import { ScoreboardScreen } from "./lobby-screens/ScoreboardScreen";
 
@@ -38,7 +38,7 @@ function LobbyPageThrows() {
   const [user, loadingUser] = useAuthWithPresence();
   const lobbyID = useLoaderData() as string;
   if (loadingUser) return <LoadingSpinner delay text="Logging in..." />;
-  if (!user) return <LoginScreen existingLobbyID={lobbyID} />;
+  if (!user) return <HomeScreen existingLobbyID={lobbyID} />;
   return <LoggedInLobbyScreen user={user} lobbyID={lobbyID} />;
 }
 
@@ -53,7 +53,7 @@ function LoggedInLobbyScreen({ lobbyID, user }: LoggedInProps) {
   if (loadingPlayer) return <LoadingSpinner delay text="Loading user..." />;
   // User may be logged in, but we offer to change their name before joining:
   if (!player || player.status === "left") {
-    return <LoginScreen existingLobbyID={lobbyID} />;
+    return <HomeScreen existingLobbyID={lobbyID} />;
   }
   return <JoinedLobbyScreen user={user} lobbyID={lobbyID} />
 }
