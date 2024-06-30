@@ -49,6 +49,7 @@ export interface LobbySettings {
   allow_join_mid_game: boolean;
   /** If true, players can like responses. */
   enable_likes: boolean;
+  enable_soundboard: boolean;
   /** If true, card statistics will not be updated. */
   freeze_stats: boolean;
   show_likes_to: ShowLikes;
@@ -73,6 +74,7 @@ export function defaultLobbySettings(): LobbySettings {
     sort_cards_by_rating: true,
     allow_join_mid_game: true,
     enable_likes: true,
+    enable_soundboard: true,
     freeze_stats: false,
     show_likes_to: 'all_except_czar',
     likes_limit: 'none',

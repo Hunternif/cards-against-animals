@@ -33,7 +33,7 @@ export function Soundboard() {
     }
   }
 
-  if (isSpectator) return null;
+  if (isSpectator || !lobby.settings.enable_soundboard) return null;
 
   return (
     <div className="soundboard" style={style}>

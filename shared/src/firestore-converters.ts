@@ -65,24 +65,7 @@ export const lobbyConverter: FConverter<GameLobby> = {
 };
 
 function mapSettings(data: any): LobbySettings {
-  const readSettings: LobbySettings = {
-    play_until: data.play_until,
-    max_turns: data.max_turns,
-    max_score: data.max_score,
-    turns_per_person: data.turns_per_person,
-    cards_per_person: data.cards_per_person,
-    new_cards_first: data.new_cards_first,
-    sort_cards_by_rating: data.sort_cards_by_rating,
-    allow_join_mid_game: data.allow_join_mid_game,
-    enable_likes: data.enable_likes,
-    freeze_stats: data.freeze_stats,
-    show_likes_to: data.show_likes_to,
-    likes_limit: data.likes_limit,
-    discard_cost: data.discard_cost,
-    lobby_control: data.lobby_control,
-    next_turn_time_sec: data.next_turn_time_sec,
-  };
-  return copyFields2(defaultLobbySettings(), removeUndefined(readSettings));
+  return copyFields2(defaultLobbySettings(), removeUndefined(data));
 }
 
 export const playerConverter: FConverter<PlayerInLobby> = {

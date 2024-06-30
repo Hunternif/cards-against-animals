@@ -87,6 +87,10 @@ export function LobbySettingsPanel(props: Props) {
         hint="Card statistics will not be updated during this game. Use this for test games."
         control={<FreezeStatsControl {...props} />}
       />
+      <FormItem label="Enable soundboard"
+        hint="People click buttons and make sounds."
+        control={<EnableSoundboardControl {...props} />}
+      />
     </div>
   </div>;
 }
@@ -267,6 +271,16 @@ function FreezeStatsControl({ settings, readOnly, onChange }: Props) {
     value={settings.freeze_stats}
     onChange={async (newValue) => {
       settings.freeze_stats = newValue;
+      if (onChange) await onChange(settings);
+    }}
+  />;
+}
+
+function EnableSoundboardControl({ settings, readOnly, onChange }: Props) {
+  return <ToggleInput disabled={readOnly}
+    value={settings.enable_soundboard}
+    onChange={async (newValue) => {
+      settings.enable_soundboard = newValue;
       if (onChange) await onChange(settings);
     }}
   />;
