@@ -251,6 +251,12 @@
   .img-like {
     height: 16px;
   }
+  .like {
+    opacity: 0.6;
+  }
+  .has-player-like .like:last-child {
+    opacity: 1;
+  }
 }
 
 

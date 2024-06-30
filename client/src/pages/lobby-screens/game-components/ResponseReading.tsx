@@ -242,6 +242,7 @@ function CardResponseReading({
   isOverlaid, index, offset,
   setContentHeight,
 }: CardProps) {
+  const { player } = useGameContext();
   const overlayClass = isOverlaid ? "overlaid" : "";
   const revealedClass = revealed ? "revealed" : "unrevealed";
   const selectedClass = `${selectable ? "selectable" : ""} ${selected ? "selected" : ""}`;
@@ -249,6 +250,7 @@ function CardResponseReading({
     position: "absolute",
     top: (offset ?? 0) + (selected ? 4 * (index ?? 0) : 0),
   } : undefined;
+  const hasPlayerLike = likes?.find((like) => like.player_uid === player.uid) != null;
 
   // Measure content height:
   const contentRef = useRef<HTMLElement>(null);
@@ -295,8 +297,10 @@ function CardResponseReading({
             </div>
           </CardCenterIcon>
         )}
-        {likes && <CardBottomLeft>
-          {likes.map((_, i) => <span key={i}>{likeIcon}</span>)}
+        {likes && <CardBottomLeft className={hasPlayerLike ? 'has-player-like' : ''}>
+          {likes.map((_, i) => (
+            <span key={i} className="like">{likeIcon}</span>
+          ))}
         </CardBottomLeft>}
       </LargeCard>
     );
