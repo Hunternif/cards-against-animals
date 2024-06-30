@@ -6,6 +6,14 @@ import { getPlayersRef } from './lobby-server-repository';
 import { getLastTurn } from './turn-server-repository';
 import { getCAAUser } from './user-server-api';
 
+/** Asserts that current user is logged in, and not anonymous. */
+export async function assertNotAnonymous(userID: string) {
+  const user = await firebaseAuth.getUser(userID);
+  if (user.email == null) {
+    throw new HttpsError('unauthenticated', 'Must be authenticated');
+  }
+}
+
 /** Asserts that current user is logged in. Returns user ID. */
 export function assertLoggedIn(event: CallableRequest): string {
   if (!event.auth) {

@@ -38,6 +38,7 @@ import {
   updateCAAUser,
 } from './user-server-api';
 import firebaseConfig from '../firebase-config.json';
+import { assertNotAnonymous } from './auth-api';
 
 /** Finds current active lobby for this user, returns lobby ID. */
 export async function findActiveLobbyWithPlayer(
@@ -64,6 +65,8 @@ export async function findActiveLobbyWithPlayer(
  */
 export async function createLobby(userID: string): Promise<GameLobby> {
   // TODO: need to acquire lock. This doesn't prevent double lobby creation!
+  // Only allow non-anonymous users to create lobbies:
+  await assertNotAnonymous(userID);
   const totalActiveLobbies = (
     await lobbiesRef.where('status', 'in', ['new', 'in_progress']).count().get()
   ).data().count;
