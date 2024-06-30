@@ -22,7 +22,7 @@ const style: CSSProperties = {
 };
 
 export function Soundboard() {
-  const { lobby, player } = useGameContext();
+  const { lobby, player, isSpectator } = useGameContext();
   const { setError } = useContext(ErrorContext);
 
   async function handleSound(soundID: string) {
@@ -32,6 +32,8 @@ export function Soundboard() {
       setError(e);
     }
   }
+
+  if (isSpectator) return null;
 
   return (
     <div className="soundboard" style={style}>
