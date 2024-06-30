@@ -105,7 +105,9 @@ Also note these additional values in `firebase-config.json`:
   // "region" controls where the Firebase Cloud Functions are hosted:
   "region": "europe-west1",
   // "useEmulator" controls whether the client should connect to the local emulator or to prod:
-  "useEmulator": true
+  "useEmulator": true,
+  // How many active game lobbies are allowed at the same time:
+  "maxActiveLobbies": 3
 }
 ```
 

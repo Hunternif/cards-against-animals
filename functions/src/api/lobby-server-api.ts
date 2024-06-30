@@ -37,6 +37,7 @@ import {
   setUsersCurrentLobby,
   updateCAAUser,
 } from './user-server-api';
+import firebaseConfig from '../firebase-config.json';
 
 /** Finds current active lobby for this user, returns lobby ID. */
 export async function findActiveLobbyWithPlayer(
@@ -59,9 +60,19 @@ export async function findActiveLobbyWithPlayer(
 
 /**
  * Creates a new lobby from this player, returns it.
+ * Throws if maximum number of active lobbies is reached.
  */
 export async function createLobby(userID: string): Promise<GameLobby> {
   // TODO: need to acquire lock. This doesn't prevent double lobby creation!
+  const totalActiveLobbies = (
+    await lobbiesRef.where('status', 'in', ['new', 'in_progress']).count().get()
+  ).data().count;
+  if (totalActiveLobbies > firebaseConfig.maxActiveLobbies) {
+    throw new HttpsError(
+      'resource-exhausted',
+      'Game limit reached. Please try again later.',
+    );
+  }
   const newLobbyRef = lobbiesRef.doc();
   const newID = newLobbyRef.id;
   const newLobby = new GameLobby(newID, userID, defaultLobbySettings(), 'new');

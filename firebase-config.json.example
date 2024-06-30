@@ -11,5 +11,6 @@
   "webUrl": "https://my-app.web.app",
   "databaseName": "my-app-default-rtdb",
   "region": "europe-west1",
-  "useEmulator": true
+  "useEmulator": true,
+  "maxActiveLobbies": 3
 }
