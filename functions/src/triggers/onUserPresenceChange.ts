@@ -2,6 +2,9 @@ import * as logger from 'firebase-functions/logger';
 import { database } from 'firebase-functions/v1';
 import { DBPresence } from '../shared/types';
 
+/** How long to wait before acting on the user's 'offline' status. */
+const offlineDebounceMs = 3000;
+
 /**
  * Monitors user presence from Realtime DB and updates it on Firestore.
  * See https://github.com/firebase/functions-samples/blob/703c035/Node-1st-gen/presence-firestore/functions/index.js
@@ -26,8 +29,21 @@ export const createOnUserPresenceChangeHandler = () =>
 
     if (eventStatus.state === 'online') {
       logger.info(`User ${uid} is online`);
-    } else  {
-      logger.info(`User ${uid} is offline`);
-      // TODO: update user status in their lobby, after a debounce time
+    } else {
+      // Debounce. This could cost money, but for a few seconds it's fine.
+      setTimeout(async () => {
+        // Verify if the user isn't online yet:
+        const statusSnapshot = await change.after.ref.once('value');
+        const status = statusSnapshot.val() as DBPresence;
+        if (status.last_changed > eventStatus.last_changed) {
+          // logger.info(
+          //   `User ${uid} was briefly offline, but no longer than ${offlineDebounceMs}.`,
+          // );
+          return;
+        }
+
+        logger.info(`User ${uid} is offline`);
+        // TODO: update user status in their lobby, after a debounce time
+      }, offlineDebounceMs);
     }
   });
