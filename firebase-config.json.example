@@ -9,6 +9,7 @@
   "measurementId": "A_BCDE123",
 
   "webUrl": "https://my-app.web.app",
+  "databaseName": "my-app-default-rtdb",
   "region": "europe-west1",
   "useEmulator": true
 }

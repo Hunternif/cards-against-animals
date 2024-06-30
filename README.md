@@ -100,6 +100,8 @@ Also note these additional values in `firebase-config.json`:
 
   // "webUrl" is used to populate html headers with .../banner.jpg:
   "webUrl": "https://my-app.web.app"
+  // Needed to correctly deploy Cloud Function triggers for Realtime Database:
+  "databaseName": "my-app-default-rtdb",
   // "region" controls where the Firebase Cloud Functions are hosted:
   "region": "europe-west1",
   // "useEmulator" controls whether the client should connect to the local emulator or to prod:
