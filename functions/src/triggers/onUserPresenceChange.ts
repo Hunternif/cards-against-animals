@@ -1,6 +1,7 @@
 import * as logger from 'firebase-functions/logger';
 import { database } from 'firebase-functions/v1';
 import { DBPresence } from '../shared/types';
+import { setPlayerOffline } from '../api/lobby-server-api';
 
 /** How long to wait before acting on the user's 'offline' status. */
 const offlineDebounceMs = 3000;
@@ -43,7 +44,7 @@ export const createOnUserPresenceChangeHandler = () =>
         }
 
         logger.info(`User ${uid} is offline`);
-        // TODO: update user status in their lobby, after a debounce time
+        await setPlayerOffline(uid);
       }, offlineDebounceMs);
     }
   });

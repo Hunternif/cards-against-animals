@@ -23,9 +23,11 @@ import {
   countPlayers,
   getLobby,
   getOnlinePlayers,
+  getPlayer,
   getPlayers,
   getPlayersRef,
   updateLobby,
+  updatePlayer,
 } from './lobby-server-repository';
 import { createNewTurn, dealCardsToPlayer } from './turn-server-api';
 import { getLastTurn, updateTurn } from './turn-server-repository';
@@ -296,4 +298,18 @@ export async function cleanUpPlayer(lobbyID: string, player: PlayerInLobby) {
   }
   // Unset 'current lobby':
   await setUsersCurrentLobby(player.uid, undefined);
+}
+
+/** Called when a player loses connection, or closes the browser.
+ * An automatic trigger will call the cleanup logic after this. */
+export async function setPlayerOffline(userID: string) {
+  const caaUser = await getCAAUser(userID);
+  const lobbyID = caaUser?.current_lobby_id;
+  if (lobbyID) {
+    const player = await getPlayer(lobbyID, userID);
+    if (player) {
+      player.status = 'left';
+      await updatePlayer(lobbyID, player);
+    }
+  }
 }
