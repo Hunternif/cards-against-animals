@@ -9,7 +9,7 @@ import {
 } from './turn-server-repository';
 
 import { FieldValue } from 'firebase-admin/firestore';
-import { db } from '../firebase-server';
+import { firestore } from '../firebase-server';
 import {
   CardInGame,
   GameLobby,
@@ -151,7 +151,7 @@ export async function logInteractionsInCompletePhase(
  */
 export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
   if (lobby.settings.freeze_stats) return;
-  await db.runTransaction(async (transaction) => {
+  await firestore.runTransaction(async (transaction) => {
     for (const prompt of logData.viewedPrompts || []) {
       if (prompt.deck_id === GeneratedDeck.id) continue;
       const cardRef = getDeckPromptsRef(prompt.deck_id).doc(
@@ -228,7 +228,7 @@ export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
  * and updates ratings on the card in deck. */
 export async function logDownvotes(lobbyID: string) {
   const players = await getOnlinePlayers(lobbyID);
-  await db.runTransaction(async (transaction) => {
+  await firestore.runTransaction(async (transaction) => {
     for (const player of players) {
       for (const card of player.downvoted.values()) {
         if (card.deck_id === GeneratedDeck.id) continue;

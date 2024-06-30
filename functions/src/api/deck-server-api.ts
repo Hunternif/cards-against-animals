@@ -1,4 +1,4 @@
-import { db } from '../firebase-server';
+import { firestore } from '../firebase-server';
 import {
   deckConverter,
   promptDeckCardConverter,
@@ -16,17 +16,17 @@ import {
 } from '../shared/types';
 
 export function getDecksRef() {
-  return db.collection(`decks`).withConverter(deckConverter);
+  return firestore.collection(`decks`).withConverter(deckConverter);
 }
 
 export function getDeckPromptsRef(deckID: string) {
-  return db
+  return firestore
     .collection(`decks/${deckID}/prompts`)
     .withConverter(promptDeckCardConverter);
 }
 
 export function getDeckResponsesRef(deckID: string) {
-  return db
+  return firestore
     .collection(`decks/${deckID}/responses`)
     .withConverter(responseDeckCardConverter);
 }

@@ -1,7 +1,7 @@
 import { FieldValue } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
 import { HttpsError } from 'firebase-functions/v2/https';
-import { db, lobbiesRef, usersRef } from '../firebase-server';
+import { firestore, lobbiesRef, usersRef } from '../firebase-server';
 import {
   promptCardInGameConverter,
   responseCardInGameConverter,
@@ -195,13 +195,13 @@ async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
     );
   }
   // Write all cards to the lobby:
-  const lobbyPromptsRef = db
+  const lobbyPromptsRef = firestore
     .collection(`lobbies/${lobby.id}/deck_prompts`)
     .withConverter(promptCardInGameConverter);
-  const lobbyResponsesRef = db
+  const lobbyResponsesRef = firestore
     .collection(`lobbies/${lobby.id}/deck_responses`)
     .withConverter(responseCardInGameConverter);
-  await db.runTransaction(async (transaction) => {
+  await firestore.runTransaction(async (transaction) => {
     newPrompts.forEach((card) =>
       transaction.set(lobbyPromptsRef.doc(card.id), card),
     );

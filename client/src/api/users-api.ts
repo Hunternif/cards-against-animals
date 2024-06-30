@@ -1,13 +1,25 @@
-import { deleteField, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { firebaseAuth, usersRef } from "../firebase";
-import { CAAUser } from "../shared/types";
-import { User, updateProfile } from "firebase/auth";
-import { getLobby } from "./lobby/lobby-repository";
-import { useDocumentData, useDocumentDataOnce } from "react-firebase-hooks/firestore";
-import { avatarMap } from "./avatars";
-import { userConverter } from "../shared/firestore-converters";
-import { leaveLobby } from "./lobby/lobby-join-api";
-import { getPlayerInLobby } from "./lobby/lobby-player-api";
+import { User, updateProfile } from 'firebase/auth';
+import {
+  collection,
+  deleteField,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
+import {
+  useDocumentData,
+  useDocumentDataOnce,
+} from 'react-firebase-hooks/firestore';
+import { firebaseAuth, firestore } from '../firebase';
+import { userConverter } from '../shared/firestore-converters';
+import { CAAUser } from '../shared/types';
+import { avatarMap } from './avatars';
+import { leaveLobby } from './lobby/lobby-join-api';
+import { getPlayerInLobby } from './lobby/lobby-player-api';
+import { getLobby } from './lobby/lobby-repository';
+
+const usersRef = collection(firestore, 'users').withConverter(userConverter);
 
 /** Finds user data by ID */
 export async function getCAAUser(userID: string): Promise<CAAUser | null> {
@@ -16,7 +28,9 @@ export async function getCAAUser(userID: string): Promise<CAAUser | null> {
 
 /** Finds or creates user data from Firebase user. */
 export async function getOrCreateCAAUser(
-  userID: string, name: string, avatarID?: string,
+  userID: string,
+  name: string,
+  avatarID?: string,
 ): Promise<CAAUser> {
   const caaUser = await getCAAUser(userID);
   if (caaUser) return caaUser;
@@ -29,7 +43,9 @@ export async function getOrCreateCAAUser(
 
 /** Creates or updates user data */
 export async function updateUserData(
-  userID: string, name: string, avatarID?: string,
+  userID: string,
+  name: string,
+  avatarID?: string,
 ): Promise<CAAUser> {
   const avatar = avatarID ? avatarMap.get(avatarID) : undefined;
   // Update Firebase user info:
@@ -83,13 +99,17 @@ export async function findPastLobbyID(userID: string): Promise<string | null> {
   const caaUser = await getCAAUser(userID);
   if (caaUser?.current_lobby_id) {
     const player = await getPlayerInLobby(caaUser.current_lobby_id, userID);
-    if (player?.status === "banned") {
-      await updateDoc(doc(usersRef, userID), { current_lobby_id: deleteField() });
+    if (player?.status === 'banned') {
+      await updateDoc(doc(usersRef, userID), {
+        current_lobby_id: deleteField(),
+      });
       return null;
     }
     const lobby = await getLobby(caaUser.current_lobby_id);
-    if (lobby?.status === "ended") {
-      await updateDoc(doc(usersRef, userID), { current_lobby_id: deleteField() });
+    if (lobby?.status === 'ended') {
+      await updateDoc(doc(usersRef, userID), {
+        current_lobby_id: deleteField(),
+      });
       return null;
     }
     return caaUser.current_lobby_id;

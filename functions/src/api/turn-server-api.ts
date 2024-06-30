@@ -2,7 +2,7 @@
 
 import * as logger from 'firebase-functions/logger';
 import { HttpsError } from 'firebase-functions/v2/https';
-import { db } from '../firebase-server';
+import { firestore } from '../firebase-server';
 import {
   promptCardInGameConverter,
   responseCardInGameConverter,
@@ -91,7 +91,7 @@ async function selectJudge(
 
 /** Selects a new prompt card from the remaining deck. */
 async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
-  const promptsRef = db
+  const promptsRef = firestore
     .collection(`lobbies/${lobbyID}/deck_prompts`)
     .withConverter(promptCardInGameConverter);
   const cards = (
@@ -156,7 +156,7 @@ export async function dealCardsToPlayer(
   newTurn: GameTurn,
   userID: string,
 ) {
-  const deckResponsesRef = db
+  const deckResponsesRef = firestore
     .collection(`lobbies/${lobby.id}/deck_responses`)
     .withConverter(responseCardInGameConverter);
   const player = await getPlayerThrows(lobby.id, userID);
@@ -191,7 +191,7 @@ export async function dealCardsToPlayer(
   const cardsPerPerson = lobby.settings.cards_per_person;
   const totalCardsNeeded = Math.max(0, cardsPerPerson - newHand.length);
 
-  await db.runTransaction(async (transaction) => {
+  await firestore.runTransaction(async (transaction) => {
     // Fetch new cards:
     const dealTime = new Date();
     const newCards =

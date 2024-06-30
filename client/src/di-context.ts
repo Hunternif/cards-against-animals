@@ -3,7 +3,7 @@ import {
   FirestoreDeckRepository,
   IDeckRepository,
 } from "./api/deck/deck-repository";
-import { db } from "./firebase";
+import { firestore } from "./firebase";
 
 interface DIContextState {
   deckRepository: IDeckRepository;
@@ -13,7 +13,7 @@ interface DIContextState {
  * Dependency injection context.
  */
 export const DIContext = createContext<DIContextState>({
-  deckRepository: new FirestoreDeckRepository(db),
+  deckRepository: new FirestoreDeckRepository(firestore),
 });
 
 /**

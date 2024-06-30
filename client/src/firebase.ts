@@ -12,31 +12,28 @@ import {
   httpsCallable,
 } from 'firebase/functions';
 import firebaseConfig from '../../firebase-config.json';
-import { playerConverter, userConverter } from './shared/firestore-converters';
 import {
   KickAction,
   LobbySettings,
   PromptCardInGame,
   ResponseCardInGame,
 } from './shared/types';
+import { connectDatabaseEmulator, getDatabase } from 'firebase/database';
 
-export const firebaseApp = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
 // To enable emulator, set `"useEmulator": true ` in firebase-config.json
 const useEmulator = (firebaseConfig as any)['useEmulator'] == true;
 
 // used for the firestore refs
-export const db = getFirestore(firebaseApp);
-if (useEmulator) connectFirestoreEmulator(db, '127.0.0.1', 8080);
+export const firestore = getFirestore(firebaseApp);
+if (useEmulator) connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
 
 export const firebaseAuth = getAuth();
 if (useEmulator) connectAuthEmulator(firebaseAuth, 'http://127.0.0.1:9099');
 
-// here we can export reusable database references
-export const usersRef = collection(db, 'users').withConverter(userConverter);
-export const playersInGameRef = collectionGroup(db, 'players').withConverter(
-  playerConverter,
-);
+export const database = getDatabase(firebaseApp);
+if (useEmulator) connectDatabaseEmulator(database, '127.0.0.1', 9000);
 
 // Functions
 const functions = getFunctions(firebaseApp, firebaseConfig.region);

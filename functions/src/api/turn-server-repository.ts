@@ -1,5 +1,5 @@
 import { HttpsError } from 'firebase-functions/v2/https';
-import { db } from '../firebase-server';
+import { firestore } from '../firebase-server';
 import {
   playerResponseConverter,
   promptCardInGameConverter,
@@ -27,26 +27,26 @@ import {
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
-  return db.collection(`lobbies/${lobbyID}/turns`).withConverter(turnConverter);
+  return firestore.collection(`lobbies/${lobbyID}/turns`).withConverter(turnConverter);
 }
 
 /** Returns Firestore subcollection reference. */
 function getTurnPromptsRef(lobbyID: string, turnID: string) {
-  return db
+  return firestore
     .collection(`lobbies/${lobbyID}/turns/${turnID}/prompts`)
     .withConverter(promptCardInGameConverter);
 }
 
 /** Returns Firestore subcollection reference. */
 function getPlayerResponsesRef(lobbyID: string, turnID: string) {
-  return db
+  return firestore
     .collection(`lobbies/${lobbyID}/turns/${turnID}/player_responses`)
     .withConverter(playerResponseConverter);
 }
 
 /** Returns Firestore subcollection reference. */
 function getResponseLikesRef(lobbyID: string, turnID: string, userID: string) {
-  return db
+  return firestore
     .collection(
       `lobbies/${lobbyID}/turns/${turnID}/player_responses/${userID}/likes`,
     )
@@ -59,7 +59,7 @@ function getPromptVotesRef(
   turnID: string,
   promptCardID: string,
 ) {
-  return db
+  return firestore
     .collection(
       `lobbies/${lobbyID}/turns/${turnID}/prompts/${promptCardID}/votes`,
     )

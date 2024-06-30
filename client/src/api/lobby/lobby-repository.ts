@@ -1,5 +1,5 @@
 import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import { firestore } from "../../firebase";
 import { lobbyConverter } from "../../shared/firestore-converters";
 import { GameLobby } from "../../shared/types";
 
@@ -10,7 +10,7 @@ import { GameLobby } from "../../shared/types";
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-export const lobbiesRef = collection(db, "lobbies").withConverter(
+export const lobbiesRef = collection(firestore, "lobbies").withConverter(
   lobbyConverter
 );
 

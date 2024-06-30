@@ -1,9 +1,9 @@
 import { collection, doc, runTransaction } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { firestore } from '../../firebase';
 import { deckMigrationConverter } from '../../shared/firestore-converters';
 import { Deck, DeckCard, DeckMigrationItem } from '../../shared/types';
 
-const deckMigRef = collection(db, 'deck_migrations').withConverter(
+const deckMigRef = collection(firestore, 'deck_migrations').withConverter(
   deckMigrationConverter,
 );
 
@@ -16,7 +16,7 @@ export async function saveDeckMigrations(
   newDeck: Deck,
   map: Map<DeckCard, DeckCard>,
 ): Promise<void> {
-  await runTransaction(db, async (transaction) => {
+  await runTransaction(firestore, async (transaction) => {
     for (let [oldCard, newCard] of map) {
       const mig = new DeckMigrationItem(
         uniqueCardID(oldDeck, oldCard),

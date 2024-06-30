@@ -1,5 +1,5 @@
 import { doc, runTransaction } from 'firebase/firestore';
-import { db, newTurnFun } from '../../firebase';
+import { firestore, newTurnFun } from '../../firebase';
 import { GameLobby, GameTurn } from '../../shared/types';
 import { getActivePlayerCount } from '../lobby/lobby-player-api';
 import { getResponseLikeCount } from './turn-like-api';
@@ -36,7 +36,7 @@ export async function startReadingPhase(lobby: GameLobby, turn: GameTurn) {
   if (responses.length < playerCount - 1) {
     throw notAllRespondedError;
   }
-  await runTransaction(db, async (transaction) => {
+  await runTransaction(firestore, async (transaction) => {
     // Ensure responses have not been modified:
     const updatedResponses = await Promise.all(
       responses.map((resp) =>

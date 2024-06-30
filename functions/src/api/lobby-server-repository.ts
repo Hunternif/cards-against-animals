@@ -1,6 +1,6 @@
 import { Transaction } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/v2/https';
-import { db, lobbiesRef } from '../firebase-server';
+import { firestore, lobbiesRef } from '../firebase-server';
 import {
   lobbyConverter,
   playerConverter,
@@ -15,7 +15,7 @@ import { GameLobby, PlayerInLobby, PlayerRole } from '../shared/types';
 ///////////////////////////////////////////////////////////////////////////////
 
 export function getPlayersRef(lobbyID: string) {
-  return db
+  return firestore
     .collection(`lobbies/${lobbyID}/players`)
     .withConverter(playerConverter);
 }

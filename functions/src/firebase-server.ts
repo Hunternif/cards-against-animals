@@ -14,11 +14,11 @@ export const firebaseApp = admin.initializeApp(firebaseConfig);
 export const firebaseAuth = firebaseApp.auth();
 
 // Initialize Cloud Firestore and get a reference to the service
-export const db = admin.firestore(firebaseApp);
+export const firestore = admin.firestore(firebaseApp);
 
-export const decksRef = db.collection("decks")
+export const decksRef = firestore.collection("decks")
   .withConverter(deckConverter);
-export const lobbiesRef = db.collection("lobbies")
+export const lobbiesRef = firestore.collection("lobbies")
   .withConverter(lobbyConverter);
-export const usersRef = db.collection("users")
+export const usersRef = firestore.collection("users")
   .withConverter(userConverter);

@@ -9,7 +9,7 @@ import {
   runTransaction,
   setDoc,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { firestore } from "../../firebase";
 import { promptCardInGameConverter } from "../../shared/firestore-converters";
 import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
 import { lobbiesRef } from "../lobby/lobby-repository";
@@ -89,7 +89,7 @@ export async function discardPrompts(
   lobby: GameLobby,
   cards: PromptCardInGame[],
 ) {
-  await runTransaction(db, async (transaction) => {
+  await runTransaction(firestore, async (transaction) => {
     for (const card of cards) {
       transaction.delete(doc(getDeckPromptsRef(lobby.id), card.id));
     }
