@@ -40,6 +40,7 @@ import dog_006 from "../assets/avatars/dog_006.jpg"
 import dog_007 from "../assets/avatars/dog_007.jpg"
 import dog_008 from "../assets/avatars/dog_008.jpg"
 import dog_009 from "../assets/avatars/dog_009.jpg"
+import dog_010 from "../assets/avatars/dog_010.jpg"
 import fox_001 from "../assets/avatars/fox_001.jpg"
 import fox_002 from "../assets/avatars/fox_002.jpg"
 import fox_003 from "../assets/avatars/fox_003.jpg"
@@ -66,7 +67,6 @@ import otter_001 from "../assets/avatars/otter_001.jpg"
 import otter_002 from "../assets/avatars/otter_002.jpg"
 import panda_001 from "../assets/avatars/panda_001.jpg"
 import panda_002 from "../assets/avatars/panda_002.jpg"
-import panda_003 from "../assets/avatars/panda_003.jpg"
 import snake_001 from "../assets/avatars/snake_001.jpg"
 import turtle_001 from "../assets/avatars/turtle_001.jpg"
 import zebra_001 from "../assets/avatars/zebra_001.jpg"
@@ -130,6 +130,7 @@ export const avatars = [
   new Avatar("dog_007", dog_007, ["dog"]),
   new Avatar("dog_008", dog_008, ["dog"]),
   new Avatar("dog_009", dog_009, ["dog"]),
+  new Avatar("dog_010", dog_010, ["dog"]),
   new Avatar("fox_001", fox_001, ["fox"]),
   new Avatar("fox_002", fox_002, ["fox"]),
   new Avatar("fox_003", fox_003, ["fox"]),
@@ -156,7 +157,6 @@ export const avatars = [
   new Avatar("otter_002", otter_002, ["otter"]),
   new Avatar("panda_001", panda_001, ["panda"]),
   new Avatar("panda_002", panda_002, ["panda"]),
-  new Avatar("panda_003", panda_003, ["panda"]),
   new Avatar("snake_001", snake_001, ["snake"]),
   new Avatar("turtle_001", turtle_001, ["turtle"]),
   new Avatar("zebra_001", zebra_001, ["zebra"]),
