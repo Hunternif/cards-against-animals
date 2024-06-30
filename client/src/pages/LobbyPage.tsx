@@ -1,17 +1,16 @@
 import { User } from "firebase/auth";
 import { useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { useLoaderData } from "react-router-dom";
+import { useLobby, usePlayerInLobby, usePlayers } from "../api/lobby/lobby-hooks";
 import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { firebaseAuth } from "../firebase";
-import { useLobby, usePlayerInLobby, usePlayers } from "../api/lobby/lobby-hooks";
+import { useAuthWithPresence } from "../hooks/auth-hooks";
+import { assertExhaustive } from "../shared/utils";
 import { GameScreen } from "./lobby-screens/GameScreen";
 import { LoginScreen } from "./lobby-screens/LoginScreen";
 import { NewLobbyScreen } from "./lobby-screens/NewLobbyScreen";
 import { ScoreboardScreen } from "./lobby-screens/ScoreboardScreen";
-import { assertExhaustive } from "../shared/utils";
 
 interface LoaderParams {
   params: any
@@ -36,7 +35,7 @@ export function LobbyPage() {
 function LobbyPageThrows() {
   // Double-check that we are logged in.
   // Users who are sent the link will need to log in first.
-  const [user, loadingUser] = useAuthState(firebaseAuth);
+  const [user, loadingUser] = useAuthWithPresence();
   const lobbyID = useLoaderData() as string;
   if (loadingUser) return <LoadingSpinner delay text="Logging in..." />;
   if (!user) return <LoginScreen existingLobbyID={lobbyID} />;

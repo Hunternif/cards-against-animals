@@ -17,6 +17,7 @@ import { createOnTurnPhaseChangeHandler } from './triggers/onTurnPhaseChange';
 
 // This import is copied during build
 import firebaseConfig from './firebase-config.json';
+import { createOnUserPresenceChangeHandler } from './triggers/onUserPresenceChange';
 
 setGlobalOptions({
   region: firebaseConfig.region,
@@ -78,3 +79,6 @@ export const onPlayerStatusChange = createOnPlayerStatusChangeHandler();
 
 /** Logic to run after lobby status changes. */
 export const onLobbyStatusChange = createOnLobbyStatusChangeHandler();
+
+/** Monitors user presence. */
+export const onUserPresenceChange = createOnUserPresenceChangeHandler();
