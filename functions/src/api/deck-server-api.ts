@@ -1,3 +1,4 @@
+import { HttpsError } from 'firebase-functions/v1/auth';
 import { firestore } from '../firebase-server';
 import {
   deckConverter,
@@ -29,6 +30,13 @@ export function getDeckResponsesRef(deckID: string) {
   return firestore
     .collection(`decks/${deckID}/responses`)
     .withConverter(responseDeckCardConverter);
+}
+
+export async function getDeck(deckID: string): Promise<Deck> {
+  const deck = (await getDecksRef().doc(deckID).get()).data();
+  if (deck == null)
+    throw new HttpsError('not-found', `Deck not found: ${deckID}`);
+  return deck;
 }
 
 export async function getAllDecks(): Promise<Deck[]> {

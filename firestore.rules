@@ -74,9 +74,20 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/lobbies/$(lobby)/turns/$(turn)).data.phase == phase;
     }
 
-  	match /decks/{document=**} {
+  	match /decks/{deck} {
+      // Everyone can read deck info:
     	allow read;
       allow write: if isLoggedIn() && userIsAdmin();
+
+      // But for locked decks, content is only available if you have a token:
+      match /{deckDocument=**} {
+        allow list;
+        allow read, write: if isLoggedIn() && userIsAdmin();
+        // Users don't need access to the deck.
+      }
+    }
+    match /deck_locks/{deckID} {
+      allow read, write: if isLoggedIn() && userIsAdmin();
     }
   	match /lobbies/{lobby} {
       // Anyone can read basic lobby data:
@@ -156,6 +167,10 @@ service cloud.firestore {
       allow read, delete: if isLoggedIn() && request.auth.uid == userID;
       // allow creating & changing your data, except admin fields:
       allow write: if isLoggedIn() && request.auth.uid == userID && isAdminInfoUnchanged(userID);
+
+      match /deck_keys/{deckID} {
+        allow write: if isLoggedIn() && request.auth.uid == userID;
+      }
     }
     match /deck_migrations/{document=**} {
       allow read, write: if userIsAdmin();

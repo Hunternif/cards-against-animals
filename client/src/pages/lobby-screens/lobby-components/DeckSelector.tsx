@@ -55,13 +55,13 @@ export function DeckSelector({ lobby, readOnly }: SelectorProps) {
   const { deckRepository } = useDIContext();
 
   async function loadDecks() {
-    await deckRepository.getDecksWithCount(['public']).then((d) => {
-      setDecks(d);
-      setLoading(false);
-    }).catch((e: any) => {
+    try {
+      setDecks(await deckRepository.getDecksWithCount(['public', 'locked']));
+    } catch (e: any) {
       setError(e);
+    } finally {
       setLoading(false);
-    });
+    };
   }
 
   useEffectOnce(() => { loadDecks(); });

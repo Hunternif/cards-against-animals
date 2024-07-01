@@ -224,6 +224,13 @@ export class DeckTag {
   constructor(public name: string, public description?: string) {}
 }
 
+/** Used to lock access to decks with a password.
+ * The player must have a 'key' record with the same hash.
+ */
+export class DeckLock {
+  constructor(public deck_id: string, public hash: string) {}
+}
+
 /** Card in deck */
 export interface DeckCard {
   /** ID is usually a number. */
@@ -382,7 +389,7 @@ export type CardType = 'prompt' | 'response';
 /** "kick" is re-joinable, "ban" is forever. */
 export type KickAction = 'kick' | 'ban';
 
-export type DeckVisibility = 'public' | 'hidden';
+export type DeckVisibility = 'public' | 'hidden' | 'locked';
 
 /** Used for cards created during a game, e.g haiku. */
 export const GeneratedDeck = new Deck('@@generated', 'Generated cards');
@@ -401,6 +408,10 @@ export class CAAUser {
     public is_admin: boolean = false,
     public current_lobby_id: string | null | undefined = null,
   ) {}
+  /** Maps deck ID to a lock key.
+   * Using the same type 'DeckLock' for convenience.
+   * Stored in a firebase subcollection and never fetched. */
+  private deck_keys?: Map<string, DeckLock>;
 }
 
 /**

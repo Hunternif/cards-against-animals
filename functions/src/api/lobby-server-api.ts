@@ -16,8 +16,10 @@ import {
   defaultLobbySettings,
 } from '../shared/types';
 import {
+  getAllDecks,
   getAllPromptsForGame,
   getAllResponsesForGame,
+  getDeck,
 } from './deck-server-api';
 import {
   countPlayers,
@@ -39,6 +41,7 @@ import {
 } from './user-server-api';
 import firebaseConfig from '../firebase-config.json';
 import { assertNotAnonymous } from './auth-api';
+import { verifyUserHasDeckKey } from './deck-lock-server-api';
 
 /** Finds current active lobby for this user, returns lobby ID. */
 export async function findActiveLobbyWithPlayer(
@@ -198,6 +201,19 @@ async function validateGameSettings(lobby: GameLobby) {
 async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
   const newPrompts = new Array<PromptCardInGame>();
   const newResponses = new Array<ResponseCardInGame>();
+  // Verify that the user has access to locked decks:
+  for (const deckID of lobby.deck_ids) {
+    const deck = await getDeck(deckID);
+    if (deck.visibility == 'locked') {
+      const access = await verifyUserHasDeckKey(lobby.creator_uid, deckID);
+      if (!access) {
+        throw new HttpsError(
+          'permission-denied',
+          `Incorrect password for deck '${deckID}'`,
+        );
+      }
+    }
+  }
   // Copy all decks in sequence:
   // (sorry I failed to do parallel...)
   // See https://stackoverflow.com/a/37576787/1093712

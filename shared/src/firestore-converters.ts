@@ -7,6 +7,7 @@ import {
 import {
   CAAUser,
   Deck,
+  DeckLock,
   DeckMigrationItem,
   DeckTag,
   GameLobby,
@@ -390,5 +391,13 @@ export const soundEventConverter: FConverter<SoundEvent> = {
       data.sound_id,
       (data.time as FTimestamp | null)?.toDate(),
     );
+  },
+};
+
+export const deckLockConverter: FConverter<DeckLock> = {
+  toFirestore: (lock: DeckLock) => copyFields(lock, ['id']),
+  fromFirestore: (snapshot: FDocSnapshot) => {
+    const data = snapshot.data();
+    return new DeckLock(data.deck_id, data.hash);
   },
 };
