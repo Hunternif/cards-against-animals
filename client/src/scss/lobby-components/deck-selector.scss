@@ -1,4 +1,4 @@
-@use "../colors.scss";
+@use '../colors.scss';
 
 /*-------------------------- Deck selector --------------------------*/
 
@@ -16,6 +16,11 @@
     color: #fff;
     background-color: rgba(colors.$bg-dark, 0.533);
   }
+  &:not(.selected) {
+    .deck-row-title {
+      opacity: 0.6;
+    }
+  }
   // Dim down checkbox opacity when unselected:
   &.editable.unselected:hover .checkbox label::after {
     opacity: 0.4;
@@ -30,8 +35,9 @@
   text-wrap: wrap;
   text-overflow: ellipsis;
   max-height: 3rem;
-  &.unselected {
-    opacity: 0.6;
+
+  .icon-lock {
+    margin-right: 0.25em;
   }
 }
 

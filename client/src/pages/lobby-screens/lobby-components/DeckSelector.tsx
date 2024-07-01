@@ -7,6 +7,7 @@ import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { useDIContext } from "../../../di-context";
 import { DeckWithCount } from "../../../api/deck/deck-repository";
 import { useEffectOnce } from "../../../hooks/ui-hooks";
+import { IconLock } from "../../../components/Icons";
 
 interface DeckProps {
   deck: DeckWithCount,
@@ -16,19 +17,25 @@ interface DeckProps {
 }
 
 function DeckRow({ deck, selected, onToggle, readOnly }: DeckProps) {
-  const selectedClass = selected ? " selected" : " unselected";
-  const readOnlyClass = readOnly ? " readonly" : " editable";
+  const classes = ['deck-row'];
+  classes.push(selected ? "selected" : "unselected");
+  classes.push(readOnly ? "readonly" : "editable");
+  const isLocked = deck.visibility === 'locked';
+  if (isLocked) classes.push('locked');
   function handleClick() {
     if (!readOnly && onToggle) onToggle(!selected);
   }
   return <tr
-    className={`deck-row${selectedClass}${readOnlyClass}`}
+    className={classes.join(' ')}
     onClick={handleClick}>
     <td style={{ width: "2em" }}>
       <Checkbox checked={selected} disabled={readOnly} />
     </td>
     <td style={{ width: "50%" }}>
-      <div className={`deck-row-title${selectedClass}`}>{deck.title}</div>
+      <div className="deck-row-title">
+        {isLocked && <IconLock className="icon-lock"/>}
+        {deck.title}
+      </div>
     </td>
     <td>
       <div className="count-column deck-prompt-count">{deck.promptCount}</div>

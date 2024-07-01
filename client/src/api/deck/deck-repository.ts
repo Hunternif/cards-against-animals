@@ -194,6 +194,7 @@ export class FirestoreDeckRepository implements IDeckRepository {
 export interface DeckWithCount {
   id: string;
   title: string;
+  visibility: DeckVisibility;
   promptCount: number;
   responseCount: number;
 }

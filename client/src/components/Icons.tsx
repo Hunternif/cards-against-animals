@@ -188,7 +188,7 @@ export function IconChevronDownInline() {
 
 export function IconChevronUp(props: IconSvgProps) {
   // From Google Fonts, Material Icons: https://fonts.google.com/icons
-  return <Svg {...props} height={props.height ?? 20} width={props.width ?? 20} viewBox="0 -960 960 960">
+  return <Svg {...props} height={props.height ?? 20} width={props.width ?? 20} viewBox="0 0 24 24">
     <path d="M480-538.463 309.076-367.539q-8.307 8.308-18.384 8.5-10.076.192-18.768-8.5-8.693-8.692-8.693-18.576 0-9.885 9.031-18.915l185.431-185.431q5.015-4.615 10.546-6.923 5.53-2.307 11.961-2.307t11.961 2.307q5.531 2.308 10.146 6.923L687.738-405.03q8.646 8.646 8.838 18.222.193 9.577-8.5 18.269-8.692 8.692-18.576 8.692t-18.576-8.692L480-538.463Z" />
   </Svg>;
 }
@@ -205,4 +205,18 @@ export function IconHeadshot(props: HtmlProps) {
 export function IconStarOfDavid(props: HtmlProps) {
   return <img {...props} src={star_of_david}
     className={`icon-star-of-david ${props.className ?? ""}`} />;
+}
+
+export function IconLock(props: IconSvgProps) {
+  // From Google Fonts, Material Icons: https://fonts.google.com/icons
+  return <Svg {...props} height={props.height ?? 20} width={props.width ?? 20} viewBox="0 0 24 24">
+    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+  </Svg>;
+}
+
+export function IconLockOpen(props: IconSvgProps) {
+  // From Google Fonts, Material Icons: https://fonts.google.com/icons
+  return <Svg {...props} height={props.height ?? 20} width={props.width ?? 20} viewBox="0 0 24 24">
+    <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/>
+  </Svg>;
 }
