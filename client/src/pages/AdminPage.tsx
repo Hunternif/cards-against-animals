@@ -2,7 +2,7 @@ import { User } from "firebase/auth";
 import { useContext, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { signOut, useCAAUserOnce } from "../api/users-api";
+import { signOut } from "../api/users-api";
 import { ErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -11,6 +11,7 @@ import { Sidebar } from "../components/layout/SidebarLayout";
 import { firebaseAuth } from "../firebase";
 import { AdminUserPill } from "./admin-screens/admin-components/AdminUserPill";
 import { GoogleLogin } from "./lobby-screens/login-components/GoogleLogin";
+import { useCAAUserOnce } from "../api/users-hooks";
 
 interface UserProps {
   user: User;

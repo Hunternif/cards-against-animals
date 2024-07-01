@@ -7,12 +7,10 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore';
-import {
-  useDocumentData,
-  useDocumentDataOnce,
-} from 'react-firebase-hooks/firestore';
 import { firebaseAuth, firestore } from '../firebase';
-import { userConverter } from '../shared/firestore-converters';
+import {
+  userConverter,
+} from '../shared/firestore-converters';
 import { CAAUser } from '../shared/types';
 import { avatarMap } from './avatars';
 import { leaveLobby } from './lobby/lobby-join-api';
@@ -21,9 +19,13 @@ import { getLobby } from './lobby/lobby-repository';
 
 const usersRef = collection(firestore, 'users').withConverter(userConverter);
 
+export function getCAAUserRef(userID: string) {
+  return doc(usersRef, userID);
+}
+
 /** Finds user data by ID */
 export async function getCAAUser(userID: string): Promise<CAAUser | null> {
-  return (await getDoc(doc(usersRef, userID))).data() ?? null;
+  return (await getDoc(getCAAUserRef(userID))).data() ?? null;
 }
 
 /** Finds or creates user data from Firebase user. */
@@ -115,14 +117,4 @@ export async function findPastLobbyID(userID: string): Promise<string | null> {
     return caaUser.current_lobby_id;
   }
   return null;
-}
-
-/** React hook to fetch user data and subscribe to it. */
-export function useCAAUser(userID: string) {
-  return useDocumentData(doc(usersRef, userID));
-}
-
-/** React hook to fetch user data, without subscribing to it. */
-export function useCAAUserOnce(userID: string) {
-  return useDocumentDataOnce(doc(usersRef, userID));
 }
