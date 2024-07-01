@@ -169,7 +169,8 @@ service cloud.firestore {
       allow write: if isLoggedIn() && request.auth.uid == userID && isAdminInfoUnchanged(userID);
 
       match /deck_keys/{deckID} {
-        allow write: if isLoggedIn() && request.auth.uid == userID;
+        // Allow list to see which decks _should_ have keys.
+        allow write, list: if isLoggedIn() && request.auth.uid == userID;
       }
     }
     match /deck_migrations/{document=**} {

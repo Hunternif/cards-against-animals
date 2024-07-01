@@ -117,12 +117,13 @@ function SmallScreenLobby(props: Props) {
   </>;
 }
 
-function MainContent({ lobby, user }: Props) {
+function MainContent(props: Props) {
+  const { lobby, user } = props;
   const isCreator = lobby.creator_uid === user.uid;
   return (
     <div style={contentStyle} className="new-lobby-main-content">
-      {isCreator ? <LobbyCreatorControls lobby={lobby} /> : (
-        <LobbyCreationReadOnly lobby={lobby} />
+      {isCreator ? <LobbyCreatorControls {...props} /> : (
+        <LobbyCreationReadOnly {...props} />
       )}
     </div>
   );

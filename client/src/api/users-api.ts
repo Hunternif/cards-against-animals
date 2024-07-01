@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import { firebaseAuth, firestore } from '../firebase';
 import {
+  deckLockConverter,
   userConverter,
 } from '../shared/firestore-converters';
 import { CAAUser } from '../shared/types';
@@ -21,6 +22,12 @@ const usersRef = collection(firestore, 'users').withConverter(userConverter);
 
 export function getCAAUserRef(userID: string) {
   return doc(usersRef, userID);
+}
+
+export function getUserDeckLocksRef(userID: string) {
+  return collection(firestore, `users/${userID}/deck_keys`).withConverter(
+    deckLockConverter,
+  );
 }
 
 /** Finds user data by ID */
