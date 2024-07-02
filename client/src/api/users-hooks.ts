@@ -3,7 +3,7 @@ import {
   useDocumentData,
   useDocumentDataOnce,
 } from 'react-firebase-hooks/firestore';
-import { FirestoreCollectionDataHook } from '../hooks/data-hooks';
+import { FirestoreCollectionDataHookNullSafe } from '../hooks/data-hooks';
 import { getCAAUserRef, getUserDeckLocksRef } from './users-api';
 
 /** React hook to fetch user data and subscribe to it. */
@@ -19,8 +19,8 @@ export function useCAAUserOnce(userID: string) {
 /** Returns a list of deck IDs for which the player _should have_ keys. */
 export function useUserDecksWithKeys(
   userID: string,
-): FirestoreCollectionDataHook<string> {
+): FirestoreCollectionDataHookNullSafe<string> {
   const [docs, loading, error] = useCollection(getUserDeckLocksRef(userID));
-  const ids = docs?.docs.map((d) => d.id);
+  const ids = docs?.docs.map((d) => d.id) ?? [];
   return [ids, loading, error];
 }

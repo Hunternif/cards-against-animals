@@ -1,5 +1,5 @@
 import { FirestoreError, Query, QuerySnapshot } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 export type FirestoreCollectionDataHook<T> = [
@@ -45,4 +45,32 @@ export function useAsyncData<T>(
     }
   }, []); // Don't depend on identity of the promise!
   return [data, error];
+}
+
+/**
+ * Convenience hook to maintain a set of items which can be
+ * marked on and off.
+ * Useful e.g. for maintaing a 'selected' subset of some collection.
+ */
+export function useMarkedData<T>(): [
+  markedData: Set<T>,
+  markItem: (item: T) => void,
+  unmarkItem: (item: T) => void,
+] {
+  const [markedData, setMarkedData] = useState<Set<T>>(new Set());
+  const markItem = useCallback(
+    (item: T) => {
+      setMarkedData(new Set(markedData).add(item));
+    },
+    [markedData],
+  );
+  const unmarkItem = useCallback(
+    (item: T) => {
+      const newMarkedData = new Set(markedData);
+      newMarkedData.delete(item);
+      setMarkedData(newMarkedData);
+    },
+    [markedData],
+  );
+  return [markedData, markItem, unmarkItem];
 }

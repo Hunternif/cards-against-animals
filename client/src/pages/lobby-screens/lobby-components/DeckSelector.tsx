@@ -1,5 +1,5 @@
 import { User } from 'firebase/auth';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useState } from 'react';
 import { DeckWithCount } from '../../../api/deck/deck-repository';
 import { addDeck, removeDeck } from '../../../api/lobby/lobby-control-api';
 import { useUserDecksWithKeys } from '../../../api/users-hooks';
@@ -8,24 +8,20 @@ import { ErrorContext } from '../../../components/ErrorContext';
 import { IconLock, IconLockOpen } from '../../../components/Icons';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { useDIContext } from '../../../di-context';
+import { useMarkedData } from '../../../hooks/data-hooks';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
 import { GameLobby } from '../../../shared/types';
+import { sleep } from '../../../shared/utils';
 
 interface DeckProps {
-  deck: DeckWithCount;
+  deck: DeckInfo;
   selected?: boolean;
   onToggle?: (selected: boolean) => void;
   readOnly?: boolean;
-  userHasKey?: boolean;
+  unlocking?: boolean;
 }
 
-function DeckRow({
-  deck,
-  selected,
-  onToggle,
-  readOnly,
-  userHasKey,
-}: DeckProps) {
+function DeckRow({ deck, selected, onToggle, readOnly, unlocking }: DeckProps) {
   const classes = ['deck-row'];
   classes.push(selected ? 'selected' : 'unselected');
   classes.push(readOnly ? 'readonly' : 'editable');
@@ -43,12 +39,17 @@ function DeckRow({
       </td>
       <td style={{ width: '50%' }}>
         <div className="deck-row-title">
-          {isLocked &&
-            (userHasKey ? (
-              <IconLockOpen className="icon-lock" />
-            ) : (
-              <IconLock className="icon-lock" />
-            ))}
+          {isLocked && (
+            <span className="icon">
+              {unlocking ? (
+                <LoadingSpinner inline />
+              ) : deck.userHasKey ? (
+                <IconLockOpen className="icon-lock" />
+              ) : (
+                <IconLock className="icon-lock" />
+              )}
+            </span>
+          )}
           {deck.title}
         </div>
       </td>
@@ -75,12 +76,19 @@ interface SelectorProps {
 
 /** Component for selecting decks in the lobby. */
 export function DeckSelector(props: SelectorProps) {
-  const { user } = props;
+  const { user, lobby } = props;
   const [loading, setLoading] = useState(true);
   const [decks, setDecks] = useState<Array<DeckWithCount>>([]);
   const { setError } = useContext(ErrorContext);
   const { deckRepository } = useDIContext();
   const [decksWithKeys, _, keysError] = useUserDecksWithKeys(user.uid);
+  const deckInfo: Array<DeckInfo> = decks.map((deck) => {
+    return {
+      selected: lobby.deck_ids.has(deck.id),
+      userHasKey: decksWithKeys.indexOf(deck.id) > -1,
+      ...deck,
+    };
+  });
 
   if (keysError) {
     setError(keysError);
@@ -105,57 +113,62 @@ export function DeckSelector(props: SelectorProps) {
       {loading ? (
         <LoadingSpinner delay text="Loading decks..." />
       ) : (
-        <Decks decks={decks} decksWithKeys={decksWithKeys ?? []} {...props} />
+        <Decks decks={deckInfo} {...props} />
       )}
     </div>
   );
 }
 
+/** Internal type to store extra info with the deck */
+type DeckInfo = DeckWithCount & {
+  selected?: boolean;
+  userHasKey?: boolean;
+};
+
 interface DecksProps extends SelectorProps {
-  /** Deck IDs for which the user has keys */
-  decksWithKeys: Array<string>;
-  decks: Array<DeckWithCount>;
+  decks: Array<DeckInfo>;
 }
 
-function Decks({ decksWithKeys, lobby, decks, readOnly }: DecksProps) {
-  const selectedRef = useRef<Array<DeckWithCount>>(
-    decks.filter((d) => lobby.deck_ids.has(d.id)),
+function Decks({ lobby, decks, readOnly }: DecksProps) {
+  const { setError } = useContext(ErrorContext);
+  const selectedDecks = decks.filter((d) => d.selected);
+  const promptCount = selectedDecks.reduce(
+    (count, deck) => count + deck.promptCount,
+    0,
   );
-  const [promptCount, setPromptCount] = useState(0);
-  const [responseCount, setResponseCount] = useState(0);
-  const decksWithKeysSet = new Set(decksWithKeys);
+  const responseCount = selectedDecks.reduce(
+    (count, deck) => count + deck.responseCount,
+    0,
+  );
 
-  function updateCounts() {
-    const selection = selectedRef.current;
-    setPromptCount(
-      selection.reduce((count, deck) => count + deck.promptCount, 0),
-    );
-    setResponseCount(
-      selection.reduce((count, deck) => count + deck.responseCount, 0),
-    );
-  }
+  /** Decks that are in the process of being unlocked. */
+  const [unlockingIDs, startUnlock, endUnlock] = useMarkedData<string>();
 
   /** Selects the deck. If it's locked, asks for the password. */
-  async function trySelectDeck(deck: DeckWithCount) {
-    // TODO: check password
-    const selection = selectedRef.current;
-    selection.push(deck);
-    updateCounts();
-    await addDeck(lobby, deck.id);
-  }
-
-  async function deselectDeck(deck: DeckWithCount) {
-    const selection = selectedRef.current;
-    const index = selection.findIndex((d) => d.id === deck.id);
-    if (index > -1) {
-      selection.splice(index, 1);
-      updateCounts();
-      await removeDeck(lobby, deck.id);
+  async function trySelectDeck(deck: DeckInfo) {
+    if (deck.visibility === 'locked') {
+      try {
+        startUnlock(deck.id);
+        // TODO: check password
+        await sleep(2000);
+        endUnlock(deck.id);
+        doSelectDeck(deck);
+      } catch (e: any) {
+        setError(e);
+        endUnlock(deck.id);
+      }
+    } else {
+      doSelectDeck(deck);
     }
   }
 
-  // Update counts once after page load:
-  useEffect(() => updateCounts(), [lobby.id]);
+  async function doSelectDeck(deck: DeckInfo) {
+    await addDeck(lobby, deck.id);
+  }
+
+  async function unselectDeck(deck: DeckInfo) {
+    await removeDeck(lobby, deck.id);
+  }
 
   return (
     <>
@@ -177,13 +190,13 @@ function Decks({ decksWithKeys, lobby, decks, readOnly }: DecksProps) {
             <DeckRow
               key={deck.id}
               deck={deck}
-              selected={lobby.deck_ids.has(deck.id)}
+              selected={deck.selected}
               onToggle={(selected) => {
                 if (selected) trySelectDeck(deck);
-                else deselectDeck(deck);
+                else unselectDeck(deck);
               }}
               readOnly={readOnly}
-              userHasKey={decksWithKeysSet.has(deck.id)}
+              unlocking={unlockingIDs.has(deck.id)}
             />
           ))}
         </tbody>
