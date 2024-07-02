@@ -1,16 +1,18 @@
+import { runTransaction } from 'firebase/firestore';
 import {
   endLobbyFun,
+  firestore,
   startLobbyFun,
   updateLobbySettingsFun,
-} from "../../firebase";
+} from '../../firebase';
 import {
   GameLobby,
   GameTurn,
   LobbySettings,
   PlayerInLobby,
-} from "../../shared/types";
-import { assertExhaustive } from "../../shared/utils";
-import { updateLobby } from "./lobby-repository";
+} from '../../shared/types';
+import { assertExhaustive } from '../../shared/utils';
+import { getLobby, updateLobby } from './lobby-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -40,18 +42,31 @@ export async function updateLobbySettings(
 }
 
 /** Should be used only during lobby setup */
-export async function addDeck(lobby: GameLobby, deckID: string): Promise<void> {
-  lobby.deck_ids.add(deckID);
-  await updateLobby(lobby);
+export async function addDeck(
+  lobby: GameLobby,
+  deckID: string,
+): Promise<GameLobby> {
+  return await runTransaction(firestore, async (transaction) => {
+    // Refresh lobby to get up-to-date list of decks:
+    const updatedLobby = (await getLobby(lobby.id, transaction))!;
+    updatedLobby.deck_ids.add(deckID);
+    await updateLobby(updatedLobby, transaction);
+    return updatedLobby;
+  });
 }
 
 /** Should be used only during lobby setup */
 export async function removeDeck(
   lobby: GameLobby,
   deckID: string,
-): Promise<void> {
-  lobby.deck_ids.delete(deckID);
-  await updateLobby(lobby);
+): Promise<GameLobby> {
+  return await runTransaction(firestore, async (transaction) => {
+    // Refresh lobby to get up-to-date list of decks:
+    const updatedLobby = (await getLobby(lobby.id, transaction))!;
+    updatedLobby.deck_ids.delete(deckID);
+    await updateLobby(updatedLobby, transaction);
+    return updatedLobby;
+  });
 }
 
 /** Returns true if game end condition has been reached. */
@@ -61,14 +76,14 @@ export function checkIfShouldEndGame(
   players: PlayerInLobby[],
 ): boolean {
   switch (lobby.settings.play_until) {
-    case "forever":
+    case 'forever':
       return false;
-    case "max_turns_per_person":
+    case 'max_turns_per_person':
     // With turns per person, we set max_turns at the start of the game.
     // If a player joins during the game, we will add only 1 more turn.
-    case "max_turns":
+    case 'max_turns':
       return turn.ordinal >= lobby.settings.max_turns;
-    case "max_score": {
+    case 'max_score': {
       for (const player of players) {
         if (player.score >= lobby.settings.max_score) {
           return true;
