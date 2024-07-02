@@ -53,7 +53,7 @@ interface FooterProps {
 export function ConfirmModalFooter({
   children, okText, cancelText, disabled, hideCancel, onConfirm, onCancel,
 }: FooterProps) {
-  return <footer>
+  return <footer className="modal-footer">
     {children ?? <>
       <GameButton onClick={onConfirm} disabled={disabled}>
         {okText ?? "Yes"}

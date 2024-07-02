@@ -37,12 +37,17 @@ function ShownModal({
           // Prevent clicking on the card from closing the modal:
           onClick={(e) => e.stopPropagation()}
         >
-          <header>
-            {title && <span className="modal-title">{title}</span>}
-            {closeButton && (
-              <button className="modal-close-button" onClick={onHide}></button>
-            )}
-          </header>
+          {(title || closeButton) && (
+            <header>
+              {title && <span className="modal-title">{title}</span>}
+              {closeButton && (
+                <button
+                  className="modal-close-button"
+                  onClick={onHide}
+                ></button>
+              )}
+            </header>
+          )}
           {children}
         </div>
       </div>

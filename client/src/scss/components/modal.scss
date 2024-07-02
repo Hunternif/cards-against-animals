@@ -63,7 +63,8 @@
       overflow-y: auto;
     }
   }
-  footer {
+  footer.modal-footer {
+    margin: 0;
     display: flex;
     gap: 1em;
     justify-content: center;
@@ -117,6 +118,7 @@
   border: none;
   padding: 0;
   opacity: 0.5;
+  margin-left: auto;
   &:hover {
     opacity: 0.75;
   }
