@@ -110,3 +110,9 @@
   color: colors.$text-hilight;
   font-weight: 500;
 }
+
+.deck-password-modal {
+  input[type='text'] {
+    width: 100%;
+  }
+}

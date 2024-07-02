@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactNode, useContext } from 'react';
+import { ChangeEvent, InputHTMLAttributes, ReactNode, useContext } from 'react';
 import { Checkbox } from './Checkbox';
 import { ErrorContext } from './ErrorContext';
 
@@ -125,6 +125,7 @@ interface TextInputProps extends ControlProps {
   placeholder?: string;
   disabled?: boolean;
   onChange: (newValue: string) => Promise<void>;
+  password?: boolean;
 }
 
 /** Form input: text */
@@ -132,6 +133,7 @@ export function TextInput({
   value,
   placeholder,
   disabled,
+  password,
   onChange,
   ...props
 }: TextInputProps) {
@@ -142,7 +144,7 @@ export function TextInput({
   }
   return (
     <input
-      type="text"
+      type={password ? 'password' : 'text'}
       className={`control ${controlClass}`}
       value={value}
       placeholder={placeholder}
