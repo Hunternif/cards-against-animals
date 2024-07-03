@@ -1,33 +1,12 @@
-import { firestore } from '../firebase-server';
-import { deckLockConverter } from '../shared/firestore-converters';
+import { HttpsError } from 'firebase-functions/v1/auth';
 import { DeckLock } from '../shared/types';
+import {
+  getDeckLock,
+  getUserDeckKey,
+  setDeckLock,
+} from './deck-lock-repository';
 
 // API for verifying access to locked decks.
-
-function getDeckLockRef(deckID: string) {
-  return firestore
-    .collection('deck_locks')
-    .withConverter(deckLockConverter)
-    .doc(deckID);
-}
-
-function getUserDeckKeyRef(userID: string, deckID: string) {
-  return firestore
-    .collection(`users/${userID}/deck_keys`)
-    .withConverter(deckLockConverter)
-    .doc(deckID);
-}
-
-async function getDeckLock(deckID: string): Promise<DeckLock | null> {
-  return (await getDeckLockRef(deckID).get())?.data() ?? null;
-}
-
-async function getUserDeckKey(
-  userID: string,
-  deckID: string,
-): Promise<DeckLock | null> {
-  return (await getUserDeckKeyRef(userID, deckID).get())?.data() ?? null;
-}
 
 /** Returns true if the user has a matching key to the deck. */
 export async function verifyUserHasDeckKey(
@@ -42,4 +21,54 @@ export async function verifyUserHasDeckKey(
   const userKey = await getUserDeckKey(userID, deckID);
   if (userKey == null) return false;
   return deckLock.hash === userKey.hash;
+}
+
+/** Returns true if the passsword matches. */
+export async function verifyDeckPassword(
+  deckID: string,
+  password: string,
+): Promise<boolean> {
+  const deckLock = await getDeckLock(deckID);
+  if (deckLock == null) {
+    // The deck doesn't have a lock
+    return true;
+  }
+  const hash = await hashDeckKey(deckLock.deck_id, password);
+  return deckLock.hash === hash;
+}
+
+/** Sets a password on a deck. Only allowed for admins */
+export async function createDeckLock(deckID: string, password: string) {
+  const existingLock = await getDeckLock(deckID);
+  if (existingLock)
+    throw new HttpsError(
+      'failed-precondition',
+      `Deck '${deckID}' already has a lock`,
+    );
+  const hash = await hashDeckKey(deckID, password);
+  await setDeckLock(new DeckLock(deckID, hash));
+}
+
+/** Creates a one-way hash for a deck password. */
+async function hashDeckKey(deckID: string, password: string): Promise<string> {
+  // deckID is the salt
+  return await sha256(password + deckID);
+}
+
+/** https://stackoverflow.com/a/48161723/1093712 */
+async function sha256(message: string): Promise<string> {
+  // encode as UTF-8
+  const msgBuffer = new TextEncoder().encode(message);
+
+  // hash the message
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+
+  // convert ArrayBuffer to Array
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+  // convert bytes to hex string
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return hashHex;
 }
