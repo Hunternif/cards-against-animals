@@ -81,7 +81,7 @@ export function defaultLobbySettings(): LobbySettings {
     show_likes_to: 'all_except_czar',
     likes_limit: 'none',
     discard_cost: '1_free_then_1_star',
-    lobby_control: 'players',
+    lobby_control: 'creator',
     next_turn_time_sec: 4.0,
   };
 }
