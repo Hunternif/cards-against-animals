@@ -94,6 +94,11 @@ export const unlockDeckForUserFun = httpsCallable<
   boolean
 >(functions, 'unlockDeckForUser');
 
+export const checkUserDeckKeyFun = httpsCallable<{ deck_id: string }, boolean>(
+  functions,
+  'checkUserDeckKey',
+);
+
 export const logInteractionFun = httpsCallable<
   {
     lobby_id: string;

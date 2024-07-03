@@ -1,5 +1,8 @@
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 
+import { checkUserDeckKeyHandler } from './functions/deck/checkUserDeckKey';
+import { lockDeckHandler } from './functions/deck/lockDeck';
+import { unlockDeckForUserHandler } from './functions/deck/unlockDeckForUser';
 import { exportCallable } from './functions/function-utils';
 import { endLobbyHandler } from './functions/lobby/endLobby';
 import { findOrCreateLobbyHandler } from './functions/lobby/findOrCreateLobby';
@@ -14,12 +17,10 @@ import { newTurnHandler } from './functions/turn/newTurn';
 import { createOnLobbyStatusChangeHandler } from './triggers/onLobbyStatusChange';
 import { createOnPlayerStatusChangeHandler } from './triggers/onPlayerStatusChange';
 import { createOnTurnPhaseChangeHandler } from './triggers/onTurnPhaseChange';
+import { createOnUserPresenceChangeHandler } from './triggers/onUserPresenceChange';
 
 // This import is copied during build
 import firebaseConfig from './firebase-config.json';
-import { createOnUserPresenceChangeHandler } from './triggers/onUserPresenceChange';
-import { lockDeckHandler } from './functions/deck/lockDeck';
-import { unlockDeckForUserHandler } from './functions/deck/unlockDeckForUser';
 
 setGlobalOptions({
   region: firebaseConfig.region,
@@ -78,6 +79,9 @@ export const lockDeck = exportCallable(lockDeckHandler);
 
 /** Unlocks the deck for this user, given the password. */
 export const unlockDeckForUser = exportCallable(unlockDeckForUserHandler);
+
+/** Returns true if the user has a valid password for this deck. */
+export const checkUserDeckKey = exportCallable(checkUserDeckKeyHandler);
 
 /** Logic to run after each turn phase. */
 export const onTurnPhaseChange = createOnTurnPhaseChangeHandler();

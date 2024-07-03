@@ -12,6 +12,7 @@ import { useMarkedData } from '../../../hooks/data-hooks';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
 import { GameLobby } from '../../../shared/types';
 import { DeckPasswordModal } from './DeckPasswordModal';
+import { checkUserDeckKey } from '../../../api/deck/deck-lock-api';
 
 interface DeckProps {
   deck: DeckInfo;
@@ -151,8 +152,14 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
     if (deck.visibility === 'locked') {
       try {
         startUnlock(deck.id);
-        // TODO: check password
-        setPasswordDeck(deck);
+        if (await checkUserDeckKey(deck)) {
+          // User already has a saved password for this deck.
+          endUnlock(deck.id);
+          doSelectDeck(deck);
+        } else {
+          // Need to type the password.
+          setPasswordDeck(deck);
+        }
       } catch (e: any) {
         setError(e);
         endUnlock(deck.id);
