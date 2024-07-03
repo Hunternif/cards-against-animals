@@ -1,6 +1,7 @@
 import { FieldValue } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
 import { HttpsError } from 'firebase-functions/v2/https';
+import firebaseConfig from '../firebase-config.json';
 import { firestore, lobbiesRef, usersRef } from '../firebase-server';
 import {
   promptCardInGameConverter,
@@ -15,8 +16,10 @@ import {
   ResponseCardInGame,
   defaultLobbySettings,
 } from '../shared/types';
+import { assertExhaustive } from '../shared/utils';
+import { assertNotAnonymous } from './auth-api';
+import { verifyUserHasDeckKey } from './deck-lock-server-api';
 import {
-  getAllDecks,
   getAllPromptsForGame,
   getAllResponsesForGame,
   getDeck,
@@ -39,9 +42,6 @@ import {
   setUsersCurrentLobby,
   updateCAAUser,
 } from './user-server-api';
-import firebaseConfig from '../firebase-config.json';
-import { assertNotAnonymous } from './auth-api';
-import { verifyUserHasDeckKey } from './deck-lock-server-api';
 
 /** Finds current active lobby for this user, returns lobby ID. */
 export async function findActiveLobbyWithPlayer(
@@ -87,6 +87,35 @@ export async function createLobby(userID: string): Promise<GameLobby> {
   return newLobby;
 }
 
+async function allowJoinAsPlayer(lobby: GameLobby): Promise<boolean> {
+  const playerCount = await countPlayers(lobby.id, 'player');
+  if (playerCount >= lobby.settings.max_players) return false;
+  switch (lobby.status) {
+    case 'new':
+      return true;
+    case 'in_progress':
+      return lobby.settings.allow_join_mid_game;
+    case 'ended':
+      return false;
+    default:
+      assertExhaustive(lobby.status);
+      return false;
+  }
+}
+
+async function allowJoinAsSpectator(lobby: GameLobby): Promise<boolean> {
+  switch (lobby.status) {
+    case 'new':
+    case 'in_progress':
+      return true;
+    case 'ended':
+      return false;
+    default:
+      assertExhaustive(lobby.status);
+      return false;
+  }
+}
+
 /**
  * Attempts to add player to lobby as "player",
  * or as "spectator" if the game is already in progress.
@@ -107,13 +136,13 @@ export async function addPlayer(
   let role: PlayerRole = 'spectator';
   if (lobby.status == 'ended') {
     throw new HttpsError('unavailable', `Lobby already ended: ${lobby.id}`);
-  } else if (lobby.status === 'new') {
+  }
+  if (await allowJoinAsPlayer(lobby)) {
     role = 'player';
-  } else if (
-    lobby.status === 'in_progress' &&
-    lobby.settings.allow_join_mid_game
-  ) {
-    role = 'player';
+  } else if (await allowJoinAsSpectator(lobby)) {
+    role = 'spectator';
+  } else {
+    throw new HttpsError('unavailable', `Could not join lobby ${lobby.id}`);
   }
   const rng = RNG.fromStrSeedWithTimestamp(lobby.id + caaUser.name);
   const player = new PlayerInLobby(

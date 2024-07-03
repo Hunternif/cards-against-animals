@@ -20,6 +20,14 @@ export function LobbySettingsPanel(props: Props) {
   return <div className="lobby-settings-container">
     <header className={headerClass}><h3>Game Settings</h3></header>
     <div className="lobby-settings-form">
+      <FormItem label="Maximum players"
+        hint="When this number is reached, other players can only spectate."
+        control={<MaxPlayersControl {...props} />}
+      />
+      <FormItem label="Cards per person"
+        hint="Each round everyone will be dealt new cards, up to this number."
+        control={<CardsPerPersonControl {...props} />}
+      />
       <FormItem label="Play until"
         hint="The game will end when this condition is met."
         control={<EndControl {...props} />}
@@ -41,10 +49,6 @@ export function LobbySettingsPanel(props: Props) {
           control={<MaxScoreControl {...props} />}
         />
       )}
-      <FormItem label="Cards per person"
-        hint="Each round everyone will be dealt new cards, up to this number."
-        control={<CardsPerPersonControl {...props} />}
-      />
       <FormItem label="Next turn after [sec]"
         hint="On Winner screen, auto-starts the next turn after this amount of time (in seconds). 0 to disable."
         control={<NextTurnTimeControl {...props} />}
@@ -93,6 +97,16 @@ export function LobbySettingsPanel(props: Props) {
       />
     </div>
   </div>;
+}
+
+function MaxPlayersControl({ settings, readOnly, onChange }: Props) {
+  return <NumberInput min={2} max={99} disabled={readOnly}
+    value={settings.max_players}
+    onChange={async (newValue) => {
+      settings.max_players = newValue;
+      if (onChange) await onChange(settings);
+    }}
+  />;
 }
 
 function EndControl({ settings, readOnly, onChange }: Props) {
@@ -260,7 +274,7 @@ function LobbyControlControl({ settings, readOnly, onChange }: Props) {
     options={[
       ["creator", "Only creator"],
       ["czar", "Only czar"],
-      ["players", "Only players"],
+      ["players", "Players"],
       ["anyone", "Anyone (spectators)"],
     ]}
   />;

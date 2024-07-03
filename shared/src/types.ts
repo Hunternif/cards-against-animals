@@ -36,6 +36,7 @@ export class GameLobby {
 }
 
 export interface LobbySettings {
+  max_players: number;
   play_until: PlayUntil;
   max_turns: number;
   max_score: number;
@@ -65,6 +66,7 @@ export interface LobbySettings {
 
 export function defaultLobbySettings(): LobbySettings {
   return {
+    max_players: 20,
     play_until: 'max_turns_per_person',
     max_turns: 10,
     max_score: 5,
