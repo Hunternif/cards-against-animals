@@ -40,11 +40,12 @@ export async function verifyDeckPassword(
 /** Sets a password on a deck. Only allowed for admins */
 export async function createDeckLock(deckID: string, password: string) {
   const existingLock = await getDeckLock(deckID);
-  if (existingLock)
+  if (existingLock) {
     throw new HttpsError(
       'failed-precondition',
       `Deck '${deckID}' already has a lock`,
     );
+  }
   const hash = await hashDeckKey(deckID, password);
   await setDeckLock(new DeckLock(deckID, hash));
 }

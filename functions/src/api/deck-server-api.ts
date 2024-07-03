@@ -34,8 +34,9 @@ export function getDeckResponsesRef(deckID: string) {
 
 export async function getDeck(deckID: string): Promise<Deck> {
   const deck = (await getDecksRef().doc(deckID).get()).data();
-  if (deck == null)
+  if (deck == null) {
     throw new HttpsError('not-found', `Deck not found: ${deckID}`);
+  }
   return deck;
 }
 

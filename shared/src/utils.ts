@@ -89,13 +89,13 @@ export function debounce(
   fn: (...args: any[]) => void,
   timeMs: number = 1000,
 ): (...args: any[]) => Promise<void> {
-  let timeoutID: number;
+  let timeout: any; // any because NodeJS uses a custom type here.
   return function (...args: any[]) {
     return new Promise((resolve, error) => {
-      if (timeoutID > 0) {
-        clearTimeout(timeoutID);
+      if (timeout > 0) {
+        clearTimeout(timeout);
       }
-      timeoutID = setTimeout(() => {
+      timeout = setTimeout(() => {
         try {
           resolve(fn(...args));
         } catch (e: any) {
