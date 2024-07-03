@@ -2,16 +2,17 @@ import { useContext, useState } from 'react';
 import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
 import { ErrorContext } from '../../../components/ErrorContext';
+import { IconLockInline } from '../../../components/Icons';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { Modal, ModalBody } from '../../../components/Modal';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { useDIContext } from '../../../di-context';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
+import { cardTypedID } from '../../../shared/deck-utils';
 import { Deck, DeckCard } from '../../../shared/types';
 import { AdminCopyCardsDialog } from './AdminCopyCardsDialog';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
-import { cardTypedID } from '../../../shared/deck-utils';
-import { IconLockInline } from '../../../components/Icons';
+import { AdminDeckPasswordModal } from './AdminDeckPasswordModal';
 import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 
 interface Props {
@@ -30,6 +31,7 @@ export function AdminDeck({ deckID }: Props) {
   const [selectedCards, setSelectedCards] = useState<Map<string, DeckCard>>(
     new Map(),
   );
+  const [showLockDialog, setShowLockDialog] = useState(false);
   const [showCopyDialog, setShowCopyDialog] = useState(false);
   const [copyStatusMsg, setCopyStatusMsg] = useState('');
 
@@ -57,7 +59,7 @@ export function AdminDeck({ deckID }: Props) {
     }
   }
 
-  // Load decks
+  // Load deck content
   useEffectOnce(() => {
     if (!deck) {
       deckRepository
@@ -69,6 +71,7 @@ export function AdminDeck({ deckID }: Props) {
         .catch((e) => setError(e));
     }
   });
+
   if (!deck) return <LoadingSpinner />;
 
   return (
@@ -91,6 +94,7 @@ export function AdminDeck({ deckID }: Props) {
           />
         </ModalBody>
       </Modal>
+
       <Modal show={copyStatusMsg != ''} onHide={() => setCopyStatusMsg('')}>
         {copyStatusMsg}
         <footer>
@@ -98,16 +102,31 @@ export function AdminDeck({ deckID }: Props) {
         </footer>
       </Modal>
 
+      <AdminDeckPasswordModal
+        deck={showLockDialog ? deck : undefined}
+        onCancel={() => setShowLockDialog(false)}
+        onComplete={() => setShowLockDialog(false)}
+      />
+
       {/* Extra controls: */}
       <div className="admin-deck-control-row">
-        <GameButton inline light iconLeft={<IconLockInline />}>
+        <GameButton
+          inline
+          light
+          iconLeft={<IconLockInline />}
+          disabled={deck.visibility === 'locked'}
+          onClick={() => setShowLockDialog(true)}
+        >
           Lock
         </GameButton>
-        {isAnySelected && (
-          <GameButton inline light onClick={() => setShowCopyDialog(true)}>
-            Copy to...
-          </GameButton>
-        )}
+        <GameButton
+          inline
+          light
+          onClick={() => setShowCopyDialog(true)}
+          disabled={!isAnySelected}
+        >
+          Copy to...
+        </GameButton>
       </div>
 
       <AdminDeckTableHeader

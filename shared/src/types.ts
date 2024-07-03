@@ -210,6 +210,7 @@ export class Deck {
   /** Must be fetched separately from a Firebase subcollection. */
   responses: Array<ResponseDeckCard> = [];
   /** Must be fetched separately from a Firebase subcollection. */
+  //TODO: move tags within deck.
   tags: DeckTag[] = [];
 
   constructor(

@@ -18,6 +18,7 @@ import { createOnTurnPhaseChangeHandler } from './triggers/onTurnPhaseChange';
 // This import is copied during build
 import firebaseConfig from './firebase-config.json';
 import { createOnUserPresenceChangeHandler } from './triggers/onUserPresenceChange';
+import { lockDeckHandler } from './functions/deck/lockDeck';
 
 setGlobalOptions({
   region: firebaseConfig.region,
@@ -70,6 +71,9 @@ export const logInteraction = exportCallable(logInteractionHandler);
  * and deal new cards.
  */
 export const discardNow = exportCallable(discardNowHandler);
+
+/** Locks deck with a password. */
+export const lockDeck = exportCallable(lockDeckHandler);
 
 /** Logic to run after each turn phase. */
 export const onTurnPhaseChange = createOnTurnPhaseChangeHandler();

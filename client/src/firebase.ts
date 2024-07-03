@@ -84,6 +84,11 @@ export const discardNowFun = httpsCallable<{ lobby_id: string }, void>(
   'discardNow',
 );
 
+export const lockDeckFun = httpsCallable<
+  { deck_id: string; password: string },
+  void
+>(functions, 'lockDeck');
+
 export const logInteractionFun = httpsCallable<
   {
     lobby_id: string;

@@ -106,12 +106,15 @@ export const playerConverter: FConverter<PlayerInLobby> = {
 
 export const deckConverter: FConverter<Deck> = {
   toFirestore: (deck: Deck) => {
-    return {
-      title: deck.title,
-      time_created: deck.time_created
-        ? FTimestamp.fromDate(deck.time_created)
-        : fServerTimestamp(),
-    };
+    return copyFields2(
+      deck,
+      {
+        time_created: deck.time_created
+          ? FTimestamp.fromDate(deck.time_created)
+          : fServerTimestamp(),
+      },
+      ['prompts', 'responses', 'tags'],
+    );
   },
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();

@@ -43,6 +43,10 @@ export async function getAllDecks(): Promise<Deck[]> {
   return (await getDecksRef().get()).docs.map((d) => d.data());
 }
 
+export async function updateDeck(deck: Deck): Promise<void> {
+  await getDecksRef().doc(deck.id).set(deck);
+}
+
 /** Loads complete content of a deck. with prompts and responses. */
 export async function downloadDeck(deckID: string): Promise<Deck> {
   const deck = (await getDecksRef().doc(deckID).get()).data();

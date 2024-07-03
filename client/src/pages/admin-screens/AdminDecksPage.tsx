@@ -7,6 +7,7 @@ import { useDIContext } from '../../di-context';
 import { useAsyncData } from '../../hooks/data-hooks';
 import { AdminDeck } from './admin-components/AdminDeck';
 import { AdminSubpage } from './admin-components/AdminSubpage';
+import { IconLockInline } from '../../components/Icons';
 
 export function AdminDecksPage() {
   const { deckRepository } = useDIContext();
@@ -23,6 +24,7 @@ export function AdminDecksPage() {
                 header={
                   <div className={`deck-header visibility-${deck.visibility}`}>
                     <span className="deck-title">
+                      {deck.visibility === 'locked' && <IconLockInline />}
                       {deck.title}
                       {deck.visibility === 'hidden' && <> (hidden)</>}
                     </span>
