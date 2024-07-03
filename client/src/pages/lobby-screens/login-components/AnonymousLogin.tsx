@@ -192,7 +192,7 @@ function LoginForm({
         />
       </Form.Group>
       <CenteredLayout>
-        <GameButton>{buttonText}</GameButton>
+        <GameButton submit>{buttonText}</GameButton>
       </CenteredLayout>
     </Form>}
   </>;

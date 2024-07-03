@@ -123,3 +123,10 @@
     opacity: 0.75;
   }
 }
+
+form.modal-confirm-form {
+  display: flex;
+  gap: 1em;
+  flex-direction: column;
+  justify-content: center;
+}
