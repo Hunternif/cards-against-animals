@@ -76,7 +76,7 @@ export function defaultLobbySettings(): LobbySettings {
     sort_cards_by_rating: true,
     allow_join_mid_game: true,
     enable_likes: true,
-    enable_soundboard: true,
+    enable_soundboard: false,
     freeze_stats: false,
     show_likes_to: 'all_except_czar',
     likes_limit: 'none',
