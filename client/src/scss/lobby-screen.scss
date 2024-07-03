@@ -157,3 +157,11 @@
     opacity: 0.7;
   }
 }
+.player-list-header {
+  text-align: center;
+}
+.spectator-list-header {
+  text-align: center;
+  position: sticky;
+  bottom: 0;
+}

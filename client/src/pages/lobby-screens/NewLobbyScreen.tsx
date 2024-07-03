@@ -2,6 +2,7 @@ import { User } from 'firebase/auth';
 import { CSSProperties, useContext, useState } from 'react';
 import { Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { leaveLobby } from '../../api/lobby/lobby-join-api';
 import { GameButton } from '../../components/Buttons';
 import { ErrorContext } from '../../components/ErrorContext';
 import { IconCounter } from '../../components/IconCounter';
@@ -14,7 +15,6 @@ import { ModalBackdrop } from '../../components/ModalBackdrop';
 import { FillLayout } from '../../components/layout/FillLayout';
 import { RowLayout } from '../../components/layout/RowLayout';
 import { ScreenSizeSwitch } from '../../components/layout/ScreenSizeSwitch';
-import { leaveLobby } from '../../api/lobby/lobby-join-api';
 import { GameLobby, PlayerInLobby } from '../../shared/types';
 import { LobbyCreationReadOnly } from './lobby-components/LobbyCreationReadOnly';
 import { LobbyCreatorControls } from './lobby-components/LobbyCreatorControls';
@@ -163,7 +163,9 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
   const activePlayers = players.filter(
     (p) => p.role === 'player' && p.status !== 'left',
   );
-  const playerCount = activePlayers.length;
+  const spectators = players.filter(
+    (p) => p.role === 'spectator' && p.status !== 'left',
+  );
 
   async function handleLeave() {
     setLeaving(true);
@@ -177,14 +179,33 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
 
   return (
     <div style={sidebarStyle} className="new-lobby-sidebar">
-      <h3 style={{ textAlign: 'center' }}>
-        Players {playerCount}/{lobby.settings.max_players}
+      <h3 className="player-list-header">
+        Players {activePlayers.length}/{lobby.settings.max_players}
       </h3>
       <FillLayout
         style={scrollableColumnStyle}
         className="miniscrollbar miniscrollbar-light"
       >
-        <LobbyPlayerList lobby={lobby} user={user} players={players} />
+        <LobbyPlayerList
+          lobby={lobby}
+          user={user}
+          players={activePlayers}
+          maxSlots={lobby.settings.max_players}
+        />
+        {spectators.length > 0 && (
+          <>
+            <hr />
+            <h3 className="spectator-list-header">
+              Spectators {spectators.length}
+            </h3>
+            <LobbyPlayerList
+              lobby={lobby}
+              user={user}
+              players={spectators}
+              maxSlots={spectators.length}
+            />
+          </>
+        )}
       </FillLayout>
       <hr />
       <GameButton
