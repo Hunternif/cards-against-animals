@@ -52,3 +52,8 @@ pre {
   font-size: 0.9rem;
   font-weight: 200;
 }
+
+.error-text {
+  margin-top: 0.5em;
+  color: colors.$error-red;
+}

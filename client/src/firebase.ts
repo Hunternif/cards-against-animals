@@ -89,6 +89,11 @@ export const lockDeckFun = httpsCallable<
   void
 >(functions, 'lockDeck');
 
+export const unlockDeckForUserFun = httpsCallable<
+  { deck_id: string; password: string },
+  boolean
+>(functions, 'unlockDeckForUser');
+
 export const logInteractionFun = httpsCallable<
   {
     lobby_id: string;

@@ -1,6 +1,7 @@
 import { firestore } from '../firebase-server';
 import { deckLockConverter } from '../shared/firestore-converters';
 import { DeckLock } from '../shared/types';
+import { hashDeckKey } from './deck-lock-server-api';
 
 function getDeckLockRef(deckID: string) {
   return firestore
@@ -29,4 +30,15 @@ export async function getUserDeckKey(
   deckID: string,
 ): Promise<DeckLock | null> {
   return (await getUserDeckKeyRef(userID, deckID).get())?.data() ?? null;
+}
+
+/** Saves the given password in the user's collection.  */
+export async function setUserDeckKey(
+  userID: string,
+  deckID: string,
+  passsword: string,
+) {
+  const hash = await hashDeckKey(deckID, passsword);
+  const lock = new DeckLock(deckID, hash);
+  await getUserDeckKeyRef(userID, deckID).set(lock);
 }

@@ -11,10 +11,7 @@ import { useDIContext } from '../../../di-context';
 import { useMarkedData } from '../../../hooks/data-hooks';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
 import { GameLobby } from '../../../shared/types';
-import { sleep } from '../../../shared/utils';
-import { Modal } from '../../../components/Modal';
-import { ConfirmModal } from '../../../components/ConfirmModal';
-import { TextInput } from '../../../components/FormControls';
+import { DeckPasswordModal } from './DeckPasswordModal';
 
 interface DeckProps {
   deck: DeckInfo;
@@ -156,8 +153,6 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
         startUnlock(deck.id);
         // TODO: check password
         setPasswordDeck(deck);
-        endUnlock(deck.id);
-        doSelectDeck(deck);
       } catch (e: any) {
         setError(e);
         endUnlock(deck.id);
@@ -175,17 +170,27 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
     await removeDeck(lobby, deck.id);
   }
 
-  async function saveDeckPassword() {
-    // TODO: check password and do select.
-    setPasswordDeck(undefined);
+  function handlePasswordCancelled() {
+    if (passwordDeck) {
+      setPasswordDeck(undefined);
+      endUnlock(passwordDeck.id);
+    }
+  }
+
+  function handlePasswordVerified() {
+    if (passwordDeck) {
+      doSelectDeck(passwordDeck);
+      setPasswordDeck(undefined);
+      endUnlock(passwordDeck.id);
+    }
   }
 
   return (
     <>
       <DeckPasswordModal
         deck={passwordDeck}
-        onCancel={() => setPasswordDeck(undefined)}
-        onComplete={saveDeckPassword}
+        onCancel={handlePasswordCancelled}
+        onComplete={handlePasswordVerified}
       />
       <table style={{ width: '100%' }}>
         <thead>
@@ -229,31 +234,5 @@ function Decks({ lobby, decks, readOnly }: DecksProps) {
         </tfoot>
       </table>
     </>
-  );
-}
-
-type DeckPasswordProps = {
-  deck?: DeckInfo;
-  onComplete: () => void;
-  onCancel: () => void;
-};
-
-function DeckPasswordModal({ deck, onComplete, onCancel }: DeckPasswordProps) {
-  const [password, setPassword] = useState<string>('');
-  async function saveDeckPassword() {
-    // TODO: check password and save it.
-    onComplete();
-  }
-  return (
-    <ConfirmModal
-      className="deck-password-modal"
-      show={deck != null}
-      onConfirm={saveDeckPassword}
-      onCancel={onCancel}
-      okText="OK"
-    >
-      <p>Password for '{deck?.title}':</p>
-      <TextInput password onChange={async (val) => setPassword(val)} />
-    </ConfirmModal>
   );
 }

@@ -1,4 +1,4 @@
-import { lockDeckFun } from '../../firebase';
+import { lockDeckFun, unlockDeckForUserFun } from '../../firebase';
 import { Deck } from '../../shared/types';
 
 // API for verifying access to locked decks.
@@ -15,4 +15,13 @@ export async function verifyDeckKey(
 /** Sets new password on the deck */
 export async function lockDeck(deck: Deck, password: string) {
   await lockDeckFun({ deck_id: deck.id, password });
+}
+
+/** Unlocks the deck for this user, given the password. */
+export async function unlockDeckForUser(
+  deck: Deck,
+  password: string,
+): Promise<boolean> {
+  const res = await unlockDeckForUserFun({ deck_id: deck.id, password });
+  return res.data;
 }

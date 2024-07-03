@@ -50,7 +50,10 @@ export async function createDeckLock(deckID: string, password: string) {
 }
 
 /** Creates a one-way hash for a deck password. */
-async function hashDeckKey(deckID: string, password: string): Promise<string> {
+export async function hashDeckKey(
+  deckID: string,
+  password: string,
+): Promise<string> {
   // deckID is the salt
   return await sha256(password + deckID);
 }
