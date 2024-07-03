@@ -1,60 +1,52 @@
 import { ReactNode } from 'react';
 import { DeckCardSet } from '../../../api/deck/deck-card-set';
-import { GameButton } from '../../../components/Buttons';
 import { Checkbox } from '../../../components/Checkbox';
 import { useScreenSize } from '../../../components/layout/ScreenSizeSwitch';
 
 interface Props {
   cards: DeckCardSet;
   onToggleAll?: (checked: boolean) => void;
-  onClickCopy?: () => void;
   selected?: DeckCardSet;
   readOnly?: boolean;
 }
 
 /**
- * Advanced header with extra controls on each column
+ * Advanced table header with extra controls on each column
  */
-export function AdminDeckControlRow({
+export function AdminDeckTableHeader({
   cards,
   onToggleAll,
-  onClickCopy,
   selected,
   readOnly,
 }: Props) {
   const isAnySelected = selected && selected.size > 0;
 
   return (
-    <table className="admin-deck-table admin-deck-control-row">
-      <tbody>
+    <table className="admin-deck-table admin-deck-table-header">
+      <thead>
         <tr>
-          <td className="col-card-id">
+          <th className="col-card-id">
             {readOnly ? (
               'ID'
             ) : (
               <Checkbox onToggle={onToggleAll} checked={isAnySelected} />
             )}
-          </td>
-          <td className="col-card-content">
+          </th>
+          <th className="col-card-content">
             Content
             <span className="deck-count">
               <DeckStats cards={cards} selected={selected} />
             </span>
-            {isAnySelected && (
-              <GameButton inline tiny light onClick={onClickCopy}>
-                Copy to...
-              </GameButton>
-            )}
-          </td>
-          <td className="col-card-tags">Tags</td>
-          <td className="col-card-counter">Views</td>
-          <td className="col-card-counter">Plays</td>
-          <td className="col-card-counter">Likes/Votes</td>
-          <td className="col-card-counter">Wins</td>
-          <td className="col-card-counter">Discards</td>
-          <td className="col-card-counter">Rating</td>
+          </th>
+          <th className="col-card-tags">Tags</th>
+          <th className="col-card-counter">Views</th>
+          <th className="col-card-counter">Plays</th>
+          <th className="col-card-counter">Likes/Votes</th>
+          <th className="col-card-counter">Wins</th>
+          <th className="col-card-counter">Discards</th>
+          <th className="col-card-counter">Rating</th>
         </tr>
-      </tbody>
+      </thead>
     </table>
   );
 }

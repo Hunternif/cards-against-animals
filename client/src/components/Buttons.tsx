@@ -17,9 +17,9 @@ export function GameButton({ iconLeft, iconRight, ...props }: ButtonProps) {
   const buttonProps = stripControlProps(props);
   return (
     <button {...buttonProps} className={`game-button ${controlClass}`}>
-      {iconLeft && <span style={{ display: "flex" }}>{iconLeft}</span>}
+      {iconLeft && <span className="icon-left">{iconLeft}</span>}
       <span style={{ flexGrow: 1 }}>{props.children}</span>
-      {iconRight && <span style={{ display: "flex" }}>{iconRight}</span>}
+      {iconRight && <span className="icon-right">{iconRight}</span>}
     </button>
   );
 }

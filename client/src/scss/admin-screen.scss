@@ -44,7 +44,8 @@
   tr {
     font-size: 13px;
   }
-  td {
+  td,
+  th {
     padding: 0 0.5em;
   }
   .col-card-id {
@@ -132,11 +133,22 @@
   }
 }
 .admin-deck-control-row {
+  display: flex;
+  gap: 0.5em;
+  font-size: 13px;
   position: sticky;
   z-index: 1;
-  top: 3em; //TODO: import accordion height
-  padding: 0.5em 0;
+  top: 3rem; //TODO: import accordion height
+  // height: 3rem;
   margin-top: -0.5em; // combat accordion section padding
+  padding: 0.5em;
+  background-color: var(--bs-body-bg); // bg color
+}
+.admin-deck-table-header {
+  position: sticky;
+  z-index: 1;
+  top: calc(3rem + 2rem); //TODO: import accordion height
+  padding: 0.5em 0;
   background-color: var(--bs-body-bg); // bg color
   color: rgba(colors.$text, 70%);
   font-weight: 200;
@@ -152,7 +164,8 @@
       font-weight: 400;
     }
   }
-  td {
+  th {
+    font-weight: 200;
     text-overflow: ellipsis;
     overflow: hidden;
   }
@@ -163,7 +176,7 @@
     // TODO: figure out a better way to fit within the screen and allow scroll
     max-height: 50vh;
   }
-  .admin-deck-control-row {
+  .admin-deck-table-header {
     top: 0;
     background-color: colors.$panel-bg; // bg color
     margin: 0;

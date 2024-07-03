@@ -5,7 +5,7 @@ import { addDeck, removeDeck } from '../../../api/lobby/lobby-control-api';
 import { useUserDecksWithKeys } from '../../../api/users-hooks';
 import { Checkbox } from '../../../components/Checkbox';
 import { ErrorContext } from '../../../components/ErrorContext';
-import { IconLock, IconLockOpen } from '../../../components/Icons';
+import { IconLockInline, IconLockOpenInline } from '../../../components/Icons';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { useDIContext } from '../../../di-context';
 import { useMarkedData } from '../../../hooks/data-hooks';
@@ -47,9 +47,9 @@ function DeckRow({ deck, selected, onToggle, readOnly, unlocking }: DeckProps) {
               {unlocking ? (
                 <LoadingSpinner inline />
               ) : deck.userHasKey ? (
-                <IconLockOpen className="icon-lock" />
+                <IconLockOpenInline className="icon-lock" />
               ) : (
-                <IconLock className="icon-lock" />
+                <IconLockInline className="icon-lock" />
               )}
             </span>
           )}

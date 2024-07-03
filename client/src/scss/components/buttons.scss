@@ -7,6 +7,14 @@
   display: flex;
   text-align: center;
   align-items: center;
+  .icon-left {
+    display: flex;
+    margin-right: 0.3em;
+  }
+  .icon-right {
+    display: flex;
+    margin-left: 0.3em;
+  }
 }
 button {
   border-radius: 8px;
@@ -101,7 +109,7 @@ button {
 .inline-game-button, .inline-control {
   height: auto;
   padding: 0.2em 0.5em;
-  display: inline-block;
+  display: inline-flex;
 }
 
 .tiny-control {

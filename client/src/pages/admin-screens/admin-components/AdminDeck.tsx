@@ -10,8 +10,9 @@ import { useEffectOnce } from '../../../hooks/ui-hooks';
 import { Deck, DeckCard } from '../../../shared/types';
 import { AdminCopyCardsDialog } from './AdminCopyCardsDialog';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
-import { AdminDeckControlRow } from './AdminDeckControlRow';
 import { cardTypedID } from '../../../shared/deck-utils';
+import { IconLockInline } from '../../../components/Icons';
+import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 
 interface Props {
   deckID: string;
@@ -34,6 +35,7 @@ export function AdminDeck({ deckID }: Props) {
 
   // TODO: optimize, retain the same instance between renders.
   const selectedCardset = new DeckCardSet(selectedCards.values());
+  const isAnySelected = selectedCardset.size > 0;
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(cardTypedID(card));
@@ -96,11 +98,22 @@ export function AdminDeck({ deckID }: Props) {
         </footer>
       </Modal>
 
-      <AdminDeckControlRow
+      {/* Extra controls: */}
+      <div className="admin-deck-control-row">
+        <GameButton inline light iconLeft={<IconLockInline />}>
+          Lock
+        </GameButton>
+        {isAnySelected && (
+          <GameButton inline light onClick={() => setShowCopyDialog(true)}>
+            Copy to...
+          </GameButton>
+        )}
+      </div>
+
+      <AdminDeckTableHeader
         cards={deckCardset}
         selected={selectedCardset}
         onToggleAll={toggleSelectAll}
-        onClickCopy={() => setShowCopyDialog(true)}
       />
       <VirtualTable
         className="admin-deck-table"
