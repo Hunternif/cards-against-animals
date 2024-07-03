@@ -81,3 +81,11 @@ export function ModalBody({
     </div>
   );
 }
+
+interface FooterProps {
+  children: ReactNode;
+}
+
+export function ModalFooter({ children }: FooterProps) {
+  return <footer className="modal-footer">{children}</footer>;
+}

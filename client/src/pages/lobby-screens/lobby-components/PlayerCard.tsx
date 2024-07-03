@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Card } from "react-bootstrap";
 import { ErrorContext } from "../../../components/ErrorContext";
-import { Modal, ModalBody } from "../../../components/Modal";
+import { Modal, ModalBody, ModalFooter } from "../../../components/Modal";
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
 import { Twemoji } from "../../../components/Twemoji";
 import { kickPlayer, updatePlayer } from "../../../api/lobby/lobby-player-api";
@@ -65,11 +65,11 @@ export function PlayerCard({ lobby, player, isMe, isCreator, isJudge, canKick }:
   return <>
     <Modal show={showKickModal} onHide={() => setShowKickModal(false)}>
       <ModalBody loading={kicking}>Kick {player.name} out?</ModalBody>
-      <footer>
+      <ModalFooter>
         <GameButton onClick={handleBan} accent disabled={kicking}>Ban</GameButton>
         <GameButton onClick={handleKick} disabled={kicking}>Kick</GameButton>
         <GameButton onClick={() => setShowKickModal(false)} disabled={kicking}>Cancel</GameButton>
-      </footer>
+      </ModalFooter>
     </Modal>
 
     <Card className={`player-card ${meStyle} ${judgeStyle}`}>

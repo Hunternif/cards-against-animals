@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { GameButton } from './Buttons';
-import { Modal, ModalBody } from './Modal';
+import { Modal, ModalBody, ModalFooter } from './Modal';
 
 interface ModalProps {
   show: boolean;
@@ -68,7 +68,7 @@ export function ConfirmModalFooter({
   onCancel,
 }: FooterProps) {
   return (
-    <footer className="modal-footer">
+    <ModalFooter>
       {children ?? (
         <>
           <GameButton submit onClick={onConfirm} disabled={disabled}>
@@ -81,6 +81,6 @@ export function ConfirmModalFooter({
           )}
         </>
       )}
-    </footer>
+    </ModalFooter>
   );
 }
