@@ -82,3 +82,26 @@ export function mapToObject<T>(
   }
   return out;
 }
+
+/** Function `fn` will be called only after `timeMs` has elapsed
+ * since the last invocation. */
+export function debounce(
+  fn: (...args: any[]) => void,
+  timeMs: number = 1000,
+): (...args: any[]) => Promise<void> {
+  let timeoutID: number;
+  return function (...args: any[]) {
+    return new Promise((resolve, error) => {
+      if (timeoutID > 0) {
+        clearTimeout(timeoutID);
+      }
+      timeoutID = setTimeout(() => {
+        try {
+          resolve(fn(...args));
+        } catch (e: any) {
+          error(e);
+        }
+      }, timeMs);
+    });
+  };
+}

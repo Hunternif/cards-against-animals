@@ -100,7 +100,7 @@ export function LobbySettingsPanel(props: Props) {
 }
 
 function MaxPlayersControl({ settings, readOnly, onChange }: Props) {
-  return <NumberInput min={2} max={99} disabled={readOnly}
+  return <NumberInput debounce min={2} max={99} disabled={readOnly}
     value={settings.max_players}
     onChange={async (newValue) => {
       settings.max_players = newValue;
@@ -126,7 +126,7 @@ function EndControl({ settings, readOnly, onChange }: Props) {
 }
 
 function MaxTurnsControl({ settings, readOnly, onChange }: Props) {
-  return <NumberInput min={1} max={99} disabled={readOnly}
+  return <NumberInput debounce min={1} max={99} disabled={readOnly}
     value={settings.max_turns}
     onChange={async (newValue) => {
       settings.max_turns = newValue;
@@ -136,7 +136,7 @@ function MaxTurnsControl({ settings, readOnly, onChange }: Props) {
 }
 
 function MaxScoreControl({ settings, readOnly, onChange }: Props) {
-  return <NumberInput min={1} max={99} disabled={readOnly}
+  return <NumberInput debounce min={1} max={99} disabled={readOnly}
     value={settings.max_score}
     onChange={async (newValue) => {
       settings.max_score = newValue;
@@ -146,7 +146,7 @@ function MaxScoreControl({ settings, readOnly, onChange }: Props) {
 }
 
 function TurnsPerPersonControl({ settings, readOnly, onChange }: Props) {
-  return <NumberInput min={1} max={99} disabled={readOnly}
+  return <NumberInput debounce min={1} max={99} disabled={readOnly}
     value={settings.turns_per_person}
     onChange={async (newValue) => {
       settings.turns_per_person = newValue;
@@ -161,7 +161,7 @@ function TurnsPerPersonControl({ settings, readOnly, onChange }: Props) {
 }
 
 function CardsPerPersonControl({ settings, readOnly, onChange }: Props) {
-  return <NumberInput min={2} max={99} disabled={readOnly}
+  return <NumberInput debounce min={2} max={99} disabled={readOnly}
     value={settings.cards_per_person}
     onChange={async (newValue) => {
       settings.cards_per_person = newValue;
@@ -171,7 +171,7 @@ function CardsPerPersonControl({ settings, readOnly, onChange }: Props) {
 }
 
 function NextTurnTimeControl({ settings, readOnly, onChange }: Props) {
-  return <NumberInput min={0.0} max={99.0} step={0.5} disabled={readOnly}
+  return <NumberInput debounce min={0.0} max={99.0} step={0.5} disabled={readOnly}
     value={settings.next_turn_time_sec}
     onChange={async (newValue) => {
       settings.next_turn_time_sec = newValue;

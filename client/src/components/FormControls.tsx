@@ -1,4 +1,5 @@
-import { ChangeEvent, InputHTMLAttributes, ReactNode, useContext } from 'react';
+import { ChangeEvent, ReactNode, useContext, useMemo, useState } from 'react';
+import { debounce } from '../shared/utils';
 import { Checkbox } from './Checkbox';
 import { ErrorContext } from './ErrorContext';
 
@@ -19,8 +20,11 @@ interface NumberInputProps extends ControlProps {
   step?: number;
   value: number;
   disabled?: boolean;
-  onChange: (newValue: number) => Promise<void>;
+  onChange: ChangeHandler<number>;
+  debounce?: boolean;
 }
+
+type ChangeHandler<T> = (newValue: T) => Promise<void>;
 
 /** Form input: integer or float numbers */
 export function NumberInput({
@@ -34,12 +38,54 @@ export function NumberInput({
 }: NumberInputProps) {
   const isInt = step != undefined && Math.floor(step) === step;
   const controlClass = getControlStyle(props);
+  const [initialValue, setInitialValue] = useState(value);
+  const [currentValue, setCurrentValue] = useState(value);
   const { setError } = useContext(ErrorContext);
+  const debouncedHandler = useMemo(
+    () => debounce(onChange) as ChangeHandler<number>,
+    [onChange],
+  );
+
+  if (value != initialValue) {
+    setInitialValue(value);
+    setCurrentValue(value);
+  }
+
+  function validate(newValue: number): number {
+    if (isNaN(newValue)) return min;
+    if (newValue < min) return min;
+    if (newValue > max) return max;
+    return newValue;
+  }
 
   async function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const strVal = event.target.value;
     const newValue = isInt ? parseInt(strVal) : parseFloat(strVal);
-    await onChange(newValue).catch((e) => setError(e));
+    setCurrentValue(newValue);
+    if (isNaN(newValue)) return;
+    try {
+      const validValue = validate(newValue);
+      if (props.debounce) {
+        await debouncedHandler(validValue);
+      } else {
+        await onChange(validValue);
+      }
+    } catch (e: any) {
+      setError(e);
+    }
+  }
+
+  async function handleBlur(event: ChangeEvent<HTMLInputElement>) {
+    // Validate:
+    const strVal = event.target.value;
+    let newValue = isInt ? parseInt(strVal) : parseFloat(strVal);
+    const validValue = validate(newValue);
+    setCurrentValue(validValue);
+    try {
+      await onChange(validValue);
+    } catch (e: any) {
+      setError(e);
+    }
   }
 
   return (
@@ -50,8 +96,9 @@ export function NumberInput({
       min={min}
       max={max}
       step={step ?? 1}
-      value={value}
+      value={isNaN(currentValue) ? '' : currentValue}
       onChange={handleChange}
+      onBlur={handleBlur}
     />
   );
 }
@@ -124,8 +171,9 @@ interface TextInputProps extends ControlProps {
   value?: string;
   placeholder?: string;
   disabled?: boolean;
-  onChange: (newValue: string) => Promise<void>;
+  onChange: ChangeHandler<string>;
   password?: boolean;
+  debounce?: boolean;
 }
 
 /** Form input: text */
@@ -139,8 +187,21 @@ export function TextInput({
 }: TextInputProps) {
   const { setError } = useContext(ErrorContext);
   const controlClass = getControlStyle(props);
+  const debouncedHandler = useMemo(
+    () => debounce(onChange) as ChangeHandler<string>,
+    [onChange],
+  );
   async function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    await onChange(event.currentTarget.value).catch((e) => setError(e));
+    try {
+      const newValue = event.currentTarget.value;
+      if (props.debounce) {
+        await debouncedHandler(newValue);
+      } else {
+        await onChange(newValue);
+      }
+    } catch (e: any) {
+      setError(e);
+    }
   }
   return (
     <input
