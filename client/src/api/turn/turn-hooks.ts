@@ -1,8 +1,10 @@
 import { collection, doc } from 'firebase/firestore';
 import { useState } from 'react';
 import {
+  useCollection,
   useCollectionData,
   useCollectionDataOnce,
+  useDocument,
   useDocumentData,
 } from 'react-firebase-hooks/firestore';
 import {
@@ -23,6 +25,7 @@ import {
 } from '../../shared/types';
 import { lobbiesRef } from '../lobby/lobby-repository';
 import { getTurnsRef } from './turn-repository';
+import { getResponseLikesRef } from './turn-like-api';
 
 type LastTurnHook = [
   lastTurn: GameTurn | undefined,
@@ -110,24 +113,29 @@ export function useAllPlayerResponsesOnce(lobby: GameLobby, turn: GameTurn) {
   );
 }
 
-/** Returns and subscribes to the likes on the given player's response
- * in the current turn in the lobby. */
-export function useResponseLikes(
+/** Subscribes to like count on the given player's response. */
+export function useResponseLikeCount(
   lobby: GameLobby,
   turn: GameTurn,
   response: PlayerResponse,
-) {
-  return useCollectionDataNonNull(
-    collection(
-      lobbiesRef,
-      lobby.id,
-      'turns',
-      turn.id,
-      'player_responses',
-      response.player_uid,
-      'likes',
-    ).withConverter(voteConverter),
+): number {
+  const [snapshots] = useCollection(
+    getResponseLikesRef(lobby.id, turn.id, response.player_uid),
   );
+  return snapshots?.docs.length ?? 0;
+}
+
+/** Returns if true if this response has the current player's like. */
+export function useResponseMyLike(
+  lobby: GameLobby,
+  turn: GameTurn,
+  response: PlayerResponse,
+  myUserID: string,
+): boolean {
+  const [likeDoc] = useDocument(
+    doc(getResponseLikesRef(lobby.id, turn.id, response.player_uid), myUserID),
+  );
+  return likeDoc?.exists() ?? false;
 }
 
 /** Returns and subscribes to the prompt in the current turn in the lobby. */

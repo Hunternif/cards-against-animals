@@ -1,68 +1,107 @@
-import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { IconCat, IconHeadshot, IconHeart, IconStarOfDavid } from "../../../components/Icons";
-import { PlayerAvatar } from "../../../components/PlayerAvatar";
-import { Twemoji } from "../../../components/Twemoji";
-import { useScreenWiderThan } from "../../../components/layout/ScreenSizeSwitch";
-import { detectCat, detectDeer, detectLenich } from "../../../api/deck/deck-parser";
-import { useResponseLikes } from "../../../api/turn/turn-hooks";
-import { PlayerInLobby, PlayerResponse, ResponseCardInGame, Vote } from "../../../shared/types";
-import { CardOffsetContext } from "./CardOffsetContext";
-import { useGameContext } from "./GameContext";
-import { CardBottomLeft, CardCenterIcon, CardContent, LargeCard } from "./LargeCard";
+import {
+  CSSProperties,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {
+  detectCat,
+  detectDeer,
+  detectLenich,
+} from '../../../api/deck/deck-parser';
+import {
+  useResponseLikeCount,
+  useResponseMyLike,
+} from '../../../api/turn/turn-hooks';
+import {
+  IconCat,
+  IconHeadshot,
+  IconHeart,
+  IconStarOfDavid,
+} from '../../../components/Icons';
+import { PlayerAvatar } from '../../../components/PlayerAvatar';
+import { Twemoji } from '../../../components/Twemoji';
+import { useScreenWiderThan } from '../../../components/layout/ScreenSizeSwitch';
+import {
+  PlayerInLobby,
+  PlayerResponse,
+  ResponseCardInGame,
+} from '../../../shared/types';
+import { CardOffsetContext } from './CardOffsetContext';
+import { useGameContext } from './GameContext';
+import {
+  CardBottomLeft,
+  CardCenterIcon,
+  CardContent,
+  LargeCard,
+} from './LargeCard';
 
 interface Props {
-  player?: PlayerInLobby,
-  response: PlayerResponse,
+  player?: PlayerInLobby;
+  response: PlayerResponse;
   /** Only the judge player can reveal */
-  canReveal?: boolean,
+  canReveal?: boolean;
   /** When selecting winner */
-  canSelect?: boolean,
-  selected?: boolean,
-  onClick?: (response: PlayerResponse) => void,
+  canSelect?: boolean;
+  selected?: boolean;
+  onClick?: (response: PlayerResponse) => void;
   /** Players other than the judge can like the response. */
-  canLike?: boolean,
-  onClickLike?: (response: PlayerResponse) => void,
-  showLikes?: boolean,
-  showName?: boolean,
+  canLike?: boolean;
+  onClickLike?: (response: PlayerResponse) => void;
+  showLikes?: boolean;
+  showName?: boolean;
 }
-
 
 /**
  * From the "reading" phase, when the judge reveals player responses one by one.
  * Optionally displays player's name.
  */
 export function ResponseReading(props: Props) {
-  return <>{
-    props.showName ? (
-      <div className="game-card-placeholder" style={{ height: "auto" }}>
-        <ResponseReadingWithoutName {...props} />
-        <div className="response-player-name" style={{
-          width: "100%",
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-          overflow: "hidden",
-        }}>
-          {props.player && <PlayerAvatar player={props.player} />}
-          <span className="player-name">{props.response.player_name}</span>
+  return (
+    <>
+      {props.showName ? (
+        <div className="game-card-placeholder" style={{ height: 'auto' }}>
+          <ResponseReadingWithoutName {...props} />
+          <div
+            className="response-player-name"
+            style={{
+              width: '100%',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+            {props.player && <PlayerAvatar player={props.player} />}
+            <span className="player-name">{props.response.player_name}</span>
+          </div>
         </div>
-      </div>
-    ) : (
-      <ResponseReadingWithoutName {...props} />
-    )
-  }</>;
+      ) : (
+        <ResponseReadingWithoutName {...props} />
+      )}
+    </>
+  );
 }
 
 /** The response itself, without player name */
 function ResponseReadingWithoutName({
-  response, canReveal, canSelect, selected, onClick,
-  canLike, onClickLike, showLikes,
+  response,
+  canReveal,
+  canSelect,
+  selected,
+  onClick,
+  canLike,
+  onClickLike,
+  showLikes,
 }: Props) {
-  const { lobby, turn } = useGameContext();
-  const [likes] = useResponseLikes(lobby, turn, response);
+  const { lobby, turn, player } = useGameContext();
+  const likeCount = useResponseLikeCount(lobby, turn, response);
+  const hasMyLike = useResponseMyLike(lobby, turn, response, player.uid);
   const likeIcon = showLikes ? <LikeIcon response={response} /> : null;
-  const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
-  const canSelectClass = canSelect ? "hoverable-card" : "";
-  const selectedClass = selected ? "selected" : "unselected";
+  const canRevealClass = canReveal ? 'can-reveal hoverable-card' : '';
+  const canSelectClass = canSelect ? 'hoverable-card' : '';
+  const selectedClass = selected ? 'selected' : 'unselected';
   const hasManyCards = response.cards.length > 1;
 
   function handleClick() {
@@ -75,58 +114,78 @@ function ResponseReadingWithoutName({
       onClickLike(response);
     }
   }
-  return <>{hasManyCards ? (
-    <ManyCardsStack
-      response={response}
-      canReveal={canReveal}
-      canSelect={canSelect}
-      selected={selected}
-      onClick={handleClick}
-      canLike={canLike}
-      onClickLike={handleClickLike}
-      likes={showLikes ? likes : undefined}
-      likeIcon={likeIcon}
-    />
-  ) : (
-    <div className={`${canRevealClass} ${canSelectClass} ${selectedClass}`} onClick={handleClick}>
-      <CardResponseReading card={response.cards[0]}
-        content={response.cards[0].content}
-        revealed={response.reveal_count > 0}
-        selectable={canSelect} selected={selected}
-        likable={canLike} onClickLike={handleClickLike}
-        likes={showLikes ? likes : undefined}
-        likeIcon={likeIcon}
-      />
-    </div >
-  )}</>;
+  return (
+    <>
+      {hasManyCards ? (
+        <ManyCardsStack
+          response={response}
+          canReveal={canReveal}
+          canSelect={canSelect}
+          selected={selected}
+          onClick={handleClick}
+          canLike={canLike}
+          onClickLike={handleClickLike}
+          likeCount={showLikes ? likeCount : 0}
+          likeIcon={likeIcon}
+          hasPlayerLike={hasMyLike}
+        />
+      ) : (
+        <div
+          className={`${canRevealClass} ${canSelectClass} ${selectedClass}`}
+          onClick={handleClick}
+        >
+          <CardResponseReading
+            card={response.cards[0]}
+            content={response.cards[0].content}
+            revealed={response.reveal_count > 0}
+            selectable={canSelect}
+            selected={selected}
+            likable={canLike}
+            onClickLike={handleClickLike}
+            likeCount={showLikes ? likeCount : 0}
+            likeIcon={likeIcon}
+            hasPlayerLike={hasMyLike}
+          />
+        </div>
+      )}
+    </>
+  );
 }
 
-
 interface CardStackProps {
-  response: PlayerResponse,
-  canReveal?: boolean,
-  canSelect?: boolean,
-  selected?: boolean,
-  onClick?: () => void,
-  canLike?: boolean,
-  onClickLike?: () => void,
-  likes?: Vote[],
-  likeIcon?: ReactNode,
+  response: PlayerResponse;
+  canReveal?: boolean;
+  canSelect?: boolean;
+  selected?: boolean;
+  onClick?: () => void;
+  canLike?: boolean;
+  onClickLike?: () => void;
+  likeCount: number;
+  likeIcon?: ReactNode;
+  hasPlayerLike?: boolean;
 }
 
 /** A single response rendered as a stack of multiple cards. */
 function ManyCardsStack({
-  response, canReveal, canSelect, selected, onClick,
-  canLike, onClickLike, likes, likeIcon,
+  response,
+  canReveal,
+  canSelect,
+  selected,
+  onClick,
+  canLike,
+  onClickLike,
+  likeCount,
+  likeIcon,
+  hasPlayerLike,
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(response.cards.map(() => 0));
   const [offsets] = useState<Array<number>>(response.cards.map(() => 0));
   const [finishedMeasuring, setFinishedMeasuring] = useState(false);
-  const canRevealClass = canReveal ? "can-reveal hoverable-card" : "";
+  const canRevealClass = canReveal ? 'can-reveal hoverable-card' : '';
   // If selected, the 1.05 scale is already applied to child cards:
-  const canSelectClass = canSelect ? "hoverable-card" : "";
-  const selectedClass = selected ? "selected" : "unselected";
+  const canSelectClass = canSelect ? 'hoverable-card' : '';
+  const selectedClass = selected ? 'selected' : 'unselected';
 
   // Context to communicate offsets between multiple responses:
   const offsetContext = useContext(CardOffsetContext);
@@ -182,75 +241,96 @@ function ManyCardsStack({
   // Overlay multiple cards on top of each other.
   // The "Placeholder" component holds place the size of a card:
   return (
-    <div className={`game-card-placeholder many-cards ${canRevealClass} ${canSelectClass} ${selectedClass}`} style={{
-      // Add extra margin below for the overlaid cards:
-      // (-18 come from .game-card.overlaid being 2em shorter)
-      marginBottom: (offsets.at(-2) ?? 0) - 18,
-    }} onClick={onClick}>
+    <div
+      className={`game-card-placeholder many-cards ${canRevealClass} ${canSelectClass} ${selectedClass}`}
+      style={{
+        // Add extra margin below for the overlaid cards:
+        // (-18 come from .game-card.overlaid being 2em shorter)
+        marginBottom: (offsets.at(-2) ?? 0) - 18,
+      }}
+      onClick={onClick}
+    >
       {/* Cards on top have absolute positioning,
           without interfering with the flow of the rest of the page. */}
       {response.cards.map((card, i) => {
         const isLastCard = i === response.cards.length - 1;
         let content = card.content;
         if (card.action === 'repeat_last' && i > 0) {
-          content = response.cards[i-1].content;
+          content = response.cards[i - 1].content;
         }
-        return <CardResponseReading
-          key={card.id} card={card}
-          content={content}
-          isOverlaid={i > 0}
-          index={i}
-          offset={offsets[i]}
-          revealed={response.reveal_count > i}
-          selectable={canSelect} selected={selected}
-          // Only enable likes on the last card of the stack:
-          likable={canLike && isLastCard}
-          onClickLike={onClickLike}
-          likes={isLastCard ? likes : []}
-          likeIcon={likeIcon}
-          setContentHeight={(height) => {
-            heights[i] = height;
-            measureOffsets();
-          }}
-        />
+        return (
+          <CardResponseReading
+            key={card.id}
+            card={card}
+            content={content}
+            isOverlaid={i > 0}
+            index={i}
+            offset={offsets[i]}
+            revealed={response.reveal_count > i}
+            selectable={canSelect}
+            selected={selected}
+            // Only enable likes on the last card of the stack:
+            likable={canLike && isLastCard}
+            onClickLike={onClickLike}
+            likeCount={isLastCard ? likeCount : 0}
+            likeIcon={likeIcon}
+            hasPlayerLike={hasPlayerLike}
+            setContentHeight={(height) => {
+              heights[i] = height;
+              measureOffsets();
+            }}
+          />
+        );
       })}
     </div>
   );
 }
 
-
 interface CardProps {
-  card: ResponseCardInGame,
-  content: string,
-  revealed: boolean,
-  selectable?: boolean,
-  selected?: boolean,
-  likable?: boolean,
-  onClickLike?: () => void,
-  likes?: Vote[],
-  likeIcon?: ReactNode,
+  card: ResponseCardInGame;
+  content: string;
+  revealed: boolean;
+  selectable?: boolean;
+  selected?: boolean;
+  likable?: boolean;
+  onClickLike?: () => void;
+  likeCount: number;
+  likeIcon?: ReactNode;
+  hasPlayerLike?: boolean;
   // Overlaid card data:
-  isOverlaid?: boolean,
-  index?: number,
-  offset?: number,
-  setContentHeight?: (height: number) => void,
+  isOverlaid?: boolean;
+  index?: number;
+  offset?: number;
+  setContentHeight?: (height: number) => void;
 }
 
 /** Individual response card (not a stack of cards)  */
 function CardResponseReading({
-  content, revealed, selectable, selected, likable, onClickLike, likes, likeIcon,
-  isOverlaid, index, offset,
+  content,
+  revealed,
+  selectable,
+  selected,
+  likable,
+  onClickLike,
+  likeCount,
+  likeIcon,
+  hasPlayerLike,
+  isOverlaid,
+  index,
+  offset,
   setContentHeight,
 }: CardProps) {
-  const { player } = useGameContext();
-  const overlayClass = isOverlaid ? "overlaid" : "";
-  const revealedClass = revealed ? "revealed" : "unrevealed";
-  const selectedClass = `${selectable ? "selectable" : ""} ${selected ? "selected" : ""}`;
-  const overlayStyle: CSSProperties | undefined = isOverlaid ? {
-    position: "absolute",
-    top: (offset ?? 0) + (selected ? 4 * (index ?? 0) : 0),
-  } : undefined;
-  const hasPlayerLike = likes?.find((like) => like.player_uid === player.uid) != null;
+  const overlayClass = isOverlaid ? 'overlaid' : '';
+  const revealedClass = revealed ? 'revealed' : 'unrevealed';
+  const selectedClass = `${selectable ? 'selectable' : ''} ${
+    selected ? 'selected' : ''
+  }`;
+  const overlayStyle: CSSProperties | undefined = isOverlaid
+    ? {
+        position: 'absolute',
+        top: (offset ?? 0) + (selected ? 4 * (index ?? 0) : 0),
+      }
+    : undefined;
 
   // Measure content height:
   const contentRef = useRef<HTMLElement>(null);
@@ -268,7 +348,7 @@ function CardResponseReading({
         measure(elem);
       });
       resizeObserver.observe(elem);
-      return () => resizeObserver.disconnect(); // clean up 
+      return () => resizeObserver.disconnect(); // clean up
     } else if (!revealed && setContentHeight) {
       // For unrevealed card, report default size:
       setContentHeight(32);
@@ -286,10 +366,13 @@ function CardResponseReading({
 
   if (revealed) {
     return (
-      <LargeCard className={`card-response response-reading ${selectedClass} ${overlayClass} ${revealedClass}`}
+      <LargeCard
+        className={`card-response response-reading ${selectedClass} ${overlayClass} ${revealedClass}`}
         style={overlayStyle}
       >
-        <span ref={contentRef}><CardContent>{content}</CardContent></span>
+        <span ref={contentRef}>
+          <CardContent>{content}</CardContent>
+        </span>
         {likable && (
           <CardCenterIcon className="like-response-container">
             <div className="like-response-button">
@@ -297,47 +380,52 @@ function CardResponseReading({
             </div>
           </CardCenterIcon>
         )}
-        {likes && <CardBottomLeft className={hasPlayerLike ? 'has-player-like' : ''}>
-          {likes.map((_, i) => (
-            <span key={i} className="like">{likeIcon}</span>
-          ))}
-        </CardBottomLeft>}
+        {likeCount > 0 && (
+          <CardBottomLeft className={hasPlayerLike ? 'has-player-like' : ''}>
+            {[...Array(likeCount)].map((_, i) => (
+              <span key={i} className="like">
+                {likeIcon}
+              </span>
+            ))}
+          </CardBottomLeft>
+        )}
       </LargeCard>
     );
   } else {
-    return <LargeCard style={overlayStyle}
-      className={`card-response response-reading unrevealed ${overlayClass}`}>
-      <CardCenterIcon className="reading-unrevealed-icon">
-        ?
-      </CardCenterIcon>
-    </LargeCard>;
+    return (
+      <LargeCard
+        style={overlayStyle}
+        className={`card-response response-reading unrevealed ${overlayClass}`}
+      >
+        <CardCenterIcon className="reading-unrevealed-icon">?</CardCenterIcon>
+      </LargeCard>
+    );
   }
 }
 
-
 interface LikeProps {
-  response: PlayerResponse
+  response: PlayerResponse;
 }
 
 /** Returns a custom icon for likes */
 function LikeIcon({ response }: LikeProps) {
   for (const card of response.cards) {
-    if (card.tags.includes("jew")) {
+    if (card.tags.includes('jew')) {
       return <IconStarOfDavid />;
     }
   }
   for (const card of response.cards) {
-    if (card.tags.includes("csgo")) {
+    if (card.tags.includes('csgo')) {
       return <IconHeadshot />;
     }
   }
   for (const card of response.cards) {
-    if (detectDeer(card.content) || card.tags.includes("deer")) {
+    if (detectDeer(card.content) || card.tags.includes('deer')) {
       return <Twemoji className="emoji-like">🦌</Twemoji>;
     }
   }
   for (const card of response.cards) {
-    if (detectCat(card.content) || card.tags.includes("cat")) {
+    if (detectCat(card.content) || card.tags.includes('cat')) {
       return <IconCat className="cat-icon" />;
     }
   }

@@ -17,7 +17,7 @@ import { voteConverter } from "../../shared/firestore-converters";
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Returns Firestore subcollection reference of likes for a player response in turn. */
-function getResponseLikesRef(
+export function getResponseLikesRef(
   lobbyID: string,
   turnID: string,
   userID: string,
