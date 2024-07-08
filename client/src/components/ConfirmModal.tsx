@@ -31,7 +31,7 @@ export function ConfirmModal({
 }: ModalProps) {
   return (
     <Modal show={show} title={title} className={className} onHide={onCancel}>
-      <form className="modal-confirm-form">
+      <form className="modal-confirm-form" onSubmit={(e) => e.preventDefault()}>
         <ModalBody loading={loading} loadingText={loadingText}>
           {children}
         </ModalBody>

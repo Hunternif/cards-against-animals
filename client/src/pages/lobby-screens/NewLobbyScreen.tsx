@@ -168,13 +168,15 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
   );
 
   async function handleLeave() {
-    setLeaving(true);
-    await leaveLobby(lobby, user.uid)
-      .then(() => navigate('/'))
-      .catch((e: any) => {
-        setError(e);
-        setLeaving(false);
-      });
+    try {
+      setLeaving(true);
+      await leaveLobby(lobby, user.uid);
+      navigate('/');
+    } catch (e: any) {
+      setError(e);
+    } finally {
+      setLeaving(false);
+    }
   }
 
   return (

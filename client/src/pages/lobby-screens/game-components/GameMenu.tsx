@@ -41,17 +41,23 @@ export function GameMenu() {
   const [savingSettings, setSavingSettings] = useState(false);
 
   async function handleLeave() {
-    await leaveLobby(lobby, player.uid)
-      .then(() => navigate("/"))
-      .catch((e: any) => setError(e));
+    try {
+      await leaveLobby(lobby, player.uid);
+      navigate('/');
+    } catch (e: any) {
+      setError(e);
+    }
   }
 
   async function handleEnd() {
-    setEnding(true);
-    await endLobby(lobby).catch((e) => {
+    try {
+      setEnding(true);
+      await endLobby(lobby)
+    } catch (e: any) {
       setError(e);
+    } finally {
       setEnding(false);
-    });
+    }
   }
 
   function openSettings() {
