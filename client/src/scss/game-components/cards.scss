@@ -254,7 +254,7 @@
   .like {
     opacity: 0.6;
   }
-  .has-player-like .like:last-child {
+  .has-player-like .like:first-child {
     opacity: 1;
   }
 }
