@@ -2,7 +2,7 @@ import { User } from "firebase/auth";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { useLobby, usePlayerInLobby, usePlayers } from "../api/lobby/lobby-hooks";
-import { ErrorContext } from "../components/ErrorContext";
+import { ErrorContext, useErrorContext } from "../components/ErrorContext";
 import { ErrorModal } from "../components/ErrorModal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { useAuthWithPresence } from "../hooks/auth-hooks";
@@ -65,8 +65,12 @@ interface LoggedInJoinedProps {
 
 /** User logged in AND joined the lobby. */
 function JoinedLobbyScreen({ lobbyID, user }: LoggedInJoinedProps) {
-  const [lobby, loadingLobby] = useLobby(lobbyID);
-  const [players, loadingPlayers] = usePlayers(lobbyID);
+  const { setError } = useErrorContext();
+  const [lobby, loadingLobby, lobbyError] = useLobby(lobbyID);
+  const [players, loadingPlayers, playersError] = usePlayers(lobbyID);
+  if (lobbyError || playersError) {
+    setError(lobbyError || playersError);
+  }
 
   if (loadingLobby || loadingPlayers) return <LoadingSpinner delay text="Loading lobby..." />;
   if (!lobby || !players) throw new Error(`Failed to load lobby ${lobbyID}`);

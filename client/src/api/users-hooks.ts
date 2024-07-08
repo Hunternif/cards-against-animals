@@ -1,5 +1,5 @@
 import {
-  useCollection,
+  useCollectionOnce,
   useDocumentData,
   useDocumentDataOnce,
 } from 'react-firebase-hooks/firestore';
@@ -20,7 +20,7 @@ export function useCAAUserOnce(userID: string) {
 export function useUserDecksWithKeys(
   userID: string,
 ): FirestoreCollectionDataHookNullSafe<string> {
-  const [docs, loading, error] = useCollection(getUserDeckLocksRef(userID));
+  const [docs, loading, error] = useCollectionOnce(getUserDeckLocksRef(userID));
   const ids = docs?.docs.map((d) => d.id) ?? [];
   return [ids, loading, error];
 }
