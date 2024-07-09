@@ -273,7 +273,7 @@ function LobbyControlControl({ settings, readOnly, onChange }: Props) {
     }}
     options={[
       ["creator", "Only creator"],
-      ["czar", "Only czar"],
+      ["creator_or_czar", "Creator or czar"],
       ["players", "Players"],
       ["anyone", "Anyone (spectators)"],
     ]}

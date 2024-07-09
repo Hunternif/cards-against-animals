@@ -36,8 +36,8 @@ export function WinnerScreen() {
     case 'players':
       showEndgameControls = isJudge || isCreator;
       break;
-    case 'czar':
     case 'creator':
+    case 'creator_or_czar':
       showEndgameControls = canControlLobby;
       break;
     default:

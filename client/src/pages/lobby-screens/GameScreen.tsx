@@ -86,8 +86,8 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
     case 'players':
       canControlLobby = player?.role === 'player';
       break;
-    case 'czar':
-      canControlLobby = isJudge;
+    case 'creator_or_czar':
+      canControlLobby = isCreator || isJudge;
       break;
     case 'creator':
       canControlLobby = isCreator;

@@ -39,8 +39,8 @@ export async function assertLobbyControl(
       case 'creator':
         assertLobbyCreator(event, lobby);
         break;
-      case 'czar':
-        await assertCurrentJudge(event, lobby);
+      case 'creator_or_czar':
+        await assertCurrentJudgeOrCreator(event, lobby);
         break;
       case 'players':
         await assertPlayerInLobby(event, lobby.id);
@@ -73,17 +73,18 @@ export async function assertPlayerInLobby(
 }
 
 /** Asserts that current user is a judge in the current turn, or lobby creator. */
-export async function assertCurrentJudge(
+export async function assertCurrentJudgeOrCreator(
   event: CallableRequest,
   lobby: GameLobby,
 ) {
   assertLoggedIn(event);
+  const userID = event.auth?.uid;
   const lastTurn = await getLastTurn(lobby);
   if (!lastTurn) {
     assertLobbyCreator(event, lobby);
   } else {
-    if (lastTurn.judge_uid !== event.auth?.uid) {
-      throw new HttpsError('unauthenticated', 'Must be lobby judge');
+    if (lobby.creator_uid !== userID && lastTurn.judge_uid !== userID) {
+      throw new HttpsError('unauthenticated', 'Must be lobby czar or creator');
     }
   }
 }

@@ -102,7 +102,7 @@ export type DiscardCost =
   // "1_free_then_1_heart_per_card" | // each card costs 1 heart
   | 'no_discard';
 // "anyone" includes spectators
-export type LobbyContol = 'creator' | 'czar' | 'players' | 'anyone';
+export type LobbyContol = 'creator' | 'creator_or_czar' | 'players' | 'anyone';
 
 /** Instance of a player specific to a single game lobby. */
 export class PlayerInLobby {
