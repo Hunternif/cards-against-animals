@@ -1,5 +1,4 @@
-@use "../colors.scss";
-
+@use '../colors.scss';
 
 /*------------------------- Button component ------------------------*/
 
@@ -7,6 +6,11 @@
   display: flex;
   text-align: center;
   align-items: center;
+  &.centered {
+    .icon-left, .icon-right {
+      width: 1em;
+    }
+  }
   .icon-left {
     display: flex;
     margin-right: 0.3em;
@@ -30,7 +34,7 @@ button {
   height: 3rem;
   white-space: nowrap;
 
-  &:hover {
+  &:hover:enabled {
     border-color: colors.$button-border-hover;
   }
   &:focus,
@@ -39,17 +43,17 @@ button {
   }
   &:disabled {
     cursor: auto;
-    border: 2px solid transparent;
     opacity: 0.4;
   }
 }
 
 // Bright accent button, for the primary CTA:
-.accent-button, .accent-control {
+.accent-button,
+.accent-control {
   background-color: colors.$accent;
   color: colors.$button-accent-text;
   border: 2px solid transparent;
-  &:hover {
+  &:hover:enabled {
     border-color: colors.$button-accent-border-hover;
     /** Glow: */
     /* box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.5); */
@@ -62,16 +66,20 @@ button {
 }
 
 // Semi-light button, for less important CTA:
-.light-button, .light-control {
+.light-button,
+.light-control {
   background-color: colors.$button-light-bg;
 }
 // Lighter button for a light background:
-.lighter-button, .lighter-control {
+.lighter-button,
+.lighter-control {
   background-color: colors.$button-lighter-bg;
 }
 
 // Secondary button, for an optional de-emphasized action:
-.secondary-button, .secondary-control {
+.secondary-button,
+.secondary-button:disabled,
+.secondary-control {
   border: 2px solid;
   color: rgba(colors.$text, 0.8);
   border-color: rgba(colors.$text, 0.4);
@@ -80,33 +88,37 @@ button {
     color: rgba(colors.$text, 0.8);
   }
 
-  &:hover {
+  &:hover:enabled {
     border: 2px solid transparent;
     background-color: rgba(colors.$text, 0.6);
     color: #000;
-    * {
+    // Update colors of hovered icons - except spinner:
+    *:not(.inline-spinner) {
       color: #000;
       border-color: rgba(#000, 0.5);
     }
   }
-  &:hover:disabled {
-    border: 2px solid;
-    color: rgba(colors.$text, 0.8);
-    * {
-      color: rgba(colors.$text, 0.8);
-    }
-    border-color: rgba(colors.$text, 0.4);
-    background-color: rgba(colors.$text, 0);
-  }
+  // &:hover:disabled {
+  //   border: 2px solid;
+  //   color: rgba(colors.$text, 0.8);
+  //   // Update colors of hovered icons - except spinner:
+  //   *:not(.inline-spinner) {
+  //     color: rgba(colors.$text, 0.8);
+  //   }
+  //   border-color: rgba(colors.$text, 0.4);
+  //   background-color: rgba(colors.$text, 0);
+  // }
 }
 
-.small-button, .small-control {
+.small-button,
+.small-control {
   font-size: small;
   height: 2.5rem;
 }
 
 // Slightly different from a "menu" inline buutton
-.inline-game-button, .inline-control {
+.inline-game-button,
+.inline-control {
   height: auto;
   padding: 0.2em 0.5em;
   display: inline-flex;
@@ -126,7 +138,6 @@ button.start-button {
   max-width: 40vw;
   position: relative;
 }
-
 
 /*------------------------ Menu inline buttons -----------------------*/
 .inline-button {
@@ -148,7 +159,6 @@ button.start-button {
 .icon-counter .count {
   margin: 0 0.2em;
 }
-
 
 /*--------------------------- Special buttons -------------------------*/
 .x-circle-button {

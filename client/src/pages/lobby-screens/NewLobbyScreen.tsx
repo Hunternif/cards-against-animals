@@ -238,8 +238,9 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
         {player.role === 'player' && !isCreator && (
           <GameButton
             secondary
+            centered
             onClick={handleSpectate}
-            disabled={changingRole}
+            loading={changingRole}
           >
             Spectate
           </GameButton>
@@ -247,8 +248,9 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
         {player.role === 'spectator' && canJoinAsPlayer && (
           <GameButton
             secondary
+            centered
             onClick={handleJoinAsPlayer}
-            disabled={changingRole}
+            loading={changingRole}
           >
             Join as player
           </GameButton>
