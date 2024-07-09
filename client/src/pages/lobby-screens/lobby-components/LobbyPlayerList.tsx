@@ -7,11 +7,15 @@ interface ListProps {
   lobby: GameLobby;
   user: User;
   players: PlayerInLobby[];
+  /** If > 0, this number of slots will always be shown. */
+  minSlots?: number;
   /** If > 0, only this number of slots will be displayed.
    * Otherwise, empty slots will be added indefinitely */
   maxSlots?: number;
   /** If true, empty slots will be added until the end of the screen. */
   fillSpace?: boolean;
+  /** Number of extra slots to show if players < maxSlots. */
+  extraEmptySlots?: number;
 }
 
 /** List of players in the lobby */
@@ -19,24 +23,35 @@ export function LobbyPlayerList({
   lobby,
   user,
   players,
+  minSlots,
   maxSlots,
   fillSpace,
+  extraEmptySlots,
 }: ListProps) {
-  const [minSlotCount, setMinSlotCount] = useState(1);
-  const [slotCount, setSlotCount] = useState(players.length);
+  // How many slots are needed to fill the screen
+  const [fillCount, setFillCount] = useState(1);
   const [slots, setSlots] = useState<Array<ReactNode>>([]);
   const ulRef = useRef<HTMLUListElement>(null);
 
   // Update number of slots, so there is always more than players:
   useEffect(() => {
-    let newSlotCount = players.length;
-    if (maxSlots != null) {
-      newSlotCount = maxSlots;
-    } else {
-      newSlotCount = Math.max(minSlotCount, slotCount, players.length + 2);
+    let minCount = Math.max(
+      1,
+      players.length,
+      Math.min(minSlots ?? 0, maxSlots ?? 0),
+    );
+    let maxCount = Math.min(
+      maxSlots ?? 1,
+      players.length + (extraEmptySlots ?? 0),
+    );
+    let slotCount = maxCount;
+    if (fillSpace) {
+      slotCount = fillCount;
     }
+    if (slotCount < minCount) slotCount = minCount;
+    // if (slotCount < players.length) slotCount = players.length;
     const newSlots = new Array<ReactNode>();
-    for (let i = 0; i < newSlotCount; i++) {
+    for (let i = 0; i < slotCount; i++) {
       if (players[i]) {
         newSlots.push(
           <PlayerCard
@@ -52,21 +67,20 @@ export function LobbyPlayerList({
       }
     }
     setSlots(newSlots);
-    setSlotCount(newSlotCount);
-  }, [players, players.length, minSlotCount, maxSlots, lobby, slotCount, user.uid]);
+  }, [players, fillCount, maxSlots, lobby, user.uid]);
 
   // Set initial number of slots to fill the entire screen:
   useEffect(() => {
-    if (maxSlots == null && fillSpace && ulRef.current?.parentElement) {
+    if (ulRef.current?.parentElement) {
       const containerHeight = ulRef.current.parentElement.clientHeight;
       const emSize = Math.max(
         12,
         parseFloat(getComputedStyle(ulRef.current).fontSize),
       );
       const slotHeight = 3.5 * emSize;
-      setMinSlotCount(Math.floor(containerHeight / slotHeight) - 1);
+      setFillCount(Math.floor(containerHeight / slotHeight) - 1);
     }
-  }, [ulRef, maxSlots, fillSpace]);
+  }, [ulRef]);
 
   return (
     <ul style={{ padding: 0, margin: 0 }} ref={ulRef}>

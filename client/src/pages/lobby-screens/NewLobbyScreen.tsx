@@ -192,7 +192,9 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
           lobby={lobby}
           user={user}
           players={activePlayers}
+          minSlots={4}
           maxSlots={lobby.settings.max_players}
+          extraEmptySlots={2}
         />
         {spectators.length > 0 && (
           <>
@@ -204,7 +206,6 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
               lobby={lobby}
               user={user}
               players={spectators}
-              maxSlots={spectators.length}
             />
           </>
         )}
