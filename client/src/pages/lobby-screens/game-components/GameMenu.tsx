@@ -19,7 +19,7 @@ import { useGameContext } from "./GameContext";
 import { GamePlayerList } from "./GamePlayerList";
 import { endLobby, updateLobbySettings } from "../../../api/lobby/lobby-control-api";
 import { leaveLobby } from "../../../api/lobby/lobby-join-api";
-import { updatePlayer } from "../../../api/lobby/lobby-player-api";
+import { setMyPlayerRole, updatePlayer } from "../../../api/lobby/lobby-player-api";
 
 
 /** Menu header on top of the game page */
@@ -35,6 +35,7 @@ export function GameMenu() {
   const { setError } = useContext(ErrorContext);
 
   const [newAvatarID, setNewAvatarID] = useState(player.avatar_id);
+  const canJoinAsPlayer = activePlayers.length < lobby.settings.max_players;
 
   // Make a local copy of settings to make changes:
   const [settings, setSettings] = useState(lobby.settings);
@@ -92,6 +93,22 @@ export function GameMenu() {
         setShowProfileModal(false);
       }
     } catch (e) {
+      setError(e);
+    }
+  }
+
+  async function handleSpectate() {
+    try {
+      await setMyPlayerRole(lobby.id, 'spectator');
+    } catch (e: any) {
+      setError(e);
+    }
+  }
+
+  async function handleJoinAsPlayer() {
+    try {
+      await setMyPlayerRole(lobby.id, 'player');
+    } catch (e: any) {
       setError(e);
     }
   }
@@ -172,6 +189,8 @@ export function GameMenu() {
             </span>
           } toggleClassName="game-menu-icon">
           <Dropdown.Menu>
+            {!isSpectator && <MenuItem label="Spectate" onClick={handleSpectate} />}
+            {isSpectator && <MenuItem label="Join as player" onClick={handleJoinAsPlayer} locked={!canJoinAsPlayer}/>}
             <MenuItem label="Profile" onClick={() => setShowProfileModal(true)} />
             <MenuItem label="Settings" onClick={openSettings} locked={!canControlLobby} />
             <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
@@ -186,17 +205,17 @@ export function GameMenu() {
 
 interface MenuItemProps {
   label: string,
+  disabled?: boolean,
   locked?: boolean,
   onClick?: () => void,
 }
 
-function MenuItem({ label, onClick, locked }: MenuItemProps) {
-  const { isJudge } = useGameContext();
+function MenuItem({ label, onClick, locked, disabled }: MenuItemProps) {
   return (
     <Dropdown.Item
       onClick={onClick}
-      disabled={locked && !isJudge}>
-      {locked && !isJudge ? (
+      disabled={disabled || locked}>
+      {locked ? (
         // Only current judge can click this. Show an icon on the right.
         <span className="menu-item-locked" >{label}
           <Twemoji className="lock-icon" >👑</Twemoji></span>
