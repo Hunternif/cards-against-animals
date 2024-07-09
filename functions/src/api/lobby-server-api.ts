@@ -126,43 +126,53 @@ export async function addPlayer(
   userID: string,
 ): Promise<void> {
   const caaUser = await getOrCreateCAAUser(userID);
-  const playersRef = getPlayersRef(lobby.id);
-  const playerRef = playersRef.doc(userID);
-  const hasAlreadyJoined = (await playerRef.get()).exists;
-  if (hasAlreadyJoined) {
-    await setUsersCurrentLobby(userID, lobby.id);
-    logger.warn(`User ${caaUser.name} (${userID}) re-joined lobby ${lobby.id}`);
-    return;
-  }
-  let role: PlayerRole = 'spectator';
-  if (lobby.status == 'ended') {
-    throw new HttpsError('unavailable', `Lobby already ended: ${lobby.id}`);
-  }
-  if (await allowJoinAsPlayer(lobby)) {
-    role = 'player';
-  } else if (await allowJoinAsSpectator(lobby)) {
-    role = 'spectator';
-  } else {
-    throw new HttpsError('unavailable', `Could not join lobby ${lobby.id}`);
-  }
-  const rng = RNG.fromStrSeedWithTimestamp(lobby.id + caaUser.name);
-  const player = new PlayerInLobby(
-    userID,
-    caaUser.name,
-    caaUser.avatar_id,
-    rng.randomInt(),
-    role,
-    'online',
-    0,
-    0,
-    0,
-    0,
-  );
-  await playerRef.set(player);
+  // Add player in a transaction so it only happens once:
+  const player = await firestore.runTransaction(async (transaction) => {
+    const playersRef = getPlayersRef(lobby.id);
+    const playerRef = playersRef.doc(userID);
+    const hasAlreadyJoined = (await transaction.get(playerRef)).exists;
+    if (hasAlreadyJoined) {
+      await setUsersCurrentLobby(userID, lobby.id);
+      logger.warn(
+        `User ${caaUser.name} (${userID}) re-joined lobby ${lobby.id}`,
+      );
+      return null;
+    }
+    let role: PlayerRole = 'spectator';
+    if (lobby.status == 'ended') {
+      throw new HttpsError('unavailable', `Lobby already ended: ${lobby.id}`);
+    }
+    if (await allowJoinAsPlayer(lobby)) {
+      role = 'player';
+    } else if (await allowJoinAsSpectator(lobby)) {
+      role = 'spectator';
+    } else {
+      throw new HttpsError('unavailable', `Could not join lobby ${lobby.id}`);
+    }
+    const rng = RNG.fromStrSeedWithTimestamp(lobby.id + caaUser.name);
+    const player = new PlayerInLobby(
+      userID,
+      caaUser.name,
+      caaUser.avatar_id,
+      rng.randomInt(),
+      role,
+      'online',
+      0,
+      0,
+      0,
+      0,
+    );
+    transaction.set(playerRef, player);
+    logger.info(
+      `User ${caaUser.name} (${userID}) joined lobby ${lobby.id} as ${role}`,
+    );
+    return player;
+  });
+
+  // Already joined, or some other invalid state:
+  if (player == null) return;
+
   await setUsersCurrentLobby(userID, lobby.id);
-  logger.info(
-    `User ${caaUser.name} (${userID}) joined lobby ${lobby.id} as ${role}`,
-  );
 
   // If the game has started, onboard the player:
   if (lobby.status == 'in_progress' && player.role === 'player') {
