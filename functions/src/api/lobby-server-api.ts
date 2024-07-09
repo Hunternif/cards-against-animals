@@ -485,5 +485,8 @@ export async function createLobbyAsCopy(
   logger.info(
     `Copied players from lobby ${oldLobby.id} to lobby ${newLobby.id}`,
   );
+  // Notify old lobby that it was copied:
+  oldLobby.next_lobby_id = newLobby.id;
+  await updateLobby(oldLobby);
   return newLobby;
 }

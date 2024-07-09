@@ -34,18 +34,16 @@ import {
 
 export const lobbyConverter: FConverter<GameLobby> = {
   toFirestore: (lobby: GameLobby) => {
-    return removeUndefined({
-      status: lobby.status,
-      creator_uid: lobby.creator_uid,
-      current_turn_id: lobby.current_turn_id,
-      time_created: lobby.time_created
-        ? FTimestamp.fromDate(lobby.time_created)
-        : fServerTimestamp(), // set new time when creating a new lobby
-      deck_ids: Array.from(lobby.deck_ids),
-      settings: copyFields(lobby.settings),
-      // the rest of the fields are subcollections, and they
-      // should not be uploaded during creation.
-    });
+    return copyFields2(
+      lobby,
+      {
+        time_created: lobby.time_created
+          ? FTimestamp.fromDate(lobby.time_created)
+          : fServerTimestamp(), // set new time when creating a new lobby
+        deck_ids: Array.from(lobby.deck_ids),
+      },
+      ['id', 'deck_prompts', 'deck_responses'],
+    );
   },
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
@@ -61,6 +59,7 @@ export const lobbyConverter: FConverter<GameLobby> = {
     ret.current_turn_id = data.current_turn_id;
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     ret.deck_ids = new Set<string>(data.deck_ids || []);
+    ret.next_lobby_id = data.next_lobby_id;
     return ret;
   },
 };

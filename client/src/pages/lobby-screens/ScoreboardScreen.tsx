@@ -1,4 +1,5 @@
 import { User } from 'firebase/auth';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameButton } from '../../components/Buttons';
 import { Delay } from '../../components/Delay';
@@ -6,8 +7,7 @@ import { Scoreboard } from '../../components/Scoreboard';
 import { FillLayout } from '../../components/layout/FillLayout';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { GameLobby, PlayerInLobby } from '../../shared/types';
-import { useErrorContext } from '../../components/ErrorContext';
-import { createLobbyAsCopy } from '../../api/lobby/lobby-join-api';
+import { NewGameButton } from './game-components/NewGameButton';
 
 interface Props {
   lobby: GameLobby;
@@ -17,16 +17,14 @@ interface Props {
 
 export function ScoreboardScreen({ lobby, user, players }: Props) {
   const navigate = useNavigate();
-  const { setError } = useErrorContext();
+  const existingNextLobbyID = useMemo(() => lobby.next_lobby_id, []);
 
-  async function handleNewGame() {
-    try {
-      const nextLobbyID = await createLobbyAsCopy(lobby.id);
-      navigate(`/${nextLobbyID}`);
-    } catch (e: any) {
-      setError(e);
+  // When next lobby id first arrives, redirect to the new lobby page:
+  useEffect(() => {
+    if (existingNextLobbyID == null && lobby.next_lobby_id != null) {
+      navigate(`/${lobby.next_lobby_id}`);
     }
-  }
+  }, [lobby.next_lobby_id]);
 
   return (
     <FillLayout className="scoreboard-screen">
@@ -43,7 +41,7 @@ export function ScoreboardScreen({ lobby, user, players }: Props) {
               <GameButton secondary onClick={() => navigate('/')}>
                 Go home
               </GameButton>
-              <GameButton onClick={handleNewGame}>New game</GameButton>
+              <NewGameButton lobby={lobby} />
             </Delay>
           )}
         </footer>

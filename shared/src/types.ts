@@ -27,6 +27,9 @@ export class GameLobby {
    * Must be fetched separately from a Firebase subcollection. */
   deck_responses: Array<ResponseCardInGame> = [];
 
+  /** ID of the next lobby, created as a copy of this lobby. */
+  next_lobby_id?: string;
+
   constructor(
     public id: string,
     public creator_uid: string,
