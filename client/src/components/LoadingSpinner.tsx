@@ -22,13 +22,13 @@ export function LoadingSpinner({
 }: LoadingProps) {
   const component = inline ? (
     <Spinner
-      className="inline-spinner"
+      className="spinner inline-spinner"
       style={{ width: '1em', height: '1em' }}
     />
   ) : (
     <CenteredLayout innerStyle={{ textAlign: 'center', ...style }}>
       {text && <h5 style={{ marginBottom: '1em' }}>{text}</h5>}
-      <Spinner />
+      <Spinner className="spinner" />
     </CenteredLayout>
   );
   if (delay || delayMs) return <Delay delayMs={delayMs}>{component}</Delay>;

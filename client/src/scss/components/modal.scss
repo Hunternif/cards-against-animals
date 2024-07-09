@@ -56,11 +56,13 @@
       font-weight: 600;
     }
     // Add vertical scrolling to all modals:
-    // TODO: bug: loading spinner flashes scroll
     &.scroll {
       @extend .miniscrollbar;
       @extend .miniscrollbar-light;
       overflow-y: auto;
+    }
+    .spinner {
+      margin-bottom: 0.5em;
     }
   }
   footer.modal-footer {
