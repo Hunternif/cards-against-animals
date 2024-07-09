@@ -6,7 +6,7 @@ import {
 } from './FormControls';
 import { LoadingSpinner } from './LoadingSpinner';
 
-interface ButtonProps
+export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     ControlProps {
   iconLeft?: ReactNode;

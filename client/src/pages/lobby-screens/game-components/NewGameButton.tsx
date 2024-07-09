@@ -1,16 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { useErrorContext } from '../../../components/ErrorContext';
 import { createLobbyAsCopy } from '../../../api/lobby/lobby-join-api';
-import { GameButton } from '../../../components/Buttons';
+import { ButtonProps, GameButton } from '../../../components/Buttons';
 import { GameLobby } from '../../../shared/types';
 import { useState } from 'react';
 
-interface Props {
+interface Props extends ButtonProps {
   lobby: GameLobby;
 }
 
 /** Starts a new game with the same players */
-export function NewGameButton({ lobby }: Props) {
+export function NewGameButton({ lobby, ...props }: Props) {
   const navigate = useNavigate();
   const { setError } = useErrorContext();
   const [starting, setStarting] = useState(false);
@@ -28,7 +28,7 @@ export function NewGameButton({ lobby }: Props) {
   }
 
   return (
-    <GameButton onClick={handleNewGame} loading={starting}>
+    <GameButton {...props} onClick={handleNewGame} loading={starting}>
       New game
     </GameButton>
   );

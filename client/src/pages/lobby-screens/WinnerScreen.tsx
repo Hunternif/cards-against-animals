@@ -14,6 +14,7 @@ import { NextTurnButton } from './game-components/NextTurnButton';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
 import { assertExhaustive } from '../../shared/utils';
+import { useRedirectToNextLobby } from '../../api/lobby/lobby-hooks';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -61,6 +62,8 @@ export function WinnerScreen() {
   useEffectOnce(() => {
     confetti();
   });
+
+  useRedirectToNextLobby(lobby);
 
   return (
     <>

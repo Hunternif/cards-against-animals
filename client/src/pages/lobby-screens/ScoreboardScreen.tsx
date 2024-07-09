@@ -1,5 +1,4 @@
 import { User } from 'firebase/auth';
-import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameButton } from '../../components/Buttons';
 import { Delay } from '../../components/Delay';
@@ -8,6 +7,7 @@ import { FillLayout } from '../../components/layout/FillLayout';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { GameLobby, PlayerInLobby } from '../../shared/types';
 import { NewGameButton } from './game-components/NewGameButton';
+import { useRedirectToNextLobby } from '../../api/lobby/lobby-hooks';
 
 interface Props {
   lobby: GameLobby;
@@ -17,14 +17,7 @@ interface Props {
 
 export function ScoreboardScreen({ lobby, user, players }: Props) {
   const navigate = useNavigate();
-  const existingNextLobbyID = useMemo(() => lobby.next_lobby_id, []);
-
-  // When next lobby id first arrives, redirect to the new lobby page:
-  useEffect(() => {
-    if (existingNextLobbyID == null && lobby.next_lobby_id != null) {
-      navigate(`/${lobby.next_lobby_id}`);
-    }
-  }, [lobby.next_lobby_id]);
+  useRedirectToNextLobby(lobby);
 
   return (
     <FillLayout className="scoreboard-screen">
