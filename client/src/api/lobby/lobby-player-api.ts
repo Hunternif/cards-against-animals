@@ -14,6 +14,7 @@ import {
   GameLobby,
   KickAction,
   PlayerInLobby,
+  PlayerRole,
   PlayerStatus,
 } from '../../shared/types';
 import { lobbiesRef } from './lobby-repository';
@@ -87,6 +88,20 @@ export async function setPlayerStatus(
   const player = await getPlayerInLobby(lobbyID, userID);
   if (player) {
     player.status = status;
+    await updatePlayer(lobbyID, player);
+  }
+}
+
+/** Updates player role in the current game.
+ * May not always be allowed, based on permission settings. */
+export async function setPlayerRole(
+  lobbyID: string,
+  userID: string,
+  role: PlayerRole,
+) {
+  const player = await getPlayerInLobby(lobbyID, userID);
+  if (player) {
+    player.role = role;
     await updatePlayer(lobbyID, player);
   }
 }

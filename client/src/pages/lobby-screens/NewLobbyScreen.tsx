@@ -3,6 +3,7 @@ import { CSSProperties, useContext, useState } from 'react';
 import { Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { leaveLobby } from '../../api/lobby/lobby-join-api';
+import { setPlayerRole } from '../../api/lobby/lobby-player-api';
 import { GameButton } from '../../components/Buttons';
 import { ErrorContext } from '../../components/ErrorContext';
 import { IconCounter } from '../../components/IconCounter';
@@ -166,6 +167,8 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
   const spectators = players.filter(
     (p) => p.role === 'spectator' && p.status !== 'left',
   );
+  const player = players.find((p) => p.uid === user.uid)!;
+  const isCreator = player.uid === lobby.creator_uid;
 
   async function handleLeave() {
     try {
@@ -176,6 +179,22 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
       setError(e);
     } finally {
       setLeaving(false);
+    }
+  }
+
+  async function handleSpectate() {
+    try {
+      await setPlayerRole(lobby.id, user.uid, 'spectator');
+    } catch (e: any) {
+      setError(e);
+    }
+  }
+
+  async function handleJoinAsPlayer() {
+    try {
+      await setPlayerRole(lobby.id, user.uid, 'player');
+    } catch (e: any) {
+      setError(e);
     }
   }
 
@@ -202,22 +221,26 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
             <h3 className="spectator-list-header">
               Spectators {spectators.length}
             </h3>
-            <LobbyPlayerList
-              lobby={lobby}
-              user={user}
-              players={spectators}
-            />
+            <LobbyPlayerList lobby={lobby} user={user} players={spectators} />
           </>
         )}
       </FillLayout>
       <hr />
-      <GameButton
-        style={{ margin: '0 1em' }}
-        onClick={handleLeave}
-        disabled={leaving}
-      >
-        Leave
-      </GameButton>
+      <footer>
+        {player.role === 'player' && !isCreator && (
+          <GameButton secondary onClick={handleSpectate} disabled={leaving}>
+            Spectate
+          </GameButton>
+        )}
+        {player.role === 'spectator' && (
+          <GameButton secondary onClick={handleJoinAsPlayer} disabled={leaving}>
+            Join as player
+          </GameButton>
+        )}
+        <GameButton onClick={handleLeave} disabled={leaving}>
+          Leave
+        </GameButton>
+      </footer>
     </div>
   );
 }
