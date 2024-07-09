@@ -94,14 +94,23 @@
     border-radius: 0;
     margin: 0;
     // padding: 0.1em 0.15em;
-    opacity: 0.8;
+    .player-name {
+      opacity: 0.8;
+    }
     &.me-card {
       background-color: rgba(colors.$player-me-bg, 0.2);
     }
     &.judge-card {
       font-weight: 700;
       color: #fff;
-      opacity: 1;
+      .player-name {
+        opacity: 1;
+      }
+    }
+    &.creator-card {
+      .inline-avatar {
+        border: 2px solid colors.$accent;
+      }
     }
   }
   li:last-child .player-card {

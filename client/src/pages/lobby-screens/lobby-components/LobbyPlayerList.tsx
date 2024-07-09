@@ -58,7 +58,8 @@ export function LobbyPlayerList({
             lobby={lobby}
             player={players[i]}
             isMe={user.uid === players[i].uid}
-            isCreator={lobby.creator_uid === players[i].uid}
+            // Using "isJudge" here, because the crown looks good here.
+            isJudge={lobby.creator_uid === players[i].uid}
             canKick={lobby.creator_uid === user.uid}
           />,
         );
