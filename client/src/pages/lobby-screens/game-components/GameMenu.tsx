@@ -25,7 +25,7 @@ import { setMyPlayerRole, updatePlayer } from "../../../api/lobby/lobby-player-a
 /** Menu header on top of the game page */
 export function GameMenu() {
   const navigate = useNavigate();
-  const { lobby, player, players, activePlayers, isSpectator, isJudge,
+  const { lobby, player, playerState, players, activePlayers, isSpectator, isJudge,
     canControlLobby } = useGameContext();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
@@ -166,9 +166,9 @@ export function GameMenu() {
       <div className="menu-row-right">
         <CustomDropdown toggle={
           <InlineButton title="Scores" style={{ whiteSpace: "nowrap" }}>
-            <IconCounter icon={<IconStarInline />} count={player.score} />
-            {player.likes > 0 && (
-              <IconCounter icon={<IconHeartInline />} count={player.likes} />
+            <IconCounter icon={<IconStarInline />} count={playerState.score} />
+            {playerState.likes > 0 && (
+              <IconCounter icon={<IconHeartInline />} count={playerState.likes} />
             )}
           </InlineButton>
         }>

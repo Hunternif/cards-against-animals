@@ -9,6 +9,7 @@ import {
 import {
   GameLobby,
   GameTurn,
+  PlayerGameState,
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
@@ -127,7 +128,7 @@ export async function getTurnPrompt(
 /** Hand from a specific player. */
 export async function getPlayerHand(
   lobbyID: string,
-  player: PlayerInLobby,
+  player: PlayerGameState,
 ): Promise<ResponseCardInHand[]> {
   return Array.from(player.hand.values());
 }
@@ -135,7 +136,7 @@ export async function getPlayerHand(
 /** ALL discarded cards from a specific player, in the last turn. */
 export async function getPlayerDiscard(
   lobbyID: string,
-  player: PlayerInLobby,
+  player: PlayerGameState,
 ): Promise<ResponseCardInGame[]> {
   return Array.from(player.discarded.values());
 }
@@ -144,7 +145,7 @@ export async function getPlayerDiscard(
  * Excludes cards that were discarded during previous "discard" moves. */
 export async function getNewPlayerDiscard(
   lobbyID: string,
-  player: PlayerInLobby,
+  player: PlayerGameState,
 ): Promise<ResponseCardInGame[]> {
   // Filter out cards that were removed from hand, during previous discards:
   const out = new Array<ResponseCardInGame>();

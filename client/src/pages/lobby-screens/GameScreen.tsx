@@ -1,5 +1,6 @@
 import { User } from 'firebase/auth';
 import { CSSProperties, useContext, useEffect } from 'react';
+import { usePlayerState } from '../../api/lobby/lobby-hooks';
 import {
   useAllPlayerResponses,
   useAllTurnPrompts,
@@ -8,6 +9,7 @@ import {
 import { ErrorContext } from '../../components/ErrorContext';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { FillLayout } from '../../components/layout/FillLayout';
+import { useSoundboardSound } from '../../hooks/sound-hooks';
 import {
   GameLobby,
   GameTurn,
@@ -22,7 +24,6 @@ import { PlayerAnsweringScreen } from './PlayerAnsweringScreen';
 import { WinnerScreen } from './WinnerScreen';
 import { GameContext, GameContextState } from './game-components/GameContext';
 import { GameMenu } from './game-components/GameMenu';
-import { useSoundboardSound } from '../../hooks/sound-hooks';
 
 interface ScreenProps {
   lobby: GameLobby;
@@ -67,6 +68,7 @@ interface PreTurnProps {
 function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   const [prompts, loadingPrompts, error] = useAllTurnPrompts(lobby, turn);
   const [responses, loadingResp, error2] = useAllPlayerResponses(lobby, turn);
+  const [playerState, loadingState, error3] = usePlayerState(lobby, user.uid);
 
   const judge = players.find((p) => p.uid === turn.judge_uid);
   const player = players.find((p) => p.uid === user.uid);
@@ -97,9 +99,7 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   }
 
   const { setError } = useContext(ErrorContext);
-  useEffect(() => {
-    if (error || error2) setError(error || error2);
-  }, [error, error2, setError]);
+  if (error || error2 || error3) setError(error || error2 || error3);
 
   if (!player) {
     setError('Current player is not in lobby');
@@ -110,13 +110,14 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
     return <></>;
   }
 
-  const hand = Array.from(player.hand.values());
+  const hand = Array.from(playerState.hand.values());
   const gameState: GameContextState = {
     user,
     lobby,
     players,
     activePlayers,
     player,
+    playerState,
     isSpectator,
     isJudge,
     isCreator,

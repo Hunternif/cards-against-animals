@@ -120,8 +120,7 @@ export async function addPlayer(
   const caaUser = await getOrCreateCAAUser(userID);
   // Add player in a transaction so it only happens once:
   const player = await firestore.runTransaction(async (transaction) => {
-    const playersRef = getPlayersRef(lobby.id);
-    const playerRef = playersRef.doc(userID);
+    const playerRef = getPlayersRef(lobby.id).doc(userID);
     const hasAlreadyJoined = (await transaction.get(playerRef)).exists;
     if (hasAlreadyJoined) {
       await setUsersCurrentLobby(userID, lobby.id);
@@ -149,10 +148,6 @@ export async function addPlayer(
       rng.randomInt(),
       role,
       'online',
-      0,
-      0,
-      0,
-      0,
     );
     transaction.set(playerRef, player);
     logger.info(
@@ -467,10 +462,6 @@ export async function createLobbyAsCopy(
         rng.randomInt(),
         p.role,
         p.status,
-        0,
-        0,
-        0,
-        0,
       ),
   );
   const newPlayersRef = getPlayersRef(newLobby.id);

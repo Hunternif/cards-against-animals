@@ -31,8 +31,8 @@ service cloud.firestore {
     }
     // Checks that the user actually has the cards they want to submit.
     function userHasCards(lobby) {
-      let player = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(request.auth.uid));
-      let hand = player.data['hand'];
+      let playerState = get(/databases/$(database)/documents/lobbies/$(lobby)/player_states/$(request.auth.uid));
+      let hand = playerState.data['hand'];
       // Can't iterate arrays, so will only check the first few cards:
       let cards = request.resource.data.cards;
       return (hand[cards[0].id].content == cards[0].content) &&
@@ -43,9 +43,9 @@ service cloud.firestore {
              (cards.size() < 6 || hand[cards[5].id].content == cards[5].content);
     }
     // Don't allow changing player data for these fields:
-    function isPrivatePlayerDataUnchanged() {
+    function fieldsUnchanged(fields) {
       return !request.resource.data.diff(resource.data).affectedKeys()
-              .hasAny(['role', 'score', 'likes', 'discards_used', 'hand']);
+              .hasAny(fields);
     }
     // Don't allow changing anything if you're banned
     function userIsNotKicked(lobby, userID) {
@@ -97,7 +97,16 @@ service cloud.firestore {
         // Don't allow creating or deleting, to preserve history.
         allow read: if isLoggedIn() && request.auth.uid == userID;
         allow update: if isLoggedIn() && request.auth.uid == userID
-                      && isPrivatePlayerDataUnchanged()
+                      && fieldsUnchanged(['role'])
+                      && userIsNotKicked(lobby, userID);
+      }
+
+      match /player_states/{userID} {
+        // Allow reading and updating your own info.
+        // Don't allow creating or deleting, to preserve history.
+        allow read: if isLoggedIn() && request.auth.uid == userID;
+        allow update: if isLoggedIn() && request.auth.uid == userID
+                      && fieldsUnchanged(['score', 'likes', 'discards_used', 'hand'])
                       && userIsNotKicked(lobby, userID);
       }
 

@@ -197,10 +197,10 @@ function Cost({ b }: { b?: boolean }) {
 
 /** Helper hook to get the current discard cost for this player. */
 function useDiscardCost(): { cost: DiscardCost; isDiscardFree: boolean } {
-  const { lobby, player } = useGameContext();
+  const { lobby, playerState } = useGameContext();
   const cost = lobby.settings.discard_cost;
   const isDiscardFree =
     cost === 'free' ||
-    (cost === '1_free_then_1_star' && player.discards_used === 0);
+    (cost === '1_free_then_1_star' && playerState.discards_used === 0);
   return { cost, isDiscardFree };
 }

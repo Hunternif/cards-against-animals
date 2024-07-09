@@ -55,7 +55,8 @@ const miniResponsesContainerStyle: CSSProperties = {
 };
 
 export function PlayerAnsweringScreen() {
-  const { lobby, turn, player, prompt, responses, hand } = useGameContext();
+  const { lobby, turn, player, playerState, prompt, responses, hand } =
+    useGameContext();
   const response = responses.find((r) => r.player_uid === player.uid);
   const [selectedCards, setSelectedCards] = useState<ResponseCardInGame[]>(
     response?.cards?.slice() ?? [],
@@ -108,7 +109,7 @@ export function PlayerAnsweringScreen() {
     if (discardedCards.length > 0) {
       try {
         setDiscarding(false);
-        await discardImmediately(lobby, player, discardedCards);
+        await discardImmediately(lobby, playerState, discardedCards);
         await restoreResponse();
       } catch (e: any) {
         setError(e);

@@ -12,6 +12,7 @@ import {
   PlayerInLobby,
 } from '../../shared/types';
 import { assertExhaustive } from '../../shared/utils';
+import { getAllPlayersStates } from './lobby-player-api';
 import { getLobby, updateLobby } from './lobby-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,11 +71,11 @@ export async function removeDeck(
 }
 
 /** Returns true if game end condition has been reached. */
-export function checkIfShouldEndGame(
+export async function checkIfShouldEndGame(
   lobby: GameLobby,
   turn: GameTurn,
   players: PlayerInLobby[],
-): boolean {
+): Promise<boolean> {
   switch (lobby.settings.play_until) {
     case 'forever':
       return false;
@@ -84,7 +85,8 @@ export function checkIfShouldEndGame(
     case 'max_turns':
       return turn.ordinal >= lobby.settings.max_turns;
     case 'max_score': {
-      for (const player of players) {
+      const playerStates = await getAllPlayersStates(lobby.id);
+      for (const player of playerStates) {
         if (player.score >= lobby.settings.max_score) {
           return true;
         }

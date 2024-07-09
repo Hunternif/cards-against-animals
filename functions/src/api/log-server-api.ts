@@ -1,6 +1,11 @@
 import * as logger from 'firebase-functions/logger';
 import { assertExhaustive } from '../shared/utils';
-import { getLobby, getOnlinePlayers } from './lobby-server-repository';
+import {
+  getLobby,
+  getOnlinePlayers,
+  getPlayerState,
+  getPlayerStates,
+} from './lobby-server-repository';
 import {
   getAllPlayerResponses,
   getPlayerHand,
@@ -81,8 +86,11 @@ export async function logInteractionsInReadingPhase(
       // Skip judge, they didn't see their hand:
       continue;
     }
-    const hand = await getPlayerHand(lobbyID, player);
-    viewedResponses.push(...hand);
+    const state = await getPlayerState(lobbyID, player.uid);
+    if (state) {
+      const hand = await getPlayerHand(lobbyID, state);
+      viewedResponses.push(...hand);
+    }
   }
   await logCardInteractions(lobby, {
     viewedResponses,
@@ -227,7 +235,7 @@ export async function logCardInteractions(lobby: GameLobby, logData: LogData) {
 /** Iterates through all of player's downvoted cards
  * and updates ratings on the card in deck. */
 export async function logDownvotes(lobbyID: string) {
-  const players = await getOnlinePlayers(lobbyID);
+  const players = await getPlayerStates(lobbyID);
   await firestore.runTransaction(async (transaction) => {
     for (const player of players) {
       for (const card of player.downvoted.values()) {

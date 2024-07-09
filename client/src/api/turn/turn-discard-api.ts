@@ -1,10 +1,10 @@
 import { discardNowFun } from '../../firebase';
 import {
   GameLobby,
-  PlayerInLobby,
+  PlayerGameState,
   ResponseCardInGame,
 } from '../../shared/types';
-import { updatePlayer } from '../lobby/lobby-player-api';
+import { updatePlayerState } from '../lobby/lobby-player-api';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -18,21 +18,21 @@ import { updatePlayer } from '../lobby/lobby-player-api';
  */
 export async function discardCards(
   lobby: GameLobby,
-  player: PlayerInLobby,
+  playerState: PlayerGameState,
   cards: ResponseCardInGame[],
 ) {
   for (const card of cards) {
-    player.discarded.set(card.id, card);
+    playerState.discarded.set(card.id, card);
   }
-  await updatePlayer(lobby.id, player);
+  await updatePlayerState(lobby.id, playerState);
 }
 
 /** Immediately discard cards marked as discarded, and deal new cards. */
 export async function discardImmediately(
   lobby: GameLobby,
-  player: PlayerInLobby,
+  playerState: PlayerGameState,
   cards: ResponseCardInGame[],
 ) {
-  await discardCards(lobby, player, cards);
+  await discardCards(lobby, playerState, cards);
   await discardNowFun({ lobby_id: lobby.id });
 }

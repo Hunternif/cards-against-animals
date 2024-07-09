@@ -3,13 +3,14 @@ import { voteConverter } from '../../shared/firestore-converters';
 import {
   GameLobby,
   GameTurn,
+  PlayerGameState,
   PlayerInLobby,
   PromptCardInGame,
   ResponseCardInGame,
   Vote,
   VoteChoice,
 } from '../../shared/types';
-import { updatePlayer } from '../lobby/lobby-player-api';
+import { updatePlayerState } from '../lobby/lobby-player-api';
 import { getTurnRef } from './turn-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,16 +35,16 @@ function getPromptVotesRef(
  * and recorded at the end of the game. */
 export async function toggleDownvoteCard(
   lobby: GameLobby,
-  player: PlayerInLobby,
+  playerState: PlayerGameState,
   card: ResponseCardInGame,
   downvoted: boolean,
 ) {
   if (downvoted) {
-    player.downvoted.set(card.id, card);
+    playerState.downvoted.set(card.id, card);
   } else {
-    player.downvoted.delete(card.id);
+    playerState.downvoted.delete(card.id);
   }
-  await updatePlayer(lobby.id, player);
+  await updatePlayerState(lobby.id, playerState);
 }
 
 /** Create/delete a "yes"/"no" vote for the given prompt from the current player.

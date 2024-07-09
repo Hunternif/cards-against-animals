@@ -107,9 +107,24 @@ export type DiscardCost =
 // "anyone" includes spectators
 export type LobbyContol = 'creator' | 'creator_or_czar' | 'players' | 'anyone';
 
-/** Instance of a player specific to a single game lobby. */
+/** Instance of a player specific to a single game lobby.
+ * This contains basic player data that changes rarely. */
 export class PlayerInLobby {
   time_joined: Date = new Date();
+
+  constructor(
+    public uid: string,
+    public name: string,
+    public avatar_id: string | null | undefined,
+    /** Used for ordering players to select the next judge. */
+    public random_index: number,
+    public role: PlayerRole,
+    public status: PlayerStatus,
+  ) {}
+}
+
+/** Instance of player data pertaining to the game: hand, score etc. */
+export class PlayerGameState {
   /** Time when the player was last dealt new cards.
    * This helps keep track of new cards. */
   time_dealt_cards: Date = new Date();
@@ -126,12 +141,6 @@ export class PlayerInLobby {
 
   constructor(
     public uid: string,
-    public name: string,
-    public avatar_id: string | null | undefined,
-    /** Used for ordering players to select the next judge. */
-    public random_index: number,
-    public role: PlayerRole,
-    public status: PlayerStatus,
     /** Current score accumulated over the entire game. */
     public score: number,
     /** How many turns were won. */

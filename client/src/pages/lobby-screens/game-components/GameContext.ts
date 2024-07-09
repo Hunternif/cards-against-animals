@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 import {
   GameLobby,
   GameTurn,
+  PlayerGameState,
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
@@ -20,6 +21,8 @@ export interface GameContextState {
   activePlayers: PlayerInLobby[],
   /** Current player */
   player: PlayerInLobby,
+  /** Current player's game state */
+  playerState: PlayerGameState,
   /** Is current player a spectator? */
   isSpectator: boolean,
   /** Is current player the lobby creator? */

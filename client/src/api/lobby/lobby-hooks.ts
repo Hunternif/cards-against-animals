@@ -6,9 +6,14 @@ import {
   useDocumentData,
 } from 'react-firebase-hooks/firestore';
 import { useNavigate } from 'react-router-dom';
-import { CAAUser, GameLobby } from '../../shared/types';
+import { useDocumentDataOrDefault } from '../../hooks/data-hooks';
+import { CAAUser, GameLobby, PlayerGameState } from '../../shared/types';
 import { joinLobbyIfNeeded } from './lobby-join-api';
-import { getPlayerRef, getPlayersRef } from './lobby-player-api';
+import {
+  getPlayerRef,
+  getPlayerStateRef,
+  getPlayersRef,
+} from './lobby-player-api';
 import { getLobbyRef } from './lobby-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,6 +55,14 @@ export function usePlayers(lobbyID: string) {
 /** React hook to fetch and subscribe to user data from player list in lobby. */
 export function usePlayerInLobby(lobbyID: string, user: User) {
   return useDocumentData(getPlayerRef(lobbyID, user.uid));
+}
+
+/** React hook to fetch and subscribe to this player's game sate. */
+export function usePlayerState(lobby: GameLobby, userID: string) {
+  return useDocumentDataOrDefault(
+    getPlayerStateRef(lobby.id, userID),
+    new PlayerGameState(userID, 0, 0, 0, 0),
+  );
 }
 
 /** If a "next lobby ID" is set on this lobby, redirects to it. */

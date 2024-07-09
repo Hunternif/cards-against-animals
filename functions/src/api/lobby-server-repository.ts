@@ -4,8 +4,14 @@ import { firestore, lobbiesRef } from '../firebase-server';
 import {
   lobbyConverter,
   playerConverter,
+  playerStateConverter,
 } from '../shared/firestore-converters';
-import { GameLobby, PlayerInLobby, PlayerRole } from '../shared/types';
+import {
+  GameLobby,
+  PlayerGameState,
+  PlayerInLobby,
+  PlayerRole,
+} from '../shared/types';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -18,6 +24,12 @@ export function getPlayersRef(lobbyID: string) {
   return firestore
     .collection(`lobbies/${lobbyID}/players`)
     .withConverter(playerConverter);
+}
+
+export function getPlayerStatesRef(lobbyID: string) {
+  return firestore
+    .collection(`lobbies/${lobbyID}/player_states`)
+    .withConverter(playerStateConverter);
 }
 
 /** Finds lobby by ID, or throws HttpsError. */
@@ -50,6 +62,21 @@ export async function updatePlayer(
   }
 }
 
+/** Updates player game state data in lobby in Firestore. */
+export async function updatePlayerState(
+  lobbyID: string,
+  state: PlayerGameState,
+  transaction?: Transaction,
+) {
+  const ref = getPlayerStatesRef(lobbyID).doc(state.uid);
+  const data = playerStateConverter.toFirestore(state);
+  if (transaction) {
+    transaction.update(ref, data);
+  } else {
+    await ref.update(data);
+  }
+}
+
 /** Find player in this lobby. */
 export async function getPlayer(
   lobbyID: string,
@@ -71,6 +98,29 @@ export async function getPlayerThrows(
     );
   }
   return player;
+}
+
+/** Finds player game state in this lobby. */
+export async function getPlayerState(
+  lobbyID: string,
+  userID: string,
+): Promise<PlayerGameState | null> {
+  return (await getPlayerStatesRef(lobbyID).doc(userID).get()).data() ?? null;
+}
+
+/** Finds or creates player game state in this lobby. */
+export async function getOrCreatePlayerState(
+  lobbyID: string,
+  userID: string,
+): Promise<PlayerGameState> {
+  const state = await getPlayerState(lobbyID, userID);
+  if (state == null) {
+    const newState = new PlayerGameState(userID, 0, 0, 0, 0);
+    await getPlayerStatesRef(lobbyID).doc(userID).set(newState);
+    return newState;
+  } else {
+    return state;
+  }
 }
 
 /** Returns all players in this lobby, by role. */
@@ -110,4 +160,11 @@ export async function getOnlinePlayers(
   return (await getPlayers(lobbyID)).filter(
     (p) => p.role === 'player' && p.status === 'online',
   );
+}
+
+/** Get all player game state data. */
+export async function getPlayerStates(
+  lobbyID: string,
+): Promise<Array<PlayerGameState>> {
+  return (await getPlayerStatesRef(lobbyID).get()).docs.map((d) => d.data());
 }

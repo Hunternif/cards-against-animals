@@ -10,6 +10,7 @@ import {
 import {
   GameLobby,
   GameTurn,
+  PlayerGameState,
   PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
@@ -20,10 +21,11 @@ import { assertExhaustive } from '../shared/utils';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
 import {
   getLobby,
-  getPlayerThrows,
+  getOrCreatePlayerState,
+  getPlayerStates,
   getPlayers,
   updateLobby,
-  updatePlayer,
+  updatePlayerState,
 } from './lobby-server-repository';
 import { logCardInteractions } from './log-server-api';
 import {
@@ -130,7 +132,7 @@ export async function discardNowAndDealCardsToPlayer(
   // 1. Pay discard cost;
   // 2. Remove discarded cards from hand;
   // 3. Deal new cards.
-  const player = await getPlayerThrows(lobby.id, userID);
+  const player = await getOrCreatePlayerState(lobby.id, userID);
   const newDiscard = await getNewPlayerDiscard(lobby.id, player);
   if (!(await payDiscardCost(lobby.id, turn, player, newDiscard))) {
     return;
@@ -159,7 +161,7 @@ export async function dealCardsToPlayer(
   const deckResponsesRef = firestore
     .collection(`lobbies/${lobby.id}/deck_responses`)
     .withConverter(responseCardInGameConverter);
-  const player = await getPlayerThrows(lobby.id, userID);
+  const player = await getOrCreatePlayerState(lobby.id, userID);
   const newHand = new Array<ResponseCardInHand>();
   const oldHand = await getPlayerHand(lobby.id, player);
   const handToDiscard = new Array<ResponseCardInGame>();
@@ -215,7 +217,7 @@ export async function dealCardsToPlayer(
     for (const card of newCards) {
       transaction.delete(deckResponsesRef.doc(card.id));
     }
-    await updatePlayer(lobby.id, player, transaction);
+    await updatePlayerState(lobby.id, player, transaction);
     logger.info(`Dealt ${newCards.length} cards to player ${userID}`);
   });
 }
@@ -226,7 +228,7 @@ export async function updatePlayerScoresFromTurn(
   turn: GameTurn,
   responses: PlayerResponse[],
 ) {
-  const players = await getPlayers(lobbyID, 'player');
+  const players = await getPlayerStates(lobbyID);
   for (const player of players) {
     if (turn.winner_uid === player.uid) {
       player.score++;
@@ -243,7 +245,7 @@ export async function updatePlayerScoresFromTurn(
       player.likes += likeCount;
       await updatePlayerResponse(lobbyID, turn.id, response);
     }
-    await updatePlayer(lobbyID, player);
+    await updatePlayerState(lobbyID, player);
   }
 }
 
@@ -256,7 +258,7 @@ export async function updatePlayerScoresFromTurn(
 async function payDiscardCost(
   lobbyID: string,
   turn: GameTurn,
-  player: PlayerInLobby,
+  player: PlayerGameState,
   discard: ResponseCardInGame[],
 ): Promise<boolean> {
   if (discard.length > 0) {
@@ -281,7 +283,7 @@ async function payDiscardCost(
     if (actualCost > 0 && player.score > 0) {
       player.score -= actualCost;
     }
-    await updatePlayer(lobbyID, player);
+    await updatePlayerState(lobbyID, player);
     return true;
   }
   return false;

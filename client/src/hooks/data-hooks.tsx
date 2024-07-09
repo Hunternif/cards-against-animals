@@ -1,6 +1,15 @@
-import { FirestoreError, Query, QuerySnapshot } from 'firebase/firestore';
+import {
+  DocumentReference,
+  DocumentSnapshot,
+  FirestoreError,
+  Query,
+  QuerySnapshot,
+} from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
+import {
+  useCollectionData,
+  useDocumentData,
+} from 'react-firebase-hooks/firestore';
 
 export type FirestoreCollectionDataHook<T> = [
   value: T[] | undefined,
@@ -14,13 +23,34 @@ export type FirestoreCollectionDataHookNullSafe<T> = [
   error?: FirestoreError,
   snapshot?: QuerySnapshot<T>,
 ];
+export type FirestorDocumentDataHook<T> = [
+  value: T | undefined,
+  loading: boolean,
+  error?: FirestoreError,
+  snapshot?: DocumentSnapshot<T>,
+];
+export type FirestorDocumentDataHookNullSafe<T> = [
+  value: T,
+  loading: boolean,
+  error?: FirestoreError,
+  snapshot?: DocumentSnapshot<T>,
+];
 
 /** Same as Firestore useCollectionData, but the returned collection is non-null. */
 export function useCollectionDataNonNull<T>(
-  query?: Query<T>,
+  query: Query<T>,
 ): FirestoreCollectionDataHookNullSafe<T> {
   const [data, loading, error, snapshot] = useCollectionData(query);
   return [data || [], loading, error, snapshot];
+}
+
+/** Same as Firestore useDocumentData, but returns a default value if undefined. */
+export function useDocumentDataOrDefault<T>(
+  query: DocumentReference<T>,
+  defaultValue: T,
+): FirestorDocumentDataHookNullSafe<T> {
+  const [data, loading, error, snapshot] = useDocumentData(query);
+  return [data || defaultValue, loading, error, snapshot];
 }
 
 /** Convenience hook to get async data. */

@@ -1,11 +1,13 @@
 import confetti from 'canvas-confetti';
-import { useMemo } from 'react';
 import { checkIfShouldEndGame } from '../../api/lobby/lobby-control-api';
+import { useRedirectToNextLobby } from '../../api/lobby/lobby-hooks';
 import { Delay } from '../../components/Delay';
 import { IconHeartInline, IconStarInline } from '../../components/Icons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { GameLayout } from '../../components/layout/GameLayout';
+import { useAsyncData } from '../../hooks/data-hooks';
 import { useEffectOnce } from '../../hooks/ui-hooks';
+import { assertExhaustive } from '../../shared/utils';
 import { CardOffsetContextProvider } from './game-components/CardOffsetContext';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { EndGameControls } from './game-components/EndGameControls';
@@ -13,8 +15,6 @@ import { useGameContext } from './game-components/GameContext';
 import { NextTurnButton } from './game-components/NextTurnButton';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
-import { assertExhaustive } from '../../shared/utils';
-import { useRedirectToNextLobby } from '../../api/lobby/lobby-hooks';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -49,9 +49,8 @@ export function WinnerScreen() {
     (r) => r.player_uid === turn.winner_uid,
   );
   // Use memo so that this is not recalculated when settings update:
-  const shouldEndNow = useMemo(
-    () => checkIfShouldEndGame(lobby, turn, players),
-    [],
+  const [shouldEndNow] = useAsyncData(
+    checkIfShouldEndGame(lobby, turn, players),
   );
   const audienceAwardResponses = responses
     .filter((r) => turn.audience_award_uids.includes(r.player_uid))

@@ -21,7 +21,7 @@ export function GameHand({
   discardedCards,
   setDiscardedCards,
 }: HandProps) {
-  const { lobby, player, hand, prompt } = useGameContext();
+  const { lobby, playerState, hand, prompt } = useGameContext();
   const handSorted = hand.sort(
     (c1, c2) =>
       c1.random_index +
@@ -33,7 +33,7 @@ export function GameHand({
   const { setError } = useContext(ErrorContext);
 
   function getIsNew(card: ResponseCardInHand): boolean {
-    return card.time_received >= player.time_dealt_cards;
+    return card.time_received >= playerState.time_dealt_cards;
   }
 
   function getSelectedIndex(card: ResponseCardInHand): number {
@@ -60,9 +60,11 @@ export function GameHand({
   }
 
   async function handleDownvote(card: ResponseCardInHand, downvoted: boolean) {
-    await toggleDownvoteCard(lobby, player, card, downvoted).catch((e: any) =>
-      setError(e),
-    );
+    try {
+      await toggleDownvoteCard(lobby, playerState, card, downvoted);
+    } catch (e: any) {
+      setError(e);
+    }
   }
 
   function getIsDiscarded(card: ResponseCardInHand): boolean {
@@ -104,7 +106,7 @@ export function GameHand({
         key={card.id}
         card={card}
         justIn={isNew}
-        downvoted={player.downvoted.has(card.id)}
+        downvoted={playerState.downvoted.has(card.id)}
         selectable={isSelectable}
         selectedIndex={getSelectedIndex(card)}
         showIndex={pick > 1}

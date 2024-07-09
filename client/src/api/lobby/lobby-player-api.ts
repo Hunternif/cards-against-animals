@@ -9,10 +9,14 @@ import {
   where,
 } from 'firebase/firestore';
 import { changePlayerRoleFun, kickPlayerFun } from '../../firebase';
-import { playerConverter } from '../../shared/firestore-converters';
+import {
+  playerConverter,
+  playerStateConverter,
+} from '../../shared/firestore-converters';
 import {
   GameLobby,
   KickAction,
+  PlayerGameState,
   PlayerInLobby,
   PlayerRole,
   PlayerStatus,
@@ -43,6 +47,28 @@ export async function updatePlayer(lobbyID: string, player: PlayerInLobby) {
   await updateDoc(
     getPlayerRef(lobbyID, player.uid),
     playerConverter.toFirestore(player),
+  );
+}
+
+/** Firestore ref to a single player's game state in a lobby. */
+export function getPlayerStateRef(lobbyID: string, userID: string) {
+  return doc(getPlayerStatesRef(lobbyID), userID);
+}
+
+/** Firestore ref to list of player state data in a lobby. */
+export function getPlayerStatesRef(lobbyID: string) {
+  return collection(lobbiesRef, lobbyID, 'player_states').withConverter(
+    playerStateConverter,
+  );
+}
+
+export async function updatePlayerState(
+  lobbyID: string,
+  state: PlayerGameState,
+) {
+  await updateDoc(
+    getPlayerStateRef(lobbyID, state.uid),
+    playerStateConverter.toFirestore(state),
   );
 }
 
@@ -77,6 +103,14 @@ export async function getActivePlayerCount(lobbyID: string): Promise<number> {
       ),
     )
   ).data().count;
+}
+
+export async function getAllPlayersStates(
+  lobbyID: string,
+): Promise<Array<PlayerGameState>> {
+  return (await getDocs(getPlayerStatesRef(lobbyID))).docs.map((p) =>
+    p.data(),
+  );
 }
 
 /** Updates player status in the current game. */
