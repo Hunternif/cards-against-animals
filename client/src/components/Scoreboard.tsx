@@ -1,6 +1,5 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import { getAllPlayersStates } from '../api/lobby/lobby-player-api';
-import { useAsyncData } from '../hooks/data-hooks';
 import { GameLobby, PlayerGameState, PlayerInLobby } from '../shared/types';
 import { IconHeartInline, IconStarInline } from './Icons';
 import { PlayerAvatar } from './PlayerAvatar';
@@ -20,8 +19,18 @@ const tableContainerStyle: CSSProperties = {
 
 /** Reusable scoreboard table component. */
 export function Scoreboard({ lobby, players }: Props) {
-  // Downloads player states only once:
-  const [playerStates] = useAsyncData(getAllPlayersStates(lobby.id));
+  const [playerStates, setPlayerStates] = useState<PlayerGameState[]>([]);
+  
+  // Because Bootstrap renders the dropdown component even when it's invisible,
+  // we need to fetch this data every new turn:
+  // TODO: get rid of Bootstrap.
+  useEffect(() => {
+    async function updatePlayerStates() {
+      setPlayerStates(await getAllPlayersStates(lobby.id));
+    }
+    updatePlayerStates();
+  }, [lobby.current_turn_id]);
+
   const playerStateMap = new Map<string, PlayerGameState>(
     playerStates?.map((p) => [p.uid, p]),
   );
