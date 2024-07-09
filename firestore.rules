@@ -42,20 +42,10 @@ service cloud.firestore {
              (cards.size() < 5 || hand[cards[4].id].content == cards[4].content) &&
              (cards.size() < 6 || hand[cards[5].id].content == cards[5].content);
     }
-    function isHandContentUnmodified(lobby, userID) {
-      let player = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
-      // When the player is first dealt cards, that could happen in parallel:
-      return request.resource.data['hand'].size() == 0 ||
-             request.resource.data['hand'] == player.data['hand'];
-    }
-    // Don't allow changing a player's score
-    function isScoreUnchanged(lobby, userID) {
-      let doc = get(/databases/$(database)/documents/lobbies/$(lobby)/players/$(userID));
-      return doc == null || (
-        doc.data['score'] == request.resource.data['score'] &&
-        doc.data['likes'] == request.resource.data['likes'] &&
-        doc.data['discards_used'] == request.resource.data['discards_used']
-      );
+    // Don't allow changing player data for these fields:
+    function isPrivatePlayerDataUnchanged() {
+      return !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['role', 'score', 'likes', 'discards_used', 'hand']);
     }
     // Don't allow changing anything if you're banned
     function userIsNotKicked(lobby, userID) {
@@ -107,8 +97,8 @@ service cloud.firestore {
         // Don't allow creating or deleting, to preserve history.
         allow read: if isLoggedIn() && request.auth.uid == userID;
         allow update: if isLoggedIn() && request.auth.uid == userID
-                      && isScoreUnchanged(lobby, userID) && userIsNotKicked(lobby, userID)
-                      && isHandContentUnmodified(lobby, userID);
+                      && isPrivatePlayerDataUnchanged()
+                      && userIsNotKicked(lobby, userID);
       }
 
       match /deck_prompts/{document=**} {

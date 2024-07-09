@@ -4,6 +4,7 @@ import { checkUserDeckKeyHandler } from './functions/deck/checkUserDeckKey';
 import { lockDeckHandler } from './functions/deck/lockDeck';
 import { unlockDeckForUserHandler } from './functions/deck/unlockDeckForUser';
 import { exportCallable } from './functions/function-utils';
+import { changePlayerRoleHandler } from './functions/lobby/changePlayerRole';
 import { endLobbyHandler } from './functions/lobby/endLobby';
 import { findOrCreateLobbyAndJoinHandler } from './functions/lobby/findOrCreateLobbyAndJoin';
 import { joinLobbyHandler } from './functions/lobby/joinLobby';
@@ -36,6 +37,9 @@ export const joinLobby = exportCallable(joinLobbyHandler);
 export const findOrCreateLobbyAndJoin = exportCallable(
   findOrCreateLobbyAndJoinHandler,
 );
+
+/** Will attempt to change player role, if allowed. */
+export const changePlayerRole = exportCallable(changePlayerRoleHandler);
 
 /** Completes lobby setup and starts the game. */
 export const startLobby = exportCallable(startLobbyHandler);

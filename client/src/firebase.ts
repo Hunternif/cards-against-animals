@@ -15,6 +15,7 @@ import firebaseConfig from '../../firebase-config.json';
 import {
   KickAction,
   LobbySettings,
+  PlayerRole,
   PromptCardInGame,
   ResponseCardInGame,
 } from './shared/types';
@@ -48,6 +49,11 @@ export const findOrCreateLobbyAndJoinFun = httpsCallable<
   {},
   { lobby_id: string }
 >(functions, 'findOrCreateLobbyAndJoin');
+
+export const changePlayerRoleFun = httpsCallable<
+  { lobby_id: string; role: PlayerRole },
+  void
+>(functions, 'changePlayerRole');
 
 export const startLobbyFun = httpsCallable<{ lobby_id: string }, void>(
   functions,

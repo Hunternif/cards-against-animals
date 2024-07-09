@@ -8,7 +8,7 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { kickPlayerFun } from '../../firebase';
+import { changePlayerRoleFun, kickPlayerFun } from '../../firebase';
 import { playerConverter } from '../../shared/firestore-converters';
 import {
   GameLobby,
@@ -94,16 +94,8 @@ export async function setPlayerStatus(
 
 /** Updates player role in the current game.
  * May not always be allowed, based on permission settings. */
-export async function setPlayerRole(
-  lobbyID: string,
-  userID: string,
-  role: PlayerRole,
-) {
-  const player = await getPlayerInLobby(lobbyID, userID);
-  if (player) {
-    player.role = role;
-    await updatePlayer(lobbyID, player);
-  }
+export async function setMyPlayerRole(lobbyID: string, role: PlayerRole) {
+  await changePlayerRoleFun({ lobby_id: lobbyID, role });
 }
 
 /** Sets the given player's status as "kicked", so they can't re-join. */

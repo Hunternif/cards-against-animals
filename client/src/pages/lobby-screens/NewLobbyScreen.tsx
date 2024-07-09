@@ -3,7 +3,7 @@ import { CSSProperties, useContext, useState } from 'react';
 import { Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { leaveLobby } from '../../api/lobby/lobby-join-api';
-import { setPlayerRole } from '../../api/lobby/lobby-player-api';
+import { setMyPlayerRole } from '../../api/lobby/lobby-player-api';
 import { GameButton } from '../../components/Buttons';
 import { ErrorContext } from '../../components/ErrorContext';
 import { IconCounter } from '../../components/IconCounter';
@@ -157,6 +157,7 @@ function MainContent(props: Props) {
 
 function PlayerListSidebar({ lobby, user, players }: Props) {
   const [leaving, setLeaving] = useState(false);
+  const [changingRole, setChangingRole] = useState(false);
   const { setError } = useContext(ErrorContext);
   const navigate = useNavigate();
 
@@ -169,6 +170,7 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
   );
   const player = players.find((p) => p.uid === user.uid)!;
   const isCreator = player.uid === lobby.creator_uid;
+  const canJoinAsPlayer = activePlayers.length < lobby.settings.max_players;
 
   async function handleLeave() {
     try {
@@ -184,17 +186,23 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
 
   async function handleSpectate() {
     try {
-      await setPlayerRole(lobby.id, user.uid, 'spectator');
+      setChangingRole(true);
+      await setMyPlayerRole(lobby.id, 'spectator');
     } catch (e: any) {
       setError(e);
+    } finally {
+      setChangingRole(false);
     }
   }
 
   async function handleJoinAsPlayer() {
     try {
-      await setPlayerRole(lobby.id, user.uid, 'player');
+      setChangingRole(true);
+      await setMyPlayerRole(lobby.id, 'player');
     } catch (e: any) {
       setError(e);
+    } finally {
+      setChangingRole(false);
     }
   }
 
@@ -228,12 +236,20 @@ function PlayerListSidebar({ lobby, user, players }: Props) {
       <hr />
       <footer>
         {player.role === 'player' && !isCreator && (
-          <GameButton secondary onClick={handleSpectate} disabled={leaving}>
+          <GameButton
+            secondary
+            onClick={handleSpectate}
+            disabled={changingRole}
+          >
             Spectate
           </GameButton>
         )}
-        {player.role === 'spectator' && (
-          <GameButton secondary onClick={handleJoinAsPlayer} disabled={leaving}>
+        {player.role === 'spectator' && canJoinAsPlayer && (
+          <GameButton
+            secondary
+            onClick={handleJoinAsPlayer}
+            disabled={changingRole}
+          >
             Join as player
           </GameButton>
         )}

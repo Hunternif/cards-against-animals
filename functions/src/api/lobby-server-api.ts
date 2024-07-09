@@ -29,6 +29,7 @@ import {
   getLobby,
   getOnlinePlayers,
   getPlayer,
+  getPlayerThrows,
   getPlayers,
   getPlayersRef,
   updateLobby,
@@ -162,6 +163,52 @@ export async function addPlayer(
   logger.info(
     `User ${caaUser.name} (${userID}) joined lobby ${lobby.id} as ${role}`,
   );
+
+  // If the game has started, onboard the player:
+  if (lobby.status == 'in_progress' && player.role === 'player') {
+    // Deal cards to the new player:
+    const turn = await getLastTurn(lobby);
+    if (turn) {
+      await dealCardsToPlayer(lobby, null, turn, userID);
+    } else {
+      logger.warn(
+        `Could not deal cards. Lobby ${lobby.id} is in progess but has no turns.`,
+      );
+    }
+    // If using turns_per_person, add more turns:
+    if (lobby.settings.play_until === 'max_turns_per_person') {
+      lobby.settings.max_turns += 1;
+      await updateLobby(lobby);
+    }
+  }
+}
+
+/**
+ * Will attempt to change player role.
+ * Can only become 'player' if player limit is not exceeded.
+ */
+export async function changePlayerRole(
+  lobby: GameLobby,
+  userID: string,
+  role: PlayerRole,
+): Promise<void> {
+  const player = await getPlayerThrows(lobby.id, userID);
+  switch (role) {
+    case 'player':
+      if (!(await allowJoinAsPlayer(lobby))) {
+        throw new HttpsError('failed-precondition', 'Cannot join as player');
+      }
+      break;
+    case 'spectator':
+      if (!(await allowJoinAsSpectator(lobby))) {
+        throw new HttpsError('failed-precondition', 'Cannot join as spectator');
+      }
+      break;
+    default:
+      assertExhaustive(role);
+  }
+  player.role = role;
+  await updatePlayer(lobby.id, player);
 
   // If the game has started, onboard the player:
   if (lobby.status == 'in_progress' && player.role === 'player') {
