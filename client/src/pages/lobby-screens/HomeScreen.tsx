@@ -67,7 +67,7 @@ export function HomeScreen({ existingLobbyID }: Props) {
       if (existingLobbyID) {
         await joinLobbyIfNeeded(existingLobbyID, caaUser);
       } else {
-        const lobbyID = await findOrCreateLobbyAndJoin(user);
+        const lobbyID = await findOrCreateLobbyAndJoin();
         navigate(`/${lobbyID}`);
       }
       setJoining(false);

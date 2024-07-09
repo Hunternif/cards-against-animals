@@ -8,11 +8,11 @@ import { CallableHandler } from '../function-utils';
  * will join as spectator.
  */
 export const joinLobbyHandler: CallableHandler<
-  { user_id: string; lobby_id: string },
+  { lobby_id: string },
   void
 > = async (event) => {
   // await sleep(2000);
-  assertLoggedIn(event);
+  const userID = assertLoggedIn(event);
   const lobby = await getLobby(event.data.lobby_id);
-  await addPlayer(lobby, event.data.user_id);
+  await addPlayer(lobby, userID);
 };

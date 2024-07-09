@@ -6,14 +6,14 @@ import {
 } from '../../api/lobby-server-api';
 import { CallableHandler } from '../function-utils';
 
-/** Combines `findOrCreateLobby` and `joinLobby` */
+/** Finds an existing active lobby for the user, or creates a new one,
+ * and joins as player. */
 export const findOrCreateLobbyAndJoinHandler: CallableHandler<
-  { user_id: string },
+  {},
   { lobby_id: string }
 > = async (event) => {
   // await sleep(2000);
-  assertLoggedIn(event);
-  const userID = event.data.user_id;
+  const userID = assertLoggedIn(event);
   const lobby =
     (await findActiveLobbyWithPlayer(userID)) ?? (await createLobby(userID));
   await addPlayer(lobby, userID);

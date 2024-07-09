@@ -1,16 +1,10 @@
-import { User } from "firebase/auth";
-import {
-  findOrCreateLobbyAndJoinFun,
-  findOrCreateLobbyFun,
-  joinLobbyFun,
-} from "../../firebase";
-import { CAAUser, GameLobby } from "../../shared/types";
+import { findOrCreateLobbyAndJoinFun, joinLobbyFun } from '../../firebase';
+import { CAAUser, GameLobby } from '../../shared/types';
 import {
   getPlayerInLobby,
   setPlayerStatus,
   updatePlayer,
-} from "./lobby-player-api";
-import { getLobby } from "./lobby-repository";
+} from './lobby-player-api';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -18,25 +12,12 @@ import { getLobby } from "./lobby-repository";
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-export async function findOrCreateLobbyID(user: User): Promise<string> {
-  const res = await findOrCreateLobbyFun({ creator_uid: user.uid });
-  return res.data.lobby_id;
-}
-
-export async function findOrCreateLobby(user: User): Promise<GameLobby> {
-  const lobbyID = await findOrCreateLobbyID(user);
-  const lobby = await getLobby(lobbyID);
-  if (!lobby) throw new Error("Couldn't find or create lobby");
-  console.log(`Fetched lobby ${lobby.id}`);
-  return lobby;
-}
-
 /**
  * Will find an active game or create a new one, and attempt to join.
  * Returns lobby ID.
  */
-export async function findOrCreateLobbyAndJoin(user: User): Promise<string> {
-  const res = await findOrCreateLobbyAndJoinFun({ user_id: user.uid });
+export async function findOrCreateLobbyAndJoin(): Promise<string> {
+  const res = await findOrCreateLobbyAndJoinFun();
   return res.data.lobby_id;
 }
 
@@ -44,11 +25,8 @@ export async function findOrCreateLobbyAndJoin(user: User): Promise<string> {
  * Will attempt to join as player. If the lobby is already in progress,
  * will join as spectator.
  */
-export async function joinLobby(
-  lobbyID: string,
-  userID: string,
-): Promise<void> {
-  await joinLobbyFun({ lobby_id: lobbyID, user_id: userID });
+export async function joinLobby(lobbyID: string): Promise<void> {
+  await joinLobbyFun({ lobby_id: lobbyID });
 }
 
 /** Remove yourself from this lobby */
@@ -57,13 +35,13 @@ export async function leaveLobby(
   userID: string,
 ): Promise<void> {
   const lobbyID = lobby instanceof GameLobby ? lobby.id : lobby;
-  await setPlayerStatus(lobbyID, userID, "left");
+  await setPlayerStatus(lobbyID, userID, 'left');
 }
 
 /** If the user is not already in the lobby, joins it. */
 export async function joinLobbyIfNeeded(lobbyID: string, caaUser: CAAUser) {
   if (!(await isUserInLobby(lobbyID, caaUser.uid))) {
-    await joinLobby(lobbyID, caaUser.uid);
+    await joinLobby(lobbyID);
   }
   // Update player name & avatar:
   const player = await getPlayerInLobby(lobbyID, caaUser.uid);
@@ -71,8 +49,8 @@ export async function joinLobbyIfNeeded(lobbyID: string, caaUser: CAAUser) {
     player.name = caaUser.name;
     player.avatar_id = caaUser.avatar_id;
     // If previously left, re-join:
-    if (player?.status === "left") {
-      player.status = "online";
+    if (player?.status === 'left') {
+      player.status = 'online';
     }
     await updatePlayer(lobbyID, player);
   }

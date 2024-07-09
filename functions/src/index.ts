@@ -5,7 +5,6 @@ import { lockDeckHandler } from './functions/deck/lockDeck';
 import { unlockDeckForUserHandler } from './functions/deck/unlockDeckForUser';
 import { exportCallable } from './functions/function-utils';
 import { endLobbyHandler } from './functions/lobby/endLobby';
-import { findOrCreateLobbyHandler } from './functions/lobby/findOrCreateLobby';
 import { findOrCreateLobbyAndJoinHandler } from './functions/lobby/findOrCreateLobbyAndJoin';
 import { joinLobbyHandler } from './functions/lobby/joinLobby';
 import { kickPlayerHandler } from './functions/lobby/kickPlayer';
@@ -26,16 +25,14 @@ setGlobalOptions({
   region: firebaseConfig.region,
 });
 
-/** Finds an existing active lobby for the user, or creates a new one. */
-export const findOrCreateLobby = exportCallable(findOrCreateLobbyHandler);
-
 /**
  * Will attempt to join as player. If the lobby is already in progress,
  * will join as spectator.
  */
 export const joinLobby = exportCallable(joinLobbyHandler);
 
-/** Combines `findOrCreateLobby` and `joinLobby` */
+/** Finds an existing active lobby for the user, or creates a new one,
+ * and joins as player. */
 export const findOrCreateLobbyAndJoin = exportCallable(
   findOrCreateLobbyAndJoinHandler,
 );

@@ -164,7 +164,7 @@ export async function addPlayer(
   );
 
   // If the game has started, onboard the player:
-  if (lobby.status == 'in_progress') {
+  if (lobby.status == 'in_progress' && player.role === 'player') {
     // Deal cards to the new player:
     const turn = await getLastTurn(lobby);
     if (turn) {
