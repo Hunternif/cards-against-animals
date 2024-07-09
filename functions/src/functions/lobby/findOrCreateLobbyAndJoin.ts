@@ -9,7 +9,7 @@ import { CallableHandler } from '../function-utils';
 /** Finds an existing active lobby for the user, or creates a new one,
  * and joins as player. */
 export const findOrCreateLobbyAndJoinHandler: CallableHandler<
-  {},
+  void,
   { lobby_id: string }
 > = async (event) => {
   // await sleep(2000);
