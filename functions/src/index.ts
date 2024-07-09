@@ -5,6 +5,7 @@ import { lockDeckHandler } from './functions/deck/lockDeck';
 import { unlockDeckForUserHandler } from './functions/deck/unlockDeckForUser';
 import { exportCallable } from './functions/function-utils';
 import { changePlayerRoleHandler } from './functions/lobby/changePlayerRole';
+import { createLobbyAsCopyHandler } from './functions/lobby/createLobbyAsCopy';
 import { endLobbyHandler } from './functions/lobby/endLobby';
 import { findOrCreateLobbyAndJoinHandler } from './functions/lobby/findOrCreateLobbyAndJoin';
 import { joinLobbyHandler } from './functions/lobby/joinLobby';
@@ -37,6 +38,9 @@ export const joinLobby = exportCallable(joinLobbyHandler);
 export const findOrCreateLobbyAndJoin = exportCallable(
   findOrCreateLobbyAndJoinHandler,
 );
+
+/** Creates a new lobby by copying all settings and players from the old lobby. */
+export const createLobbyAsCopy = exportCallable(createLobbyAsCopyHandler);
 
 /** Will attempt to change player role, if allowed. */
 export const changePlayerRole = exportCallable(changePlayerRoleHandler);

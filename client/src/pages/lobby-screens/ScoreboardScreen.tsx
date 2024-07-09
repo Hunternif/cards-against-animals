@@ -6,6 +6,8 @@ import { Scoreboard } from '../../components/Scoreboard';
 import { FillLayout } from '../../components/layout/FillLayout';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { GameLobby, PlayerInLobby } from '../../shared/types';
+import { useErrorContext } from '../../components/ErrorContext';
+import { createLobbyAsCopy } from '../../api/lobby/lobby-join-api';
 
 interface Props {
   lobby: GameLobby;
@@ -15,6 +17,17 @@ interface Props {
 
 export function ScoreboardScreen({ lobby, user, players }: Props) {
   const navigate = useNavigate();
+  const { setError } = useErrorContext();
+
+  async function handleNewGame() {
+    try {
+      const nextLobbyID = await createLobbyAsCopy(lobby.id);
+      navigate(`/${nextLobbyID}`);
+    } catch (e: any) {
+      setError(e);
+    }
+  }
+
   return (
     <FillLayout className="scoreboard-screen">
       <GameLayout>
@@ -30,6 +43,7 @@ export function ScoreboardScreen({ lobby, user, players }: Props) {
               <GameButton secondary onClick={() => navigate('/')}>
                 Go home
               </GameButton>
+              <GameButton onClick={handleNewGame}>New game</GameButton>
             </Delay>
           )}
         </footer>

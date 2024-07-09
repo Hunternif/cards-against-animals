@@ -1,4 +1,4 @@
-import { findOrCreateLobbyAndJoinFun, joinLobbyFun } from '../../firebase';
+import { createLobbyAsCopyFun, findOrCreateLobbyAndJoinFun, joinLobbyFun } from '../../firebase';
 import { CAAUser, GameLobby } from '../../shared/types';
 import {
   getPlayerInLobby,
@@ -27,6 +27,15 @@ export async function findOrCreateLobbyAndJoin(): Promise<string> {
  */
 export async function joinLobby(lobbyID: string): Promise<void> {
   await joinLobbyFun({ lobby_id: lobbyID });
+}
+
+/**
+ * Creates a new lobby by copying all settings and players from the given lobby.
+ * Returns new lobby ID.
+ */
+export async function createLobbyAsCopy(oldLobbyID: string): Promise<string> {
+  const res = await createLobbyAsCopyFun({old_lobby_id: oldLobbyID});
+  return res.data.new_lobby_id;
 }
 
 /** Remove yourself from this lobby */

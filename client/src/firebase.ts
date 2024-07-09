@@ -50,6 +50,11 @@ export const findOrCreateLobbyAndJoinFun = httpsCallable<
   { lobby_id: string }
 >(functions, 'findOrCreateLobbyAndJoin');
 
+export const createLobbyAsCopyFun = httpsCallable<
+  { old_lobby_id: string },
+  { new_lobby_id: string }
+>(functions, 'createLobbyAsCopy');
+
 export const changePlayerRoleFun = httpsCallable<
   { lobby_id: string; role: PlayerRole },
   void

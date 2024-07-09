@@ -71,20 +71,12 @@ export async function createLobby(userID: string): Promise<GameLobby> {
   // TODO: need to acquire lock. This doesn't prevent double lobby creation!
   // Only allow non-anonymous users to create lobbies:
   await assertNotAnonymous(userID);
-  const totalActiveLobbies = (
-    await lobbiesRef.where('status', 'in', ['new', 'in_progress']).count().get()
-  ).data().count;
-  if (totalActiveLobbies > firebaseConfig.maxActiveLobbies) {
-    throw new HttpsError(
-      'resource-exhausted',
-      'Game limit reached. Please try again later.',
-    );
-  }
+  await assertLobbyLimit();
   const newLobbyRef = lobbiesRef.doc();
   const newID = newLobbyRef.id;
   const newLobby = new GameLobby(newID, userID, defaultLobbySettings(), 'new');
   await newLobbyRef.set(newLobby);
-  logger.info(`Created new lobby from user: ${userID}`);
+  logger.info(`Created new lobby by user: ${userID}`);
   return newLobby;
 }
 
@@ -428,4 +420,70 @@ export async function setPlayerOffline(userID: string) {
       await updatePlayer(lobbyID, player);
     }
   }
+}
+
+/** Throws if lobby limit has been reached. */
+async function assertLobbyLimit() {
+  const totalActiveLobbies = (
+    await lobbiesRef.where('status', 'in', ['new', 'in_progress']).count().get()
+  ).data().count;
+  if (totalActiveLobbies > firebaseConfig.maxActiveLobbies) {
+    throw new HttpsError(
+      'resource-exhausted',
+      'Game limit reached. Please try again later.',
+    );
+  }
+}
+
+/**
+ * Creates a new lobby by copying all settings and players from the given lobby.
+ * Throws if maximum number of active lobbies is reached.
+ */
+export async function createLobbyAsCopy(
+  userID: string,
+  oldLobby: GameLobby,
+): Promise<GameLobby> {
+  await assertNotAnonymous(userID);
+  await assertLobbyLimit();
+  const newLobbyRef = lobbiesRef.doc();
+  const newID = newLobbyRef.id;
+  const newLobby = new GameLobby(newID, userID, oldLobby.settings, 'new');
+  newLobby.deck_ids = oldLobby.deck_ids;
+  await newLobbyRef.set(newLobby);
+  logger.info(
+    `Created new lobby, copied from lobby ${oldLobby.id} by user: ${userID}`,
+  );
+  // Copy all players:
+  const players = (await getPlayers(oldLobby.id)).filter(
+    (p) => p.status === 'online',
+  );
+  const rng = RNG.fromStrSeedWithTimestamp(newLobby.id + userID);
+  const newPlayers = players.map(
+    (p) =>
+      new PlayerInLobby(
+        p.uid,
+        p.name,
+        p.avatar_id,
+        rng.randomInt(),
+        p.role,
+        p.status,
+        0,
+        0,
+        0,
+        0,
+      ),
+  );
+  const newPlayersRef = getPlayersRef(newLobby.id);
+  await Promise.all(
+    newPlayers
+      .map((p) => [
+        newPlayersRef.doc(p.uid).set(p),
+        setUsersCurrentLobby(p.uid, newLobby.id),
+      ])
+      .flat(),
+  );
+  logger.info(
+    `Copied players from lobby ${oldLobby.id} to lobby ${newLobby.id}`,
+  );
+  return newLobby;
 }
