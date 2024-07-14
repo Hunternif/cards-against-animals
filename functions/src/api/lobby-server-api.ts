@@ -218,11 +218,6 @@ export async function changePlayerRole(
         `Could not deal cards. Lobby ${lobby.id} is in progess but has no turns.`,
       );
     }
-    // If using turns_per_person, add more turns:
-    if (lobby.settings.play_until === 'max_turns_per_person') {
-      lobby.settings.max_turns += 1;
-      await updateLobby(lobby);
-    }
   } else if (player.role === 'spectator') {
     cleanUpPlayer(lobby.id, player);
   }
