@@ -223,6 +223,8 @@ export async function changePlayerRole(
       lobby.settings.max_turns += 1;
       await updateLobby(lobby);
     }
+  } else if (player.role === 'spectator') {
+    cleanUpPlayer(lobby.id, player);
   }
 }
 
