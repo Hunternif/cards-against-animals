@@ -166,32 +166,33 @@ export async function dealCardsToPlayer(
   const oldHand = await getPlayerHand(lobby.id, player);
   const handToDiscard = new Array<ResponseCardInGame>();
   const isNewTurn = lastTurn?.id !== newTurn.id;
-  if (lastTurn) {
-    const lastResponse = await getPlayerResponse(lobby.id, lastTurn.id, userID);
-    // TODO: optimize this, remove discards outside of this function.
-    // TODO: maybe store all pool of discarded cards in a game somewhere.
-    const lastDiscard = await getPlayerDiscard(lobby.id, player);
-    for (const oldCard of oldHand) {
-      if (lastDiscard.find((c) => c.id === oldCard.id)) {
-        // discard cards that are still in the hand:
-        handToDiscard.push(oldCard);
-      } else if (
-        isNewTurn &&
-        lastResponse?.cards?.find((c) => c.id === oldCard.id)
-      ) {
-        // if starting a new turn, filter out submitted cards;
-        // if it's the same turn, keep them.
-        handToDiscard.push(oldCard);
-      } else {
-        // copy old cards to the new hand.
-        // temporarily write them here, then upload it as a subcollection
-        newHand.push(oldCard);
-      }
+  const lastResponse =
+    lastTurn == null
+      ? []
+      : (await getPlayerResponse(lobby.id, lastTurn.id, userID))?.cards ?? [];
+  // TODO: optimize this, remove discards outside of this function.
+  // TODO: maybe store all pool of discarded cards in a game somewhere.
+  const lastDiscard = await getPlayerDiscard(lobby.id, player);
+  for (const oldCard of oldHand) {
+    if (lastDiscard.find((c) => c.id === oldCard.id)) {
+      // discard cards that are still in the hand:
+      handToDiscard.push(oldCard);
+    } else if (isNewTurn && lastResponse.find((c) => c.id === oldCard.id)) {
+      // if starting a new turn, filter out submitted cards;
+      // if it's the same turn, keep them.
+      handToDiscard.push(oldCard);
+    } else {
+      // copy old cards to the new hand.
+      // temporarily write them here, then upload it as a subcollection
+      newHand.push(oldCard);
     }
   }
   // Find how many more cards we need:
   const cardsPerPerson = lobby.settings.cards_per_person;
   const totalCardsNeeded = Math.max(0, cardsPerPerson - newHand.length);
+  logger.info(
+    `Trying to deal ${totalCardsNeeded} cards to player ${userID}...`,
+  );
 
   await firestore.runTransaction(async (transaction) => {
     // Fetch new cards:
