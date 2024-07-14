@@ -49,6 +49,13 @@ export interface LobbySettings {
   new_cards_first: boolean;
   /** If true, card order will be affected by their rating. */
   sort_cards_by_rating: boolean;
+  sort_cards_by_views: boolean;
+  sort_cards_by_discards: boolean;
+  sort_cards_by_wins: boolean;
+  sort_cards_by_prompt_votes: boolean;
+  sort_cards_by_response_likes: boolean;
+  /** If true, "good" cards can be put in front. */
+  sort_cards_in_front: boolean;
   /** If true, players can join after the game has started. */
   allow_join_mid_game: boolean;
   /** If true, players can like responses. */
@@ -77,6 +84,12 @@ export function defaultLobbySettings(): LobbySettings {
     cards_per_person: 10,
     new_cards_first: false,
     sort_cards_by_rating: true,
+    sort_cards_by_views: false,
+    sort_cards_by_discards: true,
+    sort_cards_by_wins: false,
+    sort_cards_by_prompt_votes: false,
+    sort_cards_by_response_likes: false,
+    sort_cards_in_front: false,
     allow_join_mid_game: true,
     enable_likes: true,
     enable_soundboard: false,

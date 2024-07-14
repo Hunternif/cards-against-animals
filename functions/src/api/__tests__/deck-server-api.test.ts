@@ -1,12 +1,16 @@
-import { copyFields2 } from "../../shared/utils";
-import { PromptDeckCard, ResponseDeckCard, defaultLobbySettings } from "../../shared/types";
-import { getCardIndex } from "../deck-server-api";
+import { copyFields2 } from '../../shared/utils';
+import {
+  PromptDeckCard,
+  ResponseDeckCard,
+  defaultLobbySettings,
+} from '../../shared/types';
+import { getCardIndex } from '../deck-server-api';
 
 test('update card index to put new cards first', () => {
   const fakeRng = {
     randomInt() {
       return 2012345678;
-    }
+    },
   };
   const unviewedCard = newPromptCard();
   const viewedCard = copyFields2(newResponseCard(), { views: 99 });
@@ -16,7 +20,9 @@ test('update card index to put new cards first', () => {
     sort_cards_by_rating: false,
   });
 
-  expect(getCardIndex(unviewedCard, fakeRng, settingsNoReorder)).toBe(2012345678);
+  expect(getCardIndex(unviewedCard, fakeRng, settingsNoReorder)).toBe(
+    2012345678,
+  );
   expect(getCardIndex(viewedCard, fakeRng, settingsNoReorder)).toBe(2012345678);
 
   const settingsReorder = copyFields2(defaultLobbySettings(), {
@@ -27,16 +33,20 @@ test('update card index to put new cards first', () => {
   expect(getCardIndex(viewedCard, fakeRng, settingsReorder)).toBe(12345678);
 });
 
-
 test('sort cards based on rating', () => {
   const fakeRng = {
     randomInt() {
       return 100;
-    }
+    },
   };
   const settings = copyFields2(defaultLobbySettings(), {
     new_cards_first: false,
     sort_cards_by_rating: true,
+    sort_cards_by_views: true,
+    sort_cards_by_discards: true,
+    sort_cards_by_wins: true,
+    sort_cards_by_prompt_votes: true,
+    sort_cards_by_response_likes: true,
   });
 
   // For new cards, index is unchanged:
@@ -186,8 +196,8 @@ test('sort cards based on rating', () => {
 });
 
 function newPromptCard() {
-  return new PromptDeckCard("01", "My prompt", 1, 0, 0, 0, 0, [], 0, 0);
+  return new PromptDeckCard('01', 'My prompt', 1, 0, 0, 0, 0, [], 0, 0);
 }
 function newResponseCard() {
-  return new ResponseDeckCard("02", "My response", 0, 0, 0, 0, 0, 0, []);
+  return new ResponseDeckCard('02', 'My response', 0, 0, 0, 0, 0, 0, []);
 }
