@@ -106,7 +106,7 @@ service cloud.firestore {
         // Don't allow creating or deleting, to preserve history.
         allow read: if isLoggedIn() && request.auth.uid == userID;
         allow update: if isLoggedIn() && request.auth.uid == userID
-                      && fieldsUnchanged(['score', 'likes', 'discards_used', 'hand'])
+                      && fieldsUnchanged(['score', 'wins', 'likes', 'hand', 'discards_used', 'discard_tokens'])
                       && userIsNotKicked(lobby, userID);
       }
 
