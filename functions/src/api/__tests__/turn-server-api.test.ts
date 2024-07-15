@@ -65,8 +65,8 @@ test('pay discard cost: free', async () => {
 
 test('pay discard cost: no_discard', async () => {
   lobby.settings.discard_cost = 'no_discard';
-  let success = await payDiscardCost(lobby, player, discard);
-  let updatedPlayer = mockPlayerDb.get(player.uid)!;
+  const success = await payDiscardCost(lobby, player, discard);
+  const updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(false);
   expect(updatedPlayer.score).toBe(10);
   expect(updatedPlayer.discards_used).toBe(0);
@@ -148,7 +148,7 @@ test('pay discard cost: token', async () => {
   expect(updatedPlayer.score).toBe(10);
   expect(updatedPlayer.discards_used).toBe(2);
   expect(updatedPlayer.discard_tokens).toBe(3);
-  
+
   player.discard_tokens = 0;
   success = await payDiscardCost(lobby, player, discard);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
@@ -157,4 +157,3 @@ test('pay discard cost: token', async () => {
   expect(updatedPlayer.discards_used).toBe(2);
   expect(updatedPlayer.discard_tokens).toBe(0);
 });
-

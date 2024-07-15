@@ -301,9 +301,8 @@ async function calculateAndPayDiscardCost(
       // For 'star' cost, allow discarding indefinitely:
       return true;
     case '1_free_then_1_star':
-      const actualCost = player.discards_used < 1 ? 0 : 1;
-      if (actualCost > 0 && player.score > 0) {
-        player.score -= actualCost;
+      if (player.discards_used >= 1 && player.score > 0) {
+        player.score -= 1;
       }
       // For 'star' cost, allow discarding indefinitely:
       return true;
