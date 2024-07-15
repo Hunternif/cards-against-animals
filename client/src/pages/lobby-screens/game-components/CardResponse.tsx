@@ -1,6 +1,6 @@
 import { ResponseCardInGame } from '../../../shared/types';
 import { Downvote } from './CardVotes';
-import { IconTrash } from '../../../components/Icons';
+import { IconRecycle, IconTrash } from '../../../components/Icons';
 import {
   CardBottomRight,
   CardCenterIcon,
@@ -69,7 +69,7 @@ export function CardResponse({
       )}
       <CardBottomRight>
         {discarding || discarded ? (
-          <IconTrash width={24} height={24} className="card-discard-icon" />
+          <IconRecycle width={24} height={24} className="card-discard-icon" />
         ) : (
           <Downvote onClick={handleDownvote} />
         )}

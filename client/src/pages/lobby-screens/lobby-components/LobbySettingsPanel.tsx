@@ -81,7 +81,8 @@ export function LobbySettingsPanel(props: Props) {
         />
       </>}
       <FormItem label="Discard cost"
-        hint="Players can discard any number of cards every turn by paying this cost."
+        hint="Players can discard any number of cards every turn by paying this cost.
+        Discard tokens are awarded every turn."
         control={<DiscardControl {...props} />}
       />
       {discardCost === 'token' && (
@@ -264,7 +265,7 @@ function DiscardControl({ settings, readOnly, onChange }: Props) {
     }}
     options={[
       ["free", "Free"],
-      ["token", "Token"],
+      ["token", "🔄 Token"],
       ["1_star", "1 ⭐"],
       ["1_free_then_1_star", "1 free, then 1 ⭐"],
       ["no_discard", "Disabled"],

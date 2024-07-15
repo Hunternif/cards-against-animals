@@ -1,5 +1,6 @@
 import { CSSProperties, ReactNode } from 'react';
 import { GameButton } from '../../../components/Buttons';
+import { IconRecycleInline } from '../../../components/Icons';
 import { DiscardCost, ResponseCardInGame } from '../../../shared/types';
 import { assertExhaustive } from '../../../shared/utils';
 import { useGameContext } from './GameContext';
@@ -124,7 +125,7 @@ function SubmitStatusMessage({ picked }: { picked: number }) {
 
 /** Button to start the discarding process. */
 function BeginDiscardButton({ onBeginDiscard }: ControlProps) {
-  const { canDiscard, isDiscardFree } = useDiscardCost();
+  const { cost, canDiscard, isDiscardFree } = useDiscardCost();
   if (isDiscardFree) {
     return (
       <GameButton
@@ -138,12 +139,24 @@ function BeginDiscardButton({ onBeginDiscard }: ControlProps) {
       </GameButton>
     );
   } else {
+    let hint = 'Discard any number of cards for ⭐ points';
+    switch (cost) {
+      case 'free':
+      case 'no_discard':
+      case '1_star':
+      case '1_free_then_1_star':
+      case 'token':
+        hint = 'Discard any number of cards for 🔄 points';
+        break;
+      default:
+        assertExhaustive(cost);
+    }
     return (
       <GameButton
         secondary
         small
         onClick={() => onBeginDiscard()}
-        title="Discard any number of cards for ⭐ points"
+        title={hint}
         disabled={!canDiscard}
       >
         Discard: <Cost />
@@ -194,7 +207,23 @@ function DiscardControls({
 
 /** b for bold */
 function Cost({ b }: { b?: boolean }) {
-  return <i>{b ? <b>1</b> : <>1</>}★</i>;
+  const { cost } = useDiscardCost();
+  switch (cost) {
+    case 'free':
+    case 'no_discard':
+    case '1_star':
+    case '1_free_then_1_star':
+      return <i>{b ? <b>1</b> : <>1</>}★</i>;
+    case 'token':
+      return (
+        <i>
+          {b ? <b>1</b> : <>1</>}
+          {' '}<IconRecycleInline />
+        </i>
+      );
+    default:
+      assertExhaustive(cost);
+  }
 }
 
 /** Helper hook to get the current discard cost for this player. */
