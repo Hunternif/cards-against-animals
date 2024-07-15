@@ -266,26 +266,37 @@ async function payDiscardCost(
     player.discards_used++;
     // Check discard cost:
     const lobby = await getLobby(lobbyID);
-    let actualCost = 0;
     switch (lobby.settings.discard_cost) {
       case 'free':
-        break;
+        await updatePlayerState(lobbyID, player);
+        return true;
       case 'no_discard':
-        break;
+        return false;
       case '1_star':
-        actualCost = 1;
-        break;
+        if (player.score > 0) {
+          player.score -= 1;
+          await updatePlayerState(lobbyID, player);
+          return true;
+        }
+        return false;
       case '1_free_then_1_star':
-        actualCost = player.discards_used <= 1 ? 0 : 1;
-        break;
+        const cost = player.discards_used <= 1 ? 0 : 1;
+        if (cost > 0 && player.score > 0) {
+          player.score -= cost;
+          await updatePlayerState(lobbyID, player);
+          return true;
+        }
+        return false;
+      case 'token':
+        if (player.disard_tokens > 0) {
+          player.disard_tokens -= 1;
+          await updatePlayerState(lobbyID, player);
+          return true;
+        }
+        return false;
       default:
         assertExhaustive(lobby.settings.discard_cost);
     }
-    if (actualCost > 0 && player.score > 0) {
-      player.score -= actualCost;
-    }
-    await updatePlayerState(lobbyID, player);
-    return true;
   }
   return false;
 }
