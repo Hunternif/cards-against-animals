@@ -114,6 +114,7 @@ export type ShowLikes = 'all' | 'all_except_czar';
 export type LikesLimit = '1_pp_per_turn' | 'none';
 export type DiscardCost =
   | 'free'
+  | 'token' // 1 token per discard. Tokens are awarded for wins and likes.
   | '1_star'
   | '1_free_then_1_star'
   // "progress_hearts" | // 0 hearts, then 1 heart, then 2 hearts...

@@ -15,6 +15,7 @@ interface Props {
 
 export function LobbySettingsPanel(props: Props) {
   const playUntil = props.settings.play_until;
+  const discardCost = props.settings.discard_cost;
   // Delay header class to prevent background flickering bug in Chrome :(
   const headerClass = useDelay("lobby-settings", 1000) ?? "";
   return <div className="lobby-settings-container">
@@ -83,6 +84,12 @@ export function LobbySettingsPanel(props: Props) {
         hint="Players can discard any number of cards every turn by paying this cost."
         control={<DiscardControl {...props} />}
       />
+      {discardCost === 'token' && (
+        <FormItem label="Starting discard tokens"
+          hint="At the start of the game, each player gets this many discard tokens."
+          control={<DiscardTokensControl {...props} />}
+      />
+      )}
       <FormItem label="Who controls lobby"
         hint="Players with this power can change game settings, kick players, and end the game."
         control={<LobbyControlControl {...props} />}
@@ -257,10 +264,21 @@ function DiscardControl({ settings, readOnly, onChange }: Props) {
     }}
     options={[
       ["free", "Free"],
+      ["token", "Token"],
       ["1_star", "1 ⭐"],
       ["1_free_then_1_star", "1 free, then 1 ⭐"],
       ["no_discard", "Disabled"],
     ]}
+  />;
+}
+
+function DiscardTokensControl({ settings, readOnly, onChange }: Props) {
+  return <NumberInput debounce min={0} max={99} disabled={readOnly}
+    value={settings.init_discard_tokens}
+    onChange={async (newValue) => {
+      settings.init_discard_tokens = newValue;
+      if (onChange) await onChange(settings);
+    }}
   />;
 }
 
