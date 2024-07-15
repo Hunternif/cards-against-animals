@@ -1,9 +1,6 @@
+import { newPromptCard, newResponseCard } from '../../shared/mock-data';
+import { defaultLobbySettings } from '../../shared/types';
 import { copyFields2 } from '../../shared/utils';
-import {
-  PromptDeckCard,
-  ResponseDeckCard,
-  defaultLobbySettings,
-} from '../../shared/types';
 import { getCardIndex } from '../deck-server-api';
 
 test('update card index to put new cards first', () => {
@@ -194,10 +191,3 @@ test('sort cards based on rating', () => {
   prompt.downvotes = 11;
   expect(getCardIndex(prompt, fakeRng, settings)).toBe(8);
 });
-
-function newPromptCard() {
-  return new PromptDeckCard('01', 'My prompt', 1, 0, 0, 0, 0, [], 0, 0);
-}
-function newResponseCard() {
-  return new ResponseDeckCard('02', 'My response', 0, 0, 0, 0, 0, 0, []);
-}

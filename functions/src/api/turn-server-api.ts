@@ -8,6 +8,7 @@ import {
   responseCardInGameConverter,
 } from '../shared/firestore-converters';
 import {
+  DiscardCost,
   GameLobby,
   GameTurn,
   PlayerGameState,
@@ -20,7 +21,6 @@ import {
 import { assertExhaustive } from '../shared/utils';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
 import {
-  getLobby,
   getOrCreatePlayerState,
   getPlayerStates,
   getPlayers,
@@ -134,7 +134,7 @@ export async function discardNowAndDealCardsToPlayer(
   // 3. Deal new cards.
   const player = await getOrCreatePlayerState(lobby, userID);
   const newDiscard = await getNewPlayerDiscard(lobby.id, player);
-  if (!(await payDiscardCost(lobby.id, turn, player, newDiscard))) {
+  if (!(await payDiscardCost(lobby, player, newDiscard))) {
     return;
   }
   logger.info(`Discarding ${newDiscard.length} cards from player ${userID}`);
@@ -256,47 +256,56 @@ export async function updatePlayerScoresFromTurn(
  * multiple times.
  * @return true if the pay is accepted and discarding should proceed.
  */
-async function payDiscardCost(
-  lobbyID: string,
-  turn: GameTurn,
+export async function payDiscardCost(
+  lobby: GameLobby,
   player: PlayerGameState,
   discard: ResponseCardInGame[],
 ): Promise<boolean> {
   if (discard.length > 0) {
-    player.discards_used++;
     // Check discard cost:
-    const lobby = await getLobby(lobbyID);
-    switch (lobby.settings.discard_cost) {
-      case 'free':
-        await updatePlayerState(lobbyID, player);
-        return true;
-      case 'no_discard':
-        return false;
-      case '1_star':
-        if (player.score > 0) {
-          player.score -= 1;
-          await updatePlayerState(lobbyID, player);
-          return true;
-        }
-        return false;
-      case '1_free_then_1_star':
-        const cost = player.discards_used <= 1 ? 0 : 1;
-        if (cost > 0 && player.score > 0) {
-          player.score -= cost;
-          await updatePlayerState(lobbyID, player);
-          return true;
-        }
-        return false;
-      case 'token':
-        if (player.disard_tokens > 0) {
-          player.disard_tokens -= 1;
-          await updatePlayerState(lobbyID, player);
-          return true;
-        }
-        return false;
-      default:
-        assertExhaustive(lobby.settings.discard_cost);
+    if (await calculateAndPayDiscardCost(lobby.settings.discard_cost, player)) {
+      player.discards_used++;
+      await updatePlayerState(lobby.id, player);
+      return true;
     }
   }
   return false;
+}
+
+/**
+ * Modifies player state, subtracting the cost.
+ * @return true if the pay is accepted and discarding should proceed.
+ */
+async function calculateAndPayDiscardCost(
+  cost: DiscardCost,
+  player: PlayerGameState,
+) {
+  switch (cost) {
+    case 'free':
+      return true;
+    case 'no_discard':
+      return false;
+    case '1_star':
+      if (player.score > 0) {
+        player.score -= 1;
+      }
+      // For 'star' cost, allow discarding indefinitely:
+      return true;
+    case '1_free_then_1_star':
+      const actualCost = player.discards_used < 1 ? 0 : 1;
+      if (actualCost > 0 && player.score > 0) {
+        player.score -= actualCost;
+      }
+      // For 'star' cost, allow discarding indefinitely:
+      return true;
+    case 'token':
+      if (player.discard_tokens > 0) {
+        player.discard_tokens -= 1;
+        return true;
+      }
+      return false;
+    default:
+      assertExhaustive(cost);
+      return false;
+  }
 }

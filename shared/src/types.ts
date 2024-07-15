@@ -166,7 +166,7 @@ export class PlayerGameState {
     public likes: number,
     public discards_used: number,
     /** Tokens used for discards. */
-    public disard_tokens: number,
+    public discard_tokens: number,
   ) {}
 }
 
