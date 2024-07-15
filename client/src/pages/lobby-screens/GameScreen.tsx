@@ -23,7 +23,7 @@ import { JudgePickPromptScreen } from './JudgePickPromptScreen';
 import { PlayerAnsweringScreen } from './PlayerAnsweringScreen';
 import { WinnerScreen } from './WinnerScreen';
 import { GameContext, GameContextState } from './game-components/GameContext';
-import { GameMenu } from './game-components/GameMenu';
+import { GameHeader } from './game-components/header/GameHeader';
 
 interface ScreenProps {
   lobby: GameLobby;
@@ -132,7 +132,7 @@ function TurnScreen({ lobby, turn, user, players }: PreTurnProps) {
   return (
     <GameContext.Provider value={gameState}>
       <div className={`game-bg phase-${turn.phase}`} />
-      <GameMenu />
+      <GameHeader />
       {isJudge ? (
         <JudgeScreen turn={turn} />
       ) : isSpectator ? (
