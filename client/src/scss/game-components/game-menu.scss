@@ -28,6 +28,10 @@
 .menu-row-right {
   @extend .menu-row-section;
   justify-content: flex-end;
+  .badges {
+    display: flex;
+    gap: 0.1em;
+  }
 }
 
 

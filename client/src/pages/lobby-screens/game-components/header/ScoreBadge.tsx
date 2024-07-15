@@ -12,7 +12,7 @@ export function ScoreBadge() {
   return (
     <CustomDropdown
       toggle={
-        <InlineButton title="Scores" style={{ whiteSpace: 'nowrap' }}>
+        <InlineButton title="Scores">
           <IconCounter icon={<IconStarInline />} count={playerState.score} />
           {playerState.likes > 0 && (
             <IconCounter icon={<IconHeartInline />} count={playerState.likes} />

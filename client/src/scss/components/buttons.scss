@@ -147,7 +147,7 @@ button.start-button {
   padding-right: 0.2rem;
   border-radius: 0.2rem;
 }
-.inline-button {
+.inline-button:enabled {
   cursor: pointer;
 }
 .inline-button:hover {
@@ -155,6 +155,9 @@ button.start-button {
 }
 .inline-button .heart-icon-inline {
   margin-left: 0.5em;
+}
+.icon-counter {
+  white-space: nowrap;
 }
 .icon-counter .count {
   margin: 0 0.2em;

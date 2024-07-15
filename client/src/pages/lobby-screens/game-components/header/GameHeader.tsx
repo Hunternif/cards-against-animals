@@ -1,3 +1,4 @@
+import { DiscardTokensBadge } from './DiscardTokensBadge';
 import { GamePlayerMenu } from './GamePlayerMenu';
 import { PlayerCountBadge } from './PlayerCountBadge';
 import { ScoreBadge } from './ScoreBadge';
@@ -14,7 +15,10 @@ export function GameHeader() {
         </div>
 
         <div className="menu-row-right">
-          <ScoreBadge />
+          <div className="badges">
+            <DiscardTokensBadge />
+            <ScoreBadge />
+          </div>
           <GamePlayerMenu />
         </div>
       </div>
