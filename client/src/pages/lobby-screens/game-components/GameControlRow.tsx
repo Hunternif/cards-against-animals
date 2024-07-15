@@ -1,7 +1,7 @@
 import { CSSProperties, ReactNode } from 'react';
 import { GameButton } from '../../../components/Buttons';
-import { IconStarInline } from '../../../components/Icons';
 import { DiscardCost, ResponseCardInGame } from '../../../shared/types';
+import { assertExhaustive } from '../../../shared/utils';
 import { useGameContext } from './GameContext';
 
 interface ControlProps {
@@ -59,7 +59,7 @@ const buttonGroupStyle: CSSProperties = {
 export function GameControlRow(props: ControlProps) {
   const { selection, discarding } = props;
   const { cost } = useDiscardCost();
-  const canDiscard = cost !== 'no_discard';
+  const showDiscard = cost !== 'no_discard';
 
   if (discarding) {
     return (
@@ -72,7 +72,7 @@ export function GameControlRow(props: ControlProps) {
     return (
       <ControlRowLayout
         center={<SubmitStatusMessage picked={selection.length} />}
-        right={canDiscard && <BeginDiscardButton {...props} />}
+        right={showDiscard && <BeginDiscardButton {...props} />}
       />
     );
   }
@@ -124,7 +124,7 @@ function SubmitStatusMessage({ picked }: { picked: number }) {
 
 /** Button to start the discarding process. */
 function BeginDiscardButton({ onBeginDiscard }: ControlProps) {
-  const { isDiscardFree } = useDiscardCost();
+  const { canDiscard, isDiscardFree } = useDiscardCost();
   if (isDiscardFree) {
     return (
       <GameButton
@@ -132,6 +132,7 @@ function BeginDiscardButton({ onBeginDiscard }: ControlProps) {
         small
         onClick={() => onBeginDiscard()}
         title="Discard any number of cards for free"
+        disabled={!canDiscard}
       >
         Free discard
       </GameButton>
@@ -143,6 +144,7 @@ function BeginDiscardButton({ onBeginDiscard }: ControlProps) {
         small
         onClick={() => onBeginDiscard()}
         title="Discard any number of cards for ⭐ points"
+        disabled={!canDiscard}
       >
         Discard: <Cost />
       </GameButton>
@@ -196,11 +198,36 @@ function Cost({ b }: { b?: boolean }) {
 }
 
 /** Helper hook to get the current discard cost for this player. */
-function useDiscardCost(): { cost: DiscardCost; isDiscardFree: boolean } {
+function useDiscardCost(): {
+  cost: DiscardCost;
+  canDiscard: boolean;
+  isDiscardFree: boolean;
+} {
   const { lobby, playerState } = useGameContext();
   const cost = lobby.settings.discard_cost;
-  const isDiscardFree =
-    cost === 'free' ||
-    (cost === '1_free_then_1_star' && playerState.discards_used === 0);
-  return { cost, isDiscardFree };
+  let isDiscardFree = false;
+  let canDiscard = false;
+  switch (cost) {
+    case 'free':
+      isDiscardFree = true;
+      canDiscard = true;
+      break;
+    case 'no_discard':
+      break;
+    case '1_star':
+      // For 'star' cost, allow discarding indefinitely:
+      canDiscard = true;
+      break;
+    case '1_free_then_1_star':
+      isDiscardFree = playerState.discards_used === 0;
+      // For 'star' cost, allow discarding indefinitely:
+      canDiscard = true;
+      break;
+    case 'token':
+      canDiscard = playerState.discard_tokens > 0;
+      break;
+    default:
+      assertExhaustive(cost);
+  }
+  return { cost, isDiscardFree, canDiscard };
 }
