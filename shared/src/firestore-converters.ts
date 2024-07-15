@@ -106,6 +106,7 @@ export const playerStateConverter: FConverter<PlayerGameState> = {
       data.wins ?? 0,
       data.likes ?? 0,
       data.discards_used ?? 0,
+      data.discard_tokens ?? 0,
     );
     ret.time_dealt_cards =
       (data.time_dealt_cards as FTimestamp | null)?.toDate() ?? new Date();

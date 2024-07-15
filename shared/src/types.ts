@@ -72,6 +72,8 @@ export interface LobbySettings {
   lobby_control: LobbyContol;
   /** Number of seconds until next turn auto-starts. 0 to disable. */
   next_turn_time_sec: number;
+  /** How many discard tokens each player gets initially. */
+  init_discard_tokens: number;
 }
 
 export function defaultLobbySettings(): LobbySettings {
@@ -99,6 +101,7 @@ export function defaultLobbySettings(): LobbySettings {
     discard_cost: '1_free_then_1_star',
     lobby_control: 'creator',
     next_turn_time_sec: 4.0,
+    init_discard_tokens: 1,
   };
 }
 
@@ -161,6 +164,8 @@ export class PlayerGameState {
     /** Current number of likes accumulated over the entire game. */
     public likes: number,
     public discards_used: number,
+    /** Tokens used for discards. */
+    public disard_tokens: number,
   ) {}
 }
 

@@ -132,7 +132,7 @@ export async function discardNowAndDealCardsToPlayer(
   // 1. Pay discard cost;
   // 2. Remove discarded cards from hand;
   // 3. Deal new cards.
-  const player = await getOrCreatePlayerState(lobby.id, userID);
+  const player = await getOrCreatePlayerState(lobby, userID);
   const newDiscard = await getNewPlayerDiscard(lobby.id, player);
   if (!(await payDiscardCost(lobby.id, turn, player, newDiscard))) {
     return;
@@ -161,7 +161,7 @@ export async function dealCardsToPlayer(
   const deckResponsesRef = firestore
     .collection(`lobbies/${lobby.id}/deck_responses`)
     .withConverter(responseCardInGameConverter);
-  const player = await getOrCreatePlayerState(lobby.id, userID);
+  const player = await getOrCreatePlayerState(lobby, userID);
   const newHand = new Array<ResponseCardInHand>();
   const oldHand = await getPlayerHand(lobby.id, player);
   const handToDiscard = new Array<ResponseCardInGame>();

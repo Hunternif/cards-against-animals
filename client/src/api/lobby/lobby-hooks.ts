@@ -61,7 +61,8 @@ export function usePlayerInLobby(lobbyID: string, user: User) {
 export function usePlayerState(lobby: GameLobby, userID: string) {
   return useDocumentDataOrDefault(
     getPlayerStateRef(lobby.id, userID),
-    new PlayerGameState(userID, 0, 0, 0, 0),
+    // This is a temporary dummy value
+    new PlayerGameState(userID, 0, 0, 0, 0, 0),
   );
 }
 

@@ -110,13 +110,14 @@ export async function getPlayerState(
 
 /** Finds or creates player game state in this lobby. */
 export async function getOrCreatePlayerState(
-  lobbyID: string,
+  lobby: GameLobby,
   userID: string,
 ): Promise<PlayerGameState> {
-  const state = await getPlayerState(lobbyID, userID);
+  const state = await getPlayerState(lobby.id, userID);
   if (state == null) {
-    const newState = new PlayerGameState(userID, 0, 0, 0, 0);
-    await getPlayerStatesRef(lobbyID).doc(userID).set(newState);
+    const discard_tokens = lobby.settings.init_discard_tokens;
+    const newState = new PlayerGameState(userID, 0, 0, 0, 0, discard_tokens);
+    await getPlayerStatesRef(lobby.id).doc(userID).set(newState);
     return newState;
   } else {
     return state;
