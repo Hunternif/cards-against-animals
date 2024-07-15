@@ -18,7 +18,7 @@ import {
   ResponseCardInGame,
   ResponseCardInHand,
 } from '../shared/types';
-import { assertExhaustive } from '../shared/utils';
+import { assertExhaustive, countEveryN } from '../shared/utils';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
 import {
   getOrCreatePlayerState,
@@ -234,6 +234,7 @@ export async function updatePlayerScoresFromTurn(
     if (turn.winner_uid === player.uid) {
       player.score++;
       player.wins++;
+      player.discard_tokens++;
     }
     const response = responses.find((r) => r.player_uid === player.uid);
     if (response) {
@@ -243,9 +244,17 @@ export async function updatePlayerScoresFromTurn(
         player.uid,
       );
       response.like_count = likeCount;
+      // Discard tokens are awarded every 5 likes:
+      player.discard_tokens += countEveryN(
+        player.likes,
+        player.likes + likeCount,
+        5,
+      );
       player.likes += likeCount;
       await updatePlayerResponse(lobbyID, turn.id, response);
     }
+    // Discard tokens are also awarded every 5 turns:
+    player.discard_tokens += countEveryN(turn.ordinal, turn.ordinal + 1, 5);
     await updatePlayerState(lobbyID, player);
   }
 }

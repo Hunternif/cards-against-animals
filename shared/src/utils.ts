@@ -105,3 +105,9 @@ export function debounce(
     });
   };
 }
+
+/** For counting things that happen "every N turns" etc.
+ * Given old '5' and new '16', return '2' for n = 5. */
+export function countEveryN(oldVal: number, newVal: number, n: number): number {
+  return Math.max(0, Math.floor(newVal / n) - Math.floor(oldVal / n)) >>> 0;
+}
