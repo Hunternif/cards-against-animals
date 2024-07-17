@@ -132,10 +132,9 @@ export const deckConverter: FConverter<Deck> = {
   },
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
-    const ret = new Deck(snapshot.id, data.title);
-    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     // All decks are public by default, unless specified:
-    ret.visibility = data.visibility ?? 'public';
+    const ret = new Deck(snapshot.id, data.title, data.visibility ?? 'public');
+    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     // all cards must be fetched separately as a subcollection
     return ret;
   },

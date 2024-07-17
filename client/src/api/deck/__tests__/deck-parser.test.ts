@@ -51,7 +51,7 @@ test('process prompt text', () => {
 test('parse deck', () => {
   const deck = parseDeck("my_deck", "My deck",
     "Hello, __\nBye __ and _", "Poop\nCrap");
-  const expected = new Deck("my_deck", "My deck");
+  const expected = new Deck("my_deck", "My deck", 'public');
   expected.prompts = [
     new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, [], 0, 0),
     new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, [], 0, 0),
@@ -78,7 +78,7 @@ Response\tPoop`,
     `Tag\tDescription
 lol\tFirst tag
 wut\tSecond tag`);
-  const expected = new Deck("my_deck", "My deck");
+  const expected = new Deck("my_deck", "My deck", 'public');
   expected.prompts = [
     new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"], 0, 0),
     new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"], 0, 0),
@@ -104,7 +104,7 @@ test('parse TSV deck without tag descriptions', () => {
 Prompt\tHello, __\tlol\t\t\t
 Prompt\tBye __ and _\t\twut
 Response\tPoop`, "");
-  const expected = new Deck("my_deck", "My deck");
+  const expected = new Deck("my_deck", "My deck", 'public');
   expected.prompts = [
     new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"], 0, 0),
     new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"], 0, 0),
@@ -127,7 +127,7 @@ Prompt\tBye __ and _\t\twut
 Response\tPoop`,
     `lol\tFirst tag
 lol\tDuplicate tag`);
-  const expected = new Deck("my_deck", "My deck");
+  const expected = new Deck("my_deck", "My deck", 'public');
   expected.prompts = [
     new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"], 0, 0),
     new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"], 0, 0),

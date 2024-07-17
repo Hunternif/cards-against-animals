@@ -249,8 +249,8 @@ export class Deck {
   constructor(
     public id: string,
     public title: string,
+    public visibility: DeckVisibility,
     public time_created?: Date,
-    public visibility: DeckVisibility = 'public',
   ) {}
 }
 
@@ -426,7 +426,11 @@ export type KickAction = 'kick' | 'ban';
 export type DeckVisibility = 'public' | 'hidden' | 'locked';
 
 /** Used for cards created during a game, e.g haiku. */
-export const GeneratedDeck = new Deck('@@generated', 'Generated cards');
+export const GeneratedDeck = new Deck(
+  '@@generated',
+  'Generated cards',
+  'public',
+);
 
 /**
  * User data stored in the database.

@@ -39,7 +39,7 @@ export function deserializeDecks(json: string): Deck[] {
   if (data.version != 1)
     throw new Error(`Unsupported export version ${data.version}`);
   return data.decks.map((d) => {
-    const deck = new Deck(d.id, d.title);
+    const deck = new Deck(d.id, d.title, d.visibility);
     deck.prompts =
       d.prompts?.map(
         (c) =>

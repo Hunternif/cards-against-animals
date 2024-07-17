@@ -39,7 +39,7 @@ test('merge decks', async () => {
 
   const merged = await mergeDecks(deck1, deck2);
 
-  const expected = new Deck('test1', 'Test 1');
+  const expected = new Deck('test1', 'Test 1', 'public');
   expected.prompts = [
     new PromptDeckCard('0001', 'Hello, _', 1, 0, 0, 8, 0, ['lol'], 0, 0),
     new PromptDeckCard('0003', 'Bye _ and _', 2, 0, 0, 0, 0, ['wut'], 0, 0),
@@ -100,7 +100,7 @@ test('update card IDs for merge', () => {
   const resp11 = makeResponse('0011');
   const resp12 = makeResponse('0012');
 
-  const deck = new Deck('test_deck', 'Test deck');
+  const deck = new Deck('test_deck', 'Test deck', 'public');
   deck.prompts.push(makePrompt('0010'));
   deck.responses.push(makeResponse('0010'));
   const set1 = new DeckCardSet([prompt10, prompt11, resp10, resp11, resp12]);
@@ -120,7 +120,7 @@ test('maintain relative ID order', () => {
   const prompt3 = makePrompt('0003');
   const resp4 = makeResponse('0004');
 
-  const deck = new Deck('test_deck', 'Test deck');
+  const deck = new Deck('test_deck', 'Test deck', 'public');
   deck.prompts.push(makePrompt('0001'));
   deck.responses.push(makeResponse('0002'));
   const set1 = new DeckCardSet([prompt1, resp2, prompt3, resp4]);
@@ -133,7 +133,7 @@ test('maintain relative ID order', () => {
 });
 
 test('merge into empty deck', () => {
-  const newDeck = new Deck('new_deck', 'My new deck');
+  const newDeck = new Deck('new_deck', 'My new deck', 'public');
   newDeck.tags.push(new DeckTag('old_tag'));
   const set1 = new DeckCardSet([
     makePrompt('0001', 'New prompt'),

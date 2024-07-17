@@ -15,7 +15,7 @@ export function parseDeck(
   promptList: string,
   responseList: string,
 ): Deck {
-  const deck = new Deck(id, title);
+  const deck = new Deck(id, title, 'public');
   deck.prompts = promptList
     .split('\n')
     .map((line) => line.trim())
@@ -60,7 +60,7 @@ export function parseDeckTsv(
   cardData: string,
   tagData: string,
 ): Deck {
-  const deck = new Deck(id, title);
+  const deck = new Deck(id, title, 'public');
   const cardLines = cardData
     .split('\n')
     .map((line) => line.trim())

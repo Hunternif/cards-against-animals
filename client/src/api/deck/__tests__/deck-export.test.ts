@@ -12,7 +12,7 @@ import {
 } from '../deck-export';
 
 test('export deck', () => {
-  const deck = new Deck('my_deck', 'My deck');
+  const deck = new Deck('my_deck', 'My deck', 'public');
   deck.prompts = [
     new PromptDeckCard('0001', 'Hello, _', 1, 10, 0, 0, 0, ['lol'], 0, 0),
     new PromptDeckCard('0002', 'Bye _ and _', 2, 0, 3, 0, 0, ['wut'], 0, 0),
@@ -20,7 +20,7 @@ test('export deck', () => {
   deck.responses = [new ResponseDeckCard('0003', 'Poop', 0, 0, 4, 0, 0, 0, [])];
   deck.tags = [new DeckTag('lol'), new DeckTag('wut')];
 
-  const deckNoTags = new Deck('no_tags', 'No tags');
+  const deckNoTags = new Deck('no_tags', 'No tags', 'public');
   deckNoTags.responses = [
     new ResponseDeckCard('0001', 'Woah', 0, 0, 0, 5, 0, 0, []),
   ];

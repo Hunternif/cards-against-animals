@@ -23,7 +23,12 @@ export function filterResponseDeckCard(
 }
 
 export function copyDeck(deck: Deck): Deck {
-  const copy = new Deck(deck.id, deck.title);
+  const copy = new Deck(
+    deck.id,
+    deck.title,
+    deck.visibility,
+    deck.time_created,
+  );
   copy.prompts.push(...deck.prompts);
   copy.responses.push(...deck.responses);
   copy.tags.push(...deck.tags.map((t) => new DeckTag(t.name, t.description)));

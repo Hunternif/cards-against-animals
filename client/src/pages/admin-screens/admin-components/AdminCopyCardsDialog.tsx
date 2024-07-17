@@ -115,7 +115,7 @@ export function AdminCopyCardsDialog({
     try {
       setSubmitting(true);
       const mergedDeck = mergeIntoDeck(
-        targetDeck ?? new Deck(newDeckID, newDeckTitle),
+        targetDeck ?? new Deck(newDeckID, newDeckTitle, 'public'),
         updatedCards,
         sourceDeck.tags,
       );
