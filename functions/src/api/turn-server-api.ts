@@ -207,6 +207,16 @@ export async function dealCardsToPlayer(
                 .limit(totalCardsNeeded),
             )
           ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
+    // Update tag counts:
+    for (const card of newCards) {
+      for (const tagName of card.tags) {
+        const tagData = lobby.response_tags.get(tagName);
+        if (tagData != null) {
+          tagData.card_count -= 1;
+        }
+      }
+    }
+    await updateLobby(lobby, transaction);
     // Add cards to the new player hand
     newHand.push(...newCards);
     player.hand = new Map(newHand.map((c) => [c.id, c]));
