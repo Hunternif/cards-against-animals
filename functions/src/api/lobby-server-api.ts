@@ -9,6 +9,7 @@ import {
 } from '../shared/firestore-converters';
 import { RNG } from '../shared/rng';
 import {
+  Deck,
   GameLobby,
   PlayerInLobby,
   PlayerRole,
@@ -35,6 +36,7 @@ import {
   updateLobby,
   updatePlayer,
 } from './lobby-server-repository';
+import { countResponseTags } from './lobby-tags-api';
 import { createNewTurn, dealCardsToPlayer } from './turn-server-api';
 import { getLastTurn, updateTurn } from './turn-server-repository';
 import {
@@ -265,15 +267,18 @@ async function validateGameSettings(lobby: GameLobby) {
 }
 
 /**
- * Copy cards from all added decks into the lobby.
- * Copy the content because the deck could be edited or deleted in the future.
+ * Copies cards from all added decks into the lobby.
+ * Copies full card content because the deck could be edited or deleted in the future.
+ * Also calculates initial tag counts.
  */
 async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
+  const decks = new Array<Deck>();
   const newPrompts = new Array<PromptCardInGame>();
   const newResponses = new Array<ResponseCardInGame>();
   // Verify that the user has access to locked decks:
   for (const deckID of lobby.deck_ids) {
     const deck = await getDeck(deckID);
+    decks.push(deck);
     if (deck.visibility == 'locked') {
       const access = await verifyUserHasDeckKey(lobby.creator_uid, deckID);
       if (!access) {
@@ -296,6 +301,8 @@ async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
       `Fetched ${prompts.length} prompts and ${responses.length} responses from deck ${deckID}`,
     );
   }
+  // Count tags:
+  lobby.response_tags = countResponseTags(decks, newResponses);
   // Write all cards to the lobby:
   const lobbyPromptsRef = firestore
     .collection(`lobbies/${lobby.id}/deck_prompts`)
@@ -310,6 +317,7 @@ async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
     newResponses.forEach((card) =>
       transaction.set(lobbyResponsesRef.doc(card.id), card),
     );
+    updateLobby(lobby, transaction);
   });
   logger.info(
     `Copied ${newPrompts.length} prompts and ${newResponses.length} responses to lobby ${lobby.id}`,

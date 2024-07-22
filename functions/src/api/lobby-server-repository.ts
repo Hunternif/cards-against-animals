@@ -43,8 +43,17 @@ export async function getLobby(lobbyID: string): Promise<GameLobby> {
  * Updates lobby state in Firestore.
  * Does not update subcollections! (players, turns, deck etc)
  */
-export async function updateLobby(lobby: GameLobby): Promise<void> {
-  await lobbiesRef.doc(lobby.id).update(lobbyConverter.toFirestore(lobby));
+export async function updateLobby(
+  lobby: GameLobby,
+  transaction?: Transaction,
+): Promise<void> {
+  const ref = lobbiesRef.doc(lobby.id);
+  const data = lobbyConverter.toFirestore(lobby);
+  if (transaction) {
+    transaction.update(ref, data);
+  } else {
+    await ref.update(data);
+  }
 }
 
 /** Updates player data in lobby in Firestore. */
