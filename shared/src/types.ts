@@ -26,6 +26,8 @@ export class GameLobby {
   /** Response cards remaining in the deck.
    * Must be fetched separately from a Firebase subcollection. */
   deck_responses: Array<ResponseCardInGame> = [];
+  /** Maps tag name to current card count from all decks' responses. */
+  response_tags: Map<string, TagInGame> = new Map();
 
   /** ID of the next lobby, created as a copy of this lobby. */
   next_lobby_id?: string;
@@ -256,6 +258,16 @@ export class Deck {
 
 export class DeckTag {
   constructor(public name: string, public description?: string) {}
+}
+
+/** Tag info in a specific lobby.
+ * Card count is updated as the cards are dealt. */
+export class TagInGame {
+  constructor(
+    public name: string,
+    public card_count: number,
+    public description?: string,
+  ) {}
 }
 
 /** Used to lock access to decks with a password.

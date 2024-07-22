@@ -22,6 +22,7 @@ import {
   ResponseCardInHand,
   ResponseDeckCard,
   SoundEvent,
+  TagInGame,
   Vote,
   defaultLobbySettings,
 } from './types';
@@ -42,6 +43,7 @@ export const lobbyConverter: FConverter<GameLobby> = {
           ? FTimestamp.fromDate(lobby.time_created)
           : fServerTimestamp(), // set new time when creating a new lobby
         deck_ids: Array.from(lobby.deck_ids),
+        response_tags: mapToObject(lobby.response_tags, copyFields),
       },
       ['id', 'deck_prompts', 'deck_responses'],
     );
@@ -59,7 +61,8 @@ export const lobbyConverter: FConverter<GameLobby> = {
     );
     ret.current_turn_id = data.current_turn_id;
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
-    ret.deck_ids = new Set<string>(data.deck_ids || []);
+    ret.deck_ids = new Set<string>(data.deck_ids ?? []);
+    ret.response_tags = objectToMap(data.response_tags ?? {}, mapTagInGame);
     ret.next_lobby_id = data.next_lobby_id;
     return ret;
   },
@@ -243,6 +246,10 @@ function mapResponseCardInHand(data: any): ResponseCardInHand {
   const time_received =
     (data.time_received as FTimestamp | null)?.toDate() ?? new Date();
   return ResponseCardInHand.create(baseCard, time_received);
+}
+
+function mapTagInGame(data: any): TagInGame {
+  return new TagInGame(data.name, data.card_count, data.description);
 }
 
 export const userConverter: FConverter<CAAUser> = {
