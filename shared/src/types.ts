@@ -70,6 +70,8 @@ export interface LobbySettings {
   likes_limit: LikesLimit;
   /** How much does it cost for the player to discard cards, per turn. */
   discard_cost: DiscardCost;
+  /** If true, players can request cards with specific tags during discard. */
+  enable_tag_exchange: boolean;
   /** Who is allowed to change lobby settings and kick players during the game. */
   lobby_control: LobbyContol;
   /** Number of seconds until next turn auto-starts. 0 to disable. */
@@ -101,6 +103,7 @@ export function defaultLobbySettings(): LobbySettings {
     show_likes_to: 'all_except_czar',
     likes_limit: 'none',
     discard_cost: '1_free_then_1_star',
+    enable_tag_exchange: false,
     lobby_control: 'creator',
     next_turn_time_sec: 4.0,
     init_discard_tokens: 1,

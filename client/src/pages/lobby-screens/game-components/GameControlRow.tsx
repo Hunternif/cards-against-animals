@@ -207,7 +207,7 @@ function DiscardControls({
   onSetDiscardAll,
   onCancelDiscard,
 }: ControlProps) {
-  const { hand } = useGameContext();
+  const { lobby, hand } = useGameContext();
   const totalDiscardable = hand.filter(
     (c1) => !selection.find((c2) => c1.id === c2.id),
   ).length;
@@ -226,10 +226,12 @@ function DiscardControls({
         <GameButton small secondary onClick={onCancelDiscard}>
           Cancel
         </GameButton>
-        <BeginTagExchangeButton
-          cards={discardedCards}
-          disabled={discardCount == 0}
-        />
+        {lobby.settings.enable_tag_exchange && (
+          <BeginTagExchangeButton
+            cards={discardedCards}
+            disabled={discardCount == 0}
+          />
+        )}
         {/* TODO: loading animation while discard is in flight */}
         <GameButton
           small

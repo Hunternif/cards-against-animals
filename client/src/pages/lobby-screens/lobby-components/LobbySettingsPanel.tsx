@@ -91,6 +91,12 @@ export function LobbySettingsPanel(props: Props) {
           control={<DiscardTokensControl {...props} />}
       />
       )}
+      {discardCost !== 'no_discard' && (
+        <FormItem label="Enable tag exchange"
+          hint="During discard, players can request cards with specific tags."
+          control={<EnableTagExchangeControl {...props} />}
+      />
+      )}
       <FormItem label="Who controls lobby"
         hint="Players with this power can change game settings, kick players, and end the game."
         control={<LobbyControlControl {...props} />}
@@ -278,6 +284,16 @@ function DiscardTokensControl({ settings, readOnly, onChange }: Props) {
     value={settings.init_discard_tokens}
     onChange={async (newValue) => {
       settings.init_discard_tokens = newValue;
+      if (onChange) await onChange(settings);
+    }}
+  />;
+}
+
+function EnableTagExchangeControl({ settings, readOnly, onChange }: Props) {
+  return <ToggleInput disabled={readOnly}
+    value={settings.enable_tag_exchange}
+    onChange={async (newValue) => {
+      settings.enable_tag_exchange = newValue;
       if (onChange) await onChange(settings);
     }}
   />;
