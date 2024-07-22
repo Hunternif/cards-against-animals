@@ -106,6 +106,7 @@ export function GameHand({
         key={card.id}
         card={card}
         justIn={isNew}
+        downvotable
         downvoted={playerState.downvoted.has(card.id)}
         selectable={isSelectable}
         selectedIndex={getSelectedIndex(card)}

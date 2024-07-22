@@ -9,7 +9,7 @@ export function CardTagExchangePanel({ cards }: Props) {
   return (
     <div className="card-tag-exchange-panel">
       {cards.map((c) => (
-        <CardResponse card={c} />
+        <CardResponse card={c}  />
       ))}
     </div>
   );

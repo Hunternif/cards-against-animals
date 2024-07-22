@@ -13,6 +13,7 @@ interface ResponseCardProps {
   justIn?: boolean; // Card was just dealt
   downvoted?: boolean;
   selectable?: boolean;
+  downvotable?: boolean;
   /** Which card it is in your submission: #1, #2 etc. Starts from 0. */
   selectedIndex?: number;
   /** Whether to show the above index. Doesn't make sense for 1 card. */
@@ -29,6 +30,7 @@ export function CardResponse({
   justIn,
   downvoted,
   selectable,
+  downvotable,
   selectedIndex,
   showIndex,
   onToggle,
@@ -70,9 +72,9 @@ export function CardResponse({
       <CardBottomRight>
         {discarding || discarded ? (
           <IconRecycle width={24} height={24} className="card-discard-icon" />
-        ) : (
+        ) : downvotable ? (
           <Downvote onClick={handleDownvote} />
-        )}
+        ) : null}
       </CardBottomRight>
     </LargeCard>
   );
