@@ -1,8 +1,10 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode, useState } from 'react';
 import { GameButton } from '../../../components/Buttons';
-import { IconRecycleInline } from '../../../components/Icons';
+import { ConfirmModal } from '../../../components/ConfirmModal';
+import { IconCards, IconRecycleInline } from '../../../components/Icons';
 import { DiscardCost, ResponseCardInGame } from '../../../shared/types';
 import { assertExhaustive } from '../../../shared/utils';
+import { CardTagExchangePanel } from './CardTagExchangePanel';
 import { useGameContext } from './GameContext';
 
 interface ControlProps {
@@ -123,6 +125,38 @@ function SubmitStatusMessage({ picked }: { picked: number }) {
   return prompt ? `Picked ${picked} out of ${total}` : 'Waiting for prompt...';
 }
 
+interface TagExchangeProps {
+  cards: ResponseCardInGame[];
+  disabled?: boolean;
+}
+function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
+  const [showModal, setShowModal] = useState(false);
+  async function handleConfirm() {
+    setShowModal(false);
+  }
+  return (
+    <>
+      <ConfirmModal
+        show={showModal}
+        className="tag-exchange-modal"
+        title="Select tags"
+        onConfirm={handleConfirm}
+        onCancel={() => setShowModal(false)}
+      >
+        <CardTagExchangePanel cards={cards} />
+      </ConfirmModal>
+      <GameButton
+        small
+        iconLeft={<IconCards />}
+        onClick={() => setShowModal(true)}
+        disabled={disabled}
+      >
+        Tags...
+      </GameButton>
+    </>
+  );
+}
+
 /** Button to start the discarding process. */
 function BeginDiscardButton({ onBeginDiscard }: ControlProps) {
   const { cost, canDiscard, isDiscardFree } = useDiscardCost();
@@ -192,6 +226,10 @@ function DiscardControls({
         <GameButton small secondary onClick={onCancelDiscard}>
           Cancel
         </GameButton>
+        <BeginTagExchangeButton
+          cards={discardedCards}
+          disabled={discardCount == 0}
+        />
         {/* TODO: loading animation while discard is in flight */}
         <GameButton
           small
@@ -217,8 +255,7 @@ function Cost({ b }: { b?: boolean }) {
     case 'token':
       return (
         <i>
-          {b ? <b>1</b> : <>1</>}
-          {' '}<IconRecycleInline />
+          {b ? <b>1</b> : <>1</>} <IconRecycleInline />
         </i>
       );
     default:

@@ -50,6 +50,7 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 @import "game-components/cards.scss";
 @import "game-components/minicards.scss";
 @import "game-components/game-menu.scss";
+@import "game-components/tag-exchange.scss";
 
 // Final overrides for mobile:
 @import "mobile.scss";
