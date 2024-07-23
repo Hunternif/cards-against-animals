@@ -8,6 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useDocumentDataOrDefault } from '../../hooks/data-hooks';
 import { CAAUser, GameLobby, PlayerGameState } from '../../shared/types';
+import { getPromptCount, getResponseCount } from '../turn/turn-prompt-api';
 import { joinLobbyIfNeeded } from './lobby-join-api';
 import {
   getPlayerRef,
@@ -77,4 +78,20 @@ export function useRedirectToNextLobby(lobby: GameLobby) {
       navigate(`/${lobby.next_lobby_id}`);
     }
   }, [lobby.next_lobby_id]);
+}
+
+export function usePromptCount(lobby: GameLobby): number {
+  const [cardCount, setCardCount] = useState(-1);
+  useEffect(() => {
+    getPromptCount(lobby).then((c) => setCardCount(c));
+  }, [lobby]);
+  return cardCount;
+}
+
+export function useResponseCount(lobby: GameLobby): number {
+  const [cardCount, setCardCount] = useState(-1);
+  useEffect(() => {
+    getResponseCount(lobby).then((c) => setCardCount(c));
+  }, [lobby]);
+  return cardCount;
 }

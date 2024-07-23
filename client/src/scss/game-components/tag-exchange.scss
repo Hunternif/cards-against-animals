@@ -4,4 +4,13 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1em;
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    input {
+      width: 100%;
+    }
+  }
 }

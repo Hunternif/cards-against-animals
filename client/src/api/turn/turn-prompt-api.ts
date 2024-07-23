@@ -10,7 +10,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { firestore } from "../../firebase";
-import { promptCardInGameConverter } from "../../shared/firestore-converters";
+import { promptCardInGameConverter, responseCardInGameConverter } from "../../shared/firestore-converters";
 import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
 import { lobbiesRef } from "../lobby/lobby-repository";
 import { getTurnRef, updateTurn } from "./turn-repository";
@@ -33,6 +33,13 @@ function getTurnPromptsRef(lobbyID: string, turnID: string) {
 function getDeckPromptsRef(lobbyID: string) {
   return collection(lobbiesRef, lobbyID, "deck_prompts").withConverter(
     promptCardInGameConverter,
+  );
+}
+
+/** Returns Firestore subcollection reference of remaining responses in deck. */
+function getDeckResponsesRef(lobbyID: string) {
+  return collection(lobbiesRef, lobbyID, "deck_responses").withConverter(
+    responseCardInGameConverter,
   );
 }
 
@@ -99,4 +106,9 @@ export async function discardPrompts(
 /** How many prompts remain in the deck */
 export async function getPromptCount(lobby: GameLobby): Promise<number> {
   return (await getCountFromServer(getDeckPromptsRef(lobby.id))).data().count;
+}
+
+/** How many responses remain in the deck */
+export async function getResponseCount(lobby: GameLobby): Promise<number> {
+  return (await getCountFromServer(getDeckResponsesRef(lobby.id))).data().count;
 }
