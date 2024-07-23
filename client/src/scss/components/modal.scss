@@ -88,13 +88,6 @@
       width: 30rem;
       max-width: 95vw;
     }
-    .modal-body {
-      @extend .scroll;
-      // Reset font
-      font-size: medium;
-      font-weight: 400;
-      text-align: unset;
-    }
     header {
       text-align: center;
     }

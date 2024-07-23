@@ -138,6 +138,8 @@ export function GamePlayerMenu() {
         End the game for everyone?
       </ConfirmModal>
       <ConfirmModal
+        longFormat
+        scroll
         className="game-settings-modal"
         show={showSettingsModal}
         onCancel={() => setShowSettingsModal(false)}

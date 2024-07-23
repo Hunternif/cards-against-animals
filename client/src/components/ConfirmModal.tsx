@@ -14,6 +14,10 @@ interface ModalProps {
   loadingText?: string;
   className?: string;
   hideCancel?: boolean;
+  /** See ModalBody props */
+  longFormat?: boolean;
+  /** See ModalBody props */
+  scroll?: boolean;
 }
 
 export function ConfirmModal({
@@ -28,11 +32,18 @@ export function ConfirmModal({
   hideCancel,
   onConfirm,
   onCancel,
+  longFormat,
+  scroll,
 }: ModalProps) {
   return (
     <Modal show={show} title={title} className={className} onHide={onCancel}>
       <form className="modal-confirm-form" onSubmit={(e) => e.preventDefault()}>
-        <ModalBody loading={loading} loadingText={loadingText}>
+        <ModalBody
+          loading={loading}
+          loadingText={loadingText}
+          longFormat={longFormat}
+          scroll={scroll}
+        >
           {children}
         </ModalBody>
         <ConfirmModalFooter

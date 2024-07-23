@@ -65,6 +65,8 @@ interface BodyProps {
    * "Long format" doesn't apply extra styling to text.
    */
   longFormat?: boolean;
+  /** If true, content will have a vertical scroller */
+  scroll?: boolean;
 }
 
 export function ModalBody({
@@ -72,9 +74,11 @@ export function ModalBody({
   loadingText,
   loading,
   longFormat,
+  scroll,
 }: BodyProps) {
   const classes = ['modal-body'];
   if (longFormat) classes.push('long-format');
+  if (scroll) classes.push('scroll');
   return (
     <div className={classes.join(' ')}>
       {loading ? <LoadingSpinner text={loadingText} /> : children}
