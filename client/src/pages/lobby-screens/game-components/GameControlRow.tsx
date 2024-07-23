@@ -138,6 +138,7 @@ function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
     <>
       <ConfirmModal
         scroll
+        longFormat
         show={showModal}
         className="tag-exchange-modal"
         title="Select tags"

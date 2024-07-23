@@ -1,3 +1,5 @@
+@use "../colors.scss";
+
 .card-tag-exchange-panel {
   text-align: initial;
   display: flex;
@@ -5,12 +7,56 @@
   justify-content: center;
   gap: 1em;
 
-  .card-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5em;
-    input {
-      width: 100%;
+  .card {
+    width: 10rem;
+    height: 14rem;
+    border-radius: 0.5em;
+    border: 3px solid colors.$menu-lvl1-light;
+    background-color: rgba(colors.$bg-dark, 50%);
+
+    ul {
+      @extend .miniscrollbar;
+      @extend .miniscrollbar-light;
+      @extend .miniscrollbar-auto;
+      overflow-y: auto;
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      li {
+        height: 2em;
+        padding: 0.5em;
+        display: flex;
+        align-items: center;
+        
+        border-bottom: 2px solid rgba(colors.$menu-lvl1-light, 50%);
+        &:last-child {
+          border-bottom: none;
+        }
+        &:not(.disabled):not(.selected) {
+          cursor: pointer;
+          &:hover {
+            background-color: colors.$menu-lvl1-light;
+          }
+        }
+        &.selected {
+          // background-color: rgba(colors.$menu-lvl1-light, 50%);
+          background-color: colors.$accent;
+          color: colors.$button-accent-text;
+        }
+        &.disabled {
+          opacity: 50%;
+        }
+        &.technical {
+          .tag-name {
+            font-weight: 200;
+            font-style: italic;
+          }
+        }
+        .card-count {
+          font-variant-numeric: tabular-nums;
+          margin-left: auto;
+        }
+      }
     }
   }
 }

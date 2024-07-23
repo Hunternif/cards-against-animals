@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useResponseCount } from '../../../api/lobby/lobby-hooks';
-import { SelectInput } from '../../../components/FormControls';
 import { ResponseCardInGame, TagInGame } from '../../../shared/types';
-import { CardResponse } from './CardResponse';
 import { useGameContext } from './GameContext';
 
 interface Props {
@@ -49,26 +47,52 @@ interface CardContainterProps {
 }
 
 function CardContainer({ card, tags, onSelect }: CardContainterProps) {
-  const [selectedTagName, setSelectedTagName] = useState(anyTagKey);
-  const tagMap = new Map(tags.map((t) => [t.name, t]));
+  const [selectedTag, setSelectedTag] = useState(tags[0]);
 
-  function handleSelect(tagName: string) {
-    const tag = tagMap.get(tagName)!;
-    setSelectedTagName(tagName);
+  function handleSelect(tag: TagInGame) {
+    setSelectedTag(tag);
     onSelect(tag);
   }
 
   return (
-    <div key={card.id} className="card-container">
-      <SelectInput
-        value={selectedTagName}
-        options={tags.map((tag) => [
-          tag.name,
-          `${tag.name}: ${tag.card_count}`,
-        ])}
-        onChange={handleSelect}
-      />
-      <CardResponse card={card} />
+    <div key={card.id} className="card">
+      <ul>
+        {tags.map((t) => (
+          <TagItem
+            key={t.name}
+            tag={t}
+            selected={t.name === selectedTag.name}
+            onSelect={handleSelect}
+          />
+        ))}
+      </ul>
     </div>
+  );
+}
+
+interface TagItemProps {
+  tag: TagInGame;
+  selected?: boolean;
+  onSelect: (tag: TagInGame) => void;
+}
+function TagItem({ tag, selected, onSelect }: TagItemProps) {
+  const classes = ['item'];
+  if (selected) classes.push('selected');
+  if (tag.card_count === 0) classes.push('disabled');
+  if (tag.name === anyTagKey) classes.push('technical');
+
+  function handleSelect(tag: TagInGame) {
+    if (tag.card_count > 0) onSelect(tag);
+  }
+
+  return (
+    <li
+      key={tag.name}
+      className={classes.join(' ')}
+      onClick={() => handleSelect(tag)}
+    >
+      <span className="tag-name">{tag.name}</span>
+      <span className="card-count">{tag.card_count}</span>
+    </li>
   );
 }
