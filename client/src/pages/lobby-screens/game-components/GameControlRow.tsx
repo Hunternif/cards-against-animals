@@ -6,6 +6,7 @@ import { DiscardCost, ResponseCardInGame } from '../../../shared/types';
 import { assertExhaustive } from '../../../shared/utils';
 import { CardTagExchangePanel } from './CardTagExchangePanel';
 import { useGameContext } from './GameContext';
+import { useErrorContext } from '../../../components/ErrorContext';
 
 interface ControlProps {
   selection: ResponseCardInGame[];
@@ -131,8 +132,18 @@ interface TagExchangeProps {
 }
 function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
   const [showModal, setShowModal] = useState(false);
+  const [exchanging, setExchanging] = useState(false);
+  const { setError } = useErrorContext();
   async function handleConfirm() {
-    setShowModal(false);
+    try {
+      setExchanging(true);
+      // TODO: call API.
+      setShowModal(false);
+    } catch (e: any) {
+      setError(e);
+    } finally {
+      setExchanging(false);
+    }
   }
   return (
     <>
@@ -144,7 +155,10 @@ function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
         title="Select tags"
         onConfirm={handleConfirm}
         onCancel={() => setShowModal(false)}
+        okText="Confirm"
+        processing={exchanging}
       >
+        <p className="light">You will receive cards with the tag you choose.</p>
         <CardTagExchangePanel cards={cards} />
       </ConfirmModal>
       <GameButton

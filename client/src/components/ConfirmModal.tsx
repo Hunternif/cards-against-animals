@@ -11,6 +11,8 @@ interface ModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
+  /** Shows loading state on the 'ok' button */
+  processing?: boolean;
   loadingText?: string;
   className?: string;
   hideCancel?: boolean;
@@ -28,6 +30,7 @@ export function ConfirmModal({
   cancelText,
   loadingText,
   loading,
+  processing,
   className,
   hideCancel,
   onConfirm,
@@ -53,6 +56,7 @@ export function ConfirmModal({
           onCancel={onCancel}
           onConfirm={onConfirm}
           hideCancel={hideCancel}
+          processing={processing}
         />
       </form>
     </Modal>
@@ -67,6 +71,8 @@ interface FooterProps {
   onCancel: () => void;
   disabled?: boolean;
   hideCancel?: boolean;
+  /** Shows loading state on the 'ok' button */
+  processing?: boolean;
 }
 
 export function ConfirmModalFooter({
@@ -77,12 +83,18 @@ export function ConfirmModalFooter({
   hideCancel,
   onConfirm,
   onCancel,
+  processing,
 }: FooterProps) {
   return (
     <ModalFooter>
       {children ?? (
         <>
-          <GameButton submit onClick={onConfirm} disabled={disabled}>
+          <GameButton
+            submit
+            onClick={onConfirm}
+            disabled={disabled}
+            loading={processing}
+          >
             {okText ?? 'Yes'}
           </GameButton>
           {!hideCancel && (
