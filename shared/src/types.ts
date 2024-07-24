@@ -447,6 +447,11 @@ export const GeneratedDeck = new Deck(
   'public',
 );
 
+/** Used to count cards without tags. */
+export const noTagsKey: string = '@@no_tags';
+/** Used to count cards with any tags. */
+export const anyTagsKey: string = '@@any_tags';
+
 /**
  * User data stored in the database.
  * Users should only be referenced by their UIDs.

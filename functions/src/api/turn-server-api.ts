@@ -17,6 +17,8 @@ import {
   PromptCardInGame,
   ResponseCardInGame,
   ResponseCardInHand,
+  anyTagsKey,
+  noTagsKey,
 } from '../shared/types';
 import { assertExhaustive, countEveryN } from '../shared/utils';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
@@ -149,6 +151,7 @@ export async function discardNowAndDealCardsToPlayer(
 /**
  * Deal cards to a given player, up to the limit.
  * Also removes discarded cards from the hand.
+ * Also updates card counts per tag.
  * @param lastTurn will be used to check player's current turn and discard.
  * @param newTurn new cards will be added to this turn.
  */
@@ -207,8 +210,12 @@ export async function dealCardsToPlayer(
                 .limit(totalCardsNeeded),
             )
           ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
-    // Update tag counts:
+    // Update card counts per tag:
     for (const card of newCards) {
+      lobby.response_tags.get(anyTagsKey)!.card_count -= 1;
+      if (card.tags.length === 0) {
+        lobby.response_tags.get(noTagsKey)!.card_count -= 1;
+      }
       for (const tagName of card.tags) {
         const tagData = lobby.response_tags.get(tagName);
         if (tagData != null) {
