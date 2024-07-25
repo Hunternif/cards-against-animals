@@ -45,7 +45,7 @@ export const lobbyConverter: FConverter<GameLobby> = {
         deck_ids: Array.from(lobby.deck_ids),
         response_tags: mapToObject(lobby.response_tags, copyFields),
       },
-      ['id', 'deck_prompts', 'deck_responses'],
+      ['id', 'deck_prompts', 'deck_responses', 'players', 'turns'],
     );
   },
   fromFirestore: (snapshot: FDocSnapshot) => {
@@ -276,7 +276,7 @@ export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
           ? FTimestamp.fromDate(card.time_created)
           : fServerTimestamp(), // set new time when creating a new card
       },
-      ['type'],
+      ['id', 'type'],
     ),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
@@ -306,7 +306,7 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
           ? FTimestamp.fromDate(card.time_created)
           : fServerTimestamp(), // set new time when creating a new card
       },
-      ['type'],
+      ['id', 'type'],
     ),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
