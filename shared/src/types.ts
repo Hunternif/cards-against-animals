@@ -56,6 +56,8 @@ export interface LobbySettings {
   sort_cards_by_wins: boolean;
   sort_cards_by_prompt_votes: boolean;
   sort_cards_by_response_likes: boolean;
+  /** Technical flag. If true, cards will be sorted by their IDs. */
+  sort_by_id: boolean;
   /** If true, "good" cards can be put in front. */
   sort_cards_in_front: boolean;
   /** If true, players can join after the game has started. */
@@ -96,6 +98,7 @@ export function defaultLobbySettings(): LobbySettings {
     sort_cards_by_prompt_votes: true,
     sort_cards_by_response_likes: true,
     sort_cards_in_front: false,
+    sort_by_id: false,
     allow_join_mid_game: true,
     enable_likes: true,
     enable_soundboard: false,

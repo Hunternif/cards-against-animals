@@ -118,6 +118,7 @@ export function getCardIndex(
   rng: IRNG,
   settings: LobbySettings,
 ): number {
+  if (settings.sort_by_id) return -parseInt(card.id) ?? 0;
   const base = rng.randomInt();
   let result = base;
   let factor = 1.0;
