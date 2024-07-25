@@ -28,11 +28,13 @@ import {
 
 /** Returns Firestore subcollection reference. */
 export function getTurnsRef(lobbyID: string) {
-  return firestore.collection(`lobbies/${lobbyID}/turns`).withConverter(turnConverter);
+  return firestore
+    .collection(`lobbies/${lobbyID}/turns`)
+    .withConverter(turnConverter);
 }
 
 /** Returns Firestore subcollection reference. */
-function getTurnPromptsRef(lobbyID: string, turnID: string) {
+export function getTurnPromptsRef(lobbyID: string, turnID: string) {
   return firestore
     .collection(`lobbies/${lobbyID}/turns/${turnID}/prompts`)
     .withConverter(promptCardInGameConverter);
@@ -175,7 +177,18 @@ export async function getAllPlayerResponses(
   );
 }
 
-/** Update response state in Firestore. */
+/** Creates response state in Firestore. */
+export async function setPlayerResponse(
+  lobbyID: string,
+  turnID: string,
+  response: PlayerResponse,
+) {
+  await getPlayerResponsesRef(lobbyID, turnID)
+    .doc(response.player_uid)
+    .set(response);
+}
+
+/** Updates response state in Firestore. */
 export async function updatePlayerResponse(
   lobbyID: string,
   turnID: string,

@@ -4,6 +4,7 @@ import * as logger from 'firebase-functions/logger';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { firestore } from '../firebase-server';
 import { promptCardInGameConverter } from '../shared/firestore-converters';
+import { RNG } from '../shared/rng';
 import {
   DiscardCost,
   GameLobby,
@@ -23,9 +24,10 @@ import {
   getLobbyDeckResponsesRef,
   getOrCreatePlayerState,
   getPlayerStates,
+  getPlayerThrows,
   getPlayers,
   updateLobby,
-  updatePlayerState,
+  updatePlayerState
 } from './lobby-server-repository';
 import { logCardInteractions } from './log-server-api';
 import {
@@ -36,7 +38,9 @@ import {
   getPlayerResponse,
   getResponseLikeCount,
   getTurn,
+  getTurnPromptsRef,
   getTurnsRef,
+  setPlayerResponse,
   updatePlayerResponse,
   updateTurn,
 } from './turn-server-repository';
@@ -108,6 +112,38 @@ async function selectPrompt(lobbyID: string): Promise<PromptCardInGame> {
   return selected;
 }
 
+/** (Only used in tests) */
+export async function playPrompt(
+  lobby: GameLobby,
+  turn: GameTurn,
+  card: PromptCardInGame,
+) {
+  await getTurnPromptsRef(lobby.id, turn.id).doc(card.id).set(card);
+  turn.phase = 'answering';
+  await updateTurn(lobby.id, turn);
+}
+
+/** (Only used in tests) */
+export async function playResponse(
+  lobby: GameLobby,
+  turn: GameTurn,
+  userID: string,
+  cards: ResponseCardInGame[],
+): Promise<PlayerResponse> {
+  const rng = RNG.fromTimestamp();
+  const player = await getPlayerThrows(lobby.id, userID);
+  const response = new PlayerResponse(
+    userID,
+    player.name,
+    cards,
+    rng.randomInt(),
+    0,
+    0,
+  );
+  await setPlayerResponse(lobby.id, turn.id, response);
+  return response;
+}
+
 /** Deal cards to all players. */
 async function dealCards(
   lobby: GameLobby,
@@ -118,6 +154,7 @@ async function dealCards(
   const players = (await getPlayers(lobby.id)).filter(
     (p) => p.role === 'player' && p.status !== 'banned',
   );
+  players.sort((a, b) => a.random_index - b.random_index);
   for (const player of players) {
     await dealCardsToPlayer(lobby, lastTurn, newTurn, player.uid);
   }

@@ -15,13 +15,20 @@ import {
   getPlayerState,
   updateLobby,
 } from '../api/lobby-server-repository';
-import { getPlayerHand } from '../api/turn-server-repository';
+import {
+  createNewTurn,
+  playPrompt,
+  playResponse,
+} from '../api/turn-server-api';
+import { getLastTurn, updateTurn } from '../api/turn-server-repository';
+import { PromptCardInGame } from '../shared/types';
 import { mockRNG } from './mock-rng';
 
 // This test requries emulator to be running.
 
 let mrSmithUid: string;
 let playerTomUid: string;
+let resetRNG: Function;
 
 beforeEach(async () => {
   mrSmithUid = (
@@ -36,17 +43,18 @@ beforeEach(async () => {
       displayName: 'Player Tom',
     })
   ).uid;
+  resetRNG = mockRNG(); // Make predictable RNG
 });
 
 afterEach(async () => {
   testFirebaseAuth.deleteUsers([mrSmithUid, playerTomUid]);
+  resetRNG();
 });
 
 test('integration: create lobby and deal cards', async () => {
   const lobby = await createLobby(mrSmithUid);
   console.log(`Created lobby ${lobby.id}`);
   try {
-    mockRNG(); // Make predictable RNG
     await addPlayer(lobby, mrSmithUid);
     await addPlayer(lobby, playerTomUid);
 
@@ -65,7 +73,6 @@ test('integration: create lobby and deal cards', async () => {
 
     // Verify dealt cards:
     const smithState = (await getPlayerState(lobby.id, mrSmithUid))!;
-    expect(smithState.hand.size).toBe(5);
     expect([...smithState.hand.keys()]).toEqual([
       'Test deck two_0001',
       'Test deck two_0002',
@@ -74,13 +81,54 @@ test('integration: create lobby and deal cards', async () => {
       'Test deck two_0005',
     ]);
     const tomState = (await getPlayerState(lobby.id, playerTomUid))!;
-    expect(tomState.hand.size).toBe(5);
     expect([...tomState.hand.keys()]).toEqual([
       'Test deck two_0006',
       'Test deck two_0007',
       'Test deck two_0008',
       'Test deck two_0009',
       'Test deck two_0010',
+    ]);
+
+    // Play prompt and response
+    const turn1 = (await getLastTurn(lobby))!;
+    expect(turn1.judge_uid).toBe(mrSmithUid);
+    const prompt1 = new PromptCardInGame(
+      'prompt001',
+      'no_deck',
+      '001',
+      0,
+      'Test prompt! _ or _',
+      2,
+      0,
+      [],
+    );
+    await playPrompt(lobby, turn1, prompt1);
+    const tomHand = [...tomState.hand.values()];
+    await playResponse(lobby, turn1, playerTomUid, [tomHand[1], tomHand[2]]);
+
+    turn1.phase = 'reading';
+    await updateTurn(lobby.id, turn1);
+    turn1.winner_uid = playerTomUid;
+    turn1.phase = 'complete';
+    await updateTurn(lobby.id, turn1);
+
+    const turn2 = await createNewTurn(lobby);
+    // Verify dealt cards again:
+    const smithState2 = (await getPlayerState(lobby.id, mrSmithUid))!;
+    expect([...smithState2.hand.keys()]).toEqual([
+      'Test deck two_0001',
+      'Test deck two_0002',
+      'Test deck two_0003',
+      'Test deck two_0004',
+      'Test deck two_0005',
+    ]);
+    const tomState2 = (await getPlayerState(lobby.id, playerTomUid))!;
+    expect([...tomState2.hand.keys()]).toEqual([
+      'Test deck two_0006',
+      'Test deck two_0009',
+      'Test deck two_0010',
+      'Test deck two_0011',
+      'Test deck two_0012',
     ]);
   } finally {
     await endLobby(lobby);

@@ -178,6 +178,7 @@ export class PlayerGameState {
   ) {}
 }
 
+// TODO: refactor for simpler APIs: store lobby ID inside turn, etc.
 /** One turn, containing the entire state of the game board. */
 export class GameTurn {
   //================= Main game stuff ===================
