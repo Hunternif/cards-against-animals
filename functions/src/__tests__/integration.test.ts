@@ -17,10 +17,11 @@ import {
 } from '../api/lobby-server-repository';
 import {
   createNewTurn,
+  discardNowAndDealCardsToPlayer,
   playPrompt,
   playResponse,
 } from '../api/turn-server-api';
-import { getLastTurn, updateTurn } from '../api/turn-server-repository';
+import { addPlayerDiscard, getLastTurn, updateTurn } from '../api/turn-server-repository';
 import { PromptCardInGame } from '../shared/types';
 import { mockRNG } from './mock-rng';
 
@@ -129,6 +130,19 @@ test('integration: create lobby and deal cards', async () => {
       'Test deck two_0010',
       'Test deck two_0011',
       'Test deck two_0012',
+    ]);
+
+    // Do some discards:
+    const smithHand = [...smithState2.hand.values()];
+    await addPlayerDiscard(lobby.id, smithState2, [smithHand[1], smithHand[3]]);
+    await discardNowAndDealCardsToPlayer(lobby, turn2, mrSmithUid);
+    const smithState3 = (await getPlayerState(lobby.id, mrSmithUid))!;
+    expect([...smithState3.hand.keys()]).toEqual([
+      'Test deck two_0001',
+      'Test deck two_0003',
+      'Test deck two_0005',
+      'Test deck two_0013',
+      'Test deck two_0014',
     ]);
   } finally {
     await endLobby(lobby);

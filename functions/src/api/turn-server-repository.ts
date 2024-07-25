@@ -17,6 +17,7 @@ import {
   ResponseCardInHand,
   Vote,
 } from '../shared/types';
+import { updatePlayerState } from './lobby-server-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -141,6 +142,18 @@ export async function getPlayerDiscard(
   player: PlayerGameState,
 ): Promise<ResponseCardInGame[]> {
   return Array.from(player.discarded.values());
+}
+
+/** (Only used in tests) */
+export async function addPlayerDiscard(
+  lobbyID: string,
+  player: PlayerGameState,
+  cards: ResponseCardInGame[],
+) {
+  for (const card of cards) {
+    player.discarded.set(card.id, card);
+  }
+  await updatePlayerState(lobbyID, player);
 }
 
 /** NEW discarded cards from a specific player.
