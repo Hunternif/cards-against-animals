@@ -5,6 +5,7 @@ import {
   lobbyConverter,
   playerConverter,
   playerStateConverter,
+  responseCardInGameConverter,
 } from '../shared/firestore-converters';
 import {
   GameLobby,
@@ -30,6 +31,12 @@ export function getPlayerStatesRef(lobbyID: string) {
   return firestore
     .collection(`lobbies/${lobbyID}/player_states`)
     .withConverter(playerStateConverter);
+}
+
+export function getLobbyDeckResponsesRef(lobbyID: string) {
+  return firestore
+    .collection(`lobbies/${lobbyID}/deck_responses`)
+    .withConverter(responseCardInGameConverter);
 }
 
 /** Finds lobby by ID, or throws HttpsError. */

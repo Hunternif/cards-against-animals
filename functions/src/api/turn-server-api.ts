@@ -3,10 +3,7 @@
 import * as logger from 'firebase-functions/logger';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { firestore } from '../firebase-server';
-import {
-  promptCardInGameConverter,
-  responseCardInGameConverter,
-} from '../shared/firestore-converters';
+import { promptCardInGameConverter } from '../shared/firestore-converters';
 import {
   DiscardCost,
   GameLobby,
@@ -23,6 +20,7 @@ import {
 import { assertExhaustive, countEveryN } from '../shared/utils';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
 import {
+  getLobbyDeckResponsesRef,
   getOrCreatePlayerState,
   getPlayerStates,
   getPlayers,
@@ -136,7 +134,7 @@ export async function discardNowAndDealCardsToPlayer(
   // 3. Deal new cards.
   const player = await getOrCreatePlayerState(lobby, userID);
   const newDiscard = await getNewPlayerDiscard(lobby.id, player);
-  if (!(await payDiscardCost(lobby, player, newDiscard))) {
+  if (newDiscard.length === 0 || !(await payDiscardCost(lobby, player))) {
     return;
   }
   logger.info(`Discarding ${newDiscard.length} cards from player ${userID}`);
@@ -161,9 +159,7 @@ export async function dealCardsToPlayer(
   newTurn: GameTurn,
   userID: string,
 ) {
-  const deckResponsesRef = firestore
-    .collection(`lobbies/${lobby.id}/deck_responses`)
-    .withConverter(responseCardInGameConverter);
+  const deckResponsesRef = getLobbyDeckResponsesRef(lobby.id);
   const player = await getOrCreatePlayerState(lobby, userID);
   const newHand = new Array<ResponseCardInHand>();
   const oldHand = await getPlayerHand(lobby.id, player);
@@ -285,15 +281,12 @@ export async function updatePlayerScoresFromTurn(
 export async function payDiscardCost(
   lobby: GameLobby,
   player: PlayerGameState,
-  discard: ResponseCardInGame[],
 ): Promise<boolean> {
-  if (discard.length > 0) {
-    // Check discard cost:
-    if (await calculateAndPayDiscardCost(lobby.settings.discard_cost, player)) {
-      player.discards_used++;
-      await updatePlayerState(lobby.id, player);
-      return true;
-    }
+  // Check discard cost:
+  if (await calculateAndPayDiscardCost(lobby.settings.discard_cost, player)) {
+    player.discards_used++;
+    await updatePlayerState(lobby.id, player);
+    return true;
   }
   return false;
 }

@@ -1,9 +1,7 @@
-import { newGameHand } from '../../shared/mock-data';
 import {
   defaultLobbySettings,
   GameLobby,
   PlayerGameState,
-  ResponseCardInGame,
 } from '../../shared/types';
 import { copyFields } from '../../shared/utils';
 import { getOrCreatePlayerState } from '../lobby-server-repository';
@@ -32,12 +30,10 @@ jest.mock('../lobby-server-repository', () => ({
 
 let lobby: GameLobby;
 let player: PlayerGameState;
-let discard: ResponseCardInGame[];
 
 beforeEach(async () => {
   lobby = new GameLobby('001', 'p1', defaultLobbySettings());
   player = await getOrCreatePlayerState(lobby, 'p1');
-  discard = newGameHand(2);
 
   // Set initial score:
   player.score = 10;
@@ -49,13 +45,13 @@ afterEach(() => mockPlayerDb.clear());
 
 test('pay discard cost: free', async () => {
   lobby.settings.discard_cost = 'free';
-  let success = await payDiscardCost(lobby, player, discard);
+  let success = await payDiscardCost(lobby, player);
   let updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(10);
   expect(updatedPlayer.discards_used).toBe(1);
 
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(10);
@@ -65,7 +61,7 @@ test('pay discard cost: free', async () => {
 
 test('pay discard cost: no_discard', async () => {
   lobby.settings.discard_cost = 'no_discard';
-  const success = await payDiscardCost(lobby, player, discard);
+  const success = await payDiscardCost(lobby, player);
   const updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(false);
   expect(updatedPlayer.score).toBe(10);
@@ -75,19 +71,19 @@ test('pay discard cost: no_discard', async () => {
 
 test('pay discard cost: 1_star', async () => {
   lobby.settings.discard_cost = '1_star';
-  let success = await payDiscardCost(lobby, player, discard);
+  let success = await payDiscardCost(lobby, player);
   let updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(9);
   expect(updatedPlayer.discards_used).toBe(1);
 
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(8);
   expect(updatedPlayer.discards_used).toBe(2);
 
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(7);
@@ -96,7 +92,7 @@ test('pay discard cost: 1_star', async () => {
 
   // For 'star' cost, allow discarding indefinitely:
   player.score = 0;
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(0);
@@ -105,19 +101,19 @@ test('pay discard cost: 1_star', async () => {
 
 test('pay discard cost: 1_free_then_1_star', async () => {
   lobby.settings.discard_cost = '1_free_then_1_star';
-  let success = await payDiscardCost(lobby, player, discard);
+  let success = await payDiscardCost(lobby, player);
   let updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(10);
   expect(updatedPlayer.discards_used).toBe(1);
 
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(9);
   expect(updatedPlayer.discards_used).toBe(2);
 
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(8);
@@ -126,7 +122,7 @@ test('pay discard cost: 1_free_then_1_star', async () => {
 
   // For 'star' cost, allow discarding indefinitely:
   player.score = 0;
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(0);
@@ -135,14 +131,14 @@ test('pay discard cost: 1_free_then_1_star', async () => {
 
 test('pay discard cost: token', async () => {
   lobby.settings.discard_cost = 'token';
-  let success = await payDiscardCost(lobby, player, discard);
+  let success = await payDiscardCost(lobby, player);
   let updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(10);
   expect(updatedPlayer.discards_used).toBe(1);
   expect(updatedPlayer.discard_tokens).toBe(4);
 
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(true);
   expect(updatedPlayer.score).toBe(10);
@@ -150,7 +146,7 @@ test('pay discard cost: token', async () => {
   expect(updatedPlayer.discard_tokens).toBe(3);
 
   player.discard_tokens = 0;
-  success = await payDiscardCost(lobby, player, discard);
+  success = await payDiscardCost(lobby, player);
   updatedPlayer = mockPlayerDb.get(player.uid)!;
   expect(success).toBe(false);
   expect(updatedPlayer.score).toBe(10);
