@@ -2,7 +2,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
 import { HttpsError } from 'firebase-functions/v2/https';
 import firebaseConfig from '../firebase-config.json';
-import { firestore, lobbiesRef, usersRef } from '../firebase-server';
+import { firestore } from '../firebase-server';
 import {
   promptCardInGameConverter,
   responseCardInGameConverter,
@@ -33,6 +33,7 @@ import {
   getPlayerThrows,
   getPlayers,
   getPlayersRef,
+  lobbiesRef,
   updateLobby,
   updatePlayer,
 } from './lobby-server-repository';
@@ -44,6 +45,7 @@ import {
   getOrCreateCAAUser,
   setUsersCurrentLobby,
   updateCAAUser,
+  usersRef,
 } from './user-server-api';
 
 /** Finds current active lobby for this user, returns lobby ID. */

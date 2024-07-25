@@ -1,6 +1,6 @@
 import { Transaction } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/v2/https';
-import { firestore, lobbiesRef } from '../firebase-server';
+import { firestore } from '../firebase-server';
 import {
   lobbyConverter,
   playerConverter,
@@ -20,6 +20,10 @@ import {
 //  For now it's too inconvenient to make it a "real" Repository class...
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+export const lobbiesRef = firestore
+  .collection('lobbies')
+  .withConverter(lobbyConverter);
 
 export function getPlayersRef(lobbyID: string) {
   return firestore

@@ -1,8 +1,12 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { usersRef } from "../firebase-server";
+import { firestore } from "../firebase-server";
+import { userConverter } from "../shared/firestore-converters";
 import { CAAUser } from "../shared/types";
 import { getUserName } from "./auth-api";
-import { userConverter } from "../shared/firestore-converters";
+
+export const usersRef = firestore
+  .collection('users')
+  .withConverter(userConverter);
 
 /** Finds user data by ID */
 export async function getCAAUser(userID: string): Promise<CAAUser | null> {
