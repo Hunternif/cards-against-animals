@@ -1,7 +1,7 @@
 import { RNG } from '../shared/rng';
 
 /** Returns a callback that resets it back to original */
-export function mockRNG(): Function {
+export function mockRNG(): () => void {
   const original = RNG.prototype.randomInt;
 
   let counter = 0;

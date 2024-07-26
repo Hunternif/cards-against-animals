@@ -15,8 +15,6 @@ import {
   PromptCardInGame,
   ResponseCardInGame,
   ResponseCardInHand,
-  anyTagsKey,
-  noTagsKey,
 } from '../shared/types';
 import { assertExhaustive, countEveryN } from '../shared/utils';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
@@ -27,14 +25,13 @@ import {
   getPlayerThrows,
   getPlayers,
   updateLobby,
-  updatePlayerState
+  updatePlayerState,
 } from './lobby-server-repository';
+import { updateTagCountsForDeal } from './lobby-tags-api';
 import { logCardInteractions } from './log-server-api';
 import {
   getLastTurn,
   getNewPlayerDiscard,
-  getPlayerDiscard,
-  getPlayerHand,
   getPlayerResponse,
   getResponseLikeCount,
   getTurn,
@@ -67,7 +64,7 @@ export async function createNewTurn(lobby: GameLobby): Promise<GameTurn> {
   }
   const newTurn = new GameTurn(id, newOrdinal, judge.uid);
   await getTurnsRef(lobby.id).doc(id).set(newTurn);
-  await dealCards(lobby, lastTurn, newTurn);
+  await dealCardsForNewTurn(lobby, lastTurn, newTurn);
   lobby.current_turn_id = newTurn.id;
   await updateLobby(lobby);
   return newTurn; // timestamp may not have reloaded but that's ok.
@@ -144,8 +141,9 @@ export async function playResponse(
   return response;
 }
 
-/** Deal cards to all players. */
-async function dealCards(
+/** Deal cards to all players.
+ * Also removes any played or discarded cards. */
+async function dealCardsForNewTurn(
   lobby: GameLobby,
   lastTurn: GameTurn | null,
   newTurn: GameTurn,
@@ -156,31 +154,71 @@ async function dealCards(
   );
   players.sort((a, b) => a.random_index - b.random_index);
   for (const player of players) {
-    await dealCardsToPlayer(lobby, lastTurn, newTurn, player.uid);
+    const playerState = await getOrCreatePlayerState(lobby, player.uid);
+    if (lastTurn) {
+      await removePlayedCards(lobby, lastTurn, playerState);
+    }
+    await removeDiscardedCards(lobby, playerState);
+    await dealCardsToPlayer(lobby, playerState);
   }
 }
 
 /** Immediately remove discarded cards and deal new ones. */
 export async function discardNowAndDealCardsToPlayer(
   lobby: GameLobby,
-  turn: GameTurn,
   userID: string,
 ) {
   // 1. Pay discard cost;
   // 2. Remove discarded cards from hand;
   // 3. Deal new cards.
-  const player = await getOrCreatePlayerState(lobby, userID);
-  const newDiscard = await getNewPlayerDiscard(lobby.id, player);
-  if (newDiscard.length === 0 || !(await payDiscardCost(lobby, player))) {
+  const playerState = await getOrCreatePlayerState(lobby, userID);
+  const newDiscard = await getNewPlayerDiscard(lobby.id, playerState);
+  if (newDiscard.length === 0 || !(await payDiscardCost(lobby, playerState))) {
+    logger.warn(`Player ${userID} could not pay discard cost`);
     return;
   }
   logger.info(`Discarding ${newDiscard.length} cards from player ${userID}`);
-  // This will both remove discarded cards and deal new cards:
-  await dealCardsToPlayer(lobby, turn, turn, userID);
+  // Remove discarded cards and deal new cards:
+  await removeDiscardedCards(lobby, playerState);
+  await dealCardsToPlayer(lobby, playerState);
   // Log discarded cards:
   await logCardInteractions(lobby, {
     discardedResponses: newDiscard,
   });
+}
+
+/**
+ * Removes played cards from player responses.
+ * Doesn't commit to the DB because following calls will do it.
+ */
+async function removeDiscardedCards(
+  lobby: GameLobby,
+  playerState: PlayerGameState,
+): Promise<PlayerGameState> {
+  const discard = await getNewPlayerDiscard(lobby.id, playerState);
+  // TODO: maybe store all pool of discarded cards in a game somewhere.
+  for (const card of discard) {
+    playerState.hand.delete(card.id);
+  }
+  return playerState;
+}
+
+/**
+ * Removes played cards from player responses.
+ * Doesn't commit to the DB because following calls will do it.
+ */
+async function removePlayedCards(
+  lobby: GameLobby,
+  turn: GameTurn,
+  playerState: PlayerGameState,
+): Promise<PlayerGameState> {
+  const response = await getPlayerResponse(lobby.id, turn.id, playerState.uid);
+  if (response != null) {
+    for (const card of response.cards) {
+      playerState.hand.delete(card.id);
+    }
+  }
+  return playerState;
 }
 
 /**
@@ -192,40 +230,13 @@ export async function discardNowAndDealCardsToPlayer(
  */
 export async function dealCardsToPlayer(
   lobby: GameLobby,
-  lastTurn: GameTurn | null,
-  newTurn: GameTurn,
-  userID: string,
+  playerState: PlayerGameState,
 ) {
+  const userID = playerState.uid;
   const deckResponsesRef = getLobbyDeckResponsesRef(lobby.id);
-  const player = await getOrCreatePlayerState(lobby, userID);
-  const newHand = new Array<ResponseCardInHand>();
-  const oldHand = await getPlayerHand(lobby.id, player);
-  const handToDiscard = new Array<ResponseCardInGame>();
-  const isNewTurn = lastTurn?.id !== newTurn.id;
-  const lastResponse =
-    lastTurn == null
-      ? []
-      : (await getPlayerResponse(lobby.id, lastTurn.id, userID))?.cards ?? [];
-  // TODO: optimize this, remove discards outside of this function.
-  // TODO: maybe store all pool of discarded cards in a game somewhere.
-  const lastDiscard = await getPlayerDiscard(lobby.id, player);
-  for (const oldCard of oldHand) {
-    if (lastDiscard.find((c) => c.id === oldCard.id)) {
-      // discard cards that are still in the hand:
-      handToDiscard.push(oldCard);
-    } else if (isNewTurn && lastResponse.find((c) => c.id === oldCard.id)) {
-      // if starting a new turn, filter out submitted cards;
-      // if it's the same turn, keep them.
-      handToDiscard.push(oldCard);
-    } else {
-      // copy old cards to the new hand.
-      // temporarily write them here, then upload it as a subcollection
-      newHand.push(oldCard);
-    }
-  }
   // Find how many more cards we need:
   const cardsPerPerson = lobby.settings.cards_per_person;
-  const totalCardsNeeded = Math.max(0, cardsPerPerson - newHand.length);
+  const totalCardsNeeded = Math.max(0, cardsPerPerson - playerState.hand.size);
   logger.info(
     `Trying to deal ${totalCardsNeeded} cards to player ${userID}...`,
   );
@@ -244,31 +255,21 @@ export async function dealCardsToPlayer(
             )
           ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
     // Update card counts per tag:
-    for (const card of newCards) {
-      lobby.response_tags.get(anyTagsKey)!.card_count -= 1;
-      if (card.tags.length === 0) {
-        lobby.response_tags.get(noTagsKey)!.card_count -= 1;
-      }
-      for (const tagName of card.tags) {
-        const tagData = lobby.response_tags.get(tagName);
-        if (tagData != null) {
-          tagData.card_count -= 1;
-        }
-      }
-    }
+    updateTagCountsForDeal(lobby, newCards);
     await updateLobby(lobby, transaction);
     // Add cards to the new player hand
-    newHand.push(...newCards);
-    player.hand = new Map(newHand.map((c) => [c.id, c]));
+    for (const card of newCards) {
+      playerState.hand.set(card.id, card);
+    }
     // If we ran out of cards, sorry!
     if (newCards.length > 0) {
-      player.time_dealt_cards = dealTime;
+      playerState.time_dealt_cards = dealTime;
     }
     // Remove dealt cards from the deck and upload player data & hand:
     for (const card of newCards) {
       transaction.delete(deckResponsesRef.doc(card.id));
     }
-    await updatePlayerState(lobby.id, player, transaction);
+    await updatePlayerState(lobby.id, playerState, transaction);
     logger.info(`Dealt ${newCards.length} cards to player ${userID}`);
   });
 }

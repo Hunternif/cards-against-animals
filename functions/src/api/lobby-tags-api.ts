@@ -1,6 +1,7 @@
 import {
   CardInGame,
   Deck,
+  GameLobby,
   ResponseCardInGame,
   TagInGame,
   anyTagsKey,
@@ -56,4 +57,28 @@ export function countResponseTags(
     tag.card_count = count;
   }
   return tagMap;
+}
+
+/**
+ * Updates lobby.response_tags data, assuming that the given cards
+ * haven been dealt (i.e. removed from the pool of remaining deck cards).
+ * Doesn't commit to the DB because following calls will do it.
+ */
+export function updateTagCountsForDeal(
+  lobby: GameLobby,
+  dealtCards: ResponseCardInGame[],
+): GameLobby {
+  for (const card of dealtCards) {
+    lobby.response_tags.get(anyTagsKey)!.card_count -= 1;
+    if (card.tags.length === 0) {
+      lobby.response_tags.get(noTagsKey)!.card_count -= 1;
+    }
+    for (const tagName of card.tags) {
+      const tagData = lobby.response_tags.get(tagName);
+      if (tagData != null) {
+        tagData.card_count -= 1;
+      }
+    }
+  }
+  return lobby;
 }

@@ -21,15 +21,20 @@ import {
   playPrompt,
   playResponse,
 } from '../api/turn-server-api';
-import { addPlayerDiscard, getLastTurn, updateTurn } from '../api/turn-server-repository';
-import { PromptCardInGame } from '../shared/types';
+import {
+  addPlayerDiscard,
+  getLastTurn,
+  updateTurn,
+} from '../api/turn-server-repository';
+import { anyTagsKey, PromptCardInGame } from '../shared/types';
 import { mockRNG } from './mock-rng';
 
 // This test requries emulator to be running.
 
 let mrSmithUid: string;
 let playerTomUid: string;
-let resetRNG: Function;
+let playerJerryUid: string;
+let resetRNG: () => void;
 
 beforeEach(async () => {
   mrSmithUid = (
@@ -44,11 +49,16 @@ beforeEach(async () => {
       displayName: 'Player Tom',
     })
   ).uid;
+  playerJerryUid = (
+    await testFirebaseAuth.createUser({
+      displayName: 'Player Jerry',
+    })
+  ).uid;
   resetRNG = mockRNG(); // Make predictable RNG
 });
 
 afterEach(async () => {
-  testFirebaseAuth.deleteUsers([mrSmithUid, playerTomUid]);
+  testFirebaseAuth.deleteUsers([mrSmithUid, playerTomUid, playerJerryUid]);
   resetRNG();
 });
 
@@ -89,6 +99,8 @@ test('integration: create lobby and deal cards', async () => {
       'Test deck two_0009',
       'Test deck two_0010',
     ]);
+    // Verify card counts:
+    expect(lobby.response_tags.get(anyTagsKey)!.card_count).toBe(15);
 
     // Play prompt and response
     const turn1 = (await getLastTurn(lobby))!;
@@ -131,11 +143,13 @@ test('integration: create lobby and deal cards', async () => {
       'Test deck two_0011',
       'Test deck two_0012',
     ]);
+    // Verify card counts:
+    expect(lobby.response_tags.get(anyTagsKey)!.card_count).toBe(13);
 
     // Do some discards:
     const smithHand = [...smithState2.hand.values()];
     await addPlayerDiscard(lobby.id, smithState2, [smithHand[1], smithHand[3]]);
-    await discardNowAndDealCardsToPlayer(lobby, turn2, mrSmithUid);
+    await discardNowAndDealCardsToPlayer(lobby, mrSmithUid);
     const smithState3 = (await getPlayerState(lobby.id, mrSmithUid))!;
     expect([...smithState3.hand.keys()]).toEqual([
       'Test deck two_0001',
@@ -144,6 +158,21 @@ test('integration: create lobby and deal cards', async () => {
       'Test deck two_0013',
       'Test deck two_0014',
     ]);
+    // Verify card counts:
+    expect(lobby.response_tags.get(anyTagsKey)!.card_count).toBe(11);
+
+    // Have another player join mid-game:
+    await addPlayer(lobby, playerJerryUid);
+    const jerryState = (await getPlayerState(lobby.id, playerJerryUid))!;
+    expect([...jerryState.hand.keys()]).toEqual([
+      'Test deck two_0015',
+      'Test deck two_0016',
+      'Test deck two_0017',
+      'Test deck two_0018',
+      'Test deck two_0019',
+    ]);
+    // Verify card counts:
+    expect(lobby.response_tags.get(anyTagsKey)!.card_count).toBe(6);
   } finally {
     await endLobby(lobby);
   }

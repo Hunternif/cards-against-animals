@@ -1,7 +1,6 @@
 import { assertLoggedIn, assertPlayerInLobby } from '../../api/auth-api';
 import { getLobby } from '../../api/lobby-server-repository';
 import { discardNowAndDealCardsToPlayer } from '../../api/turn-server-api';
-import { getLastTurn } from '../../api/turn-server-repository';
 import { CallableHandler } from '../function-utils';
 
 /**
@@ -15,8 +14,5 @@ export const discardNowHandler: CallableHandler<
   const userID = assertLoggedIn(event);
   await assertPlayerInLobby(event, event.data.lobby_id);
   const lobby = await getLobby(event.data.lobby_id);
-  const turn = await getLastTurn(lobby);
-  if (turn) {
-    await discardNowAndDealCardsToPlayer(lobby, turn, userID);
-  }
+  await discardNowAndDealCardsToPlayer(lobby, userID);
 };

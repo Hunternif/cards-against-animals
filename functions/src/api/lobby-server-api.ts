@@ -29,6 +29,7 @@ import {
   countPlayers,
   getLobby,
   getOnlinePlayers,
+  getOrCreatePlayerState,
   getPlayer,
   getPlayerThrows,
   getPlayers,
@@ -170,7 +171,8 @@ export async function addPlayer(
     // Deal cards to the new player:
     const turn = await getLastTurn(lobby);
     if (turn) {
-      await dealCardsToPlayer(lobby, null, turn, userID);
+      const playerState = await getOrCreatePlayerState(lobby, userID);
+      await dealCardsToPlayer(lobby, playerState);
     } else {
       logger.warn(
         `Could not deal cards. Lobby ${lobby.id} is in progess but has no turns.`,
@@ -216,7 +218,8 @@ export async function changePlayerRole(
     // Deal cards to the new player:
     const turn = await getLastTurn(lobby);
     if (turn) {
-      await dealCardsToPlayer(lobby, null, turn, userID);
+      const playerState = await getOrCreatePlayerState(lobby, userID);
+      await dealCardsToPlayer(lobby, playerState);
     } else {
       logger.warn(
         `Could not deal cards. Lobby ${lobby.id} is in progess but has no turns.`,
