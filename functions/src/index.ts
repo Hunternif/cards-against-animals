@@ -22,6 +22,7 @@ import { createOnUserPresenceChangeHandler } from './triggers/onUserPresenceChan
 
 // This import is copied during build
 import firebaseConfig from './firebase-config.json';
+import { exchangeCardsHandler } from './functions/turn/exchangeCards';
 
 setGlobalOptions({
   region: firebaseConfig.region,
@@ -81,6 +82,12 @@ export const discardNow = exportCallable(discardNowHandler);
 
 /** Locks deck with a password. */
 export const lockDeck = exportCallable(lockDeckHandler);
+
+/**
+ * Discards the given cards from the player's hand and
+ * attempts to exchange them with the requested tags.
+ */
+export const exchangeCards = exportCallable(exchangeCardsHandler);
 
 /** Unlocks the deck for this user, given the password. */
 export const unlockDeckForUser = exportCallable(unlockDeckForUserHandler);

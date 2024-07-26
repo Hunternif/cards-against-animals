@@ -90,6 +90,11 @@ export const discardNowFun = httpsCallable<{ lobby_id: string }, void>(
   'discardNow',
 );
 
+export const exchangeCardsFun = httpsCallable<
+  { lobby_id: string; card_ids: string[]; tags: string[] },
+  void
+>(functions, 'exchangeCards');
+
 export const lockDeckFun = httpsCallable<
   { deck_id: string; password: string },
   void
