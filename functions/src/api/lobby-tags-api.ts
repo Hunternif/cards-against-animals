@@ -1,3 +1,4 @@
+import { Query } from 'firebase-admin/firestore';
 import {
   CardInGame,
   Deck,
@@ -7,6 +8,7 @@ import {
   anyTagsKey,
   noTagsKey,
 } from '../shared/types';
+import { getLobbyDeckResponsesRef } from './lobby-server-repository';
 
 /** Counts cards for each tag. */
 export function countCardsPerTag(
@@ -81,4 +83,23 @@ export function updateTagCountsForDeal(
     }
   }
   return lobby;
+}
+
+/** Creates a Firestore query to fetch response cards for the given tag */
+export function getCardQueryForTag(
+  lobby: GameLobby,
+  tagName: string,
+): Query<ResponseCardInGame> {
+  let query: Query<ResponseCardInGame> = getLobbyDeckResponsesRef(lobby.id);
+  switch (tagName) {
+    case anyTagsKey:
+      break;
+    case noTagsKey:
+      query = query.where('tags', '==', []);
+      break;
+    default:
+      query = query.where('tags', 'array-contains', tagName);
+      break;
+  }
+  return query;
 }

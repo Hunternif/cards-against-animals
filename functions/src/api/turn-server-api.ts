@@ -6,6 +6,7 @@ import { firestore } from '../firebase-server';
 import { promptCardInGameConverter } from '../shared/firestore-converters';
 import { RNG } from '../shared/rng';
 import {
+  anyTagsKey,
   DiscardCost,
   GameLobby,
   GameTurn,
@@ -17,18 +18,18 @@ import {
   ResponseCardInHand,
 } from '../shared/types';
 import { assertExhaustive, countEveryN } from '../shared/utils';
+import { exchangeCards } from './exchange-cards-server-api';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
 import {
   getLobbyDeckResponsesRef,
   getOrCreatePlayerState,
+  getPlayers,
   getPlayerStates,
   getPlayerThrows,
-  getPlayers,
   updateLobby,
   updatePlayerState,
 } from './lobby-server-repository';
-import { updateTagCountsForDeal } from './lobby-tags-api';
-import { logCardInteractions } from './log-server-api';
+import { getCardQueryForTag, updateTagCountsForDeal } from './lobby-tags-api';
 import {
   getLastTurn,
   getNewPlayerDiscard,
@@ -173,18 +174,12 @@ export async function discardNowAndDealCardsToPlayer(
   // 3. Deal new cards.
   const playerState = await getOrCreatePlayerState(lobby, userID);
   const newDiscard = await getNewPlayerDiscard(lobby.id, playerState);
-  if (newDiscard.length === 0 || !(await payDiscardCost(lobby, playerState))) {
-    logger.warn(`Player ${userID} could not pay discard cost`);
-    return;
-  }
-  logger.info(`Discarding ${newDiscard.length} cards from player ${userID}`);
-  // Remove discarded cards and deal new cards:
-  await removeDiscardedCards(lobby, playerState);
-  await dealCardsToPlayer(lobby, playerState);
-  // Log discarded cards:
-  await logCardInteractions(lobby, {
-    discardedResponses: newDiscard,
-  });
+  await exchangeCards(
+    lobby,
+    playerState,
+    newDiscard.map((c) => c.id),
+    [],
+  );
 }
 
 /**
@@ -227,10 +222,12 @@ async function removePlayedCards(
  * Also updates card counts per tag.
  * @param lastTurn will be used to check player's current turn and discard.
  * @param newTurn new cards will be added to this turn.
+ * @param tagNames will attempt to deal cards with the requested tags.
  */
 export async function dealCardsToPlayer(
   lobby: GameLobby,
   playerState: PlayerGameState,
+  tagNames: string[] = [],
 ) {
   const userID = playerState.uid;
   const deckResponsesRef = getLobbyDeckResponsesRef(lobby.id);
@@ -243,17 +240,33 @@ export async function dealCardsToPlayer(
 
   await firestore.runTransaction(async (transaction) => {
     // Fetch new cards:
+    let cardsNeeded = totalCardsNeeded;
+    const newCards = new Array<ResponseCardInHand>();
     const dealTime = new Date();
-    const newCards =
-      totalCardsNeeded <= 0
-        ? []
-        : (
-            await transaction.get(
-              deckResponsesRef
-                .orderBy('random_index', 'desc')
-                .limit(totalCardsNeeded),
-            )
-          ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
+    for (const tagName of tagNames) {
+      if (cardsNeeded <= 0) break; // don't exceed card limit.
+      const newCardResult = (
+        await transaction.get(
+          getCardQueryForTag(lobby, tagName)
+            .orderBy('random_index', 'desc')
+            .limit(1),
+        )
+      ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
+      cardsNeeded -= newCardResult.length;
+      if (newCardResult.length <= 0) break; // No more cards left.
+      newCards.push(...newCardResult);
+    }
+    if (cardsNeeded > 0) {
+      // Request the remainder using any tags:
+      const remainingCards = (
+        await transaction.get(
+          getCardQueryForTag(lobby, anyTagsKey)
+            .orderBy('random_index', 'desc')
+            .limit(cardsNeeded),
+        )
+      ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
+      newCards.push(...remainingCards);
+    }
     // Update card counts per tag:
     updateTagCountsForDeal(lobby, newCards);
     await updateLobby(lobby, transaction);
