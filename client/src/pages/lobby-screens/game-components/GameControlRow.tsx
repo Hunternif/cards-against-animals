@@ -1,12 +1,13 @@
 import { CSSProperties, ReactNode, useState } from 'react';
+import { exchangeCards } from '../../../api/turn/turn-discard-api';
 import { GameButton } from '../../../components/Buttons';
 import { ConfirmModal } from '../../../components/ConfirmModal';
+import { useErrorContext } from '../../../components/ErrorContext';
 import { IconCards, IconRecycleInline } from '../../../components/Icons';
 import { DiscardCost, ResponseCardInGame } from '../../../shared/types';
 import { assertExhaustive } from '../../../shared/utils';
 import { CardTagExchangePanel } from './CardTagExchangePanel';
 import { useGameContext } from './GameContext';
-import { useErrorContext } from '../../../components/ErrorContext';
 
 interface ControlProps {
   selection: ResponseCardInGame[];
@@ -131,13 +132,16 @@ interface TagExchangeProps {
   disabled?: boolean;
 }
 function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
+  const { lobby } = useGameContext();
   const [showModal, setShowModal] = useState(false);
   const [exchanging, setExchanging] = useState(false);
+  const [selectedTagNames, setSelectedTagNames] = useState<Array<string>>([]);
   const { setError } = useErrorContext();
+
   async function handleConfirm() {
     try {
       setExchanging(true);
-      // TODO: call API.
+      await exchangeCards(lobby, cards, selectedTagNames);
       setShowModal(false);
     } catch (e: any) {
       setError(e);
@@ -145,6 +149,7 @@ function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
       setExchanging(false);
     }
   }
+
   return (
     <>
       <ConfirmModal
@@ -159,7 +164,10 @@ function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
         processing={exchanging}
       >
         <p className="light">You will receive cards with the tag you choose.</p>
-        <CardTagExchangePanel cards={cards} />
+        <CardTagExchangePanel
+          cards={cards}
+          onSelectedTags={(tagNames) => setSelectedTagNames(tagNames)}
+        />
       </ConfirmModal>
       <GameButton
         small

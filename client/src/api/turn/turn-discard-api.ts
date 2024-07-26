@@ -1,4 +1,4 @@
-import { discardNowFun } from '../../firebase';
+import { discardNowFun, exchangeCardsFun } from '../../firebase';
 import {
   GameLobby,
   PlayerGameState,
@@ -35,4 +35,20 @@ export async function discardImmediately(
 ) {
   await discardCards(lobby, playerState, cards);
   await discardNowFun({ lobby_id: lobby.id });
+}
+
+/**
+ * Discards the given cards from the player's hand and
+ * attempts to exchange them with the requested tags.
+ */
+export async function exchangeCards(
+  lobby: GameLobby,
+  cards: ResponseCardInGame[],
+  tagNames: string[],
+) {
+  await exchangeCardsFun({
+    lobby_id: lobby.id,
+    card_ids: cards.map((c) => c.id),
+    tags: tagNames,
+  });
 }

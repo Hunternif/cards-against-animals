@@ -9,9 +9,10 @@ import { useGameContext } from './GameContext';
 
 interface Props {
   cards: ResponseCardInGame[];
+  onSelectedTags: (tagNames: string[]) => void;
 }
 
-export function CardTagExchangePanel({ cards }: Props) {
+export function CardTagExchangePanel({ cards, onSelectedTags }: Props) {
   const { lobby } = useGameContext();
 
   const [selectedTags, setSelectedTags] = useState<
@@ -24,6 +25,7 @@ export function CardTagExchangePanel({ cards }: Props) {
     const newSelectedTags = new Map(selectedTags);
     newSelectedTags.set(card, tag);
     setSelectedTags(newSelectedTags);
+    onSelectedTags([...newSelectedTags.values()].map((t) => t.name));
   }
 
   return (
