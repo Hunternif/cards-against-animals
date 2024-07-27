@@ -130,8 +130,13 @@ function SubmitStatusMessage({ picked }: { picked: number }) {
 interface TagExchangeProps {
   cards: ResponseCardInGame[];
   disabled?: boolean;
+  onExchangeComplete: () => void;
 }
-function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
+function BeginTagExchangeButton({
+  cards,
+  disabled,
+  onExchangeComplete,
+}: TagExchangeProps) {
   const { lobby } = useGameContext();
   const [showModal, setShowModal] = useState(false);
   const [exchanging, setExchanging] = useState(false);
@@ -142,6 +147,7 @@ function BeginTagExchangeButton({ cards, disabled }: TagExchangeProps) {
     try {
       setExchanging(true);
       await exchangeCards(lobby, cards, selectedTagNames);
+      onExchangeComplete();
       setShowModal(false);
     } catch (e: any) {
       setError(e);
@@ -254,6 +260,7 @@ function DiscardControls({
           <BeginTagExchangeButton
             cards={discardedCards}
             disabled={discardCount == 0}
+            onExchangeComplete={onCancelDiscard}
           />
         )}
         {/* TODO: loading animation while discard is in flight */}
