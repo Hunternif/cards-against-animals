@@ -1,13 +1,10 @@
 import * as logger from 'firebase-functions/logger';
 import { HttpsError } from 'firebase-functions/v1/auth';
 import {
-  anyTagsKey,
   GameLobby,
-  noTagsKey,
   PlayerGameState,
   ResponseCardInGame,
 } from '../shared/types';
-import { stringComparator } from '../shared/utils';
 import { logCardInteractions } from './log-server-api';
 import { dealCardsToPlayer, payDiscardCost } from './turn-server-api';
 
@@ -45,14 +42,6 @@ export async function exchangeCards(
     }
   }
   logger.info(`Exchanging ${cardIDs.length} cards from player ${userID}`);
-
-  // Attempt to deal new cards by tags.
-  // If any tag is missing, will try cards with any tags.
-  tagNames.sort((a, b) => {
-    // Put all-tag technical names last:
-    if (a === anyTagsKey || a === noTagsKey) return 1;
-    return stringComparator(a, b);
-  });
 
   // Find how many more cards we need:
   const cardsPerPerson = lobby.settings.cards_per_person;

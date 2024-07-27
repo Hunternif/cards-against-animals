@@ -6,7 +6,6 @@ import { firestore } from '../firebase-server';
 import { promptCardInGameConverter } from '../shared/firestore-converters';
 import { RNG } from '../shared/rng';
 import {
-  anyTagsKey,
   DiscardCost,
   GameLobby,
   GameTurn,
@@ -15,7 +14,6 @@ import {
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame,
-  ResponseCardInHand,
 } from '../shared/types';
 import { assertExhaustive, countEveryN } from '../shared/utils';
 import { exchangeCards } from './exchange-cards-server-api';
@@ -29,7 +27,10 @@ import {
   updateLobby,
   updatePlayerState,
 } from './lobby-server-repository';
-import { getCardQueryForTag, updateTagCountsForDeal } from './lobby-tags-api';
+import {
+  fetchCardsForTagsWithTransaction,
+  updateTagCountsForDeal,
+} from './lobby-tags-api';
 import {
   getLastTurn,
   getNewPlayerDiscard,
@@ -239,34 +240,15 @@ export async function dealCardsToPlayer(
   );
 
   await firestore.runTransaction(async (transaction) => {
-    // Fetch new cards:
-    let cardsNeeded = totalCardsNeeded;
-    const newCards = new Array<ResponseCardInHand>();
+    // Fetch new cards.
+    // "Deal time" should be less than the time for the next card:
     const dealTime = new Date();
-    for (const tagName of tagNames) {
-      if (cardsNeeded <= 0) break; // don't exceed card limit.
-      const newCardResult = (
-        await transaction.get(
-          getCardQueryForTag(lobby, tagName)
-            .orderBy('random_index', 'desc')
-            .limit(1),
-        )
-      ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
-      cardsNeeded -= newCardResult.length;
-      if (newCardResult.length <= 0) break; // No more cards left.
-      newCards.push(...newCardResult);
-    }
-    if (cardsNeeded > 0) {
-      // Request the remainder using any tags:
-      const remainingCards = (
-        await transaction.get(
-          getCardQueryForTag(lobby, anyTagsKey)
-            .orderBy('random_index', 'desc')
-            .limit(cardsNeeded),
-        )
-      ).docs.map((c) => ResponseCardInHand.create(c.data(), new Date()));
-      newCards.push(...remainingCards);
-    }
+    const newCards = await fetchCardsForTagsWithTransaction(
+      lobby.id,
+      tagNames,
+      totalCardsNeeded,
+      transaction,
+    );
     // Update card counts per tag:
     updateTagCountsForDeal(lobby, newCards);
     await updateLobby(lobby, transaction);
