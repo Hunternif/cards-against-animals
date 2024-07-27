@@ -23,10 +23,13 @@ export function GameHand({
 }: HandProps) {
   const { lobby, playerState, hand, prompt } = useGameContext();
   const handSorted = hand.sort(
-    (c1, c2) =>
-      c1.random_index +
-      c1.time_received.getTime() -
-      (c2.random_index + c2.time_received.getTime()),
+    (c1, c2) => {
+      if (c1.time_received !== c2.time_received) {
+        return c2.time_received.getTime() - c1.time_received.getTime();
+      } else {
+        return c2.random_index - c1.random_index;
+      }
+    }
   );
   const pick = prompt?.pick ?? 0;
   const isHandSelectable = pick > 0;
