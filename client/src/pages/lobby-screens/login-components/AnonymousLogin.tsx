@@ -105,13 +105,11 @@ function AnonymousLoginWithUser(props: PropsWithUser) {
         .catch((e) => setError(e));
     }
   }, [props.user.uid, props.loginMode]);
-
-  if (!caaUser) return <LoadingSpinner delay />;
   return <AnonymousLoginWithCaaUser {...props} caaUser={caaUser} />;
 }
 
 interface PropsWithCaaUser extends PropsWithUser {
-  caaUser: CAAUser,
+  caaUser: CAAUser | null,
 }
 
 /**
@@ -139,11 +137,11 @@ function AnonymousLoginWithCaaUser({
   }
 
   return <LoginForm
-    name={caaUser.name}
-    avatarID={caaUser.avatar_id}
+    name={caaUser?.name ?? ''}
+    avatarID={caaUser?.avatar_id ?? ''}
     onSubmit={handleSubmit}
     buttonText={buttonText}
-    loadingNode={updating ? loadingNode : null}
+    loadingNode={(!caaUser || updating) ? loadingNode : null}
     rng={rng}
   />;
 }
@@ -167,6 +165,9 @@ function LoginForm({
   const [newAvatarID, setNewAvatarID] = useState(avatarID);
   const [namePrompt] = useState(randomNickname(rng));
   const [avatarPrompt] = useState(randomAvatarID(rng));
+  // If the user loads late:
+  if (newName == '' && name != '') setNewName(name);
+  if (newAvatarID == '' && avatarID != '') setNewAvatarID(avatarID);
 
   function handleSubmit(e: FormEvent) {
     // Prevent submitting the form from refreshing the page:
