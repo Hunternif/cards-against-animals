@@ -47,7 +47,7 @@ export function AdminDeckTableHeader({
   );
 }
 
-function DeckStats({ cards, selected }: Props) {
+export function DeckStats({ cards, selected }: Props) {
   const promptCount = cards.prompts.length;
   const resCount = cards.responses.length;
   const promptSelCount = selected?.prompts.length;

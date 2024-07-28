@@ -1,5 +1,5 @@
 @use 'colors.scss';
-@use "sizes.scss";
+@use 'sizes.scss';
 
 .admin-subpage {
   display: flex;
@@ -164,6 +164,8 @@
   background-color: var(--bs-body-bg); // bg color
   color: rgba(colors.$text, 70%);
   font-weight: 200;
+  // this fixes alignment for the 'content' column:
+  vertical-align: -webkit-baseline-middle;
   .col-card-id {
     .checkbox {
       margin: auto;
@@ -182,16 +184,16 @@
     overflow: hidden;
   }
 }
+.admin-deck-table.standalone .admin-deck-table-header {
+  top: 0;
+  background-color: colors.$panel-bg; // bg color
+  margin: 0;
+}
 
 .copy-cards-dialog {
   .table-container {
     // TODO: figure out a better way to fit within the screen and allow scroll
     max-height: 50vh;
-  }
-  .admin-deck-table-header {
-    top: 0;
-    background-color: colors.$panel-bg; // bg color
-    margin: 0;
   }
   .deck-form {
     display: grid;
@@ -206,6 +208,30 @@
   .warn-msg {
     color: colors.$error-red;
     font-weight: bold;
+  }
+}
+
+.tags-dialog {
+  max-height: 90vh;
+  .table-container {
+    // TODO: figure out a better way to fit within the screen and allow scroll
+    max-height: 80vh;
+    max-width: 80vw;
+  }
+  .admin-deck-table {
+    table-layout: auto;
+  }
+  .col-card-content {
+    width: 30em;
+  }
+  .col-card-tag {
+    width: 5em; // auto-resizes thanks to table-layout: auto;
+    max-width: 10em;
+    text-overflow: ellipsis;
+    text-align: center;
+    .checkbox {
+      margin: auto;
+    }
   }
 }
 

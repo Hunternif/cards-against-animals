@@ -15,11 +15,11 @@ interface RowProps {
   isErrored?: boolean;
 }
 
-const rowHeight = 22;
+export const adminDeckRowHeight = 22;
 const borderWidth = 2;
-export const adminDeckRowHeight = rowHeight + borderWidth;
+export const adminDeckRowHeightWithBorder = adminDeckRowHeight + borderWidth;
 const rowStyle: CSSProperties = {
-  height: rowHeight,
+  height: adminDeckRowHeight,
 };
 
 export function AdminDeckCardRow({
@@ -71,7 +71,7 @@ function CounterRow({ val }: { val: number }) {
 interface CardContentRowProps {
   children: ReactNode;
 }
-function CardContentRow(props: CardContentRowProps) {
+export function CardContentRow(props: CardContentRowProps) {
   const content = props.children?.toString() ?? '';
   const emojiClass = isOnlyEmojis(content) ? 'emoji-only ' : '';
   return (

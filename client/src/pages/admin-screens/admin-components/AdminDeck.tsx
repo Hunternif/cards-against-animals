@@ -11,9 +11,13 @@ import { useEffectOnce } from '../../../hooks/ui-hooks';
 import { cardTypedID } from '../../../shared/deck-utils';
 import { Deck, DeckCard } from '../../../shared/types';
 import { AdminCopyCardsDialog } from './AdminCopyCardsDialog';
-import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
+import {
+  AdminDeckCardRow,
+  adminDeckRowHeightWithBorder,
+} from './AdminDeckCardRow';
 import { AdminDeckPasswordModal } from './AdminDeckPasswordModal';
 import { AdminDeckTableHeader } from './AdminDeckTableHeader';
+import { AdminTagsTable } from './AdminTagsTable';
 
 interface Props {
   deckID: string;
@@ -33,6 +37,7 @@ export function AdminDeck({ deckID }: Props) {
   );
   const [showLockDialog, setShowLockDialog] = useState(false);
   const [showCopyDialog, setShowCopyDialog] = useState(false);
+  const [showTagsDialog, setShowTagsDialog] = useState(false);
   const [copyStatusMsg, setCopyStatusMsg] = useState('');
 
   // TODO: optimize, retain the same instance between renders.
@@ -102,6 +107,18 @@ export function AdminDeck({ deckID }: Props) {
         </footer>
       </Modal>
 
+      <Modal
+        className="tags-dialog"
+        show={showTagsDialog}
+        onHide={() => setShowTagsDialog(false)}
+        title="Assign tags"
+        closeButton
+      >
+        <ModalBody longFormat>
+          <AdminTagsTable deck={deck} cards={deckCardset} />
+        </ModalBody>
+      </Modal>
+
       <AdminDeckPasswordModal
         deck={showLockDialog ? deck : undefined}
         onCancel={() => setShowLockDialog(false)}
@@ -127,11 +144,14 @@ export function AdminDeck({ deckID }: Props) {
         >
           Copy to...
         </GameButton>
+        <GameButton inline light onClick={() => setShowTagsDialog(true)}>
+          Tags
+        </GameButton>
       </div>
 
       <VirtualTable
         className="admin-deck-table"
-        rowHeight={adminDeckRowHeight}
+        rowHeight={adminDeckRowHeightWithBorder}
         data={deckCardset.cards}
         header={
           <AdminDeckTableHeader
