@@ -186,7 +186,7 @@
 }
 .admin-deck-table.standalone .admin-deck-table-header {
   top: 0;
-  background-color: colors.$panel-bg; // bg color
+  background-color: colors.$modal-bg; // bg color
   margin: 0;
 }
 
@@ -232,14 +232,14 @@
     left: 0;
     width: 4em;
     z-index: 1;
-    background-color: colors.$panel-bg;
+    background-color: colors.$modal-bg;
   }
   .col-card-content {
     position: sticky;
     left: 4em;
     width: 30em;
     z-index: 1;
-    background-color: colors.$panel-bg;
+    background-color: colors.$modal-bg;
   }
   .col-card-tag {
     width: 5em; // auto-resizes thanks to table-layout: auto;
@@ -248,6 +248,21 @@
     text-align: center;
     .checkbox {
       margin: auto;
+    }
+  }
+  .tag-cell {
+    cursor: pointer;
+    border-left: 2px solid colors.$modal-bg;
+    &.checked {
+      background-color: colors.$menu-lvl1;
+    }
+    &.unchecked {
+      color: transparent;
+      user-select: none;
+    }
+    &:hover {
+      color: colors.$button-accent-text;
+      background-color: colors.$accent;
     }
   }
 }

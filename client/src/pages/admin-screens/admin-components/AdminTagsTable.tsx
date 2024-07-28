@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { DeckCardSet } from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
-import { Checkbox } from '../../../components/Checkbox';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
 import { VirtualTable } from '../../../components/VirtualTable';
+import { useDIContext } from '../../../di-context';
 import {
   Deck,
   DeckCard,
@@ -17,7 +17,6 @@ import {
 } from './AdminDeckCardRow';
 import { DeckStats } from './AdminDeckTableHeader';
 import { NewTagModal } from './NewTagModal';
-import { useDIContext } from '../../../di-context';
 
 interface Props {
   deck: Deck;
@@ -97,28 +96,11 @@ interface RowProps {
 }
 
 function TagsCardRow({ deck, card, onUpdate }: RowProps) {
-  const { deckRepository } = useDIContext();
-
   const isPrompt = card instanceof PromptDeckCard;
   const classes = ['card-row'];
   classes.push(isPrompt ? 'row-prompt' : 'row-response');
   if (card instanceof ResponseDeckCard && card.action)
     classes.push('action-card');
-
-  async function handleToggle(tagName: string, checked: boolean) {
-    const index = card.tags.indexOf(tagName);
-    if (checked) {
-      if (index === -1) {
-        card.tags.push(tagName);
-      }
-    } else {
-      if (index > -1) {
-        card.tags.splice(index, 1);
-      }
-    }
-    await deckRepository.updateCard(deck, card);
-    onUpdate();
-  }
 
   return (
     <tr className={classes.join(' ')}>
@@ -132,14 +114,54 @@ function TagsCardRow({ deck, card, onUpdate }: RowProps) {
         <CardContentRow>{card.content}</CardContentRow>
       </td>
       {[...deck.tags.values()].map((t) => (
-        <td className="col-card-tag" key={t.name}>
-          <Checkbox
-            checked={card.tags.indexOf(t.name) > -1}
-            onToggle={(checked) => handleToggle(t.name, checked)}
-          />
-        </td>
+        <TagCell
+          key={t.name}
+          deck={deck}
+          card={card}
+          tag={t.name}
+          onUpdate={onUpdate}
+        />
       ))}
       <td className="col-card-tag">{/* New tag */}</td>
     </tr>
+  );
+}
+
+interface CellProps {
+  deck: Deck;
+  card: DeckCard;
+  tag: string;
+  onUpdate: () => void;
+}
+
+function TagCell({ deck, card, tag, onUpdate }: CellProps) {
+  const { deckRepository } = useDIContext();
+
+  async function handleToggle(tagName: string, checked: boolean) {
+    const index = card.tags.indexOf(tagName);
+    if (checked) {
+      if (index === -1) {
+        card.tags.push(tagName);
+      }
+    } else {
+      if (index > -1) {
+        card.tags.splice(index, 1);
+      }
+    }
+    onUpdate();
+    await deckRepository.updateCard(deck, card);
+  }
+
+  const checked = card.tags.indexOf(tag) > -1;
+  const classes = ['tag-cell', 'col-card-tag'];
+  classes.push(checked ? 'checked' : 'unchecked');
+
+  return (
+    <td
+      className={classes.join(' ')}
+      onClick={() => handleToggle(tag, !checked)}
+    >
+      {tag}
+    </td>
   );
 }
