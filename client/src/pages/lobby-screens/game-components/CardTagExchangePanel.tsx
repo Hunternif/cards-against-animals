@@ -12,6 +12,9 @@ interface Props {
   onSelectedTags: (tagNames: string[]) => void;
 }
 
+/**
+ * UI that lets you choose a tag to fetch for every given card.
+ */
 export function CardTagExchangePanel({ cards, onSelectedTags }: Props) {
   const { lobby } = useGameContext();
 
