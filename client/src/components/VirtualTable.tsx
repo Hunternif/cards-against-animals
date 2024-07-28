@@ -6,12 +6,13 @@ import {
   useMemo,
   useRef,
   useState,
-} from "react";
+} from 'react';
 
 interface Props<T> extends React.HTMLAttributes<HTMLTableElement> {
   data: T[];
   rowHeight: number;
   render: (item: T) => ReactNode;
+  header?: ReactNode;
 }
 
 /**
@@ -22,6 +23,7 @@ export function VirtualTable<T>({
   data,
   rowHeight,
   render,
+  header,
   ...props
 }: Props<T>) {
   const tableRef = useRef<HTMLTableElement>(null);
@@ -53,11 +55,11 @@ export function VirtualTable<T>({
       refreshTableOffset();
     }
     if (tableRef.current) {
-      window.addEventListener("scroll", handleScroll, true);
-      window.addEventListener("resize", handleResizeWindow);
+      window.addEventListener('scroll', handleScroll, true);
+      window.addEventListener('resize', handleResizeWindow);
       return () => {
-        window.removeEventListener("scroll", handleScroll);
-        window.removeEventListener("resize", handleResizeWindow);
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('resize', handleResizeWindow);
       };
     }
   }, [tableRef]);
@@ -80,6 +82,7 @@ export function VirtualTable<T>({
 
   return (
     <table {...props} ref={tableRef} style={tableStyle}>
+      {header && <thead>{header}</thead>}
       <tbody>
         {data.map((item, i) => {
           if (i < rowsAboveScreen || i > rowsAboveScreen + visibleRows) {

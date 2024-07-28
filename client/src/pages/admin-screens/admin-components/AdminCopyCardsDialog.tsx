@@ -17,8 +17,8 @@ import { useDIContext } from '../../../di-context';
 import { cardTypedID } from '../../../shared/deck-utils';
 import { Deck, DeckCard } from '../../../shared/types';
 import { AdminDeckCardRow, adminDeckRowHeight } from './AdminDeckCardRow';
-import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 import { AdminDeckSelector } from './AdminDeckSelector';
+import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 
 interface Props {
   sourceDeck: Deck;
@@ -169,12 +169,12 @@ export function AdminCopyCardsDialog({
         />
       </div>
       {warnMsg && <div className="warn-msg">{warnMsg}</div>}
-      <AdminDeckTableHeader readOnly cards={combinedSet} />
       <ScrollContainer scrollLight className="table-container">
         <VirtualTable
           className="admin-deck-table"
           rowHeight={adminDeckRowHeight}
           data={combinedSet.cards}
+          header={<AdminDeckTableHeader readOnly cards={combinedSet} />}
           render={(card) => (
             <AdminDeckCardRow
               card={card}

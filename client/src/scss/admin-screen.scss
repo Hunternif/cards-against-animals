@@ -1,4 +1,5 @@
 @use 'colors.scss';
+@use "sizes.scss";
 
 .admin-subpage {
   display: flex;
@@ -39,6 +40,12 @@
   }
 }
 
+.admin-deck-accordion {
+  section {
+    padding-top: 0;
+  }
+}
+
 .admin-deck-table {
   width: 100%;
   table-layout: fixed; // this is important for text ellipsis...
@@ -48,9 +55,11 @@
   tr {
     font-size: 13px;
   }
-  td,
-  th {
+  td {
     padding: 0 0.5em;
+  }
+  th {
+    padding: 0.6em 0.5em;
   }
   .col-card-id {
     width: 4em;
@@ -142,16 +151,15 @@
   font-size: 13px;
   position: sticky;
   z-index: 1;
-  top: 3rem; //TODO: import accordion height
-  // height: 3rem;
-  margin-top: -0.5em; // combat accordion section padding
+  top: sizes.$accordion-header-height;
+  height: 2.5rem;
   padding: 0.5em;
   background-color: var(--bs-body-bg); // bg color
 }
 .admin-deck-table-header {
   position: sticky;
   z-index: 1;
-  top: calc(3rem + 2rem); //TODO: import accordion height
+  top: calc(sizes.$accordion-header-height + 2.5rem);
   padding: 0.5em 0;
   background-color: var(--bs-body-bg); // bg color
   color: rgba(colors.$text, 70%);

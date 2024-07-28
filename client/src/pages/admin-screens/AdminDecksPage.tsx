@@ -20,6 +20,7 @@ export function AdminDecksPage() {
           decks.map((deck) => {
             return (
               <AccordionItem
+                className="admin-deck-accordion"
                 key={deck.id}
                 header={
                   <div className={`deck-header visibility-${deck.visibility}`}>

@@ -129,15 +129,17 @@ export function AdminDeck({ deckID }: Props) {
         </GameButton>
       </div>
 
-      <AdminDeckTableHeader
-        cards={deckCardset}
-        selected={selectedCardset}
-        onToggleAll={toggleSelectAll}
-      />
       <VirtualTable
         className="admin-deck-table"
         rowHeight={adminDeckRowHeight}
         data={deckCardset.cards}
+        header={
+          <AdminDeckTableHeader
+            cards={deckCardset}
+            selected={selectedCardset}
+            onToggleAll={toggleSelectAll}
+          />
+        }
         render={(card) => (
           <AdminDeckCardRow
             card={card}

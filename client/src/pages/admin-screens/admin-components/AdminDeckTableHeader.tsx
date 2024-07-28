@@ -22,32 +22,28 @@ export function AdminDeckTableHeader({
   const isAnySelected = selected && selected.size > 0;
 
   return (
-    <table className="admin-deck-table admin-deck-table-header">
-      <thead>
-        <tr>
-          <th className="col-card-id">
-            {readOnly ? (
-              'ID'
-            ) : (
-              <Checkbox onToggle={onToggleAll} checked={isAnySelected} />
-            )}
-          </th>
-          <th className="col-card-content">
-            Content
-            <span className="deck-count">
-              <DeckStats cards={cards} selected={selected} />
-            </span>
-          </th>
-          <th className="col-card-tags">Tags</th>
-          <th className="col-card-counter">Views</th>
-          <th className="col-card-counter">Plays</th>
-          <th className="col-card-counter">Likes/Votes</th>
-          <th className="col-card-counter">Wins</th>
-          <th className="col-card-counter">Discards</th>
-          <th className="col-card-counter">Rating</th>
-        </tr>
-      </thead>
-    </table>
+    <tr className="admin-deck-table-header">
+      <th className="col-card-id">
+        {readOnly ? (
+          'ID'
+        ) : (
+          <Checkbox onToggle={onToggleAll} checked={isAnySelected} />
+        )}
+      </th>
+      <th className="col-card-content">
+        Content
+        <span className="deck-count">
+          <DeckStats cards={cards} selected={selected} />
+        </span>
+      </th>
+      <th className="col-card-tags">Tags</th>
+      <th className="col-card-counter">Views</th>
+      <th className="col-card-counter">Plays</th>
+      <th className="col-card-counter">Likes/Votes</th>
+      <th className="col-card-counter">Wins</th>
+      <th className="col-card-counter">Discards</th>
+      <th className="col-card-counter">Rating</th>
+    </tr>
   );
 }
 
