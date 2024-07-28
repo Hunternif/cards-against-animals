@@ -24,18 +24,18 @@ interface Props {
 
 export function AdminTagsTable({ deck }: Props) {
   const [showNewTag, setShowNewTag] = useState(false);
-  const [cards, setCards] = useState(DeckCardSet.fromDeck(deck));
+  const [cards, setCards] = useState(DeckCardSet.fromDeck(deck).sortByIDs());
 
   function refreshCards() {
     // Update data to force refresh in the table.
-    setCards(DeckCardSet.fromDeck(deck));
+    setCards(DeckCardSet.fromDeck(deck).sortByIDs());
   }
 
   function handleFilter(tags: string[]) {
     if (tags.length == 0) {
-      setCards(DeckCardSet.fromDeck(deck));
+      setCards(DeckCardSet.fromDeck(deck).sortByIDs());
     } else {
-      setCards(DeckCardSet.fromDeck(deck).filterByTags(tags));
+      setCards(DeckCardSet.fromDeck(deck).sortByIDs().filterByTags(tags));
     }
   }
 
