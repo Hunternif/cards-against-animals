@@ -17,14 +17,21 @@ import {
 } from './AdminDeckCardRow';
 import { DeckStats } from './AdminDeckTableHeader';
 import { NewTagModal } from './NewTagModal';
+import { useDIContext } from '../../../di-context';
 
 interface Props {
   deck: Deck;
-  cards: DeckCardSet;
 }
 
-export function AdminTagsTable({ deck, cards }: Props) {
+export function AdminTagsTable({ deck }: Props) {
   const [showNewTag, setShowNewTag] = useState(false);
+  const [cards, setCards] = useState(DeckCardSet.fromDeck(deck));
+
+  function refreshCards() {
+    // Update data to force refresh in the table.
+    setCards(DeckCardSet.fromDeck(deck));
+  }
+
   return (
     <>
       <NewTagModal
@@ -44,7 +51,9 @@ export function AdminTagsTable({ deck, cards }: Props) {
               onNewTag={() => setShowNewTag(true)}
             />
           }
-          render={(card) => <TagsCardRow deck={deck} card={card} />}
+          render={(card) => (
+            <TagsCardRow deck={deck} card={card} onUpdate={refreshCards} />
+          )}
         />
       </ScrollContainer>
     </>
@@ -84,14 +93,33 @@ function TagsHeader({ deck, cards, onNewTag }: HeaderProps) {
 interface RowProps {
   deck: Deck;
   card: DeckCard;
+  onUpdate: () => void;
 }
 
-function TagsCardRow({ deck, card }: RowProps) {
+function TagsCardRow({ deck, card, onUpdate }: RowProps) {
+  const { deckRepository } = useDIContext();
+
   const isPrompt = card instanceof PromptDeckCard;
   const classes = ['card-row'];
   classes.push(isPrompt ? 'row-prompt' : 'row-response');
   if (card instanceof ResponseDeckCard && card.action)
     classes.push('action-card');
+
+  async function handleToggle(tagName: string, checked: boolean) {
+    const index = card.tags.indexOf(tagName);
+    if (checked) {
+      if (index === -1) {
+        card.tags.push(tagName);
+      }
+    } else {
+      if (index > -1) {
+        card.tags.splice(index, 1);
+      }
+    }
+    await deckRepository.updateCard(deck, card);
+    onUpdate();
+  }
+
   return (
     <tr className={classes.join(' ')}>
       <td className="col-card-id">{card.id}</td>
@@ -105,7 +133,10 @@ function TagsCardRow({ deck, card }: RowProps) {
       </td>
       {[...deck.tags.values()].map((t) => (
         <td className="col-card-tag" key={t.name}>
-          <Checkbox checked={card.tags.indexOf(t.name) > -1} />
+          <Checkbox
+            checked={card.tags.indexOf(t.name) > -1}
+            onToggle={(checked) => handleToggle(t.name, checked)}
+          />
         </td>
       ))}
       <td className="col-card-tag">{/* New tag */}</td>

@@ -18,6 +18,7 @@ interface Props<T> extends React.HTMLAttributes<HTMLTableElement> {
 /**
  * Renders a large table by hiding rows outside of the screen,
  * to speed up rendering.
+ * TODO: maybe convert to pure JS component for better performance?
  */
 export function VirtualTable<T>({
   data,

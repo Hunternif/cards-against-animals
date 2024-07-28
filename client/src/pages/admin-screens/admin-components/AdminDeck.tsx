@@ -115,7 +115,7 @@ export function AdminDeck({ deckID }: Props) {
         closeButton
       >
         <ModalBody longFormat>
-          <AdminTagsTable deck={deck} cards={deckCardset} />
+          <AdminTagsTable deck={deck} />
         </ModalBody>
       </Modal>
 

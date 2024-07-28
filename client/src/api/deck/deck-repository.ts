@@ -8,6 +8,7 @@ import {
   getDocs,
   runTransaction,
   setDoc,
+  updateDoc,
 } from 'firebase/firestore';
 import {
   deckConverter,
@@ -16,6 +17,7 @@ import {
 } from '../../shared/firestore-converters';
 import {
   Deck,
+  DeckCard,
   DeckVisibility,
   GeneratedDeck,
   PromptCardInGame,
@@ -47,6 +49,8 @@ export interface IDeckRepository {
   uploadNewDeck(deck: Deck): Promise<void>;
   /** Updates deck metadata, e.g. name or tags */
   updateDeck(deck: Deck): Promise<void>;
+  /** Updates card data */
+  updateCard(deck: Deck, card: DeckCard): Promise<void>;
   clearCache(): void;
 }
 
@@ -173,8 +177,18 @@ export class FirestoreDeckRepository implements IDeckRepository {
     this.deckCache.set(deck.id, deck);
   }
 
-  async updateDeck(deck: Deck): Promise<void> {
+  async updateDeck(deck: Deck) {
     await setDoc(doc(this.decksRef, deck.id), deck);
+  }
+
+  async updateCard(deck: Deck, card: DeckCard) {
+    if (card instanceof PromptDeckCard) {
+      const cardRef = doc(this.getPromptsRef(deck.id), card.id);
+      await updateDoc(cardRef, promptDeckCardConverter.toFirestore(card));
+    } else if (card instanceof ResponseDeckCard) {
+      const cardRef = doc(this.getResponsesRef(deck.id), card.id);
+      await updateDoc(cardRef, responseDeckCardConverter.toFirestore(card));
+    }
   }
 
   clearCache() {
