@@ -28,7 +28,7 @@ export function AdminTagsTable({ deck }: Props) {
 
   function refreshCards() {
     // Update data to force refresh in the table.
-    setCards(DeckCardSet.fromDeck(deck).sortByIDs());
+    setCards(new DeckCardSet(cards.cards));
   }
 
   function handleFilter(tags: string[]) {
