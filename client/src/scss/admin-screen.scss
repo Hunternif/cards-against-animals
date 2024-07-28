@@ -105,11 +105,11 @@
     &.selected {
       background-color: colors.$button-light-bg;
       &.row-prompt .col-card-content {
-        background-color: rgba(colors.$card-prompt-bg-dark, 0.5);
+        background-color: color-mix(in srgb, colors.$card-prompt-bg-dark 60%, colors.$button-light-bg);
       }
       &.row-response .col-card-content {
         // background-color: rgba(colors.$button-border-hover, 0.3);
-        background-color: rgba(colors.$card-response-bg, 0.7);
+        background-color: color-mix(in srgb, colors.$card-response-bg 75%, colors.$button-light-bg);
       }
     }
     &:hover .edit-button {
@@ -227,19 +227,25 @@
   }
   .card-row {
     cursor: auto;
+    &:not(:hover) {
+      .col-card-id {
+        // These columns are sticky.
+        // Need to set z index and background color to prevent overlap:
+        background-color: colors.$modal-bg;
+      }
+    }
   }
   .col-card-id {
     position: sticky;
     left: 0;
     width: 4em;
     z-index: 1;
-    background-color: colors.$modal-bg;
   }
   .col-card-content {
     position: sticky;
     left: 4em;
     width: 30em;
-    z-index: 1;
+    z-index: 2;
     background-color: colors.$modal-bg;
   }
   .col-card-tag {
