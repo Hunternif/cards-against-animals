@@ -126,28 +126,32 @@ export const deckConverter: FConverter<Deck> = {
     return copyFields2(
       deck,
       {
+        // Map tags by name to prevent duplicates:
+        tags: [
+          ...new Map(deck.tags.map((t) => [t.name, copyFields(t)])).values(),
+        ],
         time_created: deck.time_created
           ? FTimestamp.fromDate(deck.time_created)
           : fServerTimestamp(),
       },
-      ['prompts', 'responses', 'tags'],
+      ['prompts', 'responses'],
     );
   },
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
+    const tags =
+      data.tags?.map((t: any) => new DeckTag(t.name, t.description)) ?? [];
+    const time_created = (data.time_created as FTimestamp | null)?.toDate();
     // All decks are public by default, unless specified:
-    const ret = new Deck(snapshot.id, data.title, data.visibility ?? 'public');
-    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
+    const ret = new Deck(
+      snapshot.id,
+      data.title,
+      data.visibility ?? 'public',
+      tags,
+      time_created,
+    );
     // all cards must be fetched separately as a subcollection
     return ret;
-  },
-};
-
-export const deckTagConverter: FConverter<DeckTag> = {
-  toFirestore: (tag: DeckTag) => copyFields(tag),
-  fromFirestore: (snapshot: FDocSnapshot) => {
-    const data = snapshot.data();
-    return new DeckTag(data.name, data.description);
   },
 };
 

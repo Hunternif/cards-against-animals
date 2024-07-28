@@ -64,6 +64,9 @@ test('export deck', () => {
           "plays": 4
         }
       ],
+      "id": "my_deck",
+      "title": "My deck",
+      "visibility": "public",
       "tags": [
         {
           "name": "lol"
@@ -71,10 +74,7 @@ test('export deck', () => {
         {
           "name": "wut"
         }
-      ],
-      "id": "my_deck",
-      "title": "My deck",
-      "visibility": "public"
+      ]
     },
     {
       "responses": [

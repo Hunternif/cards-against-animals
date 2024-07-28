@@ -251,14 +251,12 @@ export class Deck {
   prompts: Array<PromptDeckCard> = [];
   /** Must be fetched separately from a Firebase subcollection. */
   responses: Array<ResponseDeckCard> = [];
-  /** Must be fetched separately from a Firebase subcollection. */
-  //TODO: move tags within deck.
-  tags: DeckTag[] = [];
 
   constructor(
     public id: string,
     public title: string,
     public visibility: DeckVisibility,
+    public tags: Array<DeckTag> = [],
     public time_created?: Date,
   ) {}
 }

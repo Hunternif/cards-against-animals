@@ -120,7 +120,7 @@ export function AdminCopyCardsDialog({
       const mergedDeck = mergeIntoDeck(
         targetDeck ?? new Deck(newDeckID, newDeckTitle, 'public'),
         updatedCards,
-        sourceDeck.tags,
+        [...sourceDeck.tags.values()],
       );
       if (targetDeck == null) {
         await deckRepository.uploadNewDeck(mergedDeck);

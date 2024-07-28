@@ -39,7 +39,8 @@ export function deserializeDecks(json: string): Deck[] {
   if (data.version != 1)
     throw new Error(`Unsupported export version ${data.version}`);
   return data.decks.map((d) => {
-    const deck = new Deck(d.id, d.title, d.visibility);
+    const tags = d.tags?.map((t) => new DeckTag(t.name, t.description)) ?? [];
+    const deck = new Deck(d.id, d.title, d.visibility, tags, d.time_created);
     deck.prompts =
       d.prompts?.map(
         (c) =>
@@ -74,11 +75,14 @@ export function deserializeDecks(json: string): Deck[] {
             c.action,
           ),
       ) ?? [];
-    deck.tags = d.tags?.map((t) => new DeckTag(t.name, t.description)) ?? [];
     return deck;
   });
 }
 
+/**
+ * During serialization of cards, removes the field 'type', any 0 numbers and
+ * empty arrays, to save space.
+ */
 function jsonReplacer(this: any, key: string, value: any): any {
   if (typeof value === 'number' && value === 0) return undefined;
   else if (Array.isArray(value) && value.length === 0) return undefined;
@@ -104,6 +108,10 @@ type DeckJson = Omit<Deck, 'prompts' | 'responses' | 'tags'> & {
   tags?: DeckTag[];
 };
 
+/**
+ * Copies all fields except 'type' and any 0 numbers or empty arrays,
+ * to save space.
+ */
 type PartialCard<T> = {
   [P in keyof Omit<T, 'type'>]: T[P] extends Number
     ? number | undefined

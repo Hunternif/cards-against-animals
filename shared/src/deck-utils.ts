@@ -27,11 +27,11 @@ export function copyDeck(deck: Deck): Deck {
     deck.id,
     deck.title,
     deck.visibility,
+    deck.tags.map((t) => new DeckTag(t.name, t.description)),
     deck.time_created,
   );
   copy.prompts.push(...deck.prompts);
   copy.responses.push(...deck.responses);
-  copy.tags.push(...deck.tags.map((t) => new DeckTag(t.name, t.description)));
   return copy;
 }
 

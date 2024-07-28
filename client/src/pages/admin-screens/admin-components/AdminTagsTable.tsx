@@ -67,7 +67,7 @@ function TagsHeader({ deck, cards, onNewTag }: HeaderProps) {
           <DeckStats cards={cards} />
         </span>
       </th>
-      {deck.tags.map((t) => (
+      {[...deck.tags.values()].map((t) => (
         <th className="col-card-tag" key={t.name}>
           {t.name}
         </th>
@@ -103,7 +103,7 @@ function TagsCardRow({ deck, card }: RowProps) {
       >
         <CardContentRow>{card.content}</CardContentRow>
       </td>
-      {deck.tags.map((t) => (
+      {[...deck.tags.values()].map((t) => (
         <td className="col-card-tag" key={t.name}>
           <Checkbox checked={card.tags.indexOf(t.name) > -1} />
         </td>

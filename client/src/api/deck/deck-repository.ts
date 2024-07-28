@@ -10,7 +10,6 @@ import {
 } from 'firebase/firestore';
 import {
   deckConverter,
-  deckTagConverter,
   promptDeckCardConverter,
   responseDeckCardConverter,
 } from '../../shared/firestore-converters';
@@ -41,7 +40,7 @@ export interface IDeckRepository {
   ): Promise<Array<DeckWithCount>>;
   /** Loads complete content of a deck, with prompts and responses. */
   downloadDeck(deckID: string): Promise<Deck>;
-  /** Uploads new or update an existing deck. */
+  /** Uploads card content, to a new deck or by updating an existing one. */
   uploadDeck(deck: Deck): Promise<void>;
   /** Verifies that deck ID does not exist, and uploads data. */
   uploadNewDeck(deck: Deck): Promise<void>;
@@ -65,13 +64,6 @@ export class FirestoreDeckRepository implements IDeckRepository {
   private getResponsesRef(deckID: string) {
     return collection(this.decksRef, deckID, 'responses').withConverter(
       responseDeckCardConverter,
-    );
-  }
-
-  /** Returns Firestore subcollection reference of tags in deck. */
-  private getTagsRef(deckID: string) {
-    return collection(this.decksRef, deckID, 'tags').withConverter(
-      deckTagConverter,
     );
   }
 
@@ -120,14 +112,12 @@ export class FirestoreDeckRepository implements IDeckRepository {
     // Fetch deck from Firestore:
     const deck = (await getDoc(doc(this.decksRef, deckID))).data();
     if (!deck) throw new Error(`Deck "${deckID}" does not exist`);
-    const [proDocs, resDocs, tagDocs] = await Promise.all([
+    const [proDocs, resDocs] = await Promise.all([
       getDocs(this.getPromptsRef(deckID)),
       getDocs(this.getResponsesRef(deckID)),
-      getDocs(this.getTagsRef(deckID)),
     ]);
     deck.prompts = proDocs.docs.map((d) => d.data());
     deck.responses = resDocs.docs.map((d) => d.data());
-    deck.tags = tagDocs.docs.map((d) => d.data());
     this.deckCache.set(deckID, deck);
     return deck;
   }
@@ -176,12 +166,6 @@ export class FirestoreDeckRepository implements IDeckRepository {
       deck.responses.forEach((response) => {
         transaction.set(doc(responsesRef, response.id), response);
       });
-      const tagsRef = collection(docRef, 'tags').withConverter(
-        deckTagConverter,
-      );
-      deck.tags.forEach((tag) => {
-        transaction.set(doc(tagsRef, tag.name), tag);
-      });
     });
     this.deckCache.set(deck.id, deck);
   }
@@ -194,7 +178,7 @@ export class FirestoreDeckRepository implements IDeckRepository {
 export type DeckWithCount = Deck & {
   promptCount: number;
   responseCount: number;
-}
+};
 
 export const haikuPrompt3 = new PromptCardInGame(
   'haiku_3',
