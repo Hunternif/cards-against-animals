@@ -9,6 +9,7 @@
   }
   &::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
   }
   &::-webkit-scrollbar-track {
     background: 0 0;
@@ -17,6 +18,9 @@
     background: colors.$bg-dark;
     border-radius: 4px;
   }
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+}
   &.miniscrollbar-dark::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.6);
   }
