@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Tooltip } from '../../../components/Tooltip';
 import {
   ResponseCardInGame,
   TagInGame,
@@ -62,14 +63,23 @@ function CardContainer({ card, tags, onSelect }: CardContainterProps) {
   return (
     <div key={card.id} className="card">
       <ul>
-        {tags.map((t) => (
-          <TagItem
-            key={t.name}
-            tag={t}
-            selected={t.name === selectedTag.name}
-            onSelect={handleSelect}
-          />
-        ))}
+        {tags.map((t) => {
+          const tagItem = (
+            <TagItem
+              key={t.name}
+              tag={t}
+              selected={t.name === selectedTag.name}
+              onSelect={handleSelect}
+            />
+          );
+          if (t.description != null)
+            return (
+              <Tooltip key={t.name} tooltip={t.description}>
+                {tagItem}
+              </Tooltip>
+            );
+          else return tagItem;
+        })}
       </ul>
     </div>
   );
@@ -109,6 +119,7 @@ function TagItem({ tag, selected, onSelect }: TagItemProps) {
       onClick={() => handleSelect(tag)}
     >
       <span className="tag-name">{tagName}</span>
+
       <span className="card-count">{tag.card_count}</span>
     </li>
   );

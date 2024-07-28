@@ -56,6 +56,10 @@
           font-variant-numeric: tabular-nums;
           margin-left: auto;
         }
+        // Rendered as a tooltip
+        &:hover .tag-description {
+          visibility: visible;
+        }
       }
     }
   }

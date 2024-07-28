@@ -1,0 +1,26 @@
+.tooltip-panel {
+  visibility: hidden;
+  font-size: 0.9rem;
+  font-weight: 200;
+  background-color: colors.$menu-lvl1;
+  color: colors.$text;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+}
+.tooltip-container:hover .tooltip-panel {
+  animation: 0.6s fadeIn; // Delayed visibility
+  animation-fill-mode: forwards;
+  // visibility: visible;
+}
+
+@keyframes fadeIn {
+  99% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+  }
+}
