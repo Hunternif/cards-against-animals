@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { DeckCardSet } from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
 import { Checkbox } from '../../../components/Checkbox';
@@ -15,6 +16,7 @@ import {
   CardContentRow,
 } from './AdminDeckCardRow';
 import { DeckStats } from './AdminDeckTableHeader';
+import { NewTagModal } from './NewTagModal';
 
 interface Props {
   deck: Deck;
@@ -22,25 +24,40 @@ interface Props {
 }
 
 export function AdminTagsTable({ deck, cards }: Props) {
+  const [showNewTag, setShowNewTag] = useState(false);
   return (
-    <ScrollContainer scrollLight className="table-container">
-      <VirtualTable
-        className="admin-deck-table standalone"
-        rowHeight={adminDeckRowHeightWithBorder}
-        data={cards.cards}
-        header={<TagsHeader deck={deck} cards={cards} />}
-        render={(card) => <TagsCardRow deck={deck} card={card} />}
+    <>
+      <NewTagModal
+        deck={deck}
+        show={showNewTag}
+        onHide={() => setShowNewTag(false)}
       />
-    </ScrollContainer>
+      <ScrollContainer scrollLight className="table-container">
+        <VirtualTable
+          className="admin-deck-table standalone"
+          rowHeight={adminDeckRowHeightWithBorder}
+          data={cards.cards}
+          header={
+            <TagsHeader
+              deck={deck}
+              cards={cards}
+              onNewTag={() => setShowNewTag(true)}
+            />
+          }
+          render={(card) => <TagsCardRow deck={deck} card={card} />}
+        />
+      </ScrollContainer>
+    </>
   );
 }
 
 interface HeaderProps {
   deck: Deck;
   cards: DeckCardSet;
+  onNewTag: () => void;
 }
 
-function TagsHeader({ deck, cards }: HeaderProps) {
+function TagsHeader({ deck, cards, onNewTag }: HeaderProps) {
   return (
     <tr className="admin-deck-table-header">
       <th className="col-card-id">ID</th>
@@ -56,7 +73,7 @@ function TagsHeader({ deck, cards }: HeaderProps) {
         </th>
       ))}
       <th className="col-card-tag">
-        <GameButton inline lighter>
+        <GameButton inline lighter onClick={onNewTag}>
           + New tag
         </GameButton>
       </th>
