@@ -31,6 +31,14 @@ export function AdminTagsTable({ deck }: Props) {
     setCards(DeckCardSet.fromDeck(deck));
   }
 
+  function handleFilter(tags: string[]) {
+    if (tags.length == 0) {
+      setCards(DeckCardSet.fromDeck(deck));
+    } else {
+      setCards(DeckCardSet.fromDeck(deck).filterByTags(tags));
+    }
+  }
+
   return (
     <>
       <NewTagModal
@@ -48,6 +56,7 @@ export function AdminTagsTable({ deck }: Props) {
               deck={deck}
               cards={cards}
               onNewTag={() => setShowNewTag(true)}
+              onFilter={handleFilter}
             />
           }
           render={(card) => (
@@ -63,9 +72,24 @@ interface HeaderProps {
   deck: Deck;
   cards: DeckCardSet;
   onNewTag: () => void;
+  onFilter: (tags: string[]) => void;
 }
 
-function TagsHeader({ deck, cards, onNewTag }: HeaderProps) {
+function TagsHeader({ deck, cards, onNewTag, onFilter }: HeaderProps) {
+  // Filter by tag names:
+  const [filter, setFilter] = useState<string[]>([]);
+
+  function handleTagClick(tag: string) {
+    const index = filter.indexOf(tag);
+    if (index == -1) {
+      filter.push(tag);
+    } else {
+      filter.splice(index, 1);
+    }
+    setFilter([...filter]);
+    onFilter(filter);
+  }
+
   return (
     <tr className="admin-deck-table-header">
       <th className="col-card-id">ID</th>
@@ -75,11 +99,20 @@ function TagsHeader({ deck, cards, onNewTag }: HeaderProps) {
           <DeckStats cards={cards} />
         </span>
       </th>
-      {[...deck.tags.values()].map((t) => (
-        <th className="col-card-tag" key={t.name}>
-          {t.name}
-        </th>
-      ))}
+      {[...deck.tags.values()].map((t) => {
+        const isFiltered = filter.indexOf(t.name) > -1;
+        return (
+          <th className="col-card-tag" key={t.name}>
+            <GameButton
+              inline
+              secondary={!isFiltered}
+              onClick={() => handleTagClick(t.name)}
+            >
+              {t.name}
+            </GameButton>
+          </th>
+        );
+      })}
       <th className="col-card-tag">
         <GameButton inline lighter onClick={onNewTag}>
           + New tag

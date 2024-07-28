@@ -68,6 +68,13 @@ export class DeckCardSet {
     this.prompts.push(...cards.filter(filterPromptDeckCard));
     this.responses.push(...cards.filter(filterResponseDeckCard));
   }
+
+  /** Returns a new set containing only cards matching the filter. */
+  filterByTags(tags: string[]) {
+    return new DeckCardSet(
+      this.cards.filter((c) => tags.every((t) => c.tags.indexOf(t) > -1)),
+    );
+  }
 }
 
 export const emptySet = new DeckCardSet([]);

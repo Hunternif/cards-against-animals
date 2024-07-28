@@ -214,9 +214,10 @@
 .tags-dialog {
   max-height: 90vh;
   max-width: 90vw;
+  width: 80vw;
   .table-container {
     // TODO: figure out a better way to fit within the screen and allow scroll
-    max-height: 80vh;
+    height: 80vh; // Force height to prevent layout shift during filters
     max-width: 80vw;
     overflow-x: auto;
   }
