@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { TextInput } from '../../../components/FormControls';
-import { Deck } from '../../../shared/types';
+import { Deck, DeckTag } from '../../../shared/types';
+import { useDIContext } from '../../../di-context';
+import { useErrorContext } from '../../../components/ErrorContext';
 
 type Props = {
   show: boolean;
@@ -11,19 +13,26 @@ type Props = {
 
 export function NewTagModal({ show, deck, onHide }: Props) {
   const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [description, setDescription] = useState<string | undefined>(undefined);
   const [processing, setProcessing] = useState(false);
+  const { deckRepository } = useDIContext();
   const [error, setError] = useState<string>();
+  const { setError: setGlobalError } = useErrorContext();
 
   async function handleSubmit() {
     if (deck) {
       try {
         setError(undefined);
         setProcessing(true);
-        // await addTag(deck, name, description);
-        // onHide();
+        if (deck.tags.find((t) => t.name === name)) {
+          setError(`Tag ${name} already exists`);
+        } else {
+          deck.tags.push(new DeckTag(name, description));
+          await deckRepository.updateDeck(deck);
+          onHide();
+        }
       } catch (e: any) {
-        setError(e);
+        setGlobalError(e);
       } finally {
         setProcessing(false);
       }

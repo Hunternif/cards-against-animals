@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   runTransaction,
+  setDoc,
 } from 'firebase/firestore';
 import {
   deckConverter,
@@ -44,6 +45,8 @@ export interface IDeckRepository {
   uploadDeck(deck: Deck): Promise<void>;
   /** Verifies that deck ID does not exist, and uploads data. */
   uploadNewDeck(deck: Deck): Promise<void>;
+  /** Updates deck metadata, e.g. name or tags */
+  updateDeck(deck: Deck): Promise<void>;
   clearCache(): void;
 }
 
@@ -168,6 +171,10 @@ export class FirestoreDeckRepository implements IDeckRepository {
       });
     });
     this.deckCache.set(deck.id, deck);
+  }
+
+  async updateDeck(deck: Deck): Promise<void> {
+    await setDoc(doc(this.decksRef, deck.id), deck);
   }
 
   clearCache() {
