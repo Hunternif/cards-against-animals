@@ -21,7 +21,16 @@ export function useSoundOnResponse() {
 
 const deerIntervalMs = 500;
 const deerSize = 7;
-const deerConfetti = confetti.shapeFromText({ text: '🦌', scalar: deerSize });
+let isDeerInitialized = false;
+let deerConfetti: confetti.Shape;
+
+function initiaizeDeer() {
+  // This fixes error on browsers that don't support OffscreenCanvas:
+  if (typeof OffscreenCanvas !== 'undefined') {
+    deerConfetti = confetti.shapeFromText({ text: '🦌', scalar: deerSize });
+  }
+  isDeerInitialized = true;
+}
 
 /** Plays a sound whenever someone uses the soundoard */
 export function useSoundboardSound() {
@@ -53,15 +62,20 @@ export function useSoundboardSound() {
       if (now.getTime() - lastDeerTime.current.getTime() > deerIntervalMs) {
         lastDeerTime.current = now;
         if (newSound.sound_id === soundYikes) {
-          confetti({
-            shapes: [deerConfetti],
-            flat: true, // this exists, but @types are outdated
-            scalar: deerSize,
-            spread: 180,
-            particleCount: 6,
-            startVelocity: 30,
-            ticks: 30,
-          } as confetti.Options);
+          if (!isDeerInitialized) {
+            initiaizeDeer();
+          }
+          if (deerConfetti) {
+            confetti({
+              shapes: [deerConfetti],
+              flat: true, // this exists, but @types are outdated
+              scalar: deerSize,
+              spread: 180,
+              particleCount: 6,
+              startVelocity: 30,
+              ticks: 30,
+            } as confetti.Options);
+          }
         }
       }
     }

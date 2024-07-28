@@ -12,7 +12,8 @@
     "build": "(cd functions && npm run build) && (cd ../client && npm run build)",
     "lint": "(cd functions && npm run lint) && (cd ../client && npm run lint)",
     "test": "(cd functions && npm run test) && (cd ../client && npm run test)",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "deploy-client": "firebase deploy --only hosting"
   },
   "dependencies": {},
   "devDependencies": {}
