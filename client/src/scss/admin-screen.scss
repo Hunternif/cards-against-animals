@@ -229,22 +229,34 @@
     cursor: auto;
     &:not(:hover) {
       .col-card-id {
-        // These columns are sticky.
-        // Need to set z index and background color to prevent overlap:
         background-color: colors.$modal-bg;
       }
+    }
+    &:hover {
+      .col-card-id {
+        background-color: inherit;
+      }
+    }
+  }
+  .admin-deck-table-header {
+    .col-card-id, .col-card-content {
+      // Sticky column, must prevent overlap:
+      background-color: colors.$modal-bg;
     }
   }
   .col-card-id {
     position: sticky;
     left: 0;
     width: 4em;
-    z-index: 1;
+    // Sticky column, must prevent overlap:
+    z-index: 2;
+    background-color: colors.$modal-bg;
   }
   .col-card-content {
     position: sticky;
     left: 4em;
     width: 30em;
+    // Sticky column, must prevent overlap:
     z-index: 2;
     background-color: colors.$modal-bg;
   }
