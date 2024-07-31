@@ -23,7 +23,7 @@ export function CardTagExchangePanel({ cards, onSelectedTags }: Props) {
     Map<ResponseCardInGame, TagInGame>
   >(new Map());
 
-  const tags = [...lobby.response_tags.values()];
+  const tags = lobby.orderedTags();
 
   function handleSelect(card: ResponseCardInGame, tag: TagInGame) {
     const newSelectedTags = new Map(selectedTags);

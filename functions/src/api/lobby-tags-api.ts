@@ -44,19 +44,22 @@ export function countResponseTags(
 ): Map<string, TagInGame> {
   // Maps by tag name:
   const tagMap = new Map<string, TagInGame>([
-    [anyTagsKey, new TagInGame(anyTagsKey, 0)],
-    [noTagsKey, new TagInGame(noTagsKey, 0)],
+    [anyTagsKey, new TagInGame(1, anyTagsKey, 0)],
+    [noTagsKey, new TagInGame(2, noTagsKey, 0)],
   ]);
   for (const deck of decks) {
     for (const tag of deck.tags) {
-      tagMap.set(tag.name, new TagInGame(tag.name, 0, tag.description));
+      tagMap.set(
+        tag.name,
+        new TagInGame(tagMap.size + 1, tag.name, 0, tag.description),
+      );
     }
   }
   const counts = countCardsPerTag(allResponses);
   for (const [tagName, count] of counts) {
     let tag = tagMap.get(tagName);
     if (tag == null) {
-      tag = new TagInGame(tagName, 0);
+      tag = new TagInGame(tagMap.size + 1, tagName, 0);
       tagMap.set(tagName, tag);
     }
     tag.card_count = count;

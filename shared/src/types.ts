@@ -38,6 +38,10 @@ export class GameLobby {
     public settings: LobbySettings,
     public status: LobbyStatus = 'new',
   ) {}
+
+  orderedTags(): Array<TagInGame> {
+    return [...this.response_tags.values()].sort((a, b) => a.order - b.order);
+  }
 }
 
 export interface LobbySettings {
@@ -269,6 +273,7 @@ export class DeckTag {
  * Card count is updated as the cards are dealt. */
 export class TagInGame {
   constructor(
+    public order: number,
     public name: string,
     public card_count: number,
     public description?: string,
