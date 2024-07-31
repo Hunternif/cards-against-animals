@@ -68,6 +68,54 @@
   gap: 1em;
 }
 
+.player-control-row {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1em;
+  gap: 1em;
+
+  .discard-count {
+    // Text that says "2 selected" etc
+    white-space: nowrap;
+    text-align: end;
+  }
+  .status-text {
+    // Status text in the middle of the screen, e.g. "Waiting for prompt"
+    padding: 0.5rem 0;
+    // white-space: nowrap;
+    text-align: center;
+  }
+}
+
+// Aligns in the center with 2 sides:
+.layout-side-column {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  @media (max-width: 1000px) {
+    // Can't fit with other columns, must break into multiple lines:
+    width: 100%;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+  }
+  &.layout-column-left {
+    justify-content: flex-start;
+  }
+  &.layout-column-mid {
+    justify-content: center;
+  }
+  &.layout-column-right {
+    justify-content: flex-end;
+  }
+}
+
+
 /* Make sure the control row stays on the screen when you scroll down: */
 .game-mid-row {
   position: sticky;

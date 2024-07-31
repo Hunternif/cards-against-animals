@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { exchangeCards } from '../../../api/turn/turn-discard-api';
 import { GameButton } from '../../../components/Buttons';
 import { ConfirmModal } from '../../../components/ConfirmModal';
@@ -18,48 +18,6 @@ interface ControlProps {
   onCancelDiscard: () => void;
   discardedCards: ResponseCardInGame[];
 }
-
-const containerStyle: CSSProperties = {
-  width: '100%',
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '0 1em',
-  gap: '1em',
-};
-const leftStyle: CSSProperties = {
-  display: 'flex',
-  justifyContent: 'flex-start',
-};
-const midStyle: CSSProperties = {
-  display: 'flex',
-  justifyContent: 'center',
-};
-const rightStyle: CSSProperties = {
-  display: 'flex',
-  gap: '0.75em',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-};
-const discardInfoStyle: CSSProperties = {
-  padding: '0.5rem 0',
-  whiteSpace: 'nowrap',
-  textAlign: 'center',
-};
-const discardCountStyle: CSSProperties = {
-  whiteSpace: 'normal',
-  minWidth: '10em',
-  textAlign: 'end',
-};
-const discardCountSmallStyle: CSSProperties = {
-  whiteSpace: 'nowrap',
-  textAlign: 'end',
-};
-const buttonGroupStyle: CSSProperties = {
-  display: 'flex',
-  gap: '0.4em',
-};
 
 export function GameControlRow(props: ControlProps) {
   const { selection, discarding } = props;
@@ -91,18 +49,12 @@ interface RowLayoutProps {
 
 function ControlRowLayout({ left, center, right }: RowLayoutProps) {
   return (
-    <div style={containerStyle}>
-      <div className="layout-side-column" style={leftStyle}>
-        {left}
+    <div className="player-control-row">
+      <div className="layout-side-column layout-column-left">{left}</div>
+      <div className="layout-side-column layout-column-mid">
+        <span className="light status-text">{center}</span>
       </div>
-      <div className="layout-side-column" style={midStyle}>
-        <span className="light" style={discardInfoStyle}>
-          {center}
-        </span>
-      </div>
-      <div className="layout-side-column" style={rightStyle}>
-        {right}
-      </div>
+      <div className="layout-side-column layout-column-right">{right}</div>
     </div>
   );
 }
@@ -244,34 +196,34 @@ function DiscardControls({
   const discardCount = discardedCards.length;
   return (
     <>
-      <span className="light" style={discardCountSmallStyle}>
+      <span className="light discard-count">
         <b>{discardCount}</b> selected
       </span>
-      <div style={buttonGroupStyle}>
-        {discardCount < totalDiscardable && (
-          <GameButton small secondary onClick={onSetDiscardAll}>
-            Select all
-          </GameButton>
-        )}
-        <GameButton small secondary onClick={onCancelDiscard}>
-          Cancel
+      {/* <div style={buttonGroupStyle}> */}
+      {discardCount < totalDiscardable && (
+        <GameButton small secondary onClick={onSetDiscardAll}>
+          Select all
         </GameButton>
-        {lobby.settings.enable_tag_exchange && (
-          <BeginTagExchangeButton
-            cards={discardedCards}
-            disabled={discardCount == 0}
-            onExchangeComplete={onCancelDiscard}
-          />
-        )}
-        {/* TODO: loading animation while discard is in flight */}
-        <GameButton
-          small
-          onClick={() => onSubmitDiscard()}
+      )}
+      <GameButton small secondary onClick={onCancelDiscard}>
+        Cancel
+      </GameButton>
+      {lobby.settings.enable_tag_exchange && (
+        <BeginTagExchangeButton
+          cards={discardedCards}
           disabled={discardCount == 0}
-        >
-          Discard
-        </GameButton>
-      </div>
+          onExchangeComplete={onCancelDiscard}
+        />
+      )}
+      {/* TODO: loading animation while discard is in flight */}
+      <GameButton
+        small
+        onClick={() => onSubmitDiscard()}
+        disabled={discardCount == 0}
+      >
+        Discard
+      </GameButton>
+      {/* </div> */}
     </>
   );
 }
