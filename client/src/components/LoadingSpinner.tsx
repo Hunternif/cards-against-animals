@@ -1,7 +1,6 @@
 import { CSSProperties } from 'react';
-import { Spinner } from 'react-bootstrap';
-import { CenteredLayout } from './layout/CenteredLayout';
 import { Delay } from './Delay';
+import { CenteredLayout } from './layout/CenteredLayout';
 
 interface LoadingProps {
   text?: string;
@@ -21,16 +20,23 @@ export function LoadingSpinner({
   inline,
 }: LoadingProps) {
   const component = inline ? (
-    <Spinner
-      className="spinner inline-spinner"
-      style={{ width: '1em', height: '1em' }}
-    />
+    <Spinner inline style={{ width: '1em', height: '1em' }} />
   ) : (
     <CenteredLayout innerStyle={{ textAlign: 'center', ...style }}>
       {text && <h5 style={{ marginBottom: '1em' }}>{text}</h5>}
-      <Spinner className="spinner" />
+      <Spinner />
     </CenteredLayout>
   );
   if (delay || delayMs) return <Delay delayMs={delayMs}>{component}</Delay>;
   else return component;
+}
+
+interface SpinnerProps {
+  inline?: boolean;
+  style?: CSSProperties;
+}
+function Spinner({ inline, style }: SpinnerProps) {
+  const classes = ['spinner', 'spinner-border2'];
+  if (inline) classes.push('inline-spinner');
+  return <div className={classes.join(' ')} style={style} />;
 }

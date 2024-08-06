@@ -1,0 +1,24 @@
+// Copied from Bootsrap
+.spinner-border2 {
+  --spinner-animation-speed: 0.75s;
+  --spinner-animation-name: spinner-border;
+  border: 0.25em solid currentcolor;
+  border-right-color: transparent;
+
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: -0.125em;
+  border-radius: 50%;
+  animation: var(--spinner-animation-speed) linear infinite spinner-spin;
+  
+  @media (prefers-reduced-motion: reduce) {
+    --spinner-animation-speed: 1.5s;
+  }
+}
+
+@keyframes spinner-spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
