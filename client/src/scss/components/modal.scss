@@ -82,6 +82,13 @@
       margin-top: 0.5em;
     }
   }
+
+  &.error-modal {
+    .modal-title {
+      color: colors.$error-red;
+    }
+    border: 2px solid colors.$error-red;
+  }
 }
 .modal-body {
   &:not(.long-format) {

@@ -1,23 +1,21 @@
-import { Modal } from "react-bootstrap";
+import { Modal, ModalBody } from './Modal';
 
 interface Props {
-  error?: any,
+  error?: any;
   /** Used for clearing the error */
-  setError: (error: any) => void,
+  setError: (error: any) => void;
 }
 
 export function ErrorModal({ error, setError }: Props) {
   return (
     <Modal
+      closeButton
       show={error != undefined}
       onHide={() => setError(null)}
-      contentClassName="border-danger"
-      centered
+      className="error-modal"
+      title="Error"
     >
-      <Modal.Header closeButton>
-        <Modal.Title>Error</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>{error instanceof Error && error.message}</Modal.Body>
+      <ModalBody>{error instanceof Error && error.message}</ModalBody>
     </Modal>
   );
 }
