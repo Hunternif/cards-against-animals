@@ -91,6 +91,9 @@ async function allowJoinAsPlayer(lobby: GameLobby): Promise<boolean> {
   switch (lobby.status) {
     case 'new':
       return true;
+    case 'starting':
+      // Let them try again after the lobby has started:
+      return false;
     case 'in_progress':
       return lobby.settings.allow_join_mid_game;
     case 'ended':
@@ -104,6 +107,7 @@ async function allowJoinAsPlayer(lobby: GameLobby): Promise<boolean> {
 async function allowJoinAsSpectator(lobby: GameLobby): Promise<boolean> {
   switch (lobby.status) {
     case 'new':
+    case 'starting':
     case 'in_progress':
       return true;
     case 'ended':

@@ -11,6 +11,7 @@ import { ScrollContainer } from '../../../components/layout/ScrollContainer';
 import { GameLobby } from '../../../shared/types';
 import { DeckSelector } from './DeckSelector';
 import { LobbySettingsPanel } from './LobbySettingsPanel';
+import { useHandler } from '../../../hooks/data-hooks';
 
 interface Props {
   user: User;
@@ -19,19 +20,9 @@ interface Props {
 
 export function LobbyCreatorControls(props: Props) {
   const { lobby } = props;
-  const [starting, setStarting] = useState(false);
   const [showLink, setShowLink] = useState(false);
   const { setError } = useContext(ErrorContext);
-
-  async function handleStart() {
-    setStarting(true);
-    try {
-      await startLobby(lobby);
-    } catch (e: any) {
-      setError(e);
-      setStarting(false);
-    }
-  }
+  const [handleStart, starting] = useHandler(() => startLobby(lobby));
 
   async function handleInvite() {
     // Copies link
@@ -44,7 +35,9 @@ export function LobbyCreatorControls(props: Props) {
     await updateLobby(lobby).catch((e) => setError(e));
   }
 
-  if (starting) return <LoadingSpinner text="Starting..." delay />;
+  if (starting || lobby.status === 'starting') {
+    return <LoadingSpinner text="Starting..." />;
+  }
   return (
     <>
       <header>

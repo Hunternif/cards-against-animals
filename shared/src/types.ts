@@ -438,7 +438,7 @@ export type PlayerStatus = 'online' | 'left' | 'banned';
 
 export type TurnPhase = 'new' | 'answering' | 'reading' | 'complete';
 
-export type LobbyStatus = 'new' | 'in_progress' | 'ended';
+export type LobbyStatus = 'new' | 'starting' | 'in_progress' | 'ended';
 
 export type CardType = 'prompt' | 'response';
 

@@ -28,6 +28,10 @@ export async function setLobbyCreator(lobby: GameLobby, userID: string) {
 }
 
 export async function startLobby(lobby: GameLobby): Promise<void> {
+  // Notify other players that the game is starting:
+  lobby.status = 'starting';
+  await updateLobby(lobby);
+  // Now actually start it:
   await startLobbyFun({ lobby_id: lobby.id });
 }
 

@@ -7,6 +7,7 @@ import { ScrollContainer } from '../../../components/layout/ScrollContainer';
 import { GameLobby } from '../../../shared/types';
 import { DeckSelector } from './DeckSelector';
 import { LobbySettingsPanel } from './LobbySettingsPanel';
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
 
 interface Props {
   user: User;
@@ -23,6 +24,9 @@ export function LobbyCreationReadOnly(props: Props) {
     setShowLink(true);
   }
 
+  if (lobby.status === 'starting') {
+    return <LoadingSpinner text="Starting..." />;
+  }
   return (
     <>
       <header>
