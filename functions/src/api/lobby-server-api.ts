@@ -236,14 +236,21 @@ export async function changePlayerRole(
 
 /** Starts the game */
 export async function startLobby(lobby: GameLobby) {
-  await validateGameSettings(lobby);
-  // Copy cards from all added decks into the lobby:
-  await copyDecksToLobby(lobby);
-  await createNewTurn(lobby);
-  // Start the game:
-  lobby.status = 'in_progress';
-  await updateLobby(lobby);
-  logger.info(`Started lobby ${lobby.id}`);
+  try {
+    await validateGameSettings(lobby);
+    // Copy cards from all added decks into the lobby:
+    await copyDecksToLobby(lobby);
+    await createNewTurn(lobby);
+    // Start the game:
+    lobby.status = 'in_progress';
+    await updateLobby(lobby);
+    logger.info(`Started lobby ${lobby.id}`);
+  } catch (e: any) {
+    // Revert lobby status:
+    lobby.status = 'new';
+    await updateLobby(lobby);
+    throw e;
+  }
 }
 
 /** Check and correct any settings before starting the game */
