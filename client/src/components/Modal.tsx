@@ -30,12 +30,12 @@ function ShownModal({
   return (
     <>
       {!noFade && <ModalBackdrop style={{ zIndex: '19' }} />}
-      <div className="modal-container" onClick={onHide}>
+      <div className="modal-container" onMouseDown={onHide}>
         <div
           {...props}
           className={`modal-card ${props.className ?? ''}`}
           // Prevent clicking on the card from closing the modal:
-          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
         >
           {(title || closeButton) && (
             <header>
