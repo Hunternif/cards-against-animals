@@ -95,7 +95,7 @@ function ResponseReadingWithoutName({
   onClickLike,
   showLikes,
 }: Props) {
-  const { lobby, turn, player } = useGameContext();
+  const { lobby, turn, player, responses } = useGameContext();
   const likeCount = useResponseLikeCount(lobby, turn, response);
   const hasMyLike = useResponseMyLike(lobby, turn, response, player.uid);
   const likeIcon = showLikes ? <LikeIcon response={response} /> : null;
@@ -113,6 +113,12 @@ function ResponseReadingWithoutName({
     if (canLike && onClickLike) {
       onClickLike(response);
     }
+  }
+  // TODO: refactor this to reduct duplication!
+  const firstCard = response.cards[0];
+  let content = firstCard.content;
+  if (firstCard.action === 'repeat_last_player') {
+    content = findPreviousResponseCard(responses, response, firstCard).content;
   }
   return (
     <>
@@ -136,7 +142,7 @@ function ResponseReadingWithoutName({
         >
           <CardResponseReading
             card={response.cards[0]}
-            content={response.cards[0].content}
+            content={content}
             revealed={response.reveal_count > 0}
             selectable={canSelect}
             selected={selected}
