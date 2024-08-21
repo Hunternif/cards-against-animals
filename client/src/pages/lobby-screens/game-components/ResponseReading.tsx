@@ -256,7 +256,8 @@ function ManyCardsStack({
         const isLastCard = i === response.cards.length - 1;
         let content = card.content;
         if (card.action === 'repeat_last' && i > 0) {
-          content = response.cards[i - 1].content;
+          // Find closest valid card:
+          content = findPreviousCard(response, i).content;
         }
         return (
           <CardResponseReading
@@ -450,4 +451,19 @@ function getMaxItems(localItems: number[], globalItems: number[]): number[] {
     result[i] = maxItem;
   }
   return result;
+}
+
+/** For the 'repeat_last' action: */
+function findPreviousCard(
+  response: PlayerResponse,
+  currentPos: number,
+): ResponseCardInGame {
+  // Find closest valid card:
+  for (let j = currentPos - 1; j >= 0; j--) {
+    if (response.cards[j].action !== 'repeat_last') {
+      return response.cards[j];
+    }
+  }
+  // If we failed, return the original card:
+  return response.cards[currentPos];
 }
