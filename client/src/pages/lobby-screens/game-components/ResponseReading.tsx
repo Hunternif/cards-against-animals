@@ -178,6 +178,7 @@ function ManyCardsStack({
   likeIcon,
   hasPlayerLike,
 }: CardStackProps) {
+  const { responses } = useGameContext();
   // Store height and offset value for each card:
   const [heights] = useState(response.cards.map(() => 0));
   const [offsets] = useState<Array<number>>(response.cards.map(() => 0));
@@ -258,6 +259,9 @@ function ManyCardsStack({
         if (card.action === 'repeat_last' && i > 0) {
           // Find closest valid card:
           content = findPreviousCard(response, i).content;
+        }
+        if (card.action === 'repeat_last_player') {
+          content = findPreviousResponseCard(responses, response, card).content;
         }
         return (
           <CardResponseReading
@@ -466,4 +470,24 @@ function findPreviousCard(
   }
   // If we failed, return the original card:
   return response.cards[currentPos];
+}
+
+/** For the 'repeat_player_last' action: */
+function findPreviousResponseCard(
+  responses: PlayerResponse[],
+  currentResponse: PlayerResponse,
+  originalCard: ResponseCardInGame,
+): ResponseCardInGame {
+  const index = responses.findIndex(
+    (r) => r.player_uid === currentResponse.player_uid,
+  );
+  // Find closest valid card:
+  for (let i = index - 1; i >= 0; i--) {
+    const prevCards = responses[i].cards;
+    if (prevCards.length > 0) {
+      return prevCards[prevCards.length - 1];
+    }
+  }
+  // If we failed, return the original card:
+  return originalCard;
 }
