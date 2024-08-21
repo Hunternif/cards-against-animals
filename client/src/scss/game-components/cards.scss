@@ -20,6 +20,7 @@
   padding: 0 0.25rem;
   white-space: pre-line;
   display: inline-block;
+  overflow-wrap: break-word; // for extra long words
   // Render large emoji:
   .emoji {
     height: 18px;
