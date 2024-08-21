@@ -67,7 +67,7 @@ export function WinnerScreen() {
   return (
     <>
       {/* Add context to share offsets between responses */}
-      <CardOffsetContextProvider>
+      {/* <CardOffsetContextProvider> */}
         <GameLayout className="winner-screen">
           <div className="sections-container">
             <div className="winner-section">
@@ -126,7 +126,7 @@ export function WinnerScreen() {
             <Soundboard />
           </footer>
         </GameLayout>
-      </CardOffsetContextProvider>
+      {/* </CardOffsetContextProvider> */}
     </>
   );
 }

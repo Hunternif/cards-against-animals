@@ -115,7 +115,7 @@ export function CardReadingScreen() {
           canVote={isActivePlayer && !isJudge}
         />
         {/* Add context to share offsets between responses */}
-        <CardOffsetContextProvider>
+        {/* <CardOffsetContextProvider> */}
           {shuffledResponses.map((r) => (
             <ResponseReading
               key={r.player_uid}
@@ -134,7 +134,7 @@ export function CardReadingScreen() {
               onClickLike={(r) => handleLike(r)}
             />
           ))}
-        </CardOffsetContextProvider>
+        {/* </CardOffsetContextProvider> */}
       </section>
       <footer>
         {noResponses && (
