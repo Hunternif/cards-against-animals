@@ -89,8 +89,8 @@ export interface LobbySettings {
 export function defaultLobbySettings(): LobbySettings {
   return {
     max_players: 20,
-    play_until: 'max_turns_per_person',
-    max_turns: 10,
+    play_until: 'max_turns',
+    max_turns: 15,
     max_score: 5,
     turns_per_person: 3,
     cards_per_person: 10,
