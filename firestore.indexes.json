@@ -7,6 +7,14 @@
         { "fieldPath": "tags", "arrayConfig": "CONTAINS" },
         { "fieldPath": "random_index", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "deck_responses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "tags", "order": "ASCENDING" },
+        { "fieldPath": "random_index", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
