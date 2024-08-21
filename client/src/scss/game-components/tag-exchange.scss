@@ -13,6 +13,7 @@
     border-radius: 0.5em;
     border: 3px solid colors.$menu-lvl1-light;
     background-color: rgba(colors.$bg-dark, 50%);
+    overflow: hidden;
 
     ul {
       @extend .miniscrollbar;
