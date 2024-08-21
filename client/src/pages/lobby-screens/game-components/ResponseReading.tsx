@@ -115,6 +115,8 @@ function ResponseReadingWithoutName({
     }
   }
   // TODO: refactor this to reduct duplication!
+  // TODO: reuse response from the previous round too
+  // TODO: if the previous detected card also has an action, use it correctly!
   const firstCard = response.cards[0];
   let content = firstCard.content;
   if (firstCard.action === 'repeat_last_player') {
