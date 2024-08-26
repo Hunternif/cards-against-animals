@@ -19,6 +19,7 @@ import { assertExhaustive, countEveryN } from '../shared/utils';
 import { exchangeCards } from './exchange-cards-server-api';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
 import {
+  countOnlinePlayers,
   getLobbyDeckResponsesRef,
   getOrCreatePlayerState,
   getPlayers,
@@ -276,11 +277,12 @@ export async function updatePlayerScoresFromTurn(
   responses: PlayerResponse[],
 ) {
   const players = await getPlayerStates(lobbyID);
+  const playerCount = await countOnlinePlayers(lobbyID, 'player');
   for (const player of players) {
     if (turn.winner_uid === player.uid) {
       player.score++;
       player.wins++;
-      player.discard_tokens++;
+      // player.discard_tokens++; // Do not award tokens for wins.
     }
     const response = responses.find((r) => r.player_uid === player.uid);
     if (response) {
@@ -290,17 +292,20 @@ export async function updatePlayerScoresFromTurn(
         player.uid,
       );
       response.like_count = likeCount;
-      // Discard tokens are awarded every 5 likes:
+      // Discard tokens are awarded every [N/2] likes, where N = number of players
       player.discard_tokens += countEveryN(
         player.likes,
         player.likes + likeCount,
-        5,
+        Math.ceil(playerCount / 2),
       );
       player.likes += likeCount;
       await updatePlayerResponse(lobbyID, turn.id, response);
     }
-    // Discard tokens are also awarded every 5 turns:
-    player.discard_tokens += countEveryN(turn.ordinal, turn.ordinal + 1, 5);
+    // Discard tokens are also awarded every N turns,
+    // where N is based on player wins. (winners get less):
+    // But not less often than the number of turns:
+    const nTurns = Math.min(2 + player.wins, playerCount);
+    player.discard_tokens += countEveryN(turn.ordinal, turn.ordinal + 1, nTurns);
     await updatePlayerState(lobbyID, player);
   }
 }

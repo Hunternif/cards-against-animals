@@ -1,4 +1,4 @@
-import { Transaction } from 'firebase-admin/firestore';
+import { Query, Transaction } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { firestore } from '../firebase-server';
 import {
@@ -160,17 +160,16 @@ export async function getPlayers(
 }
 
 /** Counts players in this lobby with this role. */
-export async function countPlayers(
+export async function countOnlinePlayers(
   lobbyID: string,
   role?: PlayerRole,
 ): Promise<number> {
+  let query: Query = getPlayersRef(lobbyID).where('status', '==', 'online');
   if (!role) {
     // Fetch all players
-    return (await getPlayersRef(lobbyID).count().get()).data().count;
+    return (await query.count().get()).data().count;
   } else {
-    return (
-      await getPlayersRef(lobbyID).where('role', '==', role).count().get()
-    ).data().count;
+    return (await query.where('role', '==', role).count().get()).data().count;
   }
 }
 

@@ -26,7 +26,7 @@ import {
   getDeck,
 } from './deck-server-api';
 import {
-  countPlayers,
+  countOnlinePlayers,
   getLobby,
   getOnlinePlayers,
   getOrCreatePlayerState,
@@ -86,7 +86,7 @@ export async function createLobby(userID: string): Promise<GameLobby> {
 }
 
 async function allowJoinAsPlayer(lobby: GameLobby): Promise<boolean> {
-  const playerCount = await countPlayers(lobby.id, 'player');
+  const playerCount = await countOnlinePlayers(lobby.id, 'player');
   if (playerCount >= lobby.settings.max_players) return false;
   switch (lobby.status) {
     case 'new':
@@ -276,7 +276,7 @@ async function validateGameSettings(lobby: GameLobby) {
   }
   // 2. Adjust max_turns for turns_per_person
   if (settings.play_until === 'max_turns_per_person') {
-    const playerCount = await countPlayers(lobby.id, 'player');
+    const playerCount = await countOnlinePlayers(lobby.id, 'player');
     settings.max_turns = Math.min(25, playerCount * settings.turns_per_person);
   }
   await updateLobby(lobby);
