@@ -354,8 +354,10 @@ export type ResponseAction =
   | 'none'
   // Repeats the previous card
   | 'repeat_last'
+  // Repeats the previous player's reponse's first card
+  | 'repeat_player_first'
   // Repeats the previous player's reponse's last card
-  | 'repeat_last_player';
+  | 'repeat_player_last';
 
 /**
  * An instance of a card in game. Contains a reference to the
