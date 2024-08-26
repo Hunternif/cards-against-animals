@@ -5,6 +5,7 @@ import {
   logInteractionsInReadingPhase,
   logPlayedPrompt,
 } from '../api/log-server-api';
+import { updateResponsesContent } from '../api/response-server-api';
 import { updatePlayerScoresFromTurn } from '../api/turn-server-api';
 import {
   getAllPlayerResponses,
@@ -33,7 +34,8 @@ export const createOnTurnPhaseChangeHandler = () =>
           break;
         }
         case 'reading': {
-          // All responses submitted: log interactions.
+          // All responses submitted: update content and log interactions.
+          await updateResponsesContent(lobbyID, turnAfter);
           await logInteractionsInReadingPhase(lobbyID, turnAfter);
           break;
         }

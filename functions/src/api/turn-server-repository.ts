@@ -10,7 +10,6 @@ import {
   GameLobby,
   GameTurn,
   PlayerGameState,
-  PlayerInLobby,
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame,
@@ -88,6 +87,21 @@ export async function getTurn(
     );
   }
   return turn;
+}
+
+/** Creates turn ID, e.g. 1 -> '01' */
+export function makeTurnID(ordinal: number): string {
+  return String(ordinal).padStart(2, '0');
+}
+
+/** Finds the previous turn in the lobby. */
+export async function getPreviousTurn(
+  lobbyID: string,
+  turn: GameTurn,
+): Promise<GameTurn | null> {
+  if (turn.ordinal <= 1) return null;
+  const prevID = makeTurnID(turn.ordinal - 1);
+  return await getTurn(lobbyID, prevID);
 }
 
 /** Finds the last turn in the lobby. */

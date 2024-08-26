@@ -40,6 +40,7 @@ import {
   getTurn,
   getTurnPromptsRef,
   getTurnsRef,
+  makeTurnID,
   setPlayerResponse,
   updatePlayerResponse,
   updateTurn,
@@ -58,7 +59,7 @@ export async function createNewTurn(lobby: GameLobby): Promise<GameTurn> {
   // }
   const judge = await selectJudge(lobby.id, lastTurn);
   const newOrdinal = lastTurn ? lastTurn.ordinal + 1 : 1;
-  const id = 'turn_' + String(newOrdinal).padStart(2, '0');
+  const id = makeTurnID(newOrdinal);
   if (!judge) {
     throw new HttpsError(
       'failed-precondition',

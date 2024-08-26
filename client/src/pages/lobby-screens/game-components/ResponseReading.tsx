@@ -114,14 +114,6 @@ function ResponseReadingWithoutName({
       onClickLike(response);
     }
   }
-  // TODO: refactor this to reduct duplication!
-  // TODO: reuse response from the previous round too
-  // TODO: if the previous detected card also has an action, use it correctly!
-  const firstCard = response.cards[0];
-  let content = firstCard.content;
-  if (firstCard.action === 'repeat_last_player') {
-    content = findPreviousResponseCard(responses, response, firstCard).content;
-  }
   return (
     <>
       {hasManyCards ? (
@@ -144,7 +136,7 @@ function ResponseReadingWithoutName({
         >
           <CardResponseReading
             card={response.cards[0]}
-            content={content}
+            content={response.cards[0].content}
             revealed={response.reveal_count > 0}
             selectable={canSelect}
             selected={selected}
@@ -263,19 +255,11 @@ function ManyCardsStack({
           without interfering with the flow of the rest of the page. */}
       {response.cards.map((card, i) => {
         const isLastCard = i === response.cards.length - 1;
-        let content = card.content;
-        if (card.action === 'repeat_last' && i > 0) {
-          // Find closest valid card:
-          content = findPreviousCard(response, i).content;
-        }
-        if (card.action === 'repeat_last_player') {
-          content = findPreviousResponseCard(responses, response, card).content;
-        }
         return (
           <CardResponseReading
             key={card.id}
             card={card}
-            content={content}
+            content={card.content}
             isOverlaid={i > 0}
             index={i}
             offset={offsets[i]}
@@ -463,39 +447,4 @@ function getMaxItems(localItems: number[], globalItems: number[]): number[] {
     result[i] = maxItem;
   }
   return result;
-}
-
-/** For the 'repeat_last' action: */
-function findPreviousCard(
-  response: PlayerResponse,
-  currentPos: number,
-): ResponseCardInGame {
-  // Find closest valid card:
-  for (let j = currentPos - 1; j >= 0; j--) {
-    if (response.cards[j].action !== 'repeat_last') {
-      return response.cards[j];
-    }
-  }
-  // If we failed, return the original card:
-  return response.cards[currentPos];
-}
-
-/** For the 'repeat_player_last' action: */
-function findPreviousResponseCard(
-  responses: PlayerResponse[],
-  currentResponse: PlayerResponse,
-  originalCard: ResponseCardInGame,
-): ResponseCardInGame {
-  const index = responses.findIndex(
-    (r) => r.player_uid === currentResponse.player_uid,
-  );
-  // Find closest valid card:
-  for (let i = index - 1; i >= 0; i--) {
-    const prevCards = responses[i].cards;
-    if (prevCards.length > 0) {
-      return prevCards[prevCards.length - 1];
-    }
-  }
-  // If we failed, return the original card:
-  return originalCard;
 }
