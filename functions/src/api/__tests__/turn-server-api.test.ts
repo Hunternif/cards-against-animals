@@ -6,7 +6,10 @@ import {
   PlayerRole,
 } from '../../shared/types';
 import { copyFields } from '../../shared/utils';
-import { countOnlinePlayers, getOrCreatePlayerState } from '../lobby-server-repository';
+import {
+  countOnlinePlayers,
+  getOrCreatePlayerState,
+} from '../lobby-server-repository';
 import { payDiscardCost, updatePlayerScoresFromTurn } from '../turn-server-api';
 
 // Maps player ID to player state
@@ -165,7 +168,7 @@ test('updaate score from turn: balancing system', async () => {
   await getOrCreatePlayerState(lobby, 'p3');
   const turn = new GameTurn('turn_01', 1, player.uid);
   expect(countOnlinePlayers(lobby.id, 'player')).toBe(3);
-  
+
   player.discard_tokens = 0;
   turn.ordinal = 1;
   await updatePlayerScoresFromTurn(lobby.id, turn, []);

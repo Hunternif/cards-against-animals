@@ -164,7 +164,7 @@ export async function countOnlinePlayers(
   lobbyID: string,
   role?: PlayerRole,
 ): Promise<number> {
-  let query: Query = getPlayersRef(lobbyID).where('status', '==', 'online');
+  const query: Query = getPlayersRef(lobbyID).where('status', '==', 'online');
   if (!role) {
     // Fetch all players
     return (await query.count().get()).data().count;
