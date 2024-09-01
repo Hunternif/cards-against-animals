@@ -1,5 +1,6 @@
 import { GameTurn, PlayerResponse, ResponseCardInGame } from '../shared/types';
 import { assertExhaustive } from '../shared/utils';
+import { getPlayer } from './lobby-server-repository';
 import {
   getAllPlayerResponses,
   getPreviousTurn,
@@ -14,31 +15,38 @@ export async function updateResponsesContent(lobbyID: string, turn: GameTurn) {
 
   for (const [respIndex, response] of responses.entries()) {
     for (const [cardIndex, card] of response.cards.entries()) {
-      let prevCard: ResponseCardInGame | undefined;
+      let newContent: string | undefined | null;
       switch (card.action) {
         case 'repeat_last':
           // Find previous card in the same response:
           if (cardIndex > 0) {
-            prevCard = response.cards[cardIndex - 1];
+            newContent = response.cards[cardIndex - 1].content;
           }
           break;
         case 'repeat_player_first':
           // Find the first card in the previous player's response:
-          prevCard = await findPreviousResponseFirstCard(
-            lobbyID,
-            turn,
-            responses,
-            respIndex,
-          );
+          newContent = (
+            await findPreviousResponseFirstCard(
+              lobbyID,
+              turn,
+              responses,
+              respIndex,
+            )
+          )?.content;
           break;
         case 'repeat_player_last':
           // Find the last card in the previous player's response:
-          prevCard = await findPreviousResponseLastCard(
-            lobbyID,
-            turn,
-            responses,
-            respIndex,
-          );
+          newContent = (
+            await findPreviousResponseLastCard(
+              lobbyID,
+              turn,
+              responses,
+              respIndex,
+            )
+          )?.content;
+          break;
+        case 'czar_name':
+          newContent = await findJudgeName(lobbyID, turn);
           break;
         case 'none':
         case undefined:
@@ -46,8 +54,8 @@ export async function updateResponsesContent(lobbyID: string, turn: GameTurn) {
         default:
           assertExhaustive(card.action);
       }
-      if (prevCard) {
-        card.content = prevCard.content;
+      if (newContent != null) {
+        card.content = newContent;
         await updatePlayerResponse(lobbyID, turn.id, response);
       }
     }
@@ -123,4 +131,12 @@ async function findPreviousResponse(
     }
   }
   return prevResponse;
+}
+
+async function findJudgeName(
+  lobbyID: string,
+  turn: GameTurn,
+): Promise<string | null> {
+  const player = await getPlayer(lobbyID, turn.judge_uid);
+  return player?.name ?? null;
 }

@@ -357,7 +357,8 @@ export type ResponseAction =
   // Repeats the previous player's reponse's first card
   | 'repeat_player_first'
   // Repeats the previous player's reponse's last card
-  | 'repeat_player_last';
+  | 'repeat_player_last'
+  | 'czar_name';
 
 /**
  * An instance of a card in game. Contains a reference to the
