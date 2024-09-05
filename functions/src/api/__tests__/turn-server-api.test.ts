@@ -6,10 +6,7 @@ import {
   PlayerRole,
 } from '../../shared/types';
 import { copyFields } from '../../shared/utils';
-import {
-  countOnlinePlayers,
-  getOrCreatePlayerState,
-} from '../lobby-server-repository';
+import { getOrCreatePlayerState } from '../lobby-server-repository';
 import { payDiscardCost, updatePlayerScoresFromTurn } from '../turn-server-api';
 
 // Maps player ID to player state
@@ -163,69 +160,78 @@ test('pay discard cost: token', async () => {
   expect(updatedPlayer.discard_tokens).toBe(0);
 });
 
-test('updaate score from turn: balancing system', async () => {
-  await getOrCreatePlayerState(lobby, 'p2');
-  await getOrCreatePlayerState(lobby, 'p3');
-  const turn = new GameTurn('turn_01', 1, player.uid);
-  expect(countOnlinePlayers(lobby.id, 'player')).toBe(3);
-
-  player.discard_tokens = 0;
-  turn.ordinal = 1;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(1);
-  turn.ordinal = 2;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(1);
-
+test('award tokens: 0 wins => token every 2 turns', async () => {
   // 0 wins: get a token every 2 turns:
-  turn.ordinal = 3;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(2);
-  turn.ordinal = 4;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(2);
-  turn.ordinal = 5;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(3);
+  await verifyDiscardTokenDistribution(
+    lobby,
+    player,
+    3,
+    [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+  );
+});
 
+test('award tokens: 1 win => token every 3 turns', async () => {
   // 1 wins: get a token every 3 turns:
-  player.discard_tokens = 0;
   player.wins = 1;
-  turn.ordinal = 1;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(0);
-  turn.ordinal = 2;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(1);
-  turn.ordinal = 3;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(1);
+  await verifyDiscardTokenDistribution(
+    lobby,
+    player,
+    3,
+    [0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4],
+  );
+});
 
+test('award tokens: 2 wins, 3 players => token every 3 turns', async () => {
   // 2 wins: get a token every 4 turns.
   // But it's limited to 3 because player count is 3:
-  player.discard_tokens = 0;
   player.wins = 2;
-  turn.ordinal = 1;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(0);
-  turn.ordinal = 2;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(1);
-  turn.ordinal = 3;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(1);
-
-  // 2 wins, 4 players: get a token every 4 turns.
-  await getOrCreatePlayerState(lobby, 'p4');
-  player.discard_tokens = 0;
-  player.wins = 2;
-  turn.ordinal = 1;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(0);
-  turn.ordinal = 2;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(0);
-  turn.ordinal = 3;
-  await updatePlayerScoresFromTurn(lobby.id, turn, []);
-  expect(player.discard_tokens).toBe(1);
+  await verifyDiscardTokenDistribution(
+    lobby,
+    player,
+    3,
+    [0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4],
+  );
 });
+
+test('award tokens: 2 wins, 4 players => token every 4 turns', async () => {
+  // 2 wins, 4 players: get a token every 4 turns.
+  player.wins = 2;
+  await verifyDiscardTokenDistribution(
+    lobby,
+    player,
+    4,
+    [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4],
+  );
+});
+
+/*
+ * Verifies that the player gets the expected number of tokens each turn.
+ * E.g.: [1, 1, 2, 2, 3, ...]
+ * turn 1:  1 token
+ * turn 2:  1 token
+ * turn 3:  2 tokens
+ * turn 4:  2 tokens
+ * turn 5:  3 tokens
+ * ...
+ */
+async function verifyDiscardTokenDistribution(
+  lobby: GameLobby,
+  player: PlayerGameState,
+  playerCount: number,
+  tokenCounts: number[],
+) {
+  const turn = new GameTurn('turn_01', 1, player.uid);
+  // Create extra players, because player count affects max token count:
+  for (let i = 1; i < playerCount; i++) {
+    await getOrCreatePlayerState(lobby, `extra_player_${i}`);
+  }
+  // Increment turns ordinal and update score:
+  player.discard_tokens = 0;
+  const actualTokenCounts = new Array<number>(tokenCounts.length);
+  for (let i = 0; i < tokenCounts.length; i++) {
+    turn.ordinal = i;
+    await updatePlayerScoresFromTurn(lobby.id, turn, []);
+    actualTokenCounts[i] = player.discard_tokens;
+  }
+  expect(actualTokenCounts).toEqual(tokenCounts);
+}
