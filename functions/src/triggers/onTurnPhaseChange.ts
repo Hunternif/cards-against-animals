@@ -13,6 +13,7 @@ import {
 } from '../api/turn-server-repository';
 import { turnConverter } from '../shared/firestore-converters';
 import { assertExhaustive } from '../shared/utils';
+import { getLobby } from '../api/lobby-server-repository';
 
 /**
  * Logic to run after each turn phase.
@@ -42,7 +43,8 @@ export const createOnTurnPhaseChangeHandler = () =>
         case 'complete': {
           // Turn completed: update all scores.
           const responses = await getAllPlayerResponses(lobbyID, turnAfter.id);
-          await updatePlayerScoresFromTurn(lobbyID, turnAfter, responses);
+          const lobby = await getLobby(lobbyID);
+          await updatePlayerScoresFromTurn(lobby, turnAfter, responses);
           await logInteractionsInCompletePhase(lobbyID, turnAfter, responses);
           break;
         }

@@ -20,6 +20,7 @@ import { exchangeCards } from './exchange-cards-server-api';
 import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
 import {
   countOnlinePlayers,
+  getLobby,
   getLobbyDeckResponsesRef,
   getOrCreatePlayerState,
   getPlayers,
@@ -273,12 +274,12 @@ export async function dealCardsToPlayer(
 
 /** Updates all player's scores and likes from this turn, if it has ended. */
 export async function updatePlayerScoresFromTurn(
-  lobbyID: string,
+  lobby: GameLobby,
   turn: GameTurn,
   responses: PlayerResponse[],
 ) {
-  const players = await getPlayerStates(lobbyID);
-  const playerCount = await countOnlinePlayers(lobbyID, 'player');
+  const players = await getPlayerStates(lobby.id);
+  const playerCount = await countOnlinePlayers(lobby.id, 'player');
   for (const player of players) {
     if (turn.winner_uid === player.uid) {
       player.score++;
@@ -288,7 +289,7 @@ export async function updatePlayerScoresFromTurn(
     const response = responses.find((r) => r.player_uid === player.uid);
     if (response) {
       const likeCount = await getResponseLikeCount(
-        lobbyID,
+        lobby.id,
         turn.id,
         player.uid,
       );
@@ -300,14 +301,23 @@ export async function updatePlayerScoresFromTurn(
         Math.ceil(playerCount / 2),
       );
       player.likes += likeCount;
-      await updatePlayerResponse(lobbyID, turn.id, response);
+      await updatePlayerResponse(lobby.id, turn.id, response);
     }
     // Discard tokens are also awarded every N turns,
     // where N is based on player wins. (winners get less):
     // But not less often than the number of turns:
     const nTurns = Math.min(2 + player.wins, playerCount);
-    player.discard_tokens += countEveryN(turn.ordinal, turn.ordinal + 1, nTurns);
-    await updatePlayerState(lobbyID, player);
+    player.discard_tokens += countEveryN(
+      turn.ordinal,
+      turn.ordinal + 1,
+      nTurns,
+    );
+    // Limit max number of tokens:
+    player.discard_tokens = Math.min(
+      player.discard_tokens,
+      lobby.settings.max_discard_tokens,
+    );
+    await updatePlayerState(lobby.id, player);
   }
 }
 

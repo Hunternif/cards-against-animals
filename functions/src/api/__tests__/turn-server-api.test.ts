@@ -6,7 +6,7 @@ import {
   PlayerRole,
 } from '../../shared/types';
 import { copyFields } from '../../shared/utils';
-import { getOrCreatePlayerState } from '../lobby-server-repository';
+import { getLobby, getOrCreatePlayerState } from '../lobby-server-repository';
 import { payDiscardCost, updatePlayerScoresFromTurn } from '../turn-server-api';
 
 // Maps player ID to player state
@@ -204,6 +204,17 @@ test('award tokens: 2 wins, 4 players => token every 4 turns', async () => {
   );
 });
 
+test('award tokens: 1 win, max_tokens = 2 => token every 3 turns, up to 2', async () => {
+  lobby.settings.max_discard_tokens = 2;
+  player.wins = 1;
+  await verifyDiscardTokenDistribution(
+    lobby,
+    player,
+    4,
+    [0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+  );
+});
+
 /*
  * Verifies that the player gets the expected number of tokens each turn.
  * E.g.: [1, 1, 2, 2, 3, ...]
@@ -230,7 +241,7 @@ async function verifyDiscardTokenDistribution(
   const actualTokenCounts = new Array<number>(tokenCounts.length);
   for (let i = 0; i < tokenCounts.length; i++) {
     turn.ordinal = i;
-    await updatePlayerScoresFromTurn(lobby.id, turn, []);
+    await updatePlayerScoresFromTurn(lobby, turn, []);
     actualTokenCounts[i] = player.discard_tokens;
   }
   expect(actualTokenCounts).toEqual(tokenCounts);

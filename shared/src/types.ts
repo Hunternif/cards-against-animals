@@ -84,6 +84,8 @@ export interface LobbySettings {
   next_turn_time_sec: number;
   /** How many discard tokens each player gets initially. */
   init_discard_tokens: number;
+  /** Max number of discard tokens any player can get. */
+  max_discard_tokens: number;
 }
 
 export function defaultLobbySettings(): LobbySettings {
@@ -114,6 +116,7 @@ export function defaultLobbySettings(): LobbySettings {
     lobby_control: 'creator',
     next_turn_time_sec: 4.0,
     init_discard_tokens: 1,
+    max_discard_tokens: 5,
   };
 }
 
