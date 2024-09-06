@@ -95,7 +95,7 @@ export function defaultLobbySettings(): LobbySettings {
     max_turns: 15,
     max_score: 5,
     turns_per_person: 3,
-    cards_per_person: 10,
+    cards_per_person: 12,
     new_cards_first: false,
     sort_cards_by_rating: true,
     sort_cards_by_views: false,
@@ -114,9 +114,9 @@ export function defaultLobbySettings(): LobbySettings {
     discard_cost: 'token',
     enable_tag_exchange: false,
     lobby_control: 'creator',
-    next_turn_time_sec: 4.0,
+    next_turn_time_sec: 5.0,
     init_discard_tokens: 1,
-    max_discard_tokens: 5,
+    max_discard_tokens: 4,
   };
 }
 
