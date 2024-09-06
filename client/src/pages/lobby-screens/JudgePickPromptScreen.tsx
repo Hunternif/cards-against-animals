@@ -19,7 +19,7 @@ import {
 } from '../../api/turn/turn-prompt-api';
 
 export function JudgePickPromptScreen() {
-  const { lobby, turn } = useGameContext();
+  const { lobby, turn, isJudge } = useGameContext();
   const [prompts, setPrompts] = useState<PromptCardInGame[]>([]);
   const [haikuPrompt, setHaikuPrompt] = useState(haikuPrompt3);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptCardInGame | null>(
@@ -103,7 +103,7 @@ export function JudgePickPromptScreen() {
   }, [lobby, prompts]);
 
   useEffect(() => {
-    if (!notified) {
+    if (!notified && isJudge) {
       new Audio(pop_3).play();
       setNotified(true);
     }

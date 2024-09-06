@@ -40,7 +40,7 @@ export function JudgeAwaitResponsesScreen() {
 
   // Play sound when everyone has answered:
   useEffect(() => {
-    if (allResponded) {
+    if (allResponded && isJudge) {
       new Audio(bell_double).play();
     }
   }, [allResponded]);
