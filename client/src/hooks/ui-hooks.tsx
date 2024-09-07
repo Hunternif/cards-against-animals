@@ -1,4 +1,4 @@
-import { EffectCallback, useEffect } from 'react';
+import { EffectCallback, useEffect, useRef } from 'react';
 
 export function useEffectOnce(effect: EffectCallback) {
   useEffect(effect, []);
@@ -26,4 +26,47 @@ export function useKeyDown(callback: () => void, keys: string[]) {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [onKeyDown]);
+}
+
+/**
+ * Calls the provided callback when the user clicks outside of an element.
+ * The element must use the ref that is returned from this hook
+ * From https://bigfrontend.dev/react/useclickoutside/discuss
+ */
+export function useClickOutside<T extends HTMLElement>(
+  callback: () => void,
+): React.Ref<T> {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const click = ({ target }: Event): void => {
+      if (target && ref.current && !ref.current.contains(target as Node)) {
+        callback();
+      }
+    };
+    // Chrome doesn't support mousedown.
+    // See https://stackoverflow.com/a/41238807/1093712
+    document.addEventListener('pointerdown', click);
+
+    return () => {
+      document.removeEventListener('pointerdown', click);
+    };
+  }, []);
+  return ref;
+}
+
+/** Calls the callback on any mouse click */
+export function useClick(callback: () => void) {
+  useEffect(() => {
+    const click = () => {
+      callback();
+    };
+    // Chrome doesn't support mousedown.
+    // See https://stackoverflow.com/a/41238807/1093712
+    document.addEventListener('pointerdown', click);
+
+    return () => {
+      document.removeEventListener('pointerdown', click);
+    };
+  }, []);
 }

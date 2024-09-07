@@ -1,5 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { ConfirmModal } from '../../../components/ConfirmModal';
+import { useClickOutside } from '../../../hooks/ui-hooks';
 import {
   filterPromptDeckCard,
   filterResponseDeckCard,
@@ -36,6 +37,13 @@ export function AdminEditCardModal({
   const isResponse = card && filterResponseDeckCard(card);
   if (isPrompt) cardClasses.push('card-prompt');
   if (isResponse) cardClasses.push('card-response');
+
+  const [newContent, setNewContent] = useState(card?.content);
+
+  function beforeClose() {
+    setNewContent(undefined);
+  }
+
   return (
     <ConfirmModal
       closeButton
@@ -44,11 +52,20 @@ export function AdminEditCardModal({
       className="edit-card-modal"
       show={card != null}
       okText="Save"
-      onConfirm={onComplete}
-      onCancel={onCancel}
+      onConfirm={() => {
+        beforeClose();
+        onComplete();
+      }}
+      onCancel={() => {
+        beforeClose();
+        onCancel();
+      }}
     >
       <LargeCard className={cardClasses.join(' ')}>
-        <CardContent>{card?.content}</CardContent>
+        <EditableCardContent
+          original={newContent ?? card?.content}
+          onChange={setNewContent}
+        />
         {isPrompt && card.pick > 1 && (
           <CardBottomRight>
             <PromptPick pick={card.pick} />
@@ -59,6 +76,41 @@ export function AdminEditCardModal({
       {isResponse && <ResponseStats deck={deck} card={card} />}
     </ConfirmModal>
   );
+}
+
+interface EditableContentProps {
+  original?: string;
+  onChange: (newValue: string) => void;
+}
+function EditableCardContent({ original, onChange }: EditableContentProps) {
+  const [edit, setEdit] = useState(false);
+
+  // To auto-hide text area when clicking outside.
+  const textAreaRef = useClickOutside<HTMLTextAreaElement>(() =>
+    setEdit(false),
+  );
+
+  if (edit)
+    return (
+      <textarea
+        ref={textAreaRef}
+        defaultValue={original}
+        onChange={(e) => {
+          const newValue = e.target.value;
+          onChange(newValue);
+        }}
+      />
+    );
+  else
+    return (
+      <CardContent
+        onClick={() => {
+          setEdit(true);
+        }}
+      >
+        {original}
+      </CardContent>
+    );
 }
 
 interface PropmtStatsProps {
