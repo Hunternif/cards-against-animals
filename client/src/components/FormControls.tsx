@@ -174,6 +174,7 @@ interface TextInputProps extends ControlProps {
   onChange: ChangeHandler<string>;
   password?: boolean;
   debounce?: boolean;
+  debounceMs?: number;
 }
 
 /** Form input: text */
@@ -183,18 +184,20 @@ export function TextInput({
   disabled,
   password,
   onChange,
+  debounce: enableDebounce,
+  debounceMs,
   ...props
 }: TextInputProps) {
   const { setError } = useContext(ErrorContext);
   const controlClass = getControlStyle(props);
   const debouncedHandler = useMemo(
-    () => debounce(onChange) as ChangeHandler<string>,
+    () => debounce(onChange, debounceMs ?? 1000) as ChangeHandler<string>,
     [onChange],
   );
   async function handleChange(event: ChangeEvent<HTMLInputElement>) {
     try {
       const newValue = event.currentTarget.value;
-      if (props.debounce) {
+      if (enableDebounce || (debounceMs != null && debounceMs > 0)) {
         await debouncedHandler(newValue);
       } else {
         await onChange(newValue);

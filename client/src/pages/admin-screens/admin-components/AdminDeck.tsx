@@ -19,6 +19,7 @@ import { AdminDeckPasswordModal } from './AdminDeckPasswordModal';
 import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 import { AdminEditCardModal } from './AdminEditCardModal';
 import { AdminTagsTable } from './AdminTagsTable';
+import { TextInput } from '../../../components/FormControls';
 
 interface Props {
   deckID: string;
@@ -79,6 +80,20 @@ export function AdminDeck({ deckID }: Props) {
         .catch((e) => setError(e));
     }
   });
+
+  async function filter(text: string) {
+    if (!deck) return;
+    if (text.length > 0) {
+      // Filter by content:
+      const filteredCards = deckCardset.cards.filter((c) =>
+        c.content.toLowerCase().includes(text.toLowerCase()),
+      );
+      setDeckCardset(DeckCardSet.fromList(filteredCards));
+      // TODO: filter by card IDs or by tags.
+    } else {
+      setDeckCardset(DeckCardSet.fromDeck(deck).sortByIDs());
+    }
+  }
 
   if (!deck) return <LoadingSpinner />;
 
@@ -157,6 +172,12 @@ export function AdminDeck({ deckID }: Props) {
         <GameButton inline light onClick={() => setShowTagsDialog(true)}>
           Tags
         </GameButton>
+        <TextInput
+          className="search-input"
+          debounceMs={200}
+          placeholder="Seach..."
+          onChange={filter}
+        ></TextInput>
       </div>
 
       <VirtualTable
