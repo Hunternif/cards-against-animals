@@ -72,6 +72,11 @@ export function copyDeckCard<
   }
 }
 
+/** Formats prompt text for display, making gaps longer. */
+export function formatPrompt(text: string): string {
+  return text.replace(/_+/g, "______");
+}
+
 /**
  * Prompts and responses can have the same ID.
  * This function returns a prefixed ID that is unique in a list containing

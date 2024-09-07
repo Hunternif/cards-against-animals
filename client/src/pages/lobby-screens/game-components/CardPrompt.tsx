@@ -16,6 +16,7 @@ import {
   CardContent,
   LargeCard,
 } from "./LargeCard";
+import { formatPrompt } from "../../../shared/deck-utils";
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
@@ -24,11 +25,6 @@ interface PromptCardProps {
   canSelect?: boolean;
   selected?: boolean;
   onClick?: () => void;
-}
-
-/** Formats gaps to be longer. */
-function formatPrompt(text: string): string {
-  return text.replace(/_+/g, "______");
 }
 
 export function CardPrompt(props: PromptCardProps) {

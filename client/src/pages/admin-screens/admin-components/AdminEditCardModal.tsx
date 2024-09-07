@@ -4,6 +4,7 @@ import { useClickOutside } from '../../../hooks/ui-hooks';
 import {
   filterPromptDeckCard,
   filterResponseDeckCard,
+  formatPrompt,
 } from '../../../shared/deck-utils';
 import {
   Deck,
@@ -65,6 +66,7 @@ export function AdminEditCardModal({
         <EditableCardContent
           original={newContent ?? card?.content}
           onChange={setNewContent}
+          isPrompt={isPrompt}
         />
         {isPrompt && card.pick > 1 && (
           <CardBottomRight>
@@ -81,8 +83,13 @@ export function AdminEditCardModal({
 interface EditableContentProps {
   original?: string;
   onChange: (newValue: string) => void;
+  isPrompt?: boolean;
 }
-function EditableCardContent({ original, onChange }: EditableContentProps) {
+function EditableCardContent({
+  original,
+  onChange,
+  isPrompt,
+}: EditableContentProps) {
   const [edit, setEdit] = useState(false);
 
   // To auto-hide text area when clicking outside.
@@ -108,7 +115,7 @@ function EditableCardContent({ original, onChange }: EditableContentProps) {
           setEdit(true);
         }}
       >
-        {original}
+        {original && isPrompt ? formatPrompt(original) : original}
       </CardContent>
     );
 }
