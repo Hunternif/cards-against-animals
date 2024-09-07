@@ -18,6 +18,7 @@ import {
 import { AdminDeckPasswordModal } from './AdminDeckPasswordModal';
 import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 import { AdminTagsTable } from './AdminTagsTable';
+import { AdminEditCardModal } from './AdminEditCardModal';
 
 interface Props {
   deckID: string;
@@ -43,6 +44,8 @@ export function AdminDeck({ deckID }: Props) {
   // TODO: optimize, retain the same instance between renders.
   const selectedCardset = new DeckCardSet(selectedCards.values());
   const isAnySelected = selectedCardset.size > 0;
+
+  const [editedCard, setEditedCard] = useState<DeckCard>();
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(cardTypedID(card));
@@ -125,6 +128,12 @@ export function AdminDeck({ deckID }: Props) {
         onComplete={() => setShowLockDialog(false)}
       />
 
+      <AdminEditCardModal
+        card={editedCard}
+        onCancel={() => setEditedCard(undefined)}
+        onComplete={() => setEditedCard(undefined)}
+      />
+
       {/* Extra controls: */}
       <div className="admin-deck-control-row">
         <GameButton
@@ -165,6 +174,7 @@ export function AdminDeck({ deckID }: Props) {
             card={card}
             selected={isSelected(card)}
             onClick={() => toggleSelectedCard(card)}
+            onEdit={() => setEditedCard(card)}
           />
         )}
       />

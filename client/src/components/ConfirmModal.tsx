@@ -20,6 +20,7 @@ interface ModalProps {
   longFormat?: boolean;
   /** See ModalBody props */
   scroll?: boolean;
+  closeButton?: boolean;
 }
 
 export function ConfirmModal({
@@ -37,9 +38,16 @@ export function ConfirmModal({
   onCancel,
   longFormat,
   scroll,
+  closeButton,
 }: ModalProps) {
   return (
-    <Modal show={show} title={title} className={className} onHide={onCancel}>
+    <Modal
+      show={show}
+      title={title}
+      className={className}
+      onHide={onCancel}
+      closeButton={closeButton}
+    >
       <form className="modal-confirm-form" onSubmit={(e) => e.preventDefault()}>
         <ModalBody
           loading={loading}

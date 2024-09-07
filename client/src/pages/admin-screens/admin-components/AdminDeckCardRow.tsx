@@ -12,6 +12,7 @@ interface RowProps {
   card: DeckCard;
   selected?: boolean;
   onClick?: () => void;
+  onEdit?: () => void;
   isErrored?: boolean;
 }
 
@@ -26,6 +27,7 @@ export function AdminDeckCardRow({
   card,
   selected,
   onClick,
+  onEdit,
   isErrored,
 }: RowProps) {
   const isPrompt = card instanceof PromptDeckCard;
@@ -47,7 +49,7 @@ export function AdminDeckCardRow({
       <td className="col-card-id">{card.id}</td>
       <td className="col-card-content" style={rowStyle}>
         <CardContentRow>{card.content}</CardContentRow>
-        <EditButton />
+        <EditButton onClick={onEdit} />
         {isPrompt && <div className="prompt-pick-number">{card.pick}</div>}
       </td>
       <td className="col-card-tags">{card.tags.join(', ')}</td>
