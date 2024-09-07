@@ -105,11 +105,19 @@
     &.selected {
       background-color: colors.$button-light-bg;
       &.row-prompt .col-card-content {
-        background-color: color-mix(in srgb, colors.$card-prompt-bg-dark 60%, colors.$button-light-bg);
+        background-color: color-mix(
+          in srgb,
+          colors.$card-prompt-bg-dark 60%,
+          colors.$button-light-bg
+        );
       }
       &.row-response .col-card-content {
         // background-color: rgba(colors.$button-border-hover, 0.3);
-        background-color: color-mix(in srgb, colors.$card-response-bg 75%, colors.$button-light-bg);
+        background-color: color-mix(
+          in srgb,
+          colors.$card-response-bg 75%,
+          colors.$button-light-bg
+        );
       }
     }
     &:hover .edit-button {
@@ -239,7 +247,8 @@
     }
   }
   .admin-deck-table-header {
-    .col-card-id, .col-card-content {
+    .col-card-id,
+    .col-card-content {
       // Sticky column, must prevent overlap:
       background-color: colors.$modal-bg;
     }
@@ -288,4 +297,30 @@
 
 .admin-deck-selector {
   min-width: 0; // This ignores extra long values and fits in the grid
+}
+
+.edit-card-modal {
+  .modal-body {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    .stats {
+      font-size: 13px;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: 4rem 8rem;
+      gap: 0.5rem;
+      margin-bottom: 0.5em;
+      dt {
+        font-weight: 200;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      dd {
+        // text-align: right;
+        margin: 0;
+      }
+    }
+  }
 }

@@ -17,8 +17,8 @@ import {
 } from './AdminDeckCardRow';
 import { AdminDeckPasswordModal } from './AdminDeckPasswordModal';
 import { AdminDeckTableHeader } from './AdminDeckTableHeader';
-import { AdminTagsTable } from './AdminTagsTable';
 import { AdminEditCardModal } from './AdminEditCardModal';
+import { AdminTagsTable } from './AdminTagsTable';
 
 interface Props {
   deckID: string;
@@ -129,6 +129,7 @@ export function AdminDeck({ deckID }: Props) {
       />
 
       <AdminEditCardModal
+        deck={deck}
         card={editedCard}
         onCancel={() => setEditedCard(undefined)}
         onComplete={() => setEditedCard(undefined)}

@@ -311,7 +311,8 @@ export interface DeckCard {
 
 /** Prompt card in deck */
 export class PromptDeckCard implements DeckCard {
-  wins = 0; // doesn't apply to prompts
+  /** Doesn't apply to prompts */
+  wins = 0;
   constructor(
     public id: string,
     public content: string,
