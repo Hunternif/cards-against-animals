@@ -1,5 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { ConfirmModal } from '../../../components/ConfirmModal';
+import { useErrorContext } from '../../../components/ErrorContext';
+import { useDIContext } from '../../../di-context';
 import { useClickOutside } from '../../../hooks/ui-hooks';
 import {
   filterPromptDeckCard,
@@ -33,6 +35,10 @@ export function AdminEditCardModal({
   onComplete,
   onCancel,
 }: Props) {
+  const { deckRepository } = useDIContext();
+  const { setError } = useErrorContext();
+  const [saving, setSaving] = useState(false);
+
   const cardClasses = ['editable-card'];
   const isPrompt = card && filterPromptDeckCard(card);
   const isResponse = card && filterResponseDeckCard(card);
@@ -41,8 +47,25 @@ export function AdminEditCardModal({
 
   const [newContent, setNewContent] = useState(card?.content);
 
-  function beforeClose() {
+  async function handleSave() {
     setNewContent(undefined);
+    setSaving(true);
+    try {
+      if (deck && card) {
+        if (newContent) card.content = newContent;
+        await deckRepository.updateCard(deck, card);
+      }
+      onComplete();
+    } catch (e: any) {
+      setError(e);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function handleCancel() {
+    setNewContent(undefined);
+    onCancel();
   }
 
   return (
@@ -53,14 +76,9 @@ export function AdminEditCardModal({
       className="edit-card-modal"
       show={card != null}
       okText="Save"
-      onConfirm={() => {
-        beforeClose();
-        onComplete();
-      }}
-      onCancel={() => {
-        beforeClose();
-        onCancel();
-      }}
+      onConfirm={handleSave}
+      onCancel={handleCancel}
+      processing={saving}
     >
       <LargeCard className={cardClasses.join(' ')}>
         <EditableCardContent
