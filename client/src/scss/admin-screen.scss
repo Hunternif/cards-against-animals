@@ -43,6 +43,9 @@
 .admin-deck-accordion {
   section {
     padding-top: 0;
+    .spinner {
+      margin-top: 0.5rem;
+    }
   }
 }
 
