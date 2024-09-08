@@ -31,7 +31,8 @@ interface Props {
 export function AdminDeck({ deckID }: Props) {
   const { deckRepository } = useDIContext();
   const [deck, setDeck] = useState<Deck | null>(null);
-  const [deckCardset, setDeckCardset] = useState(emptySet);
+  const [fullDeckCardset, setFullDeckCardset] = useState(emptySet);
+  const [currentCardset, setCurrentCardset] = useState(emptySet);
   const { setError } = useContext(ErrorContext);
   // Maps card 'typed id' to card
   const [selectedCards, setSelectedCards] = useState<Map<string, DeckCard>>(
@@ -61,7 +62,7 @@ export function AdminDeck({ deckID }: Props) {
   function toggleSelectAll(checked: boolean) {
     if (checked) {
       setSelectedCards(
-        new Map(deckCardset.cards.map((c) => [cardTypedID(c), c])),
+        new Map(currentCardset.cards.map((c) => [cardTypedID(c), c])),
       );
     } else {
       setSelectedCards(new Map());
@@ -75,7 +76,9 @@ export function AdminDeck({ deckID }: Props) {
         .downloadDeck(deckID)
         .then((val) => {
           setDeck(val);
-          setDeckCardset(DeckCardSet.fromDeck(val).sortByIDs());
+          const cardset = DeckCardSet.fromDeck(val).sortByIDs();
+          setFullDeckCardset(cardset);
+          setCurrentCardset(cardset);
         })
         .catch((e) => setError(e));
     }
@@ -85,13 +88,13 @@ export function AdminDeck({ deckID }: Props) {
     if (!deck) return;
     if (text.length > 0) {
       // Filter by content:
-      const filteredCards = deckCardset.cards.filter((c) =>
+      const filteredCards = fullDeckCardset.cards.filter((c) =>
         c.content.toLowerCase().includes(text.toLowerCase()),
       );
-      setDeckCardset(DeckCardSet.fromList(filteredCards));
+      setCurrentCardset(DeckCardSet.fromList(filteredCards));
       // TODO: filter by card IDs or by tags.
     } else {
-      setDeckCardset(DeckCardSet.fromDeck(deck).sortByIDs());
+      setCurrentCardset(fullDeckCardset);
     }
   }
 
@@ -185,10 +188,10 @@ export function AdminDeck({ deckID }: Props) {
       <VirtualTable
         className="admin-deck-table"
         rowHeight={adminDeckRowHeightWithBorder}
-        data={deckCardset.cards}
+        data={currentCardset.cards}
         header={
           <AdminDeckTableHeader
-            cards={deckCardset}
+            cards={currentCardset}
             selected={selectedCardset}
             onToggleAll={toggleSelectAll}
           />
