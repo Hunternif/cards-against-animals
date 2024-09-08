@@ -31,12 +31,23 @@ export function Twemoji(props: Props) {
         return `${options.base}${options.size}/${iconHex}${options.ext}`;
       },
     });
-    // Fixes a rendering bug in Chrome, where symbols like '♂' become extra thin
-    // whenever font weight is set:
-    return twemojiHtml.replace(
-      symbolsRegexGlobal,
-      '<span class="symbol-text">$1</span>',
-    );
+    // Fix a rendering bug in Chrome, where symbols like '♂' become extra thin
+    // whenever font weight is set.
+    // 1. Double-check if there are any special symbols in the text:
+    if (symbolsRegexGlobal.test(twemojiHtml)) {
+      // 2. Split text without splitting emojis.
+      // The '♂' symbol is often used in a 'grapheme cluster' for emoji.
+      // See https://www.npmjs.com/package/runes#example
+      return (
+        [...twemojiHtml]
+          // 3. Wrap symbols in a special tag:
+          .map((c) =>
+            symbolsRegex.test(c) ? `<span class="symbol-text">${c}</span>` : c,
+          )
+          .join('')
+      );
+    }
+    return twemojiHtml;
   }
   // TODO: parse emoji while typing
   function refreshHTML(event: FormEvent<HTMLSpanElement>) {
