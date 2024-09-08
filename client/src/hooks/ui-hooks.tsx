@@ -35,7 +35,7 @@ export function useKeyDown(callback: () => void, keys: string[]) {
  */
 export function useClickOutside<T extends HTMLElement>(
   callback: () => void,
-): React.Ref<T> {
+): React.RefObject<T> {
   const ref = useRef<T>(null);
 
   useEffect(() => {

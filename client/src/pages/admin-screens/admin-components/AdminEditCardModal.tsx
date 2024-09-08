@@ -82,7 +82,7 @@ export function AdminEditCardModal({
       onConfirm={handleSave}
       onCancel={handleCancel}
       processing={saving}
-      okButton={{accent: dirty}}
+      okButton={{ accent: dirty }}
     >
       <LargeCard className={cardClasses.join(' ')}>
         <EditableCardContent
@@ -125,6 +125,14 @@ function EditableCardContent({
   if (edit)
     return (
       <textarea
+        autoFocus
+        onFocus={(e) => {
+          // set cursor to the end of the text:
+          e.target.setSelectionRange(
+            e.target.value.length,
+            e.target.value.length,
+          );
+        }}
         ref={textAreaRef}
         defaultValue={original}
         onChange={(e) => {
