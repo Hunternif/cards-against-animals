@@ -38,6 +38,7 @@ export function AdminEditCardModal({
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
   const cardClasses = ['editable-card'];
   const isPrompt = card && filterPromptDeckCard(card);
@@ -55,6 +56,7 @@ export function AdminEditCardModal({
         if (newContent) card.content = newContent;
         await deckRepository.updateCard(deck, card);
       }
+      setDirty(false);
       onComplete();
     } catch (e: any) {
       setError(e);
@@ -65,6 +67,7 @@ export function AdminEditCardModal({
 
   function handleCancel() {
     setNewContent(undefined);
+    setDirty(false);
     onCancel();
   }
 
@@ -72,18 +75,22 @@ export function AdminEditCardModal({
     <ConfirmModal
       closeButton
       longFormat
-      title="Edit card"
+      title={dirty ? 'Edit card*' : 'Edit card'}
       className="edit-card-modal"
       show={card != null}
       okText="Save"
       onConfirm={handleSave}
       onCancel={handleCancel}
       processing={saving}
+      okButton={{accent: dirty}}
     >
       <LargeCard className={cardClasses.join(' ')}>
         <EditableCardContent
           original={newContent ?? card?.content}
-          onChange={setNewContent}
+          onChange={(c) => {
+            setNewContent(c);
+            setDirty(true);
+          }}
           isPrompt={isPrompt}
         />
         {isPrompt && card.pick > 1 && (

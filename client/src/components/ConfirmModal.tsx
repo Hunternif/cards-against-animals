@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { GameButton } from './Buttons';
+import { ButtonProps, GameButton } from './Buttons';
 import { Modal, ModalBody, ModalFooter } from './Modal';
 
 interface ModalProps {
@@ -21,6 +21,7 @@ interface ModalProps {
   /** See ModalBody props */
   scroll?: boolean;
   closeButton?: boolean;
+  okButton?: ButtonProps;
 }
 
 export function ConfirmModal({
@@ -39,6 +40,7 @@ export function ConfirmModal({
   longFormat,
   scroll,
   closeButton,
+  okButton,
 }: ModalProps) {
   return (
     <Modal
@@ -59,6 +61,7 @@ export function ConfirmModal({
         </ModalBody>
         <ConfirmModalFooter
           okText={okText}
+          okButton={okButton}
           cancelText={cancelText}
           disabled={loading}
           onCancel={onCancel}
@@ -81,6 +84,7 @@ interface FooterProps {
   hideCancel?: boolean;
   /** Shows loading state on the 'ok' button */
   processing?: boolean;
+  okButton?: ButtonProps;
 }
 
 export function ConfirmModalFooter({
@@ -92,6 +96,7 @@ export function ConfirmModalFooter({
   onConfirm,
   onCancel,
   processing,
+  okButton,
 }: FooterProps) {
   return (
     <ModalFooter>
@@ -102,6 +107,7 @@ export function ConfirmModalFooter({
             onClick={onConfirm}
             disabled={disabled}
             loading={processing}
+            {...okButton}
           >
             {okText ?? 'Yes'}
           </GameButton>
