@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
 import { ErrorContext } from '../../../components/ErrorContext';
-import { IconLockInline } from '../../../components/Icons';
+import { IconLockInline, IconSearch } from '../../../components/Icons';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { Modal, ModalBody } from '../../../components/Modal';
 import { VirtualTable } from '../../../components/VirtualTable';
@@ -173,10 +173,12 @@ export function AdminDeck({ deckID }: Props) {
           Tags
         </GameButton>
         <TextInput
+          inline
           className="search-input"
           debounceMs={200}
-          placeholder="Seach..."
+          placeholder="Search..."
           onChange={filter}
+          iconLeft={<IconSearch />}
         ></TextInput>
       </div>
 

@@ -175,6 +175,7 @@ interface TextInputProps extends ControlProps {
   password?: boolean;
   debounce?: boolean;
   debounceMs?: number;
+  iconLeft?: ReactNode;
 }
 
 /** Form input: text */
@@ -186,14 +187,20 @@ export function TextInput({
   onChange,
   debounce: enableDebounce,
   debounceMs,
+  iconLeft,
   ...props
 }: TextInputProps) {
   const { setError } = useContext(ErrorContext);
+
   const controlClass = getControlStyle(props);
+  const classes = ['control'];
+  classes.push(controlClass);
+
   const debouncedHandler = useMemo(
     () => debounce(onChange, debounceMs ?? 1000) as ChangeHandler<string>,
     [onChange],
   );
+
   async function handleChange(event: ChangeEvent<HTMLInputElement>) {
     try {
       const newValue = event.currentTarget.value;
@@ -207,15 +214,32 @@ export function TextInput({
     }
   }
   return (
-    <input
-      type={password ? 'password' : 'text'}
-      className={`control ${controlClass}`}
-      value={value}
-      placeholder={placeholder}
-      disabled={disabled}
-      onChange={handleChange}
-    />
+    <WithIcon iconLeft={iconLeft}>
+      <input
+        type={password ? 'password' : 'text'}
+        className={classes.join(' ')}
+        value={value}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={handleChange}
+      />
+    </WithIcon>
   );
+}
+
+interface WithIconProps {
+  iconLeft?: ReactNode;
+  children: ReactNode;
+}
+function WithIcon({ iconLeft, children }: WithIconProps) {
+  if (iconLeft)
+    return (
+      <div className="with-icon-left">
+        {children}
+        <div className="input-icon-left">{iconLeft}</div>
+      </div>
+    );
+  else return children;
 }
 
 export function getControlStyle({

@@ -166,14 +166,6 @@
   height: 2.5rem;
   padding: 0.5em;
   background-color: var(--bs-body-bg); // bg color
-
-  .search-input {
-    padding: 0.25em;
-    &::before {
-      // TODO use bg icon with magnifying glass
-      content: '🔎';
-    }
-  }
 }
 .admin-deck-table-header {
   position: sticky;

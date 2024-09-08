@@ -1,4 +1,4 @@
-@use "../colors.scss";
+@use '../colors.scss';
 
 /*------------------------- Input component ------------------------*/
 /* Copied from Bootstrap and modified */
@@ -20,5 +20,20 @@ input.control {
   }
   option {
     background-color: #323844;
+  }
+  &.inline-control {
+    padding: 0.25em;
+  }
+}
+.with-icon-left {
+  position: relative;
+  input.control {
+    padding-left: 2em;
+  }
+  .input-icon-left {
+    color: colors.$control-border;
+    position: absolute;
+    left: 0.25em;
+    top: 0.25em;
   }
 }
