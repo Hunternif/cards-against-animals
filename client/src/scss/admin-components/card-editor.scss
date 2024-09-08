@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  .card-content {
+    min-height: 8rem; // So that you can click it even when it's empty
+  }
   .stats {
     font-size: 13px;
     header {

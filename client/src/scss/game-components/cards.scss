@@ -25,7 +25,6 @@
   white-space: pre-line;
   display: inline-block;
   overflow-wrap: break-word; // for extra long words
-  min-height: 2rem; // So that you can click it even when it's empty
   // Render large emoji:
   .emoji {
     height: 18px;
