@@ -3,7 +3,7 @@ import {
   copyDeck,
   copyDeckCard,
 } from '../../shared/deck-utils';
-import { Deck, DeckCard, DeckTag } from '../../shared/types';
+import { Deck, DeckCard, DeckTag, ResponseDeckCard } from '../../shared/types';
 import { stringComparator } from '../../shared/utils';
 import { DeckCardSet } from './deck-card-set';
 import { cardOrdinalToID } from './deck-parser';
@@ -154,4 +154,15 @@ export async function findDuplicates(
 /** Returns the first card that exactly matches the content. */
 function findMatch(cards: DeckCard[], content: string): DeckCard | null {
   return cards.find((c) => c.content === content) ?? null;
+}
+
+/**
+ * Creates a new ID that doesn't conflict with cards in the deck.
+ * Deck must contain downloaded cards.
+ */
+export function makeNewID(deck: Deck): string {
+  const normalMap = normalizeCardIDs(DeckCardSet.fromDeck(deck).cards, [
+    new ResponseDeckCard('0001', '', 0, 0, 0, 0, 0, 0, []),
+  ]);
+  return [...normalMap.values()][0].id;
 }

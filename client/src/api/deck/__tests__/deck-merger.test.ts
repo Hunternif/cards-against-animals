@@ -7,6 +7,7 @@ import {
 } from '../../../shared/types';
 import { parseDeckTsv } from '../deck-parser';
 import {
+  makeNewID,
   mergeDecks,
   mergeIntoDeck,
   normalizeCardset,
@@ -146,3 +147,21 @@ test('merge into empty deck', () => {
   expect(merged.responses[0]).toEqual(makeResponse('0002', 'New response'));
   expect(merged.tags).toEqual([new DeckTag('old_tag'), new DeckTag('new_tag')]);
 });
+
+test('make new ID', () => {
+  // empty deck:
+  const deck = new Deck('new_deck', 'My new deck', 'public');
+  expect(makeNewID(deck)).toBe('0001');
+
+  // add 1 prompt card:
+  deck.prompts.push(makePrompt('0001'));
+  expect(makeNewID(deck)).toBe('0002');
+
+  // add 1 more prompt card:
+  deck.prompts.push(makePrompt('0034'));
+  expect(makeNewID(deck)).toBe('0035');
+
+  // add 1 response card:
+  deck.responses.push(makeResponse('0035'));
+  expect(makeNewID(deck)).toBe('0036');
+})

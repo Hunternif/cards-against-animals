@@ -24,6 +24,7 @@ import {
   PromptDeckCard,
   ResponseDeckCard,
 } from '../../shared/types';
+import { makeNewID } from './deck-merger';
 
 /** For accessing decks and cards from the server. */
 export interface IDeckRepository {
@@ -51,6 +52,8 @@ export interface IDeckRepository {
   updateDeck(deck: Deck): Promise<void>;
   /** Updates card data */
   updateCard(deck: Deck, card: DeckCard): Promise<void>;
+  /** Creates a new card. Modifies ID if needed. */
+  addCard(deck: Deck, card: DeckCard): Promise<void>;
   clearCache(): void;
 }
 
@@ -188,6 +191,19 @@ export class FirestoreDeckRepository implements IDeckRepository {
     } else if (card instanceof ResponseDeckCard) {
       const cardRef = doc(this.getResponsesRef(deck.id), card.id);
       await updateDoc(cardRef, responseDeckCardConverter.toFirestore(card));
+    }
+  }
+
+  async addCard(deck: Deck, card: DeckCard) {
+    card.id = makeNewID(deck);
+    if (card instanceof PromptDeckCard) {
+      deck.prompts.push(card);
+      const cardRef = doc(this.getPromptsRef(deck.id), card.id);
+      await setDoc(cardRef, card);
+    } else if (card instanceof ResponseDeckCard) {
+      deck.responses.push(card);
+      const cardRef = doc(this.getResponsesRef(deck.id), card.id);
+      await setDoc(cardRef, card);
     }
   }
 
