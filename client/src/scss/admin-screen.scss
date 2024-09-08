@@ -301,29 +301,3 @@
 .admin-deck-selector {
   min-width: 0; // This ignores extra long values and fits in the grid
 }
-
-.edit-card-modal {
-  .modal-body {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    .stats {
-      font-size: 13px;
-    }
-    .stats-row {
-      display: grid;
-      grid-template-columns: 4rem 8rem;
-      gap: 0.5rem;
-      margin-bottom: 0.5em;
-      dt {
-        font-weight: 200;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      dd {
-        // text-align: right;
-        margin: 0;
-      }
-    }
-  }
-}

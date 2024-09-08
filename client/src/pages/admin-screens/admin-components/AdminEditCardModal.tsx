@@ -1,25 +1,14 @@
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { useErrorContext } from '../../../components/ErrorContext';
 import { useDIContext } from '../../../di-context';
-import { useClickOutside } from '../../../hooks/ui-hooks';
 import {
+  copyDeckCard,
   filterPromptDeckCard,
   filterResponseDeckCard,
-  formatPrompt,
 } from '../../../shared/deck-utils';
-import {
-  Deck,
-  DeckCard,
-  PromptDeckCard,
-  ResponseDeckCard,
-} from '../../../shared/types';
-import { PromptPick } from '../../lobby-screens/game-components/CardPrompt';
-import {
-  CardBottomRight,
-  CardContent,
-  LargeCard,
-} from '../../lobby-screens/game-components/LargeCard';
+import { Deck, DeckCard } from '../../../shared/types';
+import { CardEditor } from './CardEditor';
 
 interface Props {
   deck?: Deck;
@@ -46,17 +35,25 @@ export function AdminEditCardModal({
   if (isPrompt) cardClasses.push('card-prompt');
   if (isResponse) cardClasses.push('card-response');
 
-  const [newContent, setNewContent] = useState(card?.content);
+  // Copy of the card, containing modified data:
+  const [cardCopy, setCardCopy] = useState(card && copyDeckCard(card));
+  if (card && cardCopy == null) {
+    setCardCopy(copyDeckCard(card));
+  }
+
+  function handleChange() {
+    setDirty(true);
+  }
 
   async function handleSave() {
-    setNewContent(undefined);
     setSaving(true);
     try {
-      if (deck && card) {
-        if (newContent) card.content = newContent;
+      if (deck && card && cardCopy) {
+        // Apply changes to the original card:
+        Object.assign(card, cardCopy);
         await deckRepository.updateCard(deck, card);
       }
-      setDirty(false);
+      beforeClose();
       onComplete();
     } catch (e: any) {
       setError(e);
@@ -66,9 +63,14 @@ export function AdminEditCardModal({
   }
 
   function handleCancel() {
-    setNewContent(undefined);
-    setDirty(false);
+    beforeClose();
     onCancel();
+  }
+
+  /** Called before the modal is closed, to clear state. */
+  function beforeClose() {
+    setCardCopy(undefined);
+    setDirty(false);
   }
 
   return (
@@ -84,130 +86,9 @@ export function AdminEditCardModal({
       processing={saving}
       okButton={{ accent: dirty }}
     >
-      <LargeCard className={cardClasses.join(' ')}>
-        <EditableCardContent
-          original={newContent ?? card?.content}
-          onChange={(c) => {
-            setNewContent(c);
-            setDirty(true);
-          }}
-          isPrompt={isPrompt}
-        />
-        {isPrompt && card.pick > 1 && (
-          <CardBottomRight>
-            <PromptPick pick={card.pick} />
-          </CardBottomRight>
-        )}
-      </LargeCard>
-      {isPrompt && <PromptStats deck={deck} card={card} />}
-      {isResponse && <ResponseStats deck={deck} card={card} />}
+      {cardCopy && (
+        <CardEditor deck={deck} card={cardCopy} onChange={handleChange} />
+      )}
     </ConfirmModal>
-  );
-}
-
-interface EditableContentProps {
-  original?: string;
-  onChange: (newValue: string) => void;
-  isPrompt?: boolean;
-}
-function EditableCardContent({
-  original,
-  onChange,
-  isPrompt,
-}: EditableContentProps) {
-  const [edit, setEdit] = useState(false);
-
-  // To auto-hide text area when clicking outside.
-  const textAreaRef = useClickOutside<HTMLTextAreaElement>(() =>
-    setEdit(false),
-  );
-
-  if (edit)
-    return (
-      <textarea
-        autoFocus
-        onFocus={(e) => {
-          // set cursor to the end of the text:
-          e.target.setSelectionRange(
-            e.target.value.length,
-            e.target.value.length,
-          );
-        }}
-        ref={textAreaRef}
-        defaultValue={original}
-        onChange={(e) => {
-          const newValue = e.target.value;
-          onChange(newValue);
-        }}
-      />
-    );
-  else
-    return (
-      <CardContent
-        onClick={() => {
-          setEdit(true);
-        }}
-      >
-        {original && isPrompt ? formatPrompt(original) : original}
-      </CardContent>
-    );
-}
-
-interface PropmtStatsProps {
-  deck?: Deck;
-  card: PromptDeckCard;
-}
-function PromptStats({ deck, card }: PropmtStatsProps) {
-  return (
-    <dl className="stats">
-      <StatsRow label="Deck">{deck?.title}</StatsRow>
-      <StatsRow label="ID">{card.id}</StatsRow>
-      <StatsRow label="Tags">
-        {card.tags.length > 0 ? card.tags.join(', ') : '-'}
-      </StatsRow>
-      <StatsRow label="Views">{card.views}</StatsRow>
-      <StatsRow label="Plays">{card.plays}</StatsRow>
-      <StatsRow label="Wins">{card.wins}</StatsRow>
-      <StatsRow label="Discards">{card.discards}</StatsRow>
-      <StatsRow label="Upvotes">{card.upvotes}</StatsRow>
-      <StatsRow label="Downvotes">{card.downvotes}</StatsRow>
-      <StatsRow label="Rating">{card.rating}</StatsRow>
-    </dl>
-  );
-}
-
-interface ResponseStatsProps {
-  deck?: Deck;
-  card: ResponseDeckCard;
-}
-function ResponseStats({ deck, card }: ResponseStatsProps) {
-  return (
-    <dl className="stats">
-      <StatsRow label="Deck">{deck?.title ?? '-'}</StatsRow>
-      <StatsRow label="ID">{card.id}</StatsRow>
-      <StatsRow label="Tags">
-        {card.tags.length > 0 ? card.tags.join(', ') : '-'}
-      </StatsRow>
-      <StatsRow label="Views">{card.views}</StatsRow>
-      <StatsRow label="Plays">{card.plays}</StatsRow>
-      <StatsRow label="Likes">{card.likes}</StatsRow>
-      <StatsRow label="Wins">{card.wins}</StatsRow>
-      <StatsRow label="Discards">{card.discards}</StatsRow>
-      <StatsRow label="Rating">{card.rating}</StatsRow>
-      <StatsRow label="Action">{card.action ?? '-'}</StatsRow>
-    </dl>
-  );
-}
-
-interface StatsRowProps {
-  label: string;
-  children: ReactNode;
-}
-function StatsRow({ label, children }: StatsRowProps) {
-  return (
-    <div className="stats-row">
-      <dt>{label}</dt>
-      <dd>{children}</dd>
-    </div>
   );
 }
