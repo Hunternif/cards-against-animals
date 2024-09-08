@@ -1,13 +1,16 @@
-import { CSSProperties, useContext } from "react";
-import { usePromptVotes } from "../../../api/turn/turn-hooks";
-import { votePrompt } from "../../../api/turn/turn-vote-card-api";
-import { ErrorContext } from "../../../components/ErrorContext";
-import { PlayerAvatar } from "../../../components/PlayerAvatar";
-import { Twemoji } from "../../../components/Twemoji";
-import { PromptCardInGame, VoteChoice } from "../../../shared/types";
-import { copyFields2 } from "../../../shared/utils";
-import { Downvote, Upvote } from "./CardVotes";
-import { useGameContext } from "./GameContext";
+import { CSSProperties, useContext } from 'react';
+import { usePromptVotes } from '../../../api/turn/turn-hooks';
+import { votePrompt } from '../../../api/turn/turn-vote-card-api';
+import { ErrorContext } from '../../../components/ErrorContext';
+import { PlayerAvatar } from '../../../components/PlayerAvatar';
+import { Twemoji } from '../../../components/Twemoji';
+import { useDIContext } from '../../../di-context';
+import { useAsyncData } from '../../../hooks/data-hooks';
+import { formatPrompt } from '../../../shared/deck-utils';
+import { PromptCardInGame, VoteChoice } from '../../../shared/types';
+import { copyFields2 } from '../../../shared/utils';
+import { Downvote, Upvote } from './CardVotes';
+import { useGameContext } from './GameContext';
 import {
   CardBottom,
   CardBottomLeft,
@@ -15,8 +18,7 @@ import {
   CardCenterIcon,
   CardContent,
   LargeCard,
-} from "./LargeCard";
-import { formatPrompt } from "../../../shared/deck-utils";
+} from './LargeCard';
 
 interface PromptCardProps {
   /** Undefined while the judge hasn't picked a prompt yet */
@@ -24,6 +26,7 @@ interface PromptCardProps {
   canVote?: boolean;
   canSelect?: boolean;
   selected?: boolean;
+  showDeckName?: boolean;
   onClick?: () => void;
 }
 
@@ -46,6 +49,7 @@ function KnownPrompt({
   canVote,
   canSelect,
   selected,
+  showDeckName,
   onClick,
 }: KnownPromptCardProps) {
   const { lobby, turn, player } = useGameContext();
@@ -53,12 +57,12 @@ function KnownPrompt({
   const [promptVotes] = usePromptVotes(lobby, turn, card);
   const currentVote = promptVotes?.find((v) => v.player_uid === player.uid);
   const voteClass = currentVote
-    ? currentVote.choice === "yes"
-      ? "upvoted"
-      : "downvoted"
-    : "";
-  const canSelectClass = canSelect ? "hoverable-card" : "";
-  const selectedClass = selected ? "selected" : "unselected";
+    ? currentVote.choice === 'yes'
+      ? 'upvoted'
+      : 'downvoted'
+    : '';
+  const canSelectClass = canSelect ? 'hoverable-card' : '';
+  const selectedClass = selected ? 'selected' : 'unselected';
 
   async function vote(choice?: VoteChoice) {
     await votePrompt(lobby, turn, card, player, choice).catch((e: any) =>
@@ -67,19 +71,19 @@ function KnownPrompt({
   }
 
   async function handleUpvote() {
-    if (currentVote?.choice === "yes") {
+    if (currentVote?.choice === 'yes') {
       // toggle to cancel the previous upvote:
       await vote(undefined);
     } else {
-      await vote("yes");
+      await vote('yes');
     }
   }
   async function handleDownvote() {
-    if (currentVote?.choice === "no") {
+    if (currentVote?.choice === 'no') {
       // toggle to cancel the previous downvote:
       await vote(undefined);
     } else {
-      await vote("no");
+      await vote('no');
     }
   }
   return (
@@ -88,21 +92,20 @@ function KnownPrompt({
       onClick={onClick}
     >
       <CardContent>{formatPrompt(card.content)}</CardContent>
-      {(canVote || card.pick > 1) && (
-        <CardBottom>
-          {canVote && (
-            <CardBottomLeft className="prompt-voting">
-              <Upvote onClick={handleUpvote} />
-              <Downvote onClick={handleDownvote} />
-            </CardBottomLeft>
-          )}
-          {card.pick > 1 && (
-            <CardBottomRight>
-              <PromptPick pick={card.pick} />
-            </CardBottomRight>
-          )}
-        </CardBottom>
-      )}
+      <CardBottom>
+        {showDeckName && <DeckName deckID={card.deck_id} />}
+        {canVote && (
+          <CardBottomLeft className="prompt-voting">
+            <Upvote onClick={handleUpvote} />
+            <Downvote onClick={handleDownvote} />
+          </CardBottomLeft>
+        )}
+        {card.pick > 1 && (
+          <CardBottomRight>
+            <PromptPick pick={card.pick} />
+          </CardBottomRight>
+        )}
+      </CardBottom>
     </LargeCard>
   );
 }
@@ -126,7 +129,7 @@ export function UnknownPrompt() {
 }
 
 const containerStyle: CSSProperties = {
-  height: "auto",
+  height: 'auto',
 };
 
 /** Displays the prompt card and the current judge name below it. */
@@ -147,4 +150,11 @@ export function CardPromptWithCzar(props: PromptCardProps) {
       )}
     </div>
   );
+}
+
+function DeckName({ deckID }: { deckID?: string }) {
+  const { deckRepository } = useDIContext();
+  const [decks] = useAsyncData(deckRepository.getDecks([]));
+  const deck = decks?.find((d) => d.id === deckID);
+  return <div className="prompt-deck-name">{deck?.title}</div>;
 }

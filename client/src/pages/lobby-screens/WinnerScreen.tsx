@@ -68,64 +68,64 @@ export function WinnerScreen() {
     <>
       {/* Add context to share offsets between responses */}
       {/* <CardOffsetContextProvider> */}
-        <GameLayout className="winner-screen">
-          <div className="sections-container">
-            <div className="winner-section">
+      <GameLayout className="winner-screen">
+        <div className="sections-container">
+          <div className="winner-section">
+            <header>
+              <h2>
+                {winner ? (
+                  <>
+                    Winner
+                    <PlayerAvatar player={winner} />
+                    <i>{winner.name}</i> <IconStarInline />
+                  </>
+                ) : (
+                  <Delay>No winner</Delay>
+                )}
+              </h2>
+            </header>
+            <section>
+              <CardPromptWithCzar card={prompt} showDeckName />
+              {winnerResponse && (
+                <ResponseReading
+                  player={winner}
+                  showName={showAudienceAward}
+                  response={winnerResponse}
+                />
+              )}
+            </section>
+          </div>
+          {showAudienceAward && (
+            // TODO: animate audience choice winner transition
+            <div className="winner-section audience-award-section">
               <header>
                 <h2>
-                  {winner ? (
-                    <>
-                      Winner
-                      <PlayerAvatar player={winner} />
-                      <i>{winner.name}</i> <IconStarInline />
-                    </>
-                  ) : (
-                    <Delay>No winner</Delay>
-                  )}
+                  Audience Choice <IconHeartInline />
                 </h2>
               </header>
               <section>
-                <CardPromptWithCzar card={prompt} />
-                {winnerResponse && (
+                {audienceAwardResponses.map((r) => (
                   <ResponseReading
-                    player={winner}
-                    showName={showAudienceAward}
-                    response={winnerResponse}
+                    showName
+                    showLikes
+                    key={r.player_uid}
+                    response={r}
+                    player={players.find((p) => p.uid === r.player_uid)}
                   />
-                )}
+                ))}
               </section>
             </div>
-            {showAudienceAward && (
-              // TODO: animate audience choice winner transition
-              <div className="winner-section audience-award-section">
-                <header>
-                  <h2>
-                    Audience Choice <IconHeartInline />
-                  </h2>
-                </header>
-                <section>
-                  {audienceAwardResponses.map((r) => (
-                    <ResponseReading
-                      showName
-                      showLikes
-                      key={r.player_uid}
-                      response={r}
-                      player={players.find((p) => p.uid === r.player_uid)}
-                    />
-                  ))}
-                </section>
-              </div>
-            )}
-          </div>
-          <footer className="winner-control-row">
-            <Delay>
-              {shouldEndNow
-                ? showEndgameControls && <EndGameControls />
-                : isJudge && <NextTurnButton />}
-            </Delay>
-            <Soundboard />
-          </footer>
-        </GameLayout>
+          )}
+        </div>
+        <footer className="winner-control-row">
+          <Delay>
+            {shouldEndNow
+              ? showEndgameControls && <EndGameControls />
+              : isJudge && <NextTurnButton />}
+          </Delay>
+          <Soundboard />
+        </footer>
+      </GameLayout>
       {/* </CardOffsetContextProvider> */}
     </>
   );

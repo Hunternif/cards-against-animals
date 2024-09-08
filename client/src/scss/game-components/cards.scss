@@ -53,6 +53,7 @@
 .card-bottom {
   display: flex;
   margin-top: auto;
+  flex-wrap: wrap;
 }
 .card-bottom-right, .card-bottom-left {
   display: flex;
@@ -189,6 +190,15 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+.prompt-deck-name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  font-weight: 200;
+  opacity: 0.5;
+  margin-bottom: 0.25em;
 }
 
 
