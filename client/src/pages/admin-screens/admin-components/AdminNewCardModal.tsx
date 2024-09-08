@@ -2,42 +2,30 @@ import { useState } from 'react';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { useErrorContext } from '../../../components/ErrorContext';
 import { useDIContext } from '../../../di-context';
-import {
-  copyDeckCard,
-  filterPromptDeckCard,
-  filterResponseDeckCard,
-} from '../../../shared/deck-utils';
-import { Deck, DeckCard } from '../../../shared/types';
+import { CardType, Deck, ResponseDeckCard } from '../../../shared/types';
 import { CardEditor } from './CardEditor';
 
 interface Props {
-  deck?: Deck;
-  /** If undefined, the modal is hidden */
-  card?: DeckCard;
+  show: boolean;
+  deck: Deck;
   onClose: () => void;
 }
 
-export function AdminEditCardModal({
-  deck,
-  card,
-  onClose,
-}: Props) {
+/** Saves */
+export function AdminNewCardModal({ show, deck, onClose }: Props) {
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-  const cardClasses = ['editable-card'];
-  const isPrompt = card && filterPromptDeckCard(card);
-  const isResponse = card && filterResponseDeckCard(card);
-  if (isPrompt) cardClasses.push('card-prompt');
-  if (isResponse) cardClasses.push('card-response');
+  const [type, setType] = useState<CardType>('response');
+  const [card, setCard] = useState(
+    new ResponseDeckCard('new_id', '', 0, 0, 0, 0, 0, 0, []),
+  );
 
-  // Copy of the card, containing modified data:
-  const [cardCopy, setCardCopy] = useState(card && copyDeckCard(card));
-  if (card && cardCopy == null) {
-    setCardCopy(copyDeckCard(card));
-  }
+  const cardClasses = ['editable-card'];
+  if (type === 'prompt') cardClasses.push('card-prompt');
+  if (type === 'response') cardClasses.push('card-response');
 
   function handleChange() {
     setDirty(true);
@@ -46,10 +34,8 @@ export function AdminEditCardModal({
   async function handleSave() {
     setSaving(true);
     try {
-      if (deck && card && cardCopy) {
-        // Apply changes to the original card:
-        Object.assign(card, cardCopy);
-        await deckRepository.updateCard(deck, card);
+      if (deck && card) {
+        await deckRepository.addCard(deck, card);
       }
       beforeClose();
       onClose();
@@ -67,7 +53,7 @@ export function AdminEditCardModal({
 
   /** Called before the modal is closed, to clear state. */
   function beforeClose() {
-    setCardCopy(undefined);
+    setCard(new ResponseDeckCard('new_id', '', 0, 0, 0, 0, 0, 0, []));
     setDirty(false);
   }
 
@@ -77,16 +63,14 @@ export function AdminEditCardModal({
       longFormat
       title={dirty ? 'Edit card*' : 'Edit card'}
       className="edit-card-modal"
-      show={card != null}
+      show={show}
       okText="Save"
       onConfirm={handleSave}
       onCancel={handleCancel}
       processing={saving}
-      okButton={{ accent: dirty }}
+      okButton={{ accent: true }}
     >
-      {cardCopy && (
-        <CardEditor deck={deck} card={cardCopy} onChange={handleChange} />
-      )}
+      <CardEditor deck={deck} card={card} onChange={handleChange} />
     </ConfirmModal>
   );
 }

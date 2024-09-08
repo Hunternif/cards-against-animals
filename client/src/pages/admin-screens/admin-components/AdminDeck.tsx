@@ -2,7 +2,12 @@ import { useContext, useState } from 'react';
 import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
 import { ErrorContext } from '../../../components/ErrorContext';
-import { IconLockInline, IconSearch } from '../../../components/Icons';
+import { TextInput } from '../../../components/FormControls';
+import {
+  IconLockInline,
+  IconPlus,
+  IconSearch,
+} from '../../../components/Icons';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { Modal, ModalBody } from '../../../components/Modal';
 import { VirtualTable } from '../../../components/VirtualTable';
@@ -18,8 +23,8 @@ import {
 import { AdminDeckPasswordModal } from './AdminDeckPasswordModal';
 import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 import { AdminEditCardModal } from './AdminEditCardModal';
+import { AdminNewCardModal } from './AdminNewCardModal';
 import { AdminTagsTable } from './AdminTagsTable';
-import { TextInput } from '../../../components/FormControls';
 
 interface Props {
   deckID: string;
@@ -42,12 +47,14 @@ export function AdminDeck({ deckID }: Props) {
   const [showCopyDialog, setShowCopyDialog] = useState(false);
   const [showTagsDialog, setShowTagsDialog] = useState(false);
   const [copyStatusMsg, setCopyStatusMsg] = useState('');
+  const [showNewCardDialog, setShowNewCardDialog] = useState(false);
 
   // TODO: optimize, retain the same instance between renders.
   const selectedCardset = new DeckCardSet(selectedCards.values());
   const isAnySelected = selectedCardset.size > 0;
 
   const [editedCard, setEditedCard] = useState<DeckCard>();
+  const [filterText, setFilterText] = useState('');
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(cardTypedID(card));
@@ -84,17 +91,27 @@ export function AdminDeck({ deckID }: Props) {
     }
   });
 
-  async function filter(text: string) {
+  async function filter(fullCardSet: DeckCardSet, text: string) {
+    setFilterText(text);
     if (!deck) return;
     if (text.length > 0) {
       // Filter by content:
-      const filteredCards = fullDeckCardset.cards.filter((c) =>
+      const filteredCards = fullCardSet.cards.filter((c) =>
         c.content.toLowerCase().includes(text.toLowerCase()),
       );
       setCurrentCardset(DeckCardSet.fromList(filteredCards));
       // TODO: filter by card IDs or by tags.
     } else {
-      setCurrentCardset(fullDeckCardset);
+      setCurrentCardset(fullCardSet);
+    }
+  }
+
+  /** Recalculates deck set */
+  function refresh() {
+    if (deck) {
+      const fullCardSet = DeckCardSet.fromDeck(deck).sortByIDs();
+      setFullDeckCardset(fullCardSet);
+      filter(fullCardSet, filterText);
     }
   }
 
@@ -149,12 +166,23 @@ export function AdminDeck({ deckID }: Props) {
       <AdminEditCardModal
         deck={deck}
         card={editedCard}
-        onCancel={() => setEditedCard(undefined)}
-        onComplete={() => setEditedCard(undefined)}
+        onClose={() => setEditedCard(undefined)}
+      />
+
+      <AdminNewCardModal
+        deck={deck}
+        show={showNewCardDialog}
+        onClose={() => {
+          refresh();
+          setShowNewCardDialog(false);
+        }}
       />
 
       {/* Extra controls: */}
       <div className="admin-deck-control-row">
+        <GameButton inline light onClick={() => setShowNewCardDialog(true)}>
+          <IconPlus />
+        </GameButton>
         <GameButton
           inline
           light
@@ -180,7 +208,7 @@ export function AdminDeck({ deckID }: Props) {
           className="search-input"
           debounceMs={200}
           placeholder="Search..."
-          onChange={filter}
+          onChange={(text) => filter(fullDeckCardset, text)}
           iconLeft={<IconSearch />}
         ></TextInput>
       </div>
