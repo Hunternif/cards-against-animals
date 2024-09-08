@@ -13,6 +13,7 @@ export function ErrorModal({ error, setError }: Props) {
       show={error != undefined}
       onHide={() => setError(null)}
       className="error-modal"
+      containerClassname="error-container"
       title="Error"
     >
       <ModalBody>{error instanceof Error && error.message}</ModalBody>

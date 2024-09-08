@@ -9,6 +9,7 @@ interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
   noFade?: boolean;
   onHide?: () => void;
   closeButton?: boolean;
+  containerClassname?: string;
 }
 
 /** Modal card centered over the screen. */
@@ -24,13 +25,17 @@ function ShownModal({
   onHide,
   children,
   closeButton,
+  containerClassname,
   ...props
 }: ModalProps) {
   useKeyDown(() => show && onHide && onHide(), ['Escape']);
   return (
     <>
       {!noFade && <ModalBackdrop style={{ zIndex: '19' }} />}
-      <div className="modal-container" onMouseDown={onHide}>
+      <div
+        className={`modal-container ${containerClassname}`}
+        onMouseDown={onHide}
+      >
         <div
           {...props}
           className={`modal-card ${props.className ?? ''}`}

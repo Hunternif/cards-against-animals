@@ -109,6 +109,9 @@
     margin-bottom: 0.5em;
   }
 }
+.error-container {
+  z-index: 999;
+}
 
 .modal-close-button {
   // From Bootstrap modal:
