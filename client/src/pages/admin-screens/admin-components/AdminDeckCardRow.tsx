@@ -47,9 +47,16 @@ export function AdminDeckCardRow({
   return (
     <tr className={classes.join(' ')} onClick={onClick}>
       <td className="col-card-id">{card.id}</td>
-      <td className="col-card-content" style={rowStyle}>
+      <td
+        className="col-card-content"
+        style={rowStyle}
+        onClick={(e) => {
+          e.stopPropagation(); // prevent selecting the row
+          if (onEdit) onEdit();
+        }}
+      >
         <CardContentRow>{card.content}</CardContentRow>
-        <EditButton onClick={onEdit} />
+        <EditButton />
         {isPrompt && <div className="prompt-pick-number">{card.pick}</div>}
       </td>
       <td className="col-card-tags">{card.tags.join(', ')}</td>
