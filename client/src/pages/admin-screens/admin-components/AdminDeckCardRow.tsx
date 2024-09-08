@@ -94,10 +94,11 @@ function EditButton({ onClick }: { onClick?: () => void }) {
       <GameButton
         tiny
         className="edit-button"
-        onClick={(e) => {
-          e.stopPropagation(); // prevent selecting the row
-          if (onClick) onClick();
-        }}
+        // Do nothing on click, because the entire column is clickable
+        // onClick={(e) => {
+        //   e.stopPropagation(); // prevent selecting the row
+        //   if (onClick) onClick();
+        // }}
       >
         Edit
       </GameButton>

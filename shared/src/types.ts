@@ -364,6 +364,14 @@ export type ResponseAction =
   | 'repeat_player_last'
   | 'czar_name';
 
+export const allCardActions: Array<ResponseAction> = [
+  'none',
+  'repeat_last',
+  'repeat_player_first',
+  'repeat_player_last',
+  'czar_name',
+];
+
 /**
  * An instance of a card in game. Contains a reference to the
  * original DeckCard and its cached content.

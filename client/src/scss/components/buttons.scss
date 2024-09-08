@@ -7,7 +7,8 @@
   text-align: center;
   align-items: center;
   &.centered {
-    .icon-left, .icon-right {
+    .icon-left,
+    .icon-right {
       width: 1em;
     }
   }
@@ -124,7 +125,9 @@ button {
   display: inline-flex;
 }
 
-.tiny-control {
+button.tiny-control,
+input.tiny-control,
+select.tiny-control {
   height: auto;
   padding: 0 0.5em;
   border-radius: 4px;

@@ -1,22 +1,24 @@
 import { ReactNode, useState } from 'react';
-import {
-  Deck,
-  DeckCard,
-  PromptDeckCard,
-  ResponseDeckCard,
-} from '../../../shared/types';
-import {
-  CardBottomRight,
-  CardContent,
-  LargeCard,
-} from '../../lobby-screens/game-components/LargeCard';
-import { PromptPick } from '../../lobby-screens/game-components/CardPrompt';
+import { NumberInput, SelectInput } from '../../../components/FormControls';
+import { useClickOutside } from '../../../hooks/ui-hooks';
 import {
   filterPromptDeckCard,
   filterResponseDeckCard,
   formatPrompt,
 } from '../../../shared/deck-utils';
-import { useClickOutside } from '../../../hooks/ui-hooks';
+import {
+  allCardActions,
+  Deck,
+  DeckCard,
+  PromptDeckCard,
+  ResponseDeckCard,
+} from '../../../shared/types';
+import { PromptPick } from '../../lobby-screens/game-components/CardPrompt';
+import {
+  CardBottomRight,
+  CardContent,
+  LargeCard,
+} from '../../lobby-screens/game-components/LargeCard';
 
 interface Props {
   deck?: Deck;
@@ -35,6 +37,7 @@ export function CardEditor({ deck, card, onChange }: Props) {
   const isResponse = card && filterResponseDeckCard(card);
   if (isPrompt) cardClasses.push('card-prompt');
   if (isResponse) cardClasses.push('card-response');
+  if (isResponse && card.action) cardClasses.push('action-card');
 
   // This forces redender:
   const [dirty, setDirty] = useState(false);
@@ -47,7 +50,7 @@ export function CardEditor({ deck, card, onChange }: Props) {
   if (dirty) setDirty(false);
 
   return (
-    <div className='card-editor'>
+    <div className="card-editor">
       <LargeCard className={cardClasses.join(' ')}>
         <EditableCardContent
           original={card?.content}
@@ -63,8 +66,12 @@ export function CardEditor({ deck, card, onChange }: Props) {
           </CardBottomRight>
         )}
       </LargeCard>
-      {isPrompt && <PromptStats deck={deck} card={card} />}
-      {isResponse && <ResponseStats deck={deck} card={card} />}
+      {isPrompt && (
+        <PromptStats deck={deck} card={card} onChange={handleChange} />
+      )}
+      {isResponse && (
+        <ResponseStats deck={deck} card={card} onChange={handleChange} />
+      )}
     </div>
   );
 }
@@ -120,8 +127,9 @@ function EditableCardContent({
 interface PropmtStatsProps {
   deck?: Deck;
   card: PromptDeckCard;
+  onChange?: () => void;
 }
-function PromptStats({ deck, card }: PropmtStatsProps) {
+function PromptStats({ deck, card, onChange }: PropmtStatsProps) {
   return (
     <dl className="stats">
       <StatsRow label="Deck">{deck?.title}</StatsRow>
@@ -129,13 +137,37 @@ function PromptStats({ deck, card }: PropmtStatsProps) {
       <StatsRow label="Tags">
         {card.tags.length > 0 ? card.tags.join(', ') : '-'}
       </StatsRow>
-      <StatsRow label="Views">{card.views}</StatsRow>
-      <StatsRow label="Plays">{card.plays}</StatsRow>
-      <StatsRow label="Wins">{card.wins}</StatsRow>
-      <StatsRow label="Discards">{card.discards}</StatsRow>
-      <StatsRow label="Upvotes">{card.upvotes}</StatsRow>
-      <StatsRow label="Downvotes">{card.downvotes}</StatsRow>
-      <StatsRow label="Rating">{card.rating}</StatsRow>
+      <StatsRow label="Pick">
+        <NumberPropInput obj={card} prop="pick" min={1} onChange={onChange} />
+      </StatsRow>
+      <hr />
+      <header>Statistics</header>
+      <StatsRow label="Views">
+        <NumberPropInput obj={card} prop="views" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Plays">
+        <NumberPropInput obj={card} prop="plays" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Wins">
+        <NumberPropInput obj={card} prop="wins" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Discards">
+        <NumberPropInput obj={card} prop="discards" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Upvotes">
+        <NumberPropInput obj={card} prop="upvotes" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Downvotes">
+        <NumberPropInput obj={card} prop="downvotes" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Rating">
+        <NumberPropInput
+          obj={card}
+          prop="rating"
+          min={-9999}
+          onChange={onChange}
+        />
+      </StatsRow>
     </dl>
   );
 }
@@ -143,8 +175,9 @@ function PromptStats({ deck, card }: PropmtStatsProps) {
 interface ResponseStatsProps {
   deck?: Deck;
   card: ResponseDeckCard;
+  onChange?: () => void;
 }
-function ResponseStats({ deck, card }: ResponseStatsProps) {
+function ResponseStats({ deck, card, onChange }: ResponseStatsProps) {
   return (
     <dl className="stats">
       <StatsRow label="Deck">{deck?.title ?? '-'}</StatsRow>
@@ -152,13 +185,42 @@ function ResponseStats({ deck, card }: ResponseStatsProps) {
       <StatsRow label="Tags">
         {card.tags.length > 0 ? card.tags.join(', ') : '-'}
       </StatsRow>
-      <StatsRow label="Views">{card.views}</StatsRow>
-      <StatsRow label="Plays">{card.plays}</StatsRow>
-      <StatsRow label="Likes">{card.likes}</StatsRow>
-      <StatsRow label="Wins">{card.wins}</StatsRow>
-      <StatsRow label="Discards">{card.discards}</StatsRow>
-      <StatsRow label="Rating">{card.rating}</StatsRow>
-      <StatsRow label="Action">{card.action ?? '-'}</StatsRow>
+      <StatsRow label="Action">
+        <SelectInput
+          tiny
+          value={card.action ?? 'none'}
+          options={allCardActions.map((a) => [a, a])}
+          onChange={(v) => {
+            card.action = v === 'none' ? undefined : v;
+            if (onChange) onChange();
+          }}
+        />
+      </StatsRow>
+      <hr />
+      <header>Statistics</header>
+      <StatsRow label="Views">
+        <NumberPropInput obj={card} prop="views" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Plays">
+        <NumberPropInput obj={card} prop="plays" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Likes">
+        <NumberPropInput obj={card} prop="likes" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Wins">
+        <NumberPropInput obj={card} prop="wins" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Discards">
+        <NumberPropInput obj={card} prop="discards" onChange={onChange} />
+      </StatsRow>
+      <StatsRow label="Rating">
+        <NumberPropInput
+          obj={card}
+          prop="rating"
+          min={-9999}
+          onChange={onChange}
+        />
+      </StatsRow>
     </dl>
   );
 }
@@ -173,5 +235,35 @@ function StatsRow({ label, children }: StatsRowProps) {
       <dt>{label}</dt>
       <dd>{children}</dd>
     </div>
+  );
+}
+
+interface NumberPropertyInputProps<P extends string> {
+  obj: Record<P, number>;
+  prop: P;
+  onChange?: () => void;
+  min?: number; // defaults to 0
+  max?: number; // defaults to 9999
+}
+/** Helper component to shorten */
+function NumberPropInput<P extends string>({
+  obj,
+  prop,
+  onChange,
+  min,
+  max,
+}: NumberPropertyInputProps<P>) {
+  return (
+    <NumberInput
+      tiny
+      value={obj[prop]}
+      min={min == null ? 0 : min}
+      max={max == null ? 9999 : max}
+      step={1}
+      onChange={(val) => {
+        obj[prop] = val;
+        if (onChange) onChange();
+      }}
+    />
   );
 }

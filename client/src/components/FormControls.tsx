@@ -24,7 +24,7 @@ interface NumberInputProps extends ControlProps {
   debounce?: boolean;
 }
 
-type ChangeHandler<T> = (newValue: T) => Promise<void>;
+type ChangeHandler<T> = (newValue: T) => void | Promise<void>;
 
 /** Form input: integer or float numbers */
 export function NumberInput({

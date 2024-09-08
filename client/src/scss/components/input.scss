@@ -24,6 +24,9 @@ input.control {
   &.inline-control {
     padding: 0.25em;
   }
+  &.tiny-control {
+    font-weight: inherit;
+  }
 }
 .with-icon-left {
   position: relative;
