@@ -88,6 +88,7 @@ export function WinnerScreen() {
               <CardPromptWithCzar card={prompt} showDeckName />
               {winnerResponse && (
                 <ResponseReading
+                  showLikes
                   player={winner}
                   showName={showAudienceAward}
                   response={winnerResponse}
