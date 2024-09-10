@@ -5,7 +5,7 @@ import {
   Query,
   QuerySnapshot,
 } from 'firebase/firestore';
-import { useCallback, useEffect, useState } from 'react';
+import { DependencyList, useCallback, useEffect, useState } from 'react';
 import {
   useCollectionData,
   useDocumentData,
@@ -110,22 +110,23 @@ export function useMarkedData<T>(): [
  * Convenience hook to run async handler on a button click,
  * with error handling and loading state.
  */
-export function useHandler(
-  callback: () => Promise<void>,
-): [handler: () => void, loading: boolean] {
+export function useHandler<V>(
+  callback: () => Promise<V>,
+  deps: DependencyList,
+): [handler: () => Promise<V | undefined>, loading: boolean] {
   const { setError } = useErrorContext();
   const [loading, setLoading] = useState(false);
 
-  async function handler() {
+  const handler = useCallback(async () => {
     try {
       setLoading(true);
-      await callback();
+      return await callback();
     } catch (e: any) {
       setError(e);
     } finally {
       setLoading(false);
     }
-  }
+  }, deps);
   return [handler, loading];
 }
 
@@ -133,44 +134,47 @@ export function useHandler(
  * Convenience hook to run async handler on a button click,
  * with error handling and loading state. With 1 argument.
  */
-export function useHandler1<T>(
-  callback: (arg1: T) => Promise<void>,
-): [handler: (arg1: T) => void, loading: boolean] {
+export function useHandler1<T, V>(
+  callback: (arg1: T) => Promise<V>,
+  deps: DependencyList,
+): [handler: (arg1: T) => Promise<V | undefined>, loading: boolean] {
   const { setError } = useErrorContext();
   const [loading, setLoading] = useState(false);
 
-  async function handler(arg1: T) {
+  const handler = useCallback(async (arg1: T) => {
     try {
       setLoading(true);
-      await callback(arg1);
+      return await callback(arg1);
     } catch (e: any) {
       setError(e);
     } finally {
       setLoading(false);
     }
-  }
+  }, deps);
   return [handler, loading];
 }
 
 /**
  * Convenience hook to run async handler on a button click,
  * with error handling and loading state. With 2 arguments.
+ * WARNING: parameters passed here are saved in the closure!
  */
-export function useHandler2<T, U>(
-  callback: (arg1: T, arg2: U) => Promise<void>,
-): [handler: (arg1: T, arg2: U) => void, loading: boolean] {
+export function useHandler2<T, U, V>(
+  callback: (arg1: T, arg2: U) => Promise<V>,
+  deps: DependencyList,
+): [handler: (arg1: T, arg2: U) => Promise<V | undefined>, loading: boolean] {
   const { setError } = useErrorContext();
   const [loading, setLoading] = useState(false);
 
-  async function handler(arg1: T, arg2: U) {
+  const handler = useCallback(async (arg1: T, arg2: U) => {
     try {
       setLoading(true);
-      await callback(arg1, arg2);
+      return await callback(arg1, arg2);
     } catch (e: any) {
       setError(e);
     } finally {
       setLoading(false);
     }
-  }
+  }, deps);
   return [handler, loading];
 }
