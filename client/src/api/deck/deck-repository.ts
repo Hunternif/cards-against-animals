@@ -24,6 +24,7 @@ import {
   PromptDeckCard,
   ResponseDeckCard,
 } from '../../shared/types';
+import { DeckCardSet } from './deck-card-set';
 import { makeNewID } from './deck-merger';
 
 /** For accessing decks and cards from the server. */
@@ -54,6 +55,7 @@ export interface IDeckRepository {
   updateCard(deck: Deck, card: DeckCard): Promise<void>;
   /** Creates a new card. Modifies ID if needed. */
   addCard(deck: Deck, card: DeckCard): Promise<void>;
+  deleteCards(deck: Deck, cards: DeckCard[]): Promise<void>;
   clearCache(): void;
 }
 
@@ -205,6 +207,25 @@ export class FirestoreDeckRepository implements IDeckRepository {
       const cardRef = doc(this.getResponsesRef(deck.id), card.id);
       await setDoc(cardRef, card);
     }
+  }
+
+  async deleteCards(deck: Deck, cards: DeckCard[]) {
+    const cardSet = DeckCardSet.fromList(cards);
+    await runTransaction(this.db, async (transaction) => {
+      for (const card of cardSet.prompts) {
+        const cardRef = doc(this.getResponsesRef(deck.id), card.id);
+        transaction.delete(cardRef);
+      }
+      for (const card of cardSet.responses) {
+        const cardRef = doc(this.getResponsesRef(deck.id), card.id);
+        transaction.delete(cardRef);
+      }
+    });
+    // If the transaction was successful, remove cards from the local deck:
+    deck.prompts = deck.prompts.filter((c) => !cardSet.prompts.includes(c));
+    deck.responses = deck.responses.filter(
+      (c) => !cardSet.responses.includes(c),
+    );
   }
 
   clearCache() {

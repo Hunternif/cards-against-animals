@@ -1,15 +1,17 @@
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
+import { ConfirmModal } from '../../../components/ConfirmModal';
 import { ErrorContext } from '../../../components/ErrorContext';
 import { TextInput } from '../../../components/FormControls';
 import {
   IconLockInline,
   IconPlus,
   IconSearch,
+  IconTrash,
 } from '../../../components/Icons';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
-import { Modal, ModalBody } from '../../../components/Modal';
+import { Modal, ModalBody, ModalFooter } from '../../../components/Modal';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { useDIContext } from '../../../di-context';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
@@ -25,6 +27,7 @@ import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 import { AdminEditCardModal } from './AdminEditCardModal';
 import { AdminNewCardModal } from './AdminNewCardModal';
 import { AdminTagsTable } from './AdminTagsTable';
+import { useHandler } from '../../../hooks/data-hooks';
 
 interface Props {
   deckID: string;
@@ -45,8 +48,9 @@ export function AdminDeck({ deckID }: Props) {
   );
   const [showLockDialog, setShowLockDialog] = useState(false);
   const [showCopyDialog, setShowCopyDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showTagsDialog, setShowTagsDialog] = useState(false);
-  const [copyStatusMsg, setCopyStatusMsg] = useState('');
+  const [statusMsg, setStatusMsg] = useState('');
   const [showNewCardDialog, setShowNewCardDialog] = useState(false);
 
   // TODO: optimize, retain the same instance between renders.
@@ -107,13 +111,22 @@ export function AdminDeck({ deckID }: Props) {
   }
 
   /** Recalculates deck set */
-  function refresh() {
+  const refresh = useCallback(() => {
     if (deck) {
       const fullCardSet = DeckCardSet.fromDeck(deck).sortByIDs();
       setFullDeckCardset(fullCardSet);
       filter(fullCardSet, filterText);
     }
-  }
+  }, [deck]);
+
+  const [handleDelete, deleting] = useHandler(async () => {
+    if (deck) {
+      await deckRepository.deleteCards(deck, [...selectedCards.values()]);
+      setSelectedCards(new Map());
+      setShowDeleteDialog(false);
+      refresh();
+    }
+  }, [deckRepository, deck, selectedCards, refresh]);
 
   if (!deck) return <LoadingSpinner />;
 
@@ -132,17 +145,17 @@ export function AdminDeck({ deckID }: Props) {
             copiedCards={selectedCardset}
             onComplete={(msg) => {
               setShowCopyDialog(false);
-              setCopyStatusMsg(msg);
+              setStatusMsg(msg);
             }}
           />
         </ModalBody>
       </Modal>
 
-      <Modal show={copyStatusMsg != ''} onHide={() => setCopyStatusMsg('')}>
-        {copyStatusMsg}
-        <footer>
-          <GameButton onClick={() => setCopyStatusMsg('')}>OK</GameButton>
-        </footer>
+      <Modal show={statusMsg != ''} onHide={() => setStatusMsg('')}>
+        <ModalBody>{statusMsg}</ModalBody>
+        <ModalFooter>
+          <GameButton onClick={() => setStatusMsg('')}>OK</GameButton>
+        </ModalFooter>
       </Modal>
 
       <Modal
@@ -178,10 +191,33 @@ export function AdminDeck({ deckID }: Props) {
         }}
       />
 
+      <ConfirmModal
+        show={showDeleteDialog}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteDialog(false)}
+        processing={deleting}
+      >
+        Delete {selectedCards.size} cards?
+      </ConfirmModal>
+
       {/* Extra controls: */}
       <div className="admin-deck-control-row">
-        <GameButton inline light onClick={() => setShowNewCardDialog(true)}>
+        <GameButton
+          inline
+          light
+          onClick={() => setShowNewCardDialog(true)}
+          className="icon-button"
+        >
           <IconPlus />
+        </GameButton>
+        <GameButton
+          inline
+          light
+          onClick={() => setShowDeleteDialog(true)}
+          disabled={!isAnySelected}
+          className="icon-button"
+        >
+          <IconTrash />
         </GameButton>
         <GameButton
           inline
