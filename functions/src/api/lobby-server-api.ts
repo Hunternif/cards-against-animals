@@ -274,6 +274,15 @@ async function validateGameSettings(lobby: GameLobby) {
   if (isNaN(settings.turns_per_person) || settings.turns_per_person < 1) {
     settings.turns_per_person = defaults.turns_per_person;
   }
+  if (isNaN(settings.sort_min_factor)) {
+    settings.sort_min_factor = defaults.sort_min_factor;
+  }
+  if (settings.sort_min_factor <= 0) {
+    settings.sort_min_factor = 0.0000000001;
+  }
+  if (settings.sort_min_factor < 1) {
+    settings.sort_min_factor = 1;
+  }
   // 2. Adjust max_turns for turns_per_person
   if (settings.play_until === 'max_turns_per_person') {
     const playerCount = await countOnlinePlayers(lobby.id, 'player');

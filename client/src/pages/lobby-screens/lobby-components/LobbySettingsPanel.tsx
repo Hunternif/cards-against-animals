@@ -13,6 +13,8 @@ interface Props {
   onChange?: (settings: LobbySettings) => Promise<void>,
 }
 
+type SortingLevel = 'off' | 'low' | 'med' | 'high';
+
 export function LobbySettingsPanel(props: Props) {
   const playUntil = props.settings.play_until;
   const discardCost = props.settings.discard_cost;
@@ -204,13 +206,37 @@ function NewCardsFirstControl({ settings, readOnly, onChange, inGame, }: Props) 
   />;
 }
 
+type SortingOption = {
+  level: SortingLevel,
+  label: string,
+  threshold: number,
+}
+const sortOff: SortingOption = {level: 'off', label: 'Off', threshold: 1};
+const sortLow: SortingOption = {level: 'low', label: 'A little', threshold: 0.1};
+const sortMed: SortingOption = {level: 'med', label: 'Normal sort', threshold: 0.01};
+const sortHigh: SortingOption = {level: 'high', label: 'Strong sort', threshold: 0.0001};
+
 function SortCardsByRatingControl({ settings, readOnly, onChange, inGame }: Props) {
-  return <ToggleInput disabled={readOnly || inGame}
-    value={settings.sort_cards_by_rating}
+  // Maps value to [label, threshold for sort_min_factor]:
+  const optionMap = new Map<SortingLevel, SortingOption>([
+    ['off', sortOff],
+    ['low', sortLow],
+    ['med', sortMed],
+    ['high', sortHigh],
+  ]);
+  let current: SortingLevel = 'low';
+  if (settings.sort_min_factor <= sortOff.threshold) current = 'off';
+  if (settings.sort_min_factor <= sortLow.threshold) current = 'low';
+  if (settings.sort_min_factor <= sortMed.threshold) current = 'med';
+  if (settings.sort_min_factor <= sortHigh.threshold) current = 'high';
+  return <SelectInput disabled={readOnly}
+    value={current}
     onChange={async (newValue) => {
-      settings.sort_cards_by_rating = newValue;
+      const data = optionMap.get(newValue)!!;
+      settings.sort_min_factor = data.threshold;
       if (onChange) await onChange(settings);
     }}
+    options={[...optionMap.values()].map((v) => [v.level, v.label])}
   />;
 }
 

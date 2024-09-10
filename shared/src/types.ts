@@ -64,6 +64,9 @@ export interface LobbySettings {
   sort_by_id: boolean;
   /** If true, "good" cards can be put in front. */
   sort_cards_in_front: boolean;
+  /* Multiplier for card index, applied to bad cards to put them later.
+   * Values close to 0 will put them very far back. Value 1 means no sorting. */
+  sort_min_factor: number;
   /** If true, players can join after the game has started. */
   allow_join_mid_game: boolean;
   /** If true, players can like responses. */
@@ -105,6 +108,7 @@ export function defaultLobbySettings(): LobbySettings {
     sort_cards_by_response_likes: true,
     sort_cards_in_front: false,
     sort_by_id: false,
+    sort_min_factor: 0.01,
     allow_join_mid_game: true,
     enable_likes: true,
     enable_soundboard: false,

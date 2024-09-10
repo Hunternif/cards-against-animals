@@ -44,6 +44,7 @@ test('sort cards based on rating', () => {
     sort_cards_by_wins: true,
     sort_cards_by_prompt_votes: true,
     sort_cards_by_response_likes: true,
+    sort_min_factor: 0.0001,
   });
 
   // For new cards, index is unchanged:

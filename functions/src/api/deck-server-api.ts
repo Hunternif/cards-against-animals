@@ -150,8 +150,10 @@ export function getCardIndex(
   ) {
     factor *= 1.0 + card.likes / 2.0;
   }
+  // TODO: make this a controllable slope instead.
   // Minimum possible factor:
-  factor = Math.max(0.0001, factor);
+  factor = Math.max(0.000000001, factor); // Prevent 0
+  factor = Math.max(settings.sort_min_factor, factor);
   // Maximum possible factor (don't allow putting cards ahead of the queue):
   if (!settings.sort_cards_in_front) {
     factor = Math.min(factor, 1.0);
