@@ -8,6 +8,7 @@ import {
 } from '../../../shared/deck-utils';
 import {
   allCardActions,
+  CardType,
   Deck,
   DeckCard,
   PromptDeckCard,
@@ -25,13 +26,16 @@ interface Props {
   /** If undefined, the modal is hidden */
   card?: DeckCard;
   onChange?: () => void;
+  /** Called when you change card type. If the callback is not provided,
+   * this feature will not be available. */
+  onChangeType?: (newType: CardType) => void;
 }
 
 /**
  * UI to edit the content of a card.
  * Modifies the card instance directly!
  */
-export function CardEditor({ deck, card, onChange }: Props) {
+export function CardEditor({ deck, card, onChange, onChangeType }: Props) {
   const cardClasses = ['editable-card'];
   const isPrompt = card && filterPromptDeckCard(card);
   const isResponse = card && filterResponseDeckCard(card);
@@ -51,21 +55,35 @@ export function CardEditor({ deck, card, onChange }: Props) {
 
   return (
     <div className="card-editor">
-      <LargeCard className={cardClasses.join(' ')}>
-        <EditableCardContent
-          original={card?.content}
-          onChange={(c) => {
-            if (card) card.content = c;
-            handleChange();
-          }}
-          isPrompt={isPrompt}
-        />
-        {isPrompt && card.pick > 1 && (
-          <CardBottomRight>
-            <PromptPick pick={card.pick} />
-          </CardBottomRight>
+      <div className="card-container">
+        <LargeCard className={cardClasses.join(' ')}>
+          <EditableCardContent
+            original={card?.content}
+            onChange={(c) => {
+              if (card) card.content = c;
+              handleChange();
+            }}
+            isPrompt={isPrompt}
+          />
+          {isPrompt && card.pick > 1 && (
+            <CardBottomRight>
+              <PromptPick pick={card.pick} />
+            </CardBottomRight>
+          )}
+        </LargeCard>
+        {card && onChangeType && (
+          <SelectInput
+            className="card-type-selector"
+            tiny
+            options={[
+              ['prompt', 'Prompt'],
+              ['response', 'Response'],
+            ]}
+            value={card.type}
+            onChange={onChangeType}
+          />
         )}
-      </LargeCard>
+      </div>
       {isPrompt && (
         <PromptStats deck={deck} card={card} onChange={handleChange} />
       )}

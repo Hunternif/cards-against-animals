@@ -35,4 +35,13 @@
       }
     }
   }
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    select,
+    input {
+      font-size: 13px;
+    }
+  }
 }

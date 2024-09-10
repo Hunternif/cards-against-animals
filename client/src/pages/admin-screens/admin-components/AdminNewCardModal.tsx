@@ -2,7 +2,15 @@ import { useState } from 'react';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { useErrorContext } from '../../../components/ErrorContext';
 import { useDIContext } from '../../../di-context';
-import { CardType, Deck, ResponseDeckCard } from '../../../shared/types';
+import { useHandler } from '../../../hooks/data-hooks';
+import {
+  CardType,
+  Deck,
+  DeckCard,
+  PromptDeckCard,
+  ResponseDeckCard,
+} from '../../../shared/types';
+import { assertExhaustive } from '../../../shared/utils';
 import { CardEditor } from './CardEditor';
 
 interface Props {
@@ -15,35 +23,18 @@ interface Props {
 export function AdminNewCardModal({ show, deck, onClose }: Props) {
   const { deckRepository } = useDIContext();
   const { setError } = useErrorContext();
-  const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-  const [type, setType] = useState<CardType>('response');
-  const [card, setCard] = useState(
+  const [card, setCard] = useState<DeckCard>(
     new ResponseDeckCard('new_id', '', 0, 0, 0, 0, 0, 0, []),
   );
 
   const cardClasses = ['editable-card'];
-  if (type === 'prompt') cardClasses.push('card-prompt');
-  if (type === 'response') cardClasses.push('card-response');
+  if (card.type === 'prompt') cardClasses.push('card-prompt');
+  if (card.type === 'response') cardClasses.push('card-response');
 
   function handleChange() {
     setDirty(true);
-  }
-
-  async function handleSave() {
-    setSaving(true);
-    try {
-      if (deck && card) {
-        await deckRepository.addCard(deck, card);
-      }
-      beforeClose();
-      onClose();
-    } catch (e: any) {
-      setError(e);
-    } finally {
-      setSaving(false);
-    }
   }
 
   function handleCancel() {
@@ -55,6 +46,56 @@ export function AdminNewCardModal({ show, deck, onClose }: Props) {
   function beforeClose() {
     setCard(new ResponseDeckCard('new_id', '', 0, 0, 0, 0, 0, 0, []));
     setDirty(false);
+  }
+
+  const [handleSave, saving] = useHandler(async () => {
+    if (deck && card) {
+      await deckRepository.addCard(deck, card);
+    }
+    beforeClose();
+    onClose();
+  }, [deckRepository, deck, card, beforeClose, onClose]);
+
+  function handleChangeType(newType: CardType) {
+    switch (newType) {
+      case 'prompt':
+        setCard(
+          new PromptDeckCard(
+            card.id,
+            card.content,
+            1,
+            card.rating,
+            card.views,
+            card.plays,
+            card.discards,
+            card.tags,
+            0,
+            0,
+            card.time_created,
+          ),
+        );
+        break;
+      case 'response':
+        setCard(
+          new ResponseDeckCard(
+            card.id,
+            card.content,
+            card.rating,
+            card.views,
+            card.plays,
+            card.discards,
+            card.wins,
+            0,
+            card.tags,
+            card.time_created,
+            undefined,
+          ),
+        );
+        break;
+      default:
+        assertExhaustive(newType);
+    }
+    handleChange();
   }
 
   return (
@@ -70,7 +111,12 @@ export function AdminNewCardModal({ show, deck, onClose }: Props) {
       processing={saving}
       okButton={{ accent: true }}
     >
-      <CardEditor deck={deck} card={card} onChange={handleChange} />
+      <CardEditor
+        deck={deck}
+        card={card}
+        onChange={handleChange}
+        onChangeType={handleChangeType}
+      />
     </ConfirmModal>
   );
 }
