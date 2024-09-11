@@ -3,6 +3,7 @@ import { assertExhaustive } from '../shared/utils';
 import { getPlayer } from './lobby-server-repository';
 import {
   getAllPlayerResponses,
+  getPlayerResponse,
   getPreviousTurn,
   updatePlayerResponse,
 } from './turn-server-repository';
@@ -44,6 +45,18 @@ export async function updateResponsesContent(lobbyID: string, turn: GameTurn) {
               respIndex,
             )
           )?.content;
+          break;
+        case 'repeat_winner_first':
+          // Find previous winner, pick first card:
+          newContent = (
+            await findPreviousWinnerResponse(lobbyID, turn)
+          )?.cards.at(0)?.content;
+          break;
+        case 'repeat_winner_last':
+          // Find previous winner, pick first card:
+          newContent = (
+            await findPreviousWinnerResponse(lobbyID, turn)
+          )?.cards.at(-1)?.content;
           break;
         case 'czar_name':
           newContent = await findJudgeName(lobbyID, turn);
@@ -131,6 +144,17 @@ async function findPreviousResponse(
     }
   }
   return prevResponse;
+}
+
+async function findPreviousWinnerResponse(
+  lobbyID: string,
+  turn: GameTurn,
+): Promise<PlayerResponse | null> {
+  const prevTurn = await getPreviousTurn(lobbyID, turn);
+  if (prevTurn?.winner_uid) {
+    return await getPlayerResponse(lobbyID, prevTurn.id, prevTurn.winner_uid);
+  }
+  return null;
 }
 
 async function findJudgeName(

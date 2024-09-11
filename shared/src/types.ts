@@ -366,6 +366,10 @@ export type ResponseAction =
   | 'repeat_player_first'
   // Repeats the previous player's reponse's last card
   | 'repeat_player_last'
+  // Repeats the previous winner's response's first card
+  | 'repeat_winner_first'
+  // Repeats the previous winner's response's last card
+  | 'repeat_winner_last'
   | 'czar_name';
 
 export const allCardActions: Array<ResponseAction> = [
@@ -373,6 +377,8 @@ export const allCardActions: Array<ResponseAction> = [
   'repeat_last',
   'repeat_player_first',
   'repeat_player_last',
+  'repeat_winner_first',
+  'repeat_winner_last',
   'czar_name',
 ];
 
