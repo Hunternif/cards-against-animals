@@ -22,7 +22,7 @@ export function LobbyCreatorControls(props: Props) {
   const { lobby } = props;
   const [showLink, setShowLink] = useState(false);
   const { setError } = useContext(ErrorContext);
-  const [handleStart, starting] = useHandler(() => startLobby(lobby), []);
+  const [handleStart, starting] = useHandler(() => startLobby(lobby), [lobby]);
 
   async function handleInvite() {
     // Copies link
