@@ -1,0 +1,29 @@
+@use '../colors.scss';
+
+.timer-pie {
+  width: 2rem;
+  height: 2rem;
+  color: colors.$text;
+
+  // Center inside the round border:
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+
+  // Reduce width to account for border:
+  svg.pie-svg {
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+  }
+
+  &.running-out {
+    color: colors.$accent;
+  }
+}
+.pie-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

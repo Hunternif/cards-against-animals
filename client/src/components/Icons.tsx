@@ -10,7 +10,7 @@ interface SvgProps
 interface HtmlProps extends React.HTMLAttributes<HTMLElement> { }
 
 /** Sets color from css font color*/
-function Svg(props: SvgProps) {
+export function Svg(props: SvgProps) {
   const [ref, setRef] = useState<Element | null>(null);
   // Get current font color from CSS and apply it to the SVG path:
   const color = ref ? window.getComputedStyle(ref).getPropertyValue("color") : undefined;
