@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Svg } from '../../../components/Icons';
 
 interface Props {
@@ -8,6 +8,10 @@ interface Props {
   pctValue?: number;
   paused?: boolean;
   onClear?: () => void;
+  /** Called a few seconds before time runs out */
+  onLastCall?: () => void;
+  /** Seconds until the end when 'last call' is called. */
+  lastCallSec?: number;
 }
 
 /** Returns a percent value, from 0 to 100. */
@@ -22,6 +26,13 @@ function calculateElapsedPercent(startTime: Date, endTime: Date): number {
     newValue = Math.min(100, newValue);
   }
   return newValue;
+}
+
+/** Returns true if there is less than [seconds] remaining until [endTime]. */
+function isLastCall(endTime: Date, seconds: number): boolean {
+  const nowMs = new Date().getTime();
+  const endMs = endTime.getTime();
+  return nowMs > endMs - seconds * 1000;
 }
 
 /**
@@ -47,13 +58,15 @@ export function TimerPie({
   pctValue,
   paused,
   onClear,
+  onLastCall,
+  lastCallSec,
 }: Props) {
   // Number from 0 to 100:
   const [percent, setPercent] = useState(
     pctValue ?? calculateElapsedPercent(startTime, endTime),
   );
   const [calledClear, setCalledClear] = useState(false);
-  const pathRef = useRef<SVGPathElement>(null);
+  const [calledLastCall, setCalledLastCall] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -69,6 +82,15 @@ export function TimerPie({
       interval = setInterval(() => {
         const newValue = calculateElapsedPercent(startTime, endTime);
         setPercent(newValue);
+        if (
+          !calledLastCall &&
+          onLastCall &&
+          lastCallSec != null &&
+          isLastCall(endTime, lastCallSec)
+        ) {
+          setCalledLastCall(true);
+          onLastCall();
+        }
         if (newValue >= 100) {
           if (onClear && !calledClear) {
             // console.log(`Cleared timer! ${new Date()}`);
@@ -86,7 +108,17 @@ export function TimerPie({
       startTimer();
     }
     return stopTimer;
-  }, [startTime, endTime, pctValue, calledClear, paused, onClear]);
+  }, [
+    startTime,
+    endTime,
+    pctValue,
+    calledClear,
+    calledLastCall,
+    lastCallSec,
+    paused,
+    onClear,
+    onLastCall,
+  ]);
 
   useEffect(() => {
     // Reset when start time changes:
@@ -94,9 +126,8 @@ export function TimerPie({
   }, [startTime]);
 
   const classes = ['timer-pie'];
-  if (percent > 75) {
-    classes.push('running-out');
-  }
+  if (percent > 75) classes.push('running-out');
+  if (calledLastCall) classes.push('last-call');
 
   return (
     <div className={classes.join(' ')}>

@@ -21,9 +21,25 @@
   &.running-out {
     color: colors.$accent;
   }
+  &.last-call {
+    color: colors.$burned-text;
+    animation: shake 150ms 2 linear;
+  }
 }
 .pie-container {
   width: 100%;
   display: flex;
   justify-content: center;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(3px, 0);
+  }
+  50% {
+    transform: translate(-3px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
 }
