@@ -370,6 +370,8 @@ export type ResponseAction =
   | 'repeat_winner_first'
   // Repeats the previous winner's response's last card
   | 'repeat_winner_last'
+  // Picks any card that someone else is repeating during this turn
+  | 'any_repeated_card'
   | 'czar_name';
 
 export const allCardActions: Array<ResponseAction> = [
@@ -379,6 +381,7 @@ export const allCardActions: Array<ResponseAction> = [
   'repeat_player_last',
   'repeat_winner_first',
   'repeat_winner_last',
+  'any_repeated_card',
   'czar_name',
 ];
 

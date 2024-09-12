@@ -13,6 +13,8 @@ export async function updateResponsesContent(lobbyID: string, turn: GameTurn) {
   const responses = await getAllPlayerResponses(lobbyID, turn.id);
   // Sort resposnes in the same order as on the Card Reading Screen:
   responses.sort((r1, r2) => r1.random_index - r2.random_index);
+  // Remember cards that were repeated:
+  const repeated = new Array<string>();
 
   for (const [respIndex, response] of responses.entries()) {
     for (const [cardIndex, card] of response.cards.entries()) {
@@ -22,6 +24,7 @@ export async function updateResponsesContent(lobbyID: string, turn: GameTurn) {
           // Find previous card in the same response:
           if (cardIndex > 0) {
             newContent = response.cards[cardIndex - 1].content;
+            repeated.push(newContent);
           }
           break;
         case 'repeat_player_first':
@@ -34,6 +37,7 @@ export async function updateResponsesContent(lobbyID: string, turn: GameTurn) {
               respIndex,
             )
           )?.content;
+          if (newContent) repeated.push(newContent);
           break;
         case 'repeat_player_last':
           // Find the last card in the previous player's response:
@@ -45,18 +49,24 @@ export async function updateResponsesContent(lobbyID: string, turn: GameTurn) {
               respIndex,
             )
           )?.content;
+          if (newContent) repeated.push(newContent);
           break;
         case 'repeat_winner_first':
           // Find previous winner, pick first card:
           newContent = (
             await findPreviousWinnerResponse(lobbyID, turn)
           )?.cards.at(0)?.content;
+          if (newContent) repeated.push(newContent);
           break;
         case 'repeat_winner_last':
           // Find previous winner, pick first card:
           newContent = (
             await findPreviousWinnerResponse(lobbyID, turn)
           )?.cards.at(-1)?.content;
+          if (newContent) repeated.push(newContent);
+          break;
+        case 'any_repeated_card':
+          // Do nothing, will populate this later.
           break;
         case 'czar_name':
           newContent = await findJudgeName(lobbyID, turn);
@@ -69,6 +79,16 @@ export async function updateResponsesContent(lobbyID: string, turn: GameTurn) {
       }
       if (newContent != null) {
         card.content = newContent;
+        await updatePlayerResponse(lobbyID, turn.id, response);
+      }
+    }
+  }
+
+  // Do another run for 'any_repeated_card' consumers:
+  for (const [respIndex, response] of responses.entries()) {
+    for (const [cardIndex, card] of response.cards.entries()) {
+      if (card.action === 'any_repeated_card' && repeated.length > 0) {
+        card.content = repeated[0];
         await updatePlayerResponse(lobbyID, turn.id, response);
       }
     }
