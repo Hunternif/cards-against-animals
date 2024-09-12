@@ -174,6 +174,9 @@ export const turnConverter: FConverter<GameTurn> = {
       {
         time_created: FTimestamp.fromDate(turn.time_created),
         phase_start_time: FTimestamp.fromDate(turn.phase_start_time),
+        phase_end_time: turn.phase_end_time
+          ? FTimestamp.fromDate(turn.phase_end_time)
+          : undefined,
         // if legacy prompt exists, keep it:
         prompt: turn.legacy_prompt && copyFields(turn.legacy_prompt, []),
       },
@@ -191,6 +194,7 @@ export const turnConverter: FConverter<GameTurn> = {
     );
     ret.phase_start_time =
       (data.phase_start_time as FTimestamp | null)?.toDate() ?? time_created;
+    ret.phase_end_time = (data.phase_end_time as FTimestamp | null)?.toDate();
     ret.phase = data.phase || 'new';
     ret.winner_uid = data.winner_uid;
     ret.audience_award_uids = data.audience_award_uids ?? [];

@@ -28,31 +28,40 @@ export async function startReadingPhase(lobby: GameLobby, turn: GameTurn) {
   if (turn.phase !== 'answering') {
     throw new Error(`Invalid turn phase to start reading: ${turn.phase}`);
   }
-  // TODO: throw a special error class
-  const notAllRespondedError = new Error('Not all players responded');
-  const responses = await getAllPlayerResponses(lobby.id, turn.id);
-  const playerCount = await getActivePlayerCount(lobby.id);
-  // -1 because of judge
-  if (responses.length < playerCount - 1) {
-    throw notAllRespondedError;
-  }
-  await runTransaction(firestore, async (transaction) => {
-    // Ensure responses have not been modified:
-    const updatedResponses = await Promise.all(
-      responses.map((resp) =>
-        transaction.get(
-          doc(getPlayerResponsesRef(lobby.id, turn.id), resp.player_uid),
-        ),
-      ),
-    );
-    for (let updatedResp of updatedResponses) {
-      if (!updatedResp.exists()) {
-        throw notAllRespondedError;
-      }
-    }
+  const timeRanOut =
+    turn.phase_end_time && new Date().getTime() > turn.phase_end_time.getTime();
+  // If time ran out, you can continue:
+  if (timeRanOut) {
     turn.phase = 'reading';
-    await updateTurn(lobby.id, turn, transaction);
-  });
+    await updateTurn(lobby.id, turn);
+  } else {
+    // We still have time, so wait for all players.
+    // TODO: throw a special error class
+    const notAllRespondedError = new Error('Not all players responded');
+    const responses = await getAllPlayerResponses(lobby.id, turn.id);
+    const playerCount = await getActivePlayerCount(lobby.id);
+    // -1 because of judge
+    if (responses.length < playerCount - 1) {
+      throw notAllRespondedError;
+    }
+    await runTransaction(firestore, async (transaction) => {
+      // Ensure responses have not been modified:
+      const updatedResponses = await Promise.all(
+        responses.map((resp) =>
+          transaction.get(
+            doc(getPlayerResponsesRef(lobby.id, turn.id), resp.player_uid),
+          ),
+        ),
+      );
+      for (let updatedResp of updatedResponses) {
+        if (!updatedResp.exists()) {
+          throw notAllRespondedError;
+        }
+      }
+      turn.phase = 'reading';
+      await updateTurn(lobby.id, turn, transaction);
+    });
+  }
 }
 
 /**

@@ -218,6 +218,8 @@ export class GameTurn {
   phase: TurnPhase = 'new';
   /** Time when the last phase bagan. */
   phase_start_time: Date = this.time_created;
+  /** Time when the current phase should end. */
+  phase_end_time?: Date;
 
   constructor(
     public id: string,

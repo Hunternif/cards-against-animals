@@ -23,6 +23,7 @@ export const createOnTurnPhaseChangeHandler = () =>
   onDocumentUpdated('lobbies/{lobbyID}/turns/{turnID}', async (event) => {
     if (!event.data) return;
     const lobbyID = event.params.lobbyID;
+    const lobby = await getLobby(lobbyID);
     const turnBefore = turnConverter.fromFirestore(event.data.before);
     const turnAfter = turnConverter.fromFirestore(event.data.after);
     if (turnBefore.phase !== turnAfter.phase) {
@@ -43,7 +44,6 @@ export const createOnTurnPhaseChangeHandler = () =>
         case 'complete': {
           // Turn completed: update all scores.
           const responses = await getAllPlayerResponses(lobbyID, turnAfter.id);
-          const lobby = await getLobby(lobbyID);
           await updatePlayerScoresFromTurn(lobby, turnAfter, responses);
           await logInteractionsInCompletePhase(lobbyID, turnAfter, responses);
           break;
@@ -56,7 +56,14 @@ export const createOnTurnPhaseChangeHandler = () =>
         turnBefore.phase_start_time.getUTCMilliseconds() ===
         turnAfter.phase_start_time.getUTCMilliseconds()
       ) {
-        turnAfter.phase_start_time = new Date();
+        const now = new Date();
+        turnAfter.phase_start_time = now;
+        const phaseDurationSec = lobby.settings.answer_time_sec;
+        if (turnAfter.phase === 'answering' && phaseDurationSec > 0) {
+          turnAfter.phase_end_time = new Date(
+            now.getTime() + phaseDurationSec * 1000,
+          );
+        }
         await updateTurn(lobbyID, turnAfter);
       }
     }
