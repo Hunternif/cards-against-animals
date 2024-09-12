@@ -1,18 +1,17 @@
 import { useContext, useEffect, useState } from 'react';
+import { startReadingPhase } from '../../api/turn/turn-control-api';
 import bell_double from '../../assets/sounds/bell_double.mp3';
 import { GameButton } from '../../components/Buttons';
 import { ErrorContext } from '../../components/ErrorContext';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { ScreenSizeSwitch } from '../../components/layout/ScreenSizeSwitch';
 import { useSoundOnResponse } from '../../hooks/sound-hooks';
-import { startReadingPhase } from '../../api/turn/turn-control-api';
 import { PlayerInLobby, PlayerResponse } from '../../shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
 import { MiniCardResponse } from './game-components/MiniCardResponse';
 import { ResponseCount } from './game-components/ResponseCount';
 import { Soundboard } from './game-components/Soundboard';
-import { TurnTimer } from './game-components/TurnTimer';
 
 // const dummyPlayer = new PlayerInLobby("01", "Dummy");
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
@@ -40,9 +39,7 @@ export function JudgeAwaitResponsesScreen() {
 
   // Can skip to the next phase?
   const allResponded = validPlayers.every((p) => findResponse(p));
-  const timeRanOut =
-    turn.phase_end_time && new Date().getTime() > turn.phase_end_time.getTime();
-  const [timeRanOutNow, setTimeRanOutNow] = useState(false);
+  const [timeRanOut, setTimeRanOut] = useState(false);
 
   // Play sound when everyone has answered:
   useEffect(() => {
@@ -50,6 +47,18 @@ export function JudgeAwaitResponsesScreen() {
       new Audio(bell_double).play();
     }
   }, [allResponded]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (
+        turn.phase_end_time &&
+        new Date().getTime() > turn.phase_end_time.getTime()
+      ) {
+        setTimeRanOut(true);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [turn]);
 
   return (
     <GameLayout>
@@ -69,15 +78,14 @@ export function JudgeAwaitResponsesScreen() {
             />
           }
         />
-        <TurnTimer onClear={() => setTimeRanOutNow(true)} />
       </section>
       <footer>
-        {isJudge && (allResponded || timeRanOut || timeRanOutNow) && (
+        {isJudge && (allResponded || timeRanOut || timeRanOut) && (
           <>
             <span>
               {allResponded
                 ? 'All players responded!'
-                : timeRanOut || timeRanOutNow
+                : timeRanOut || timeRanOut
                 ? 'Time ran out!'
                 : null}
             </span>

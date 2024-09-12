@@ -1,3 +1,4 @@
+import { TurnTimer } from '../TurnTimer';
 import { DiscardTokensBadge } from './DiscardTokensBadge';
 import { GamePlayerMenu } from './GamePlayerMenu';
 import { PlayerCountBadge } from './PlayerCountBadge';
@@ -12,6 +13,11 @@ export function GameHeader() {
         <div className="menu-row-left">
           <PlayerCountBadge />
           <TurnCounter />
+        </div>
+
+        <div className="menu-row-mid">
+          {/* TODO: on mobile, make sure this is sticky */}
+          <TurnTimer />
         </div>
 
         <div className="menu-row-right">

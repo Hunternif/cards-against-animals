@@ -16,7 +16,6 @@ import { GameHand } from './game-components/GameHand';
 import { GameMiniResponses } from './game-components/GameMiniResponses';
 import { ResponseCount } from './game-components/ResponseCount';
 import { Soundboard } from './game-components/Soundboard';
-import { TurnTimer } from './game-components/TurnTimer';
 
 const containerStyle: CSSProperties = {
   display: 'flex',
@@ -179,7 +178,6 @@ export function PlayerAnsweringScreen() {
         )}
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
-        <TurnTimer />
         <GameControlRow
           selection={selectedCards}
           discarding={discarding}
