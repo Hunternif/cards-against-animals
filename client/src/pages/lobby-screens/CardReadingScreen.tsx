@@ -7,8 +7,8 @@ import { ErrorContext } from '../../components/ErrorContext';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { PlayerResponse } from '../../shared/types';
 import { assertExhaustive } from '../../shared/utils';
-import { CardOffsetContextProvider } from './game-components/CardOffsetContext';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
+import { EndOfTurnControls } from './game-components/EndOfTurnControls';
 import { useGameContext } from './game-components/GameContext';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
@@ -116,38 +116,28 @@ export function CardReadingScreen() {
         />
         {/* Add context to share offsets between responses */}
         {/* <CardOffsetContextProvider> */}
-          {shuffledResponses.map((r) => (
-            <ResponseReading
-              key={r.player_uid}
-              player={players.find((p) => p.uid === r.player_uid)}
-              response={r}
-              canReveal={isJudge}
-              canSelect={isJudge && allRevealed}
-              selected={winner?.player_uid === r.player_uid}
-              onClick={(r) => handleClick(r)}
-              showLikes={showLikes}
-              canLike={
-                !isJudge &&
-                r.player_uid !== player.uid &&
-                lobby.settings.enable_likes
-              }
-              onClickLike={(r) => handleLike(r)}
-            />
-          ))}
+        {shuffledResponses.map((r) => (
+          <ResponseReading
+            key={r.player_uid}
+            player={players.find((p) => p.uid === r.player_uid)}
+            response={r}
+            canReveal={isJudge}
+            canSelect={isJudge && allRevealed}
+            selected={winner?.player_uid === r.player_uid}
+            onClick={(r) => handleClick(r)}
+            showLikes={showLikes}
+            canLike={
+              !isJudge &&
+              r.player_uid !== player.uid &&
+              lobby.settings.enable_likes
+            }
+            onClickLike={(r) => handleLike(r)}
+          />
+        ))}
         {/* </CardOffsetContextProvider> */}
       </section>
       <footer>
-        {noResponses && (
-          <>
-            <GameButton
-              accent
-              onClick={handleSkipTurn}
-              disabled={startingNewTurn}
-            >
-              Next turn
-            </GameButton>
-          </>
-        )}
+        {noResponses && <EndOfTurnControls />}
         <Soundboard />
       </footer>
     </GameLayout>

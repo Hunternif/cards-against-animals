@@ -57,8 +57,9 @@ export function useDocumentDataOrDefault<T>(
 /** Convenience hook to get async data. */
 export function useAsyncData<T>(
   promise: Promise<T>,
-): [data: T | null, error: any] {
+): [data: T | null, loading: boolean, error: any] {
   const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   useEffect(() => {
     let active = true;
@@ -69,13 +70,16 @@ export function useAsyncData<T>(
 
     async function awaitPromise() {
       try {
+        setLoading(true);
         setData(await promise);
       } catch (e: any) {
         setError(e);
+      } finally {
+        setLoading(false);
       }
     }
   }, []); // Don't depend on identity of the promise!
-  return [data, error];
+  return [data, loading, error];
 }
 
 /**
