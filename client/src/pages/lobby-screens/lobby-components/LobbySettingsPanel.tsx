@@ -52,8 +52,12 @@ export function LobbySettingsPanel(props: Props) {
           control={<MaxScoreControl {...props} />}
         />
       )}
+       <FormItem label="Timer [sec]"
+        hint="Counts down the time while players can answer (in seconds). When it expires, Czar can continue to the 'Reveal' phase. Set 0 to disable."
+        control={<AnswerTimeControl {...props} />}
+      />
       <FormItem label="Next turn after [sec]"
-        hint="On Winner screen, auto-starts the next turn after this amount of time (in seconds). 0 to disable."
+        hint="On Winner screen, auto-starts the next turn after this amount of time (in seconds). Set 0 to disable."
         control={<NextTurnTimeControl {...props} />}
       />
       <FormItem label="New cards first" disabled={props.inGame}
@@ -181,6 +185,16 @@ function CardsPerPersonControl({ settings, readOnly, onChange }: Props) {
     value={settings.cards_per_person}
     onChange={async (newValue) => {
       settings.cards_per_person = newValue;
+      if (onChange) await onChange(settings);
+    }}
+  />;
+}
+
+function AnswerTimeControl({ settings, readOnly, onChange }: Props) {
+  return <NumberInput debounce min={0} max={99999} disabled={readOnly}
+    value={settings.answer_time_sec}
+    onChange={async (newValue) => {
+      settings.answer_time_sec = newValue;
       if (onChange) await onChange(settings);
     }}
   />;

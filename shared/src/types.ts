@@ -83,6 +83,8 @@ export interface LobbySettings {
   enable_tag_exchange: boolean;
   /** Who is allowed to change lobby settings and kick players during the game. */
   lobby_control: LobbyContol;
+  /** Timer [seconds] for players to answer. 0 to disable. */
+  answer_time_sec: number;
   /** Number of seconds until next turn auto-starts. 0 to disable. */
   next_turn_time_sec: number;
   /** How many discard tokens each player gets initially. */
@@ -118,6 +120,7 @@ export function defaultLobbySettings(): LobbySettings {
     discard_cost: 'token',
     enable_tag_exchange: false,
     lobby_control: 'creator',
+    answer_time_sec: 60.0,
     next_turn_time_sec: 5.0,
     init_discard_tokens: 1,
     max_discard_tokens: 4,
