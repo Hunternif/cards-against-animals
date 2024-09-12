@@ -43,10 +43,10 @@ export function JudgeAwaitResponsesScreen() {
 
   // Play sound when everyone has answered:
   useEffect(() => {
-    if (allResponded && isJudge) {
+    if (isJudge && (allResponded || timeRanOut)) {
       new Audio(bell_double).play();
     }
-  }, [allResponded]);
+  }, [allResponded, timeRanOut]);
 
   useEffect(() => {
     const interval = setInterval(() => {
