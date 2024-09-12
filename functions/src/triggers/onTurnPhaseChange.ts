@@ -1,5 +1,6 @@
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 
+import { getLobby } from '../api/lobby-server-repository';
 import {
   logInteractionsInCompletePhase,
   logInteractionsInReadingPhase,
@@ -8,12 +9,12 @@ import {
 import { updateResponsesContent } from '../api/response-server-api';
 import { updatePlayerScoresFromTurn } from '../api/turn-server-api';
 import {
+  clearTurnTimer,
   getAllPlayerResponses,
   updateTurn,
 } from '../api/turn-server-repository';
 import { turnConverter } from '../shared/firestore-converters';
 import { assertExhaustive } from '../shared/utils';
-import { getLobby } from '../api/lobby-server-repository';
 
 /**
  * Logic to run after each turn phase.
@@ -63,8 +64,10 @@ export const createOnTurnPhaseChangeHandler = () =>
           turnAfter.phase_end_time = new Date(
             now.getTime() + phaseDurationSec * 1000,
           );
+          await updateTurn(lobbyID, turnAfter);
+        } else {
+          await clearTurnTimer(lobbyID, turnAfter);
         }
-        await updateTurn(lobbyID, turnAfter);
       }
     }
   });

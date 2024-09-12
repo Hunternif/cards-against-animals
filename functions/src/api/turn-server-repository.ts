@@ -1,3 +1,4 @@
+import { FieldValue } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { firestore } from '../firebase-server';
 import {
@@ -122,6 +123,13 @@ export async function updateTurn(
   await getTurnsRef(lobbyID)
     .doc(turn.id)
     .update(turnConverter.toFirestore(turn));
+}
+
+/** Separate functino to clear phase_end_time */
+export async function clearTurnTimer(lobbyID: string, turn: GameTurn) {
+  await getTurnsRef(lobbyID)
+    .doc(turn.id)
+    .update({ phase_end_time: FieldValue.delete() });
 }
 
 /** Counts how many turns have occurred in this lobby. */
