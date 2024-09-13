@@ -24,6 +24,7 @@ export function TurnTimer({ onClear }: Props) {
           onClear={onClear}
           lastCallSec={3}
           onLastCall={handleLastCall}
+          reverse
         />
       </div>
     );
