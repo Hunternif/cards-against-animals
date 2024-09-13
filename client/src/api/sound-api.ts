@@ -1,4 +1,5 @@
 import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
+import a from '../assets/sounds/a.mp3';
 import bruh from '../assets/sounds/bruh.mp3';
 import clown_honk from '../assets/sounds/clown_honk.mp3';
 import cum from '../assets/sounds/cum.mp3';
@@ -29,6 +30,7 @@ export async function postSoundEvent(
   await setDoc(doc(getSoundsRef(lobby.id), player.uid), sound);
 }
 
+export const soundA = 'a';
 export const soundBruh = 'bruh';
 export const soundClownHonk = 'clown_honk';
 export const soundCum = 'cum';
@@ -38,6 +40,7 @@ export const soundYikes = 'yikes';
 
 /** All known sounds */
 const sounds = new Map<string, string>([
+  [soundA, a],
   [soundBruh, bruh],
   [soundClownHonk, clown_honk],
   [soundCum, cum],
