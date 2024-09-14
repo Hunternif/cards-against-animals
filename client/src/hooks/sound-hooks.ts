@@ -46,40 +46,43 @@ export function useSoundboardSound() {
 
   // TODO: play only new sounds on page reload
   useEffect(() => {
-    if (sounds && sounds.length > 0) {
-      const soundsByTime = sounds
-        .slice()
-        .sort((a, b) => a.time.getTime() - b.time.getTime());
-      const newSound = soundsByTime[soundsByTime.length - 1];
+    playSounds();
+    async function playSounds() {
+      if (sounds && sounds.length > 0) {
+        const soundsByTime = sounds
+          .slice()
+          .sort((a, b) => a.time.getTime() - b.time.getTime());
+        const newSound = soundsByTime[soundsByTime.length - 1];
 
-      // Ignore sounds from previous turns or phases:
-      if (newSound.time.getTime() < turn.phase_start_time.getTime()) {
-        return;
-      }
+        // Ignore sounds from previous turns or phases:
+        if (newSound.time.getTime() < turn.phase_start_time.getTime()) {
+          return;
+        }
 
-      audioPerPlayer.current.get(newSound.player_uid)?.pause();
-      const audio = playSoundEvent(newSound);
-      audioPerPlayer.current.set(newSound.player_uid, audio);
+        audioPerPlayer.current.get(newSound.player_uid)?.pause();
+        const audio = await playSoundEvent(newSound);
+        audioPerPlayer.current.set(newSound.player_uid, audio);
 
-      // Sike! confetti effects
-      // TODO: move this into another module, using events?
-      const now = new Date();
-      if (now.getTime() - lastDeerTime.current.getTime() > deerIntervalMs) {
-        lastDeerTime.current = now;
-        if (newSound.sound_id === soundYikes) {
-          if (!isDeerInitialized) {
-            initiaizeDeer();
-          }
-          if (deerConfetti) {
-            confetti({
-              shapes: [deerConfetti],
-              flat: true, // this exists, but @types are outdated
-              scalar: deerSize,
-              spread: 180,
-              particleCount: 6,
-              startVelocity: 30,
-              ticks: 30,
-            } as confetti.Options);
+        // Sike! confetti effects
+        // TODO: move this into another module, using events?
+        const now = new Date();
+        if (now.getTime() - lastDeerTime.current.getTime() > deerIntervalMs) {
+          lastDeerTime.current = now;
+          if (newSound.sound_id === soundYikes) {
+            if (!isDeerInitialized) {
+              initiaizeDeer();
+            }
+            if (deerConfetti) {
+              confetti({
+                shapes: [deerConfetti],
+                flat: true, // this exists, but @types are outdated
+                scalar: deerSize,
+                spread: 180,
+                particleCount: 6,
+                startVelocity: 30,
+                ticks: 30,
+              } as confetti.Options);
+            }
           }
         }
       }
@@ -109,20 +112,28 @@ interface SoundOptions {
 /** Plays this sound once on the page. */
 export function useSound(soundID: string, options: SoundOptions = {}) {
   useEffect(() => {
-    if (options.startTime) {
-      const now = new Date().getTime();
-      const expiryTime =
-        options.startTime.getTime() + (options.startThresholdMs ?? 3000);
-      if (now > expiryTime) {
-        // Too much time has passed since 'startTime', don't play.
-        return;
+    const unsubPromise = tryPlaySound();
+    return () => {
+      unsubPromise.then((f) => f && f());
+    };
+
+    /** Returns the 'unsubscribe' function */
+    async function tryPlaySound(): Promise<Function | undefined> {
+      if (options.startTime) {
+        const now = new Date().getTime();
+        const expiryTime =
+          options.startTime.getTime() + (options.startThresholdMs ?? 3000);
+        if (now > expiryTime) {
+          // Too much time has passed since 'startTime', don't play.
+          return;
+        }
       }
-    }
-    const audio = playSoundID(soundID, options.volume);
-    if (audio && !options.playUntilEnd) {
-      return () => {
-        audio.pause();
-      };
+      const audio = await playSoundID(soundID, options.volume);
+      if (audio && !options.playUntilEnd) {
+        return () => {
+          audio.pause();
+        };
+      }
     }
   }, [options]);
 }

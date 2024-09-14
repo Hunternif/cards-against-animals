@@ -152,23 +152,23 @@ const sounds = new Map<string, string>([
   [soundLaugh018, laugh_018],
 ]);
 
-export function playSoundEvent(
+export async function playSoundEvent(
   event: SoundEvent,
   volume: number = 0.1,
-): HTMLAudioElement | null {
-  return playSoundID(event.sound_id, volume);
+): Promise<HTMLAudioElement | null> {
+  return await playSoundID(event.sound_id, volume);
 }
 
 /** If the sound ID is valid, starts playing and returns its Audio object. */
-export function playSoundID(
+export async function playSoundID(
   soundID: string,
   volume: number = 0.1,
-): HTMLAudioElement | null {
+): Promise<HTMLAudioElement | null> {
   const url = sounds.get(soundID) ?? null;
   if (url) {
     const audio = new Audio(url);
     audio.volume = volume;
-    audio.play();
+    await audio.play();
     return audio;
   }
   return null;
