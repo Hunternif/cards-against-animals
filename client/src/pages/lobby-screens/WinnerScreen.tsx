@@ -1,10 +1,19 @@
 import confetti from 'canvas-confetti';
 import { useRedirectToNextLobby } from '../../api/lobby/lobby-hooks';
+import {
+  soundApplauseHigh,
+  soundApplauseLow,
+  soundCheer,
+  soundGolfClap,
+  soundKidsCheer,
+} from '../../api/sound-api';
 import { Delay } from '../../components/Delay';
 import { IconHeartInline, IconStarInline } from '../../components/Icons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { GameLayout } from '../../components/layout/GameLayout';
+import { useSound } from '../../hooks/sound-hooks';
 import { useEffectOnce } from '../../hooks/ui-hooks';
+import { PlayerInLobby, PlayerResponse } from '../../shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { EndOfTurnControls } from './game-components/EndOfTurnControls';
 import { useGameContext } from './game-components/GameContext';
@@ -27,6 +36,11 @@ export function WinnerScreen() {
 
   useEffectOnce(() => {
     confetti();
+  });
+
+  useSound(getApplauseSoundFromLikes(winnerResponse, players), {
+    playUntilEnd: true,
+    volume: 0.2,
   });
 
   useRedirectToNextLobby(lobby);
@@ -95,4 +109,18 @@ export function WinnerScreen() {
       {/* </CardOffsetContextProvider> */}
     </>
   );
+}
+
+/** Returns the appropriate applause sound ID based on the number of likes. */
+function getApplauseSoundFromLikes(
+  response: PlayerResponse | undefined,
+  players: PlayerInLobby[],
+): string | undefined {
+  if (response?.like_count == null) return;
+  if (response.like_count >= players.length) return soundKidsCheer;
+  if (response.like_count > 3) return soundCheer;
+  if (response.like_count > 2) return soundApplauseHigh;
+  if (response.like_count > 1) return soundApplauseLow;
+  if (response.like_count > 0) return soundGolfClap;
+  return soundGolfClap;
 }

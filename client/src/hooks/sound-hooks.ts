@@ -110,15 +110,22 @@ interface SoundOptions {
 }
 
 /** Plays this sound once on the page. */
-export function useSound(soundID: string, options: SoundOptions = {}) {
+export function useSound(
+  soundID: string | undefined,
+  options: SoundOptions = {},
+) {
   useEffect(() => {
-    const unsubPromise = tryPlaySound();
+    if (soundID == null) return;
+
+    const unsubPromise = tryPlaySound(soundID);
     return () => {
       unsubPromise.then((f) => f && f());
     };
 
     /** Returns the 'unsubscribe' function */
-    async function tryPlaySound(): Promise<Function | undefined> {
+    async function tryPlaySound(
+      soundID: string,
+    ): Promise<Function | undefined> {
       if (options.startTime) {
         const now = new Date().getTime();
         const expiryTime =
@@ -135,5 +142,5 @@ export function useSound(soundID: string, options: SoundOptions = {}) {
         };
       }
     }
-  }, [options]);
+  }, [soundID, options.startTime, options.startThresholdMs]);
 }

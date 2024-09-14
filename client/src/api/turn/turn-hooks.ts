@@ -122,7 +122,9 @@ export function useResponseLikeCount(
   const [snapshots] = useCollection(
     getResponseLikesRef(lobby.id, turn.id, response.player_uid),
   );
-  return snapshots?.docs.length ?? 0;
+  // update data so it's available across the app:
+  response.like_count = snapshots?.docs.length ?? 0;
+  return response.like_count;
 }
 
 /** Returns if true if this response has the current player's like. */
