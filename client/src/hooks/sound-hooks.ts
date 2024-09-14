@@ -114,12 +114,19 @@ export function useSound(
   soundID: string | undefined,
   options: SoundOptions = {},
 ) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const currentSoundIDRef = useRef('');
+
   useEffect(() => {
     if (soundID == null) return;
-
-    const unsubPromise = tryPlaySound(soundID);
+    if (currentSoundIDRef.current != soundID) {
+      currentSoundIDRef.current = soundID;
+      tryPlaySound(soundID);
+    }
     return () => {
-      unsubPromise.then((f) => f && f());
+      if (audioRef.current && !options.playUntilEnd) {
+        audioRef.current.pause();
+      }
     };
 
     /** Returns the 'unsubscribe' function */
@@ -136,11 +143,7 @@ export function useSound(
         }
       }
       const audio = await playSoundID(soundID, options.volume);
-      if (audio && !options.playUntilEnd) {
-        return () => {
-          audio.pause();
-        };
-      }
+      audioRef.current = audio;
     }
-  }, [soundID, options.startTime, options.startThresholdMs]);
+  }, [soundID, options.startTime, options.startThresholdMs, options.volume]);
 }
