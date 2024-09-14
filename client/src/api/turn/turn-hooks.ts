@@ -44,7 +44,7 @@ export function useLastTurn(lobby: GameLobby): LastTurnHook {
   // While the new turn is loading, return the previous turn:
   const [prevTurn, setPrevTurn] = useState<GameTurn | undefined>(undefined);
   const [lastTurn, loading, error] = useDocumentData(
-    doc(getTurnsRef(lobby.id), lobby.current_turn_id),
+    doc(getTurnsRef(lobby.id), lobby.current_turn_id ?? 'UNKNOWN'),
   );
   if (lastTurn && prevTurn != lastTurn) {
     setPrevTurn(lastTurn);

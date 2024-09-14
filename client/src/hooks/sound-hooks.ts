@@ -94,16 +94,35 @@ interface SoundOptions {
    * If `playUntilEnd = true`, sound will play until the end without stopping.
    */
   playUntilEnd?: boolean;
+  /**
+   * If more than `threshold` [ms] has passed since the start of playback,
+   * sound will not start again. This sets the start time.
+   */
+  startTime?: Date;
+  /**
+   * If more than `threshold` [ms] has passed since the start of playback,
+   * sound will not start again. This sets the threshold. Default is 3000.
+   */
+  startThresholdMs?: number;
 }
 
 /** Plays this sound once on the page. */
 export function useSound(soundID: string, options: SoundOptions = {}) {
   useEffect(() => {
+    if (options.startTime) {
+      const now = new Date().getTime();
+      const expiryTime =
+        options.startTime.getTime() + (options.startThresholdMs ?? 3000);
+      if (now > expiryTime) {
+        // Too much time has passed since 'startTime', don't play.
+        return;
+      }
+    }
     const audio = playSoundID(soundID, options.volume);
     if (audio && !options.playUntilEnd) {
       return () => {
         audio.pause();
       };
     }
-  }, []);
+  }, [options]);
 }
