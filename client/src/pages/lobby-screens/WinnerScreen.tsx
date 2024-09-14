@@ -22,7 +22,8 @@ import { Soundboard } from './game-components/Soundboard';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
-  const { lobby, turn, players, prompt, responses } = useGameContext();
+  const { lobby, turn, players, activePlayers, prompt, responses } =
+    useGameContext();
   const winner = players.find((p) => p.uid === turn.winner_uid);
 
   const winnerResponse = responses.find(
@@ -38,7 +39,7 @@ export function WinnerScreen() {
     confetti();
   });
 
-  useSound(getApplauseSoundFromLikes(winnerResponse, players), {
+  useSound(getApplauseSoundFromLikes(winnerResponse, activePlayers), {
     playUntilEnd: true,
     volume: 0.2,
   });
