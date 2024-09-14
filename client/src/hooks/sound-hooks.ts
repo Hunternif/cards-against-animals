@@ -1,9 +1,14 @@
+import confetti from 'canvas-confetti';
 import { useEffect, useRef, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { getSoundsRef, playSoundEvent, soundYikes } from '../api/sound-api';
+import {
+  getSoundsRef,
+  playSoundEvent,
+  playSoundID,
+  soundYikes,
+} from '../api/sound-api';
 import pop from '../assets/sounds/pop.mp3';
 import { useGameContext } from '../pages/lobby-screens/game-components/GameContext';
-import confetti from 'canvas-confetti';
 
 /** Plays a sound whenever a new response is added */
 export function useSoundOnResponse() {
@@ -80,4 +85,25 @@ export function useSoundboardSound() {
       }
     }
   }, [sounds]);
+}
+
+interface SoundOptions {
+  volume?: number;
+  /**
+   * By default the sound will stop when going to the next page.
+   * If `playUntilEnd = true`, sound will play until the end without stopping.
+   */
+  playUntilEnd?: boolean;
+}
+
+/** Plays this sound once on the page. */
+export function useSound(soundID: string, options: SoundOptions = {}) {
+  useEffect(() => {
+    const audio = playSoundID(soundID, options.volume);
+    if (audio && !options.playUntilEnd) {
+      return () => {
+        audio.pause();
+      };
+    }
+  }, []);
 }

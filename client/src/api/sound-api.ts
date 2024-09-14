@@ -156,7 +156,15 @@ export function playSoundEvent(
   event: SoundEvent,
   volume: number = 0.1,
 ): HTMLAudioElement | null {
-  const url = sounds.get(event.sound_id) ?? null;
+  return playSoundID(event.sound_id, volume);
+}
+
+/** If the sound ID is valid, starts playing and returns its Audio object. */
+export function playSoundID(
+  soundID: string,
+  volume: number = 0.1,
+): HTMLAudioElement | null {
+  const url = sounds.get(soundID) ?? null;
   if (url) {
     const audio = new Audio(url);
     audio.volume = volume;

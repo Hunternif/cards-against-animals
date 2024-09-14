@@ -1,10 +1,12 @@
 import { User } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useRedirectToNextLobby } from '../../api/lobby/lobby-hooks';
+import { soundMusicNge } from '../../api/sound-api';
 import { GameButton } from '../../components/Buttons';
 import { Scoreboard } from '../../components/Scoreboard';
 import { FillLayout } from '../../components/layout/FillLayout';
 import { GameLayout } from '../../components/layout/GameLayout';
+import { useSound } from '../../hooks/sound-hooks';
 import { GameLobby, PlayerInLobby } from '../../shared/types';
 import { NewGameButton } from './game-components/NewGameButton';
 
@@ -17,6 +19,9 @@ interface Props {
 export function ScoreboardScreen({ lobby, user, players }: Props) {
   const navigate = useNavigate();
   useRedirectToNextLobby(lobby);
+  useSound(soundMusicNge, {
+    volume: 0.4,
+  });
 
   return (
     <FillLayout className="scoreboard-screen">
