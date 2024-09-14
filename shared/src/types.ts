@@ -248,6 +248,10 @@ export class PlayerResponse {
     /** Will be updated after the turn completes. */
     public like_count: number | undefined,
   ) {}
+
+  get isRevealed(): boolean {
+    return this.reveal_count >= this.cards.length;
+  }
 }
 
 /** Represents a player who voted on a card, e.g. like or dislike. */

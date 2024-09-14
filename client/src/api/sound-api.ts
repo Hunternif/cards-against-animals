@@ -44,6 +44,7 @@ import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { soundEventConverter } from '../shared/firestore-converters';
 import { GameLobby, PlayerInLobby, SoundEvent } from '../shared/types';
 import { getLobbyRef } from './lobby/lobby-repository';
+import { RNG } from '../shared/rng';
 
 export function getSoundsRef(lobbyID: string) {
   const lobbyRef = getLobbyRef(lobbyID);
@@ -89,8 +90,8 @@ export const soundKidsCheer = 'kids_cheer';
 // Laugh
 // Sound effects from https://www.zapsplat.com
 export const soundLaugh001 = 'laugh_001';
-export const soundLaugh002 = 'laugh_002';
-export const soundLaugh003 = 'laugh_003';
+export const soundLaugh002Mid = 'laugh_002';
+export const soundLaugh003Mid = 'laugh_003';
 export const soundLaugh004 = 'laugh_004';
 export const soundLaugh005 = 'laugh_005';
 export const soundLaugh006 = 'laugh_006';
@@ -101,9 +102,9 @@ export const soundLaugh010 = 'laugh_010';
 export const soundLaugh011 = 'laugh_011';
 export const soundLaugh012Long = 'laugh_012_long';
 export const soundLaugh013 = 'laugh_013';
-export const soundLaugh014 = 'laugh_014';
-export const soundLaugh015 = 'laugh_015';
-export const soundLaugh016 = 'laugh_016';
+export const soundLaugh014Mid = 'laugh_014';
+export const soundLaugh015Mid = 'laugh_015';
+export const soundLaugh016Mid = 'laugh_016';
 export const soundLaugh017 = 'laugh_017';
 export const soundLaugh018 = 'laugh_018';
 
@@ -133,8 +134,8 @@ const sounds = new Map<string, string>([
   // Laugh
   // Sound effects from https://www.zapsplat.com
   [soundLaugh001, laugh_001],
-  [soundLaugh002, laugh_002],
-  [soundLaugh003, laugh_003],
+  [soundLaugh002Mid, laugh_002],
+  [soundLaugh003Mid, laugh_003],
   [soundLaugh004, laugh_004],
   [soundLaugh005, laugh_005],
   [soundLaugh006, laugh_006],
@@ -145,9 +146,9 @@ const sounds = new Map<string, string>([
   [soundLaugh011, laugh_011],
   [soundLaugh012Long, laugh_012_long],
   [soundLaugh013, laugh_013],
-  [soundLaugh014, laugh_014],
-  [soundLaugh015, laugh_015],
-  [soundLaugh016, laugh_016],
+  [soundLaugh014Mid, laugh_014],
+  [soundLaugh015Mid, laugh_015],
+  [soundLaugh016Mid, laugh_016],
   [soundLaugh017, laugh_017],
   [soundLaugh018, laugh_018],
 ]);
@@ -172,4 +173,31 @@ export async function playSoundID(
     return audio;
   }
   return null;
+}
+
+const shortLaughs = [
+  soundLaugh001,
+  // soundLaugh002Mid,
+  // soundLaugh003Mid,
+  soundLaugh004,
+  soundLaugh005,
+  soundLaugh006,
+  soundLaugh007,
+  soundLaugh008,
+  soundLaugh009,
+  soundLaugh010,
+  soundLaugh011,
+  // soundLaugh012Mid,
+  soundLaugh013,
+  // soundLaugh014Mid,
+  // soundLaugh015Mid,
+  // soundLaugh016Mid,
+  soundLaugh017,
+  soundLaugh018,
+];
+
+/** Returns random sound ID */
+export function randomLaugh(): string {
+  const i = RNG.fromTimestamp().randomIntClamped(0, shortLaughs.length - 1);
+  return shortLaughs[i];
 }

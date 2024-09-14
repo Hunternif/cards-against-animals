@@ -73,6 +73,17 @@ export class RNG implements IRNG {
   }
 
   /**
+   * Shuffles the array in place. Using Fisher-Yates (aka Knuth) Shuffle.
+   * From https://stackoverflow.com/a/12646864/1093712
+   */
+  shuffleArray<T>(array: Array<T>) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = this.randomIntClamped(0, i);
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  /**
    * Creates a RNG function seeded with a.
    * The returned function will yield random 32-bit integers.
    */

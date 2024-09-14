@@ -1,5 +1,5 @@
 import { collection, doc } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useCollection,
   useCollectionData,
@@ -24,8 +24,8 @@ import {
   PromptCardInGame,
 } from '../../shared/types';
 import { lobbiesRef } from '../lobby/lobby-repository';
-import { getTurnsRef } from './turn-repository';
 import { getResponseLikesRef } from './turn-like-api';
+import { getTurnsRef } from './turn-repository';
 
 type LastTurnHook = [
   lastTurn: GameTurn | undefined,
@@ -173,4 +173,16 @@ export function usePromptVotes(
       'votes',
     ).withConverter(voteConverter),
   );
+}
+
+/** Returns true when response is revealed on-screen. */
+export function useResponseReveal(response: PlayerResponse) {
+  const [alreadyRevealed] = useState(response.isRevealed);
+  const [revealed, setRevealed] = useState(false);
+  useEffect(() => {
+    if (!alreadyRevealed && response.isRevealed) {
+      setRevealed(true);
+    }
+  }, [alreadyRevealed, response.isRevealed]);
+  return revealed;
 }

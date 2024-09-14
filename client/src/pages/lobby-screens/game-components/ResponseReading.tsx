@@ -14,6 +14,7 @@ import {
 import {
   useResponseLikeCount,
   useResponseMyLike,
+  useResponseReveal,
 } from '../../../api/turn/turn-hooks';
 import {
   IconCat,
@@ -37,6 +38,7 @@ import {
   CardContent,
   LargeCard,
 } from './LargeCard';
+import { LaughTrack } from './LaughTrack';
 
 interface Props {
   player?: PlayerInLobby;
@@ -52,6 +54,7 @@ interface Props {
   onClickLike?: (response: PlayerResponse) => void;
   showLikes?: boolean;
   showName?: boolean;
+  laughOnReveal?: boolean;
 }
 
 /**
@@ -59,11 +62,19 @@ interface Props {
  * Optionally displays player's name.
  */
 export function ResponseReading(props: Props) {
+  const { lobby, turn } = useGameContext();
+  const { response, laughOnReveal } = props;
+  const revealed = useResponseReveal(response);
+  const likes = useResponseLikeCount(lobby, turn, response);
+
   return (
     <>
+      {revealed && laughOnReveal && (
+        <LaughTrack response={response} likes={likes} />
+      )}
       {props.showName ? (
         <div className="game-card-placeholder" style={{ height: 'auto' }}>
-          <ResponseReadingWithoutName {...props} />
+          <ResponseReadingWithoutName {...props} likeCount={likes} />
           <div
             className="response-player-name"
             style={{
@@ -78,11 +89,15 @@ export function ResponseReading(props: Props) {
           </div>
         </div>
       ) : (
-        <ResponseReadingWithoutName {...props} />
+        <ResponseReadingWithoutName {...props} likeCount={likes} />
       )}
     </>
   );
 }
+
+type PropsWithLikes = Props & {
+  likeCount: number;
+};
 
 /** The response itself, without player name */
 function ResponseReadingWithoutName({
@@ -94,9 +109,9 @@ function ResponseReadingWithoutName({
   canLike,
   onClickLike,
   showLikes,
-}: Props) {
+  likeCount,
+}: PropsWithLikes) {
   const { lobby, turn, player, responses } = useGameContext();
-  const likeCount = useResponseLikeCount(lobby, turn, response);
   const hasMyLike = useResponseMyLike(lobby, turn, response, player.uid);
   const likeIcon = showLikes ? <LikeIcon response={response} /> : null;
   const canRevealClass = canReveal ? 'can-reveal hoverable-card' : '';

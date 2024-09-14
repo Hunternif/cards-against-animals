@@ -124,14 +124,15 @@ export function CardReadingScreen() {
             canReveal={isJudge}
             canSelect={isJudge && allRevealed}
             selected={winner?.player_uid === r.player_uid}
-            onClick={(r) => handleClick(r)}
+            onClick={handleClick}
             showLikes={showLikes}
             canLike={
               !isJudge &&
               r.player_uid !== player.uid &&
               lobby.settings.enable_likes
             }
-            onClickLike={(r) => handleLike(r)}
+            onClickLike={handleLike}
+            laughOnReveal
           />
         ))}
         {/* </CardOffsetContextProvider> */}

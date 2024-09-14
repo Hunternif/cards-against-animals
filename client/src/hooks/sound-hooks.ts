@@ -123,6 +123,9 @@ export function useSound(
       currentSoundIDRef.current = soundID;
       tryPlaySound(soundID);
     }
+    if (audioRef.current && options.volume) {
+      audioRef.current.volume = options.volume;
+    }
     return () => {
       if (audioRef.current && !options.playUntilEnd) {
         audioRef.current.pause();
