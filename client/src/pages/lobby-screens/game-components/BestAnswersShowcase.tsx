@@ -33,21 +33,21 @@ export function BestAnswersShowcase({ lobby }: Props) {
 
   useEffect(() => {
     let interval: any;
-    if (bestAnswers) {
+    if (bestAnswers && bestAnswers.length > 0) {
       // add the first card:
-      setVisibleAnswers(bestAnswers.slice(0, 1));
-      let i = 2;
-      if (i < bestAnswers.length) {
-        interval = setInterval(() => {
-          if (bestAnswers) {
-            setVisibleAnswers(bestAnswers.slice(0, i));
-            i++;
-            if (interval && i > bestAnswers.length) {
-              clearInterval(interval);
-            }
-          }
-        }, 3000);
-      }
+      let currentlyVisible = [bestAnswers[0]];
+      setVisibleAnswers(currentlyVisible);
+      // Add more cards in a loop:
+      let i = 1;
+      interval = setInterval(() => {
+        if (i >= bestAnswers.length) {
+          // loop forever:
+          i = 0;
+        }
+        currentlyVisible = [...currentlyVisible, bestAnswers[i]];
+        setVisibleAnswers(currentlyVisible);
+        i++;
+      }, 3000);
     }
     return () => {
       clearInterval(interval);
@@ -59,7 +59,7 @@ export function BestAnswersShowcase({ lobby }: Props) {
       {visibleAnswers.map((answer, i) => {
         return (
           <div
-            key={`${answer.prompt.id}${answer.response.cards[0].id}`}
+            key={`${answer.prompt.id}${answer.response.cards[0].id}_${i}`}
             className="answer-showcase"
             style={{
               opacity: 0.5,
