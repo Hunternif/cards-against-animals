@@ -19,6 +19,7 @@ import { EndOfTurnControls } from './game-components/EndOfTurnControls';
 import { useGameContext } from './game-components/GameContext';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
+import { getLocalSettings } from '../../api/local-settings';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -44,6 +45,7 @@ export function WinnerScreen() {
   useSound(getApplauseSoundFromLikes(winnerResponse, activePlayers), {
     playUntilEnd: true,
     volume: 0.2,
+    enabled: getLocalSettings().enableAudienceSound,
   });
 
   useRedirectToNextLobby(lobby);

@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { MouseEvent, ReactNode, useContext, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -21,6 +21,10 @@ import { copyFields } from '../../../../shared/utils';
 import { AvatarSelector } from '../../lobby-components/AvatarSelector';
 import { LobbySettingsPanel } from '../../lobby-components/LobbySettingsPanel';
 import { useGameContext } from '../GameContext';
+import {
+  getLocalSettings,
+  saveLocalSettings,
+} from '../../../../api/local-settings';
 
 /** Dropdown menu showing player */
 export function GamePlayerMenu() {
@@ -44,8 +48,9 @@ export function GamePlayerMenu() {
   const canJoinAsPlayer = activePlayers.length < lobby.settings.max_players;
 
   // Make a local copy of settings to make changes:
-  const [settings, setSettings] = useState(lobby.settings);
+  const [lobbySettings, setLobbySettings] = useState(lobby.settings);
   const [savingSettings, setSavingSettings] = useState(false);
+  const [localSettings, setLocalSettings] = useState(getLocalSettings());
 
   async function handleLeave() {
     try {
@@ -67,16 +72,16 @@ export function GamePlayerMenu() {
     }
   }
 
-  function openSettings() {
+  function openLobbySettings() {
     // Make a local copy of settings to make changes:
-    setSettings(copyFields(lobby.settings));
+    setLobbySettings(copyFields(lobby.settings));
     setShowSettingsModal(true);
   }
 
   async function handleSaveSettings() {
     setSavingSettings(true);
     try {
-      await updateLobbySettings(lobby.id, settings);
+      await updateLobbySettings(lobby.id, lobbySettings);
       setShowSettingsModal(false);
     } catch (e) {
       setError(e);
@@ -86,7 +91,7 @@ export function GamePlayerMenu() {
   }
   /** Causes the settings panel to rerender. */
   async function refreshSettings(newSettings: LobbySettings) {
-    setSettings(copyFields(newSettings));
+    setLobbySettings(copyFields(newSettings));
   }
 
   async function handleSaveProfile() {
@@ -117,6 +122,14 @@ export function GamePlayerMenu() {
     } catch (e: any) {
       setError(e);
     }
+  }
+
+  function toggleAudienceSound() {
+    const newSettings = Object.assign({}, localSettings, {
+      enableAudienceSound: !localSettings.enableAudienceSound,
+    });
+    saveLocalSettings(newSettings);
+    setLocalSettings(newSettings);
   }
 
   return (
@@ -150,7 +163,7 @@ export function GamePlayerMenu() {
       >
         <LobbySettingsPanel
           inGame
-          settings={settings}
+          settings={lobbySettings}
           onChange={refreshSettings}
         />
       </ConfirmModal>
@@ -193,8 +206,14 @@ export function GamePlayerMenu() {
           )}
           <MenuItem label="Profile" onClick={() => setShowProfileModal(true)} />
           <MenuItem
-            label="Settings"
-            onClick={openSettings}
+            label="Audience sound"
+            icon={localSettings.enableAudienceSound ? '🔊' : '🔇'}
+            onClick={toggleAudienceSound}
+            preventClose
+          />
+          <MenuItem
+            label="Lobby settings"
+            onClick={openLobbySettings}
             locked={!canControlLobby}
           />
           <MenuItem label="Leave" onClick={() => setShowLeaveModal(true)} />
@@ -212,18 +231,32 @@ export function GamePlayerMenu() {
 interface MenuItemProps {
   label: string;
   disabled?: boolean;
+  icon?: ReactNode;
   locked?: boolean;
   onClick?: () => void;
+  preventClose?: boolean;
 }
 
-function MenuItem({ label, onClick, locked, disabled }: MenuItemProps) {
+function MenuItem({
+  label,
+  icon,
+  onClick,
+  locked,
+  disabled,
+  preventClose,
+}: MenuItemProps) {
+  function handleClick(e: MouseEvent<HTMLElement>) {
+    if (preventClose) e.stopPropagation(); // prevent closing the menu;
+    onClick && onClick();
+  }
   return (
-    <Dropdown.Item onClick={onClick} disabled={disabled || locked}>
-      {locked ? (
+    <Dropdown.Item onClick={handleClick} disabled={disabled || locked}>
+      {icon || locked ? (
         // Only current judge can click this. Show an icon on the right.
-        <span className="menu-item-locked">
+        <span className="menu-item-with-icon">
           {label}
-          <Twemoji className="lock-icon">👑</Twemoji>
+          {icon && <Twemoji className="icon">{icon}</Twemoji>}
+          {locked && <Twemoji className="lock-icon">👑</Twemoji>}
         </span>
       ) : (
         label

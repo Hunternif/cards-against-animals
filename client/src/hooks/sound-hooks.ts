@@ -107,6 +107,8 @@ interface SoundOptions {
    * sound will not start again. This sets the threshold. Default is 3000.
    */
   startThresholdMs?: number;
+  /** Controls whether to play the sound. */
+  enabled?: boolean;
 }
 
 /** Plays this sound once on the page. */
@@ -118,7 +120,7 @@ export function useSound(
   const currentSoundIDRef = useRef('');
 
   useEffect(() => {
-    if (soundID == null) return;
+    if (soundID == null || options.enabled === false) return;
     if (currentSoundIDRef.current != soundID) {
       currentSoundIDRef.current = soundID;
       tryPlaySound(soundID);
@@ -148,5 +150,11 @@ export function useSound(
       const audio = await playSoundID(soundID, options.volume);
       audioRef.current = audio;
     }
-  }, [soundID, options.startTime, options.startThresholdMs, options.volume]);
+  }, [
+    soundID,
+    options.enabled,
+    options.startTime,
+    options.startThresholdMs,
+    options.volume,
+  ]);
 }

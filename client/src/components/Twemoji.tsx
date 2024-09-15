@@ -14,7 +14,6 @@ const symbolsRegexGlobal = new RegExp(symbolsRegex, 'g');
 export function Twemoji(props: Props) {
   const children = props.children?.toString() ?? '';
   const newProps = copyFields(props, ['children']);
-  const [innerHtml, setInnerHtml] = useState(parseEmoji(children));
 
   function parseEmoji(str: string): string {
     const twemojiHtml = twemoji.parse(str ?? '', {
@@ -49,15 +48,11 @@ export function Twemoji(props: Props) {
     }
     return twemojiHtml;
   }
-  // TODO: parse emoji while typing
-  function refreshHTML(event: FormEvent<HTMLSpanElement>) {
-    setInnerHtml(parseEmoji(event.currentTarget.innerText));
-  }
 
   return (
     <span
       {...newProps}
-      dangerouslySetInnerHTML={{ __html: innerHtml }}
+      dangerouslySetInnerHTML={{ __html: parseEmoji(children) }}
       // onInput={refreshHTML}
     />
   );

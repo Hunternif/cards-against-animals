@@ -49,11 +49,12 @@
   opacity: 0.4;
 }
 
-.menu-item-locked {
+.menu-item-with-icon {
   display: flex;
+  gap: 0.5em;
   justify-content: space-between;
 }
-.menu-item-locked .lock-icon {
+.menu-item-with-icon .lock-icon {
   opacity: 0.6;
 }
 
