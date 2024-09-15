@@ -17,9 +17,9 @@ import { PlayerInLobby, PlayerResponse } from '../../shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { EndOfTurnControls } from './game-components/EndOfTurnControls';
 import { useGameContext } from './game-components/GameContext';
+import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
-import { getLocalSettings } from '../../api/local-settings';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -42,10 +42,12 @@ export function WinnerScreen() {
     });
   });
 
+  const { settings } = useLocalSettings();
+
   useSound(getApplauseSoundFromLikes(winnerResponse, activePlayers), {
     playUntilEnd: true,
     volume: 0.2,
-    enabled: getLocalSettings().enableAudienceSound,
+    enabled: settings.enableAudienceSound,
   });
 
   useRedirectToNextLobby(lobby);

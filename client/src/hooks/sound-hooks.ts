@@ -1,5 +1,5 @@
 import confetti from 'canvas-confetti';
-import { useEffect, useRef, useState } from 'react';
+import { DependencyList, useEffect, useRef, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import {
   getSoundsRef,
@@ -120,7 +120,10 @@ export function useSound(
   const currentSoundIDRef = useRef('');
 
   useEffect(() => {
-    if (soundID == null || options.enabled === false) return;
+    if (options.enabled === false && audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (soundID == null) return;
     if (currentSoundIDRef.current != soundID) {
       currentSoundIDRef.current = soundID;
       tryPlaySound(soundID);

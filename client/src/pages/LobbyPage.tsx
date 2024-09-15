@@ -15,6 +15,7 @@ import { GameScreen } from './lobby-screens/GameScreen';
 import { HomeScreen } from './lobby-screens/HomeScreen';
 import { NewLobbyScreen } from './lobby-screens/NewLobbyScreen';
 import { ScoreboardScreen } from './lobby-screens/ScoreboardScreen';
+import { LocalSettingsContextProvider } from './lobby-screens/game-components/LocalSettingsContext';
 
 interface LoaderParams {
   params: any;
@@ -31,7 +32,9 @@ export function LobbyPage() {
     <>
       <ErrorModal error={error} setError={setError} />
       <ErrorContext.Provider value={{ error, setError }}>
-        <LobbyPageThrows />
+        <LocalSettingsContextProvider>
+          <LobbyPageThrows />
+        </LocalSettingsContextProvider>
       </ErrorContext.Provider>
     </>
   );

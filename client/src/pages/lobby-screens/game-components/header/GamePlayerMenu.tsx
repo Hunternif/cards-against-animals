@@ -21,10 +21,7 @@ import { copyFields } from '../../../../shared/utils';
 import { AvatarSelector } from '../../lobby-components/AvatarSelector';
 import { LobbySettingsPanel } from '../../lobby-components/LobbySettingsPanel';
 import { useGameContext } from '../GameContext';
-import {
-  getLocalSettings,
-  saveLocalSettings,
-} from '../../../../api/local-settings';
+import { useLocalSettings } from '../LocalSettingsContext';
 
 /** Dropdown menu showing player */
 export function GamePlayerMenu() {
@@ -50,7 +47,8 @@ export function GamePlayerMenu() {
   // Make a local copy of settings to make changes:
   const [lobbySettings, setLobbySettings] = useState(lobby.settings);
   const [savingSettings, setSavingSettings] = useState(false);
-  const [localSettings, setLocalSettings] = useState(getLocalSettings());
+  const { settings: localSettings, saveSettings: saveLocalSettings } =
+    useLocalSettings();
 
   async function handleLeave() {
     try {
@@ -129,7 +127,6 @@ export function GamePlayerMenu() {
       enableAudienceSound: !localSettings.enableAudienceSound,
     });
     saveLocalSettings(newSettings);
-    setLocalSettings(newSettings);
   }
 
   return (

@@ -1,5 +1,5 @@
 /** Local game settings that don't affect other players. */
-type LocalSettingsState = {
+export type LocalSettingsState = {
   enableAudienceSound: boolean;
 };
 
@@ -26,13 +26,18 @@ function load(): LocalSettingsState {
   }
 }
 
+let cache: LocalSettingsState;
+
 /** Gets settings from local storage */
 export function getLocalSettings(): LocalSettingsState {
-  return load();
+  if (cache) return cache;
+  cache = load();
+  return cache;
 }
 
 /** Saves settings in local storage */
 export function saveLocalSettings(settings: LocalSettingsState) {
+  Object.assign(cache, settings);
   const json = JSON.stringify(settings);
   localStorage.setItem(settingsKey, json);
 }
