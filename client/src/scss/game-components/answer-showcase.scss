@@ -1,0 +1,32 @@
+.answer-showcase {
+  // Fade in:
+  animation: fade-in 1s, rain-down 60s linear forwards;
+  position: fixed;
+
+  // TODO animation for flowing down
+  // Disable swing animation for cards inside:
+  .many-cards,
+  .many-cards .game-card {
+    transition: none;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes rain-down {
+    from {
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(2000px);
+    }
+  }
+}

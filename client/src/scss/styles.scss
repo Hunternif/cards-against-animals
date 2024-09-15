@@ -50,6 +50,7 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 @import "lobby-components/deck-selector.scss";
 
 // Game-screen-specific components:
+@import "game-components/answer-showcase.scss";
 @import "game-components/cards.scss";
 @import "game-components/minicards.scss";
 @import "game-components/game-menu.scss";

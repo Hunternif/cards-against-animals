@@ -44,7 +44,7 @@ interface CardStackProps {
   /** True if the current player can like this response. */
   canLike?: boolean;
   onClickLike?: () => void;
-  likeCount: number;
+  likeCount?: number;
   likeIcon?: ReactNode;
   /** True if the stack has the player's like. */
   hasMyLike?: boolean;
@@ -108,12 +108,12 @@ export function CardStack({
           <CardInStack
             card={cards[0]}
             content={cards[0].content}
-            revealed={revealCount != null && revealCount > 0}
+            revealed={revealCount == null || revealCount > 0}
             selectable={canSelect}
             selected={selected}
             likable={canLike}
             onClickLike={handleClickLike}
-            likeCount={showLikes ? likeCount : 0}
+            likeCount={showLikes ? likeCount ?? 0 : 0}
             likeIcon={likeIcon}
             hasPlayerLike={hasMyLike}
           />
@@ -221,13 +221,13 @@ function ManyCardsStack({
             isOverlaid={i > 0}
             index={i}
             offset={offsets[i]}
-            revealed={revealCount != null && revealCount > i}
+            revealed={revealCount == null || revealCount > i}
             selectable={canSelect}
             selected={selected}
             // Only enable likes on the last card of the stack:
             likable={canLike && isLastCard}
             onClickLike={onClickLike}
-            likeCount={isLastCard ? likeCount : 0}
+            likeCount={isLastCard ? likeCount ?? 0 : 0}
             likeIcon={likeIcon}
             hasPlayerLike={hasMyLike}
             setContentHeight={(height) => {

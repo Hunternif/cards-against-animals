@@ -4,19 +4,21 @@ import {
   doc,
   getDocs,
   increment,
+  query,
   setDoc,
   updateDoc,
-} from "firebase/firestore";
-import { RNG } from "../../shared/rng";
+  where,
+} from 'firebase/firestore';
+import { playerResponseConverter } from '../../shared/firestore-converters';
+import { RNG } from '../../shared/rng';
 import {
   GameLobby,
   GameTurn,
   PlayerInLobby,
   PlayerResponse,
   ResponseCardInGame,
-} from "../../shared/types";
-import { getTurnRef } from "./turn-repository";
-import { playerResponseConverter } from "../../shared/firestore-converters";
+} from '../../shared/types';
+import { getTurnRef } from './turn-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -27,7 +29,7 @@ import { playerResponseConverter } from "../../shared/firestore-converters";
 /** Returns Firestore subcollection reference of player responses in turn. */
 export function getPlayerResponsesRef(lobbyID: string, turnID: string) {
   const turnRef = getTurnRef(lobbyID, turnID);
-  return collection(turnRef, "player_responses").withConverter(
+  return collection(turnRef, 'player_responses').withConverter(
     playerResponseConverter,
   );
 }
@@ -77,8 +79,14 @@ export async function revealPlayerResponse(
 export async function getAllPlayerResponses(
   lobbyID: string,
   turnID: string,
+  minLikeCount: number = 0,
 ): Promise<Array<PlayerResponse>> {
-  return (await getDocs(getPlayerResponsesRef(lobbyID, turnID))).docs.map((d) =>
-    d.data(),
-  );
+  const ref = getPlayerResponsesRef(lobbyID, turnID);
+  if (minLikeCount <= 0) {
+    return (await getDocs(ref)).docs.map((d) => d.data());
+  } else {
+    return (
+      await getDocs(query(ref, where('like_count', '>=', minLikeCount)))
+    ).docs.map((d) => d.data());
+  }
 }

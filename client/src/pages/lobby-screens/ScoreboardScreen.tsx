@@ -8,6 +8,7 @@ import { FillLayout } from '../../components/layout/FillLayout';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { useSound } from '../../hooks/sound-hooks';
 import { GameLobby, PlayerInLobby } from '../../shared/types';
+import { BestAnswersShowcase } from './game-components/BestAnswersShowcase';
 import { NewGameButton } from './game-components/NewGameButton';
 
 interface Props {
@@ -20,7 +21,7 @@ export function ScoreboardScreen({ lobby, user, players }: Props) {
   const navigate = useNavigate();
   useRedirectToNextLobby(lobby);
   useSound(soundMusicNge, {
-    volume: 0.4,
+    volume: 0.2,
     startTime: lobby.time_created,
     // Don't play if it's been more than 6 hours since the start of lobby:
     startThresholdMs: 1000 * 60 * 60 * 6,
@@ -28,6 +29,7 @@ export function ScoreboardScreen({ lobby, user, players }: Props) {
 
   return (
     <FillLayout className="scoreboard-screen">
+      <BestAnswersShowcase lobby={lobby} />
       <GameLayout>
         <header>
           <h2>Scoreboard</h2>
