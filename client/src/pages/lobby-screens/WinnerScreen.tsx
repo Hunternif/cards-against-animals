@@ -36,7 +36,9 @@ export function WinnerScreen() {
     lobby.settings.enable_likes && audienceAwardResponses.length > 0;
 
   useEffectOnce(() => {
-    confetti();
+    confetti({
+      ticks: 50,
+    });
   });
 
   useSound(getApplauseSoundFromLikes(winnerResponse, activePlayers), {
