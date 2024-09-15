@@ -1,10 +1,9 @@
+// Answer stacks smoothly flowing down on the end-game screen.
 .answer-showcase {
-  // Fade in:
   animation: fade-in 1s, rain-down 60s linear forwards;
   position: fixed;
 
-  // TODO animation for flowing down
-  // Disable swing animation for cards inside:
+  // Disable animation for cards inside the stack:
   .many-cards,
   .many-cards .game-card {
     transition: none;
