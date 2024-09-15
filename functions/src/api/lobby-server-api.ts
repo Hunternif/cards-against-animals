@@ -280,7 +280,7 @@ async function validateGameSettings(lobby: GameLobby) {
   if (settings.sort_min_factor <= 0) {
     settings.sort_min_factor = 0.0000000001;
   }
-  if (settings.sort_min_factor < 1) {
+  if (settings.sort_min_factor > 1) {
     settings.sort_min_factor = 1;
   }
   // 2. Adjust max_turns for turns_per_person
