@@ -46,7 +46,7 @@ export function WinnerScreen() {
 
   useSound(getApplauseSoundFromLikes(winnerResponse, activePlayers), {
     playUntilEnd: true,
-    volume: 0.2,
+    volume: 0.05,
     enabled: settings.enableAudienceSound,
   });
 

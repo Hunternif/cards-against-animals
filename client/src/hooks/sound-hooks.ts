@@ -120,8 +120,11 @@ export function useSound(
   const currentSoundIDRef = useRef('');
 
   useEffect(() => {
-    if (options.enabled === false && audioRef.current) {
-      audioRef.current.pause();
+    if (options.enabled === false) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      return;
     }
     if (soundID == null) return;
     if (currentSoundIDRef.current != soundID) {

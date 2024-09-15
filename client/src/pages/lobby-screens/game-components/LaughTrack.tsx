@@ -15,7 +15,7 @@ export function LaughTrack({ response, likes }: Props) {
   const { settings } = useLocalSettings();
 
   // More likes -> louder.
-  const volume = Math.min(1, 0.05 + likes * 0.075);
+  const volume = Math.min(1, 0.02 + likes * 0.05);
 
   useSound(soundID, {
     playUntilEnd: true,
