@@ -1,6 +1,6 @@
 // Answer stacks smoothly flowing down on the end-game screen.
 .answer-showcase {
-  animation: fade-in 1s, rain-down 60s linear forwards;
+  animation: fade-in 1s, rain-down 20s linear forwards;
   position: fixed;
 
   // Disable animation for cards inside the stack:
@@ -25,7 +25,7 @@
 
     to {
       opacity: 0;
-      transform: translateY(800%);
+      transform: translateY(500%);
     }
   }
 }
