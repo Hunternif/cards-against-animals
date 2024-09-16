@@ -1,10 +1,12 @@
 /** Local game settings that don't affect other players. */
 export type LocalSettingsState = {
   enableAudienceSound: boolean;
+  enableMusic: boolean;
 };
 
 const defaultLocalSettings: LocalSettingsState = {
   enableAudienceSound: true,
+  enableMusic: true,
 };
 
 const settingsKey = 'caa-local-settings';

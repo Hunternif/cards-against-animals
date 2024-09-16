@@ -150,7 +150,14 @@ button.start-button {
   padding-right: 0.2rem;
   border-radius: 0.2rem;
 }
-.inline-button:enabled {
+.inline-button.big {
+  display: flex;
+  height: 3rem;
+  min-width: 3rem;
+  justify-content: center;
+  align-items: center;
+}
+.inline-button:not(:disabled) {
   cursor: pointer;
 }
 .inline-button:hover {

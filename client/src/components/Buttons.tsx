@@ -49,10 +49,17 @@ export function GameButton({
   );
 }
 
-export function InlineButton(props: React.HTMLProps<HTMLSpanElement>) {
+interface InlineButtonProps extends React.HTMLProps<HTMLSpanElement> {
+  big?: boolean;
+}
+
+export function InlineButton({ big, className, ...props }: InlineButtonProps) {
+  const classes = ['inline-button'];
+  if (className) classes.push(className);
+  if (big) classes.push('big');
   return (
     <div className="inline-button-block">
-      <span {...props} className={`inline-button ${props.className ?? ''}`} />
+      <span {...props} className={classes.join(' ')} />
     </div>
   );
 }
