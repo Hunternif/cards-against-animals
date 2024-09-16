@@ -123,10 +123,13 @@ export function GamePlayerMenu() {
   }
 
   function toggleAudienceSound() {
-    const newSettings = Object.assign({}, localSettings, {
-      enableAudienceSound: !localSettings.enableAudienceSound,
-    });
-    saveLocalSettings(newSettings);
+    localSettings.enableAudienceSound = !localSettings.enableAudienceSound;
+    saveLocalSettings(localSettings);
+  }
+
+  function toggleMusic() {
+    localSettings.enableMusic = !localSettings.enableMusic;
+    saveLocalSettings(localSettings);
   }
 
   return (
@@ -206,6 +209,12 @@ export function GamePlayerMenu() {
             label="Audience sound"
             icon={localSettings.enableAudienceSound ? '🔊' : '🔇'}
             onClick={toggleAudienceSound}
+            preventClose
+          />
+          <MenuItem
+            label="Music"
+            icon={localSettings.enableMusic ? '🔊' : '🔇'}
+            onClick={toggleMusic}
             preventClose
           />
           <MenuItem
