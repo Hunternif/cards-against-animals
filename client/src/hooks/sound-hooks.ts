@@ -1,5 +1,5 @@
 import confetti from 'canvas-confetti';
-import { DependencyList, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import {
   getSoundsRef,
@@ -111,13 +111,43 @@ interface SoundOptions {
   enabled?: boolean;
 }
 
-/** Plays this sound once on the page. */
+/**
+ * Plays this sound once on the page.
+ * If you open this page for the first time without interacting,
+ * Chrome will block audio playback.
+ * Use the returned 'retry' function to retry.
+ */
 export function useSound(
   soundID: string | undefined,
   options: SoundOptions = {},
-) {
+): { soundError: any; retrySound: () => void } {
+  const [soundError, setSoundError] = useState<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentSoundIDRef = useRef('');
+
+  /** Returns the 'unsubscribe' function */
+  async function tryPlaySound(
+    soundID: string,
+    options: SoundOptions,
+  ): Promise<Function | undefined> {
+    if (options.startTime) {
+      const now = new Date().getTime();
+      const expiryTime =
+        options.startTime.getTime() + (options.startThresholdMs ?? 3000);
+      if (now > expiryTime) {
+        // Too much time has passed since 'startTime', don't play.
+        return;
+      }
+    }
+    try {
+      setSoundError(null);
+      currentSoundIDRef.current = soundID;
+      const audio = await playSoundID(soundID, options.volume);
+      audioRef.current = audio;
+    } catch (e: any) {
+      setSoundError(e);
+    }
+  }
 
   useEffect(() => {
     if (options.enabled === false) {
@@ -128,8 +158,7 @@ export function useSound(
     }
     if (soundID == null) return;
     if (currentSoundIDRef.current != soundID) {
-      currentSoundIDRef.current = soundID;
-      tryPlaySound(soundID);
+      tryPlaySound(soundID, options);
     }
     if (audioRef.current && options.volume) {
       audioRef.current.volume = options.volume;
@@ -139,23 +168,6 @@ export function useSound(
         audioRef.current.pause();
       }
     };
-
-    /** Returns the 'unsubscribe' function */
-    async function tryPlaySound(
-      soundID: string,
-    ): Promise<Function | undefined> {
-      if (options.startTime) {
-        const now = new Date().getTime();
-        const expiryTime =
-          options.startTime.getTime() + (options.startThresholdMs ?? 3000);
-        if (now > expiryTime) {
-          // Too much time has passed since 'startTime', don't play.
-          return;
-        }
-      }
-      const audio = await playSoundID(soundID, options.volume);
-      audioRef.current = audio;
-    }
   }, [
     soundID,
     options.enabled,
@@ -163,4 +175,15 @@ export function useSound(
     options.startThresholdMs,
     options.volume,
   ]);
+
+  return {
+    soundError,
+    retrySound: () => {
+      currentSoundIDRef.current = '';
+      audioRef.current = null;
+      if (soundID) {
+        tryPlaySound(soundID, options);
+      }
+    },
+  };
 }
