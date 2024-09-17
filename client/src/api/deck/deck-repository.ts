@@ -213,7 +213,7 @@ export class FirestoreDeckRepository implements IDeckRepository {
     const cardSet = DeckCardSet.fromList(cards);
     await runTransaction(this.db, async (transaction) => {
       for (const card of cardSet.prompts) {
-        const cardRef = doc(this.getResponsesRef(deck.id), card.id);
+        const cardRef = doc(this.getPromptsRef(deck.id), card.id);
         transaction.delete(cardRef);
       }
       for (const card of cardSet.responses) {
