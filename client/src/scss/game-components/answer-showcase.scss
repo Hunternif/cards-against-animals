@@ -25,7 +25,7 @@
 
     to {
       opacity: 0;
-      transform: translateY(500%);
+      transform: translateY(calc(1700px - 200%));
     }
   }
 }
