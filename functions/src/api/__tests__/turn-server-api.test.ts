@@ -45,6 +45,7 @@ beforeEach(async () => {
   player.score = 10;
   player.discard_tokens = 5;
   mockPlayerDb.set(player.uid, player);
+  lobby.settings.max_discard_tokens = 10;
 });
 
 afterEach(() => mockPlayerDb.clear());
