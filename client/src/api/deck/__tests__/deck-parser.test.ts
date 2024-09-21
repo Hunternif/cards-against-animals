@@ -53,8 +53,8 @@ test('parse deck', () => {
     "Hello, __\nBye __ and _", "Poop\nCrap");
   const expected = new Deck("my_deck", "My deck", 'public');
   expected.prompts = [
-    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, [], 0, 0),
-    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, [], 0, 0),
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, 0, [], 0, 0),
+    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, 0, [], 0, 0),
   ];
   expected.responses = [
     new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, 0, []),
@@ -65,7 +65,7 @@ test('parse deck', () => {
   expect(deck.title).toBe("My deck");
   expect(deck.prompts.length).toBe(2);
   expect(deck.prompts[0]).toEqual(
-    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, [], 0, 0)
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, 0, [], 0, 0)
   );
 });
 
@@ -80,8 +80,8 @@ lol\tFirst tag
 wut\tSecond tag`);
   const expected = new Deck("my_deck", "My deck", 'public');
   expected.prompts = [
-    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"], 0, 0),
-    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"], 0, 0),
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, 0, ["lol"], 0, 0),
+    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, 0, ["wut"], 0, 0),
   ];
   expected.responses = [
     new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, 0, []),
@@ -94,7 +94,7 @@ wut\tSecond tag`);
   expect(deck.title).toBe("My deck");
   expect(deck.prompts.length).toBe(2);
   expect(deck.prompts[0]).toEqual(
-    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"], 0, 0)
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, 0, ["lol"], 0, 0)
   );
 });
 
@@ -106,8 +106,8 @@ Prompt\tBye __ and _\t\twut
 Response\tPoop`, "");
   const expected = new Deck("my_deck", "My deck", 'public');
   expected.prompts = [
-    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"], 0, 0),
-    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"], 0, 0),
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, 0, ["lol"], 0, 0),
+    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, 0, ["wut"], 0, 0),
   ];
   expected.responses = [
     new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, 0, []),
@@ -129,8 +129,8 @@ Response\tPoop`,
 lol\tDuplicate tag`);
   const expected = new Deck("my_deck", "My deck", 'public');
   expected.prompts = [
-    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, ["lol"], 0, 0),
-    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, ["wut"], 0, 0),
+    new PromptDeckCard("0001", "Hello, _", 1, 0, 0, 0, 0, 0, ["lol"], 0, 0),
+    new PromptDeckCard("0002", "Bye _ and _", 2, 0, 0, 0, 0, 0, ["wut"], 0, 0),
   ];
   expected.responses = [
     new ResponseDeckCard("0003", "Poop", 0, 0, 0, 0, 0, 0, []),

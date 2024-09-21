@@ -68,6 +68,7 @@ export function AdminNewCardModal({ show, deck, onClose }: Props) {
             card.views,
             card.plays,
             card.discards,
+            card.likes,
             card.tags,
             0,
             0,

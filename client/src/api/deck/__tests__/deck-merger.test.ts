@@ -42,8 +42,8 @@ test('merge decks', async () => {
 
   const expected = new Deck('test1', 'Test 1', 'public');
   expected.prompts = [
-    new PromptDeckCard('0001', 'Hello, _', 1, 0, 0, 8, 0, ['lol'], 0, 0),
-    new PromptDeckCard('0003', 'Bye _ and _', 2, 0, 0, 0, 0, ['wut'], 0, 0),
+    new PromptDeckCard('0001', 'Hello, _', 1, 0, 0, 8, 0, 0, ['lol'], 0, 0),
+    new PromptDeckCard('0003', 'Bye _ and _', 2, 0, 0, 0, 0, 0, ['wut'], 0, 0),
   ];
   expected.responses = [
     new ResponseDeckCard('0002', 'Poop', 0, 0, 9, 0, 0, 0, []),
@@ -54,7 +54,7 @@ test('merge decks', async () => {
 });
 
 function makePrompt(id: string, text: string = 'Prompt'): PromptDeckCard {
-  return new PromptDeckCard(id, text, 0, 0, 0, 0, 0, [], 0, 0);
+  return new PromptDeckCard(id, text, 0, 0, 0, 0, 0, 0, [], 0, 0);
 }
 function makeResponse(id: string, text: string = 'Response'): ResponseDeckCard {
   return new ResponseDeckCard(id, text, 0, 0, 0, 0, 8, 0, []);

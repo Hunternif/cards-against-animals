@@ -2,8 +2,8 @@ import { expect, test } from "vitest";
 import { PromptDeckCard, ResponseDeckCard } from "../../../shared/types";
 import { DeckCardSet } from "../deck-card-set";
 
-const prompt1 = new PromptDeckCard('0001', 'Hello, _', 1, 0, 0, 8, 0, ['lol'], 0, 0);
-const prompt2 = new PromptDeckCard('0003', 'Bye _ and _', 2, 0, 0, 0, 0, ['wut'], 0, 0);
+const prompt1 = new PromptDeckCard('0001', 'Hello, _', 1, 0, 0, 8, 0, 0, ['lol'], 0, 0);
+const prompt2 = new PromptDeckCard('0003', 'Bye _ and _', 2, 0, 0, 0, 0, 0, ['wut'], 0, 0);
 const resp1 = new ResponseDeckCard('0002', 'Poop', 0, 0, 9, 0, 0, 0, []);
 const resp2 = new ResponseDeckCard('0004', 'What', 0, 0, 0, 0, 0, 0, []);
 

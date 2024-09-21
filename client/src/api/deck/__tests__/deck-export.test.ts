@@ -14,8 +14,8 @@ import {
 test('export deck', () => {
   const deck = new Deck('my_deck', 'My deck', 'public');
   deck.prompts = [
-    new PromptDeckCard('0001', 'Hello, _', 1, 10, 0, 0, 0, ['lol'], 0, 0),
-    new PromptDeckCard('0002', 'Bye _ and _', 2, 0, 3, 0, 0, ['wut'], 0, 0),
+    new PromptDeckCard('0001', 'Hello, _', 1, 10, 0, 0, 0, 2, ['lol'], 0, 0),
+    new PromptDeckCard('0002', 'Bye _ and _', 2, 0, 3, 0, 0, 0, ['wut'], 0, 0),
   ];
   deck.responses = [new ResponseDeckCard('0003', 'Poop', 0, 0, 4, 0, 0, 0, [])];
   deck.tags = [new DeckTag('lol'), new DeckTag('wut')];
@@ -43,6 +43,7 @@ test('export deck', () => {
           "content": "Hello, _",
           "pick": 1,
           "rating": 10,
+          "likes": 2,
           "tags": [
             "lol"
           ]

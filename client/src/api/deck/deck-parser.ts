@@ -25,7 +25,7 @@ export function parseDeck(
         const id = cardOrdinalToID(i + 1);
         const pick = parsePromptPick(line);
         const text = processPromptText(processCardText(line));
-        return new PromptDeckCard(id, text, pick, 0, 0, 0, 0, [], 0, 0);
+        return new PromptDeckCard(id, text, pick, 0, 0, 0, 0, 0, [], 0, 0);
       } catch (e: any) {
         const error = new Error(`Error parsing prompt card row ${i + 1}`);
         error.stack += `\nCaused by: ${e}`;
@@ -83,7 +83,7 @@ export function parseDeckTsv(
         const text = processPromptText(processCardText(rawText));
         const pick = parsePromptPick(text);
         deck.prompts.push(
-          new PromptDeckCard(id, text, pick, 0, 0, 0, 0, tags, 0, 0),
+          new PromptDeckCard(id, text, pick, 0, 0, 0, 0, 0, tags, 0, 0),
         );
       } else if (type === 'Response') {
         const text = processCardText(items[1]);

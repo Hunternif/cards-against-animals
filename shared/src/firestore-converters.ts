@@ -313,6 +313,7 @@ export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
       data.views ?? 0,
       data.plays ?? 0,
       data.discards ?? 0,
+      data.likes ?? 0,
       data.tags || [],
       data.upvotes ?? 0,
       data.downvotes ?? 0,

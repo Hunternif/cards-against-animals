@@ -47,6 +47,7 @@ export function copyDeckCard<
       card.views,
       card.plays,
       card.discards,
+      card.likes,
       card.tags.slice(),
       card.upvotes,
       card.downvotes,

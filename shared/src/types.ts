@@ -318,6 +318,7 @@ export interface DeckCard {
   discards: number;
   /** Analytics: how many times this card won a turn */
   wins: number;
+  likes: number;
   tags: string[];
   type: CardType;
 }
@@ -335,6 +336,7 @@ export class PromptDeckCard implements DeckCard {
     public views: number,
     public plays: number,
     public discards: number,
+    public likes: number,
     public tags: string[],
     public upvotes: number,
     public downvotes: number,

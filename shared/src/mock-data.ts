@@ -1,7 +1,7 @@
 import { PromptDeckCard, ResponseCardInGame, ResponseDeckCard } from './types';
 
 export function newPromptCard(id: string = '01') {
-  return new PromptDeckCard(id, 'My prompt', 1, 0, 0, 0, 0, [], 0, 0);
+  return new PromptDeckCard(id, 'My prompt', 1, 0, 0, 0, 0, 0, [], 0, 0);
 }
 
 export function newResponseCard(id: string = '02') {

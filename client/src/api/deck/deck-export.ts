@@ -52,6 +52,7 @@ export function deserializeDecks(json: string): Deck[] {
             c.views ?? 0,
             c.plays ?? 0,
             c.discards ?? 0,
+            c.likes ?? 0,
             c.tags ?? [],
             c.upvotes ?? 0,
             c.downvotes ?? 0,
