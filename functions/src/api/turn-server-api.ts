@@ -24,6 +24,7 @@ import {
   getLobbyDeckResponsesRef,
   getOrCreatePlayerState,
   getPlayers,
+  getPlayerState,
   getPlayerStates,
   getPlayerThrows,
   updateLobby,
@@ -153,18 +154,31 @@ async function dealCardsForNewTurn(
   lastTurn: GameTurn | null,
   newTurn: GameTurn,
 ): Promise<void> {
-  // Deal cards to: online players, players who left.
+  // Remove cards from: all players (including temporary spectators).
   const players = (await getPlayers(lobby.id)).filter(
-    (p) => p.role === 'player' && p.status !== 'banned',
+    (p) => p.status !== 'banned',
   );
   players.sort((a, b) => a.random_index - b.random_index);
   for (const player of players) {
-    const playerState = await getOrCreatePlayerState(lobby, player.uid);
-    if (lastTurn) {
-      await removePlayedCards(lobby, lastTurn, playerState);
+    let playerState = await getPlayerState(lobby.id, player.uid);
+    if (playerState) {
+      if (lastTurn) {
+        await removePlayedCards(lobby, lastTurn, playerState);
+      }
+      await removeDiscardedCards(lobby, playerState);
+      // These calls do not update the DB!
+      // TODO: clean up this API.
     }
-    await removeDiscardedCards(lobby, playerState);
-    await dealCardsToPlayer(lobby, playerState);
+    if (player.role === 'player') {
+      if (!playerState) {
+        playerState = await getOrCreatePlayerState(lobby, player.uid);
+      }
+      // Deal cards to: online players, players who left.
+      await dealCardsToPlayer(lobby, playerState);
+    } else if (playerState) {
+      // Don't forget to update the DB:
+      await updatePlayerState(lobby.id, playerState);
+    }
   }
 }
 
