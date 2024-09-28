@@ -70,10 +70,24 @@ export class DeckCardSet {
   }
 
   /** Returns a new set containing only cards matching the filter. */
-  filterByTags(tags: string[]) {
+  filterByTags(tags: string[]): DeckCardSet {
     return new DeckCardSet(
       this.cards.filter((c) => tags.every((t) => c.tags.indexOf(t) > -1)),
     );
+  }
+
+  /** Returns a new set where cards are sorted by this field. */
+  sortByField(field: keyof DeckCard): DeckCardSet {
+    const cards = this.cards.slice();
+    cards.sort((a, b) => {
+      const f1 = a[field];
+      const f2 = b[field];
+      if (f1 == null || f2 == null) return 1;
+      if (f1 < f2) return -1;
+      if (f1 > f2) return 1;
+      return 0;
+    });
+    return DeckCardSet.fromList(cards);
   }
 }
 

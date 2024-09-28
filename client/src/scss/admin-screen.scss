@@ -209,6 +209,16 @@
     font-weight: 200;
     text-overflow: ellipsis;
     overflow: hidden;
+    &.clickable {
+      cursor: pointer;
+      &:hover {
+        color: #fff;
+      }
+      &.selected {
+        font-weight: 400;
+        color: #fff
+      }
+    }
   }
 }
 .admin-deck-table.standalone .admin-deck-table-header {

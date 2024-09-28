@@ -60,6 +60,7 @@ export function AdminDeck({ deckID }: Props) {
   const [filterText, setFilterText] = useState('');
   const [filterPrompts, setFilterPrompts] = useState(true);
   const [filterResponses, setFilterResponses] = useState(true);
+  const [sortFields, setSortFields] = useState<Array<keyof DeckCard>>([]);
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(cardTypedID(card));
@@ -112,6 +113,18 @@ export function AdminDeck({ deckID }: Props) {
     }
   }, [deckRepository, deck, selectedCards, refresh]);
 
+  function handleClickColumn(field: keyof DeckCard) {
+    let fields = sortFields.slice();
+    // TODO: sort up or down
+    if (fields.includes(field)) {
+      // toggle off:
+      fields = fields.filter((f) => f != field);
+    } else {
+      fields.push(field);
+    }
+    setSortFields(fields);
+  }
+
   // Compute final card list based on filters:
   const currentCardset = useMemo(() => {
     let cardset = fullDeckCardset;
@@ -128,9 +141,12 @@ export function AdminDeck({ deckID }: Props) {
       );
       cardset = DeckCardSet.fromList(filteredCards);
     }
+    for (const field of sortFields) {
+      cardset = cardset.sortByField(field);
+    }
     // TODO: filter by card IDs or by tags.
     return cardset;
-  }, [fullDeckCardset, filterPrompts, filterResponses, filterText]);
+  }, [fullDeckCardset, filterPrompts, filterResponses, filterText, sortFields]);
 
   if (!deck) return <LoadingSpinner />;
 
@@ -276,6 +292,7 @@ export function AdminDeck({ deckID }: Props) {
             cards={currentCardset}
             selected={selectedCardset}
             onToggleAll={toggleSelectAll}
+            onClickField={handleClickColumn}
           />
         }
         render={(card) => (

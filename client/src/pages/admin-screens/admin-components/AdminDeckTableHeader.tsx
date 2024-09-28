@@ -1,13 +1,15 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { DeckCardSet } from '../../../api/deck/deck-card-set';
 import { Checkbox } from '../../../components/Checkbox';
 import { useScreenSize } from '../../../components/layout/ScreenSizeSwitch';
+import { DeckCard } from '../../../shared/types';
 
 interface Props {
   cards: DeckCardSet;
   onToggleAll?: (checked: boolean) => void;
   selected?: DeckCardSet;
   readOnly?: boolean;
+  onClickField?: (field: keyof DeckCard) => void;
 }
 
 /**
@@ -18,6 +20,7 @@ export function AdminDeckTableHeader({
   onToggleAll,
   selected,
   readOnly,
+  onClickField,
 }: Props) {
   const isAnySelected = selected && selected.size > 0;
 
@@ -37,14 +40,49 @@ export function AdminDeckTableHeader({
         </span>
       </th>
       <th className="col-card-tags">Tags</th>
-      <th className="col-card-counter">Views</th>
-      <th className="col-card-counter">Plays</th>
-      <th className="col-card-counter">Likes/Votes</th>
-      <th className="col-card-counter">Wins</th>
-      <th className="col-card-counter">Discards</th>
-      <th className="col-card-counter">Rating</th>
-      <th className="col-card-counter">Tier</th>
+      <FilteredHeader field="views" onClickField={onClickField}>
+        Views
+      </FilteredHeader>
+      <FilteredHeader field="plays" onClickField={onClickField}>
+        Plays
+      </FilteredHeader>
+      <FilteredHeader field="likes" onClickField={onClickField}>
+        Likes/Votes
+      </FilteredHeader>
+      <FilteredHeader field="wins" onClickField={onClickField}>
+        Wins
+      </FilteredHeader>
+      <FilteredHeader field="discards" onClickField={onClickField}>
+        Discards
+      </FilteredHeader>
+      <FilteredHeader field="rating" onClickField={onClickField}>
+        Rating
+      </FilteredHeader>
+      <FilteredHeader field="tier" onClickField={onClickField}>
+        Tier
+      </FilteredHeader>
     </tr>
+  );
+}
+
+interface HeaderProps {
+  children: ReactNode;
+  field: keyof DeckCard;
+  onClickField?: (field: keyof DeckCard) => void;
+}
+
+function FilteredHeader({ children, field, onClickField }: HeaderProps) {
+  const [selected, setSelected] = useState(false);
+  const classes = ['col-card-counter clickable'];
+  if (selected) classes.push('selected');
+  function handleClick() {
+    setSelected(!selected);
+    onClickField && onClickField(field);
+  }
+  return (
+    <th className={classes.join(' ')} onClick={handleClick}>
+      {children}
+    </th>
   );
 }
 
