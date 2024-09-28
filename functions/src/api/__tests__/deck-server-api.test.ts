@@ -1,5 +1,14 @@
+import {
+  copyDeckCard,
+  getCardFactor,
+  inferCardTier,
+} from '../../shared/deck-utils';
 import { newPromptCard, newResponseCard } from '../../shared/mock-data';
-import { defaultLobbySettings } from '../../shared/types';
+import {
+  defaultLobbySettings,
+  PromptDeckCard,
+  ResponseDeckCard,
+} from '../../shared/types';
 import { copyFields2 } from '../../shared/utils';
 import { getCardIndex } from '../deck-server-api';
 
@@ -192,3 +201,64 @@ test('sort cards based on rating', () => {
   prompt.downvotes = 11;
   expect(getCardIndex(prompt, fakeRng, settings)).toBe(8);
 });
+
+test('sample card sorting factor', () => {
+  const settings = defaultLobbySettings();
+
+  const newCard = makeResponse('01');
+  expect(getCardFactor(newCard, settings)).toBe(1);
+  expect(inferCardTier(newCard, settings)).toBe('top');
+
+  const okCard = makeResponse('02');
+  okCard.views = 200;
+  okCard.plays = 40;
+  okCard.likes = 50;
+  okCard.wins = 7;
+  okCard.discards = 5;
+  okCard.rating - 1;
+  expect(getCardFactor(okCard, settings)).toBeCloseTo(0.5, 1);
+  expect(inferCardTier(okCard, settings)).toBe('mid');
+
+  const betterCard = copyDeckCard(okCard);
+  betterCard.likes = 70;
+  expect(getCardFactor(betterCard, settings)).toBeCloseTo(0.7, 1);
+  expect(inferCardTier(betterCard, settings)).toBe('mid');
+
+  const betterCard2 = copyDeckCard(okCard);
+  betterCard2.likes = 80;
+  expect(getCardFactor(betterCard2, settings)).toBeCloseTo(0.8, 1);
+  expect(inferCardTier(betterCard2, settings)).toBe('mid');
+
+  const badCard = copyDeckCard(betterCard2);
+  badCard.discards = 10;
+  expect(getCardFactor(badCard, settings)).toBeCloseTo(0.4, 1);
+  expect(inferCardTier(badCard, settings)).toBe('mid');
+
+  const worseCard = copyDeckCard(okCard);
+  worseCard.rating = -2;
+  expect(getCardFactor(worseCard, settings)).toBeCloseTo(0.1, 1);
+  expect(inferCardTier(worseCard, settings)).toBe('mid');
+
+  const mehCard = makeResponse('03');
+  mehCard.views = 100;
+  mehCard.plays = 10;
+  mehCard.likes = 10;
+  mehCard.discards = 3;
+  mehCard.rating = -2;
+  expect(getCardFactor(mehCard, settings)).toBeCloseTo(0.03, 1);
+  expect(inferCardTier(mehCard, settings)).toBe('shit');
+
+  const shitCard = makeResponse('04');
+  shitCard.views = 20;
+  shitCard.plays = 5;
+  shitCard.rating = -4;
+  expect(getCardFactor(shitCard, settings)).toBeCloseTo(0.01, 1);
+  expect(inferCardTier(shitCard, settings)).toBe('shit');
+});
+
+function makePrompt(id: string, text: string = 'Prompt'): PromptDeckCard {
+  return new PromptDeckCard(id, text, 0, 0, 0, 0, 0, 0, [], 0, 0);
+}
+function makeResponse(id: string, text: string = 'Response'): ResponseDeckCard {
+  return new ResponseDeckCard(id, text, 0, 0, 0, 0, 8, 0, []);
+}

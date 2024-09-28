@@ -1,5 +1,6 @@
 import { HttpsError } from 'firebase-functions/v1/auth';
 import { firestore } from '../firebase-server';
+import { getCardFactor } from '../shared/deck-utils';
 import {
   deckConverter,
   promptDeckCardConverter,
@@ -11,9 +12,7 @@ import {
   DeckCard,
   LobbySettings,
   PromptCardInGame,
-  PromptDeckCard,
   ResponseCardInGame,
-  ResponseDeckCard,
 } from '../shared/types';
 
 export function getDecksRef() {
@@ -121,43 +120,8 @@ export function getCardIndex(
   if (settings.sort_by_id) return -parseInt(card.id) ?? 0;
   const base = rng.randomInt();
   let result = base;
-  let factor = 1.0;
+  const factor = getCardFactor(card, settings);
 
-  // Adjust index based on rating:
-  if (settings.sort_cards_by_rating) {
-    factor *= (100.0 + card.rating * 40.0) / 100.0;
-  }
-  // (card.plays / 2.0 + 1.0) *
-  if (settings.sort_cards_by_views) {
-    factor *= 1.0 / (card.views / 10.0 + 1.0);
-  }
-  if (settings.sort_cards_by_wins) {
-    factor *= card.wins + 1.0;
-  }
-  if (settings.sort_cards_by_discards) {
-    factor *= 1.0 / (card.discards * 10.0 + 1.0);
-  }
-  // Adjust prompt cards based on votes:
-  if (settings.sort_cards_by_prompt_votes && card instanceof PromptDeckCard) {
-    factor *=
-      (2 * Math.max(0, card.upvotes - card.downvotes) + 1.0) *
-      (1.0 / (Math.max(0, card.downvotes - card.upvotes) * 10.0 + 1.0));
-  }
-  // Adjust response cards based on likes:
-  if (
-    settings.sort_cards_by_response_likes &&
-    card instanceof ResponseDeckCard
-  ) {
-    factor *= 1.0 + card.likes / 2.0;
-  }
-  // TODO: make this a controllable slope instead.
-  // Minimum possible factor:
-  factor = Math.max(0.000000001, factor); // Prevent 0
-  factor = Math.max(settings.sort_min_factor, factor);
-  // Maximum possible factor (don't allow putting cards ahead of the queue):
-  if (!settings.sort_cards_in_front) {
-    factor = Math.min(factor, 1.0);
-  }
   result = (result * factor) >>> 0;
 
   // Adjust index for unviewed cards
