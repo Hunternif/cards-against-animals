@@ -317,8 +317,10 @@ export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
       data.tags || [],
       data.upvotes ?? 0,
       data.downvotes ?? 0,
+      data.tier,
+      data.tier_history || [],
+      (data.time_created as FTimestamp | null)?.toDate(),
     );
-    ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     return ret;
   },
 };
@@ -346,6 +348,8 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
       data.wins ?? 0,
       data.likes ?? 0,
       data.tags || [],
+      data.tier,
+      data.tier_history || [],
       (data.time_created as FTimestamp | null)?.toDate(),
       data.action,
     );

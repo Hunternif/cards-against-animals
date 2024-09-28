@@ -56,6 +56,8 @@ export function deserializeDecks(json: string): Deck[] {
             c.tags ?? [],
             c.upvotes ?? 0,
             c.downvotes ?? 0,
+            c.tier,
+            c.tier_history,
             c.time_created,
           ),
       ) ?? [];
@@ -72,6 +74,8 @@ export function deserializeDecks(json: string): Deck[] {
             c.wins ?? 0,
             c.likes ?? 0,
             c.tags ?? [],
+            c.tier,
+            c.tier_history,
             c.time_created,
             c.action,
           ),
@@ -116,8 +120,8 @@ type DeckJson = Omit<Deck, 'prompts' | 'responses' | 'tags'> & {
 type PartialCard<T> = {
   [P in keyof Omit<T, 'type'>]: T[P] extends Number
     ? number | undefined
-    : T[P] extends Array<string>
-    ? Array<string> | undefined
+    : T[P] extends Array<any>
+    ? T[P] | undefined
     : T[P];
 };
 

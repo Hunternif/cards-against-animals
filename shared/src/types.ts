@@ -321,6 +321,10 @@ export interface DeckCard {
   likes: number;
   tags: string[];
   type: CardType;
+  tier?: CardTier;
+  /** What tier this card was at in every game.
+   * Each item represents a single game, the most recent game is last. */
+  tier_history: Array<CardTier>;
 }
 
 /** Prompt card in deck */
@@ -340,6 +344,8 @@ export class PromptDeckCard implements DeckCard {
     public tags: string[],
     public upvotes: number,
     public downvotes: number,
+    public tier?: CardTier,
+    public tier_history: Array<CardTier> = [],
     public time_created?: Date,
   ) {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -360,6 +366,8 @@ export class ResponseDeckCard implements DeckCard {
     public wins: number,
     public likes: number,
     public tags: string[],
+    public tier?: CardTier,
+    public tier_history: Array<CardTier> = [],
     public time_created?: Date,
     public action?: ResponseAction,
   ) {}
@@ -482,6 +490,8 @@ export type TurnPhase = 'new' | 'answering' | 'reading' | 'complete';
 export type LobbyStatus = 'new' | 'starting' | 'in_progress' | 'ended';
 
 export type CardType = 'prompt' | 'response';
+
+export type CardTier = 'top' | 'mid' | 'shit';
 
 /** "kick" is re-joinable, "ban" is forever. */
 export type KickAction = 'kick' | 'ban';

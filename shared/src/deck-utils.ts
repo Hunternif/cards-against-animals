@@ -51,6 +51,8 @@ export function copyDeckCard<
       card.tags.slice(),
       card.upvotes,
       card.downvotes,
+      card.tier,
+      card.tier_history.slice(),
       card.time_created,
     ) as T;
   } else if (filterResponseDeckCard(card)) {
@@ -64,6 +66,8 @@ export function copyDeckCard<
       card.wins,
       card.likes,
       card.tags.slice(),
+      card.tier,
+      card.tier_history.slice(),
       card.time_created,
       card.action,
     ) as T;

@@ -72,6 +72,8 @@ export function AdminNewCardModal({ show, deck, onClose }: Props) {
             card.tags,
             0,
             0,
+            card.tier,
+            card.tier_history,
             card.time_created,
           ),
         );
@@ -88,6 +90,8 @@ export function AdminNewCardModal({ show, deck, onClose }: Props) {
             card.wins,
             0,
             card.tags,
+            card.tier,
+            card.tier_history,
             card.time_created,
             undefined,
           ),
