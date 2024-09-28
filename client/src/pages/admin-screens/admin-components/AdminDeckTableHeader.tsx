@@ -9,7 +9,7 @@ interface Props {
   onToggleAll?: (checked: boolean) => void;
   selected?: DeckCardSet;
   readOnly?: boolean;
-  onClickField?: (field: keyof DeckCard) => void;
+  onClickField?: (field: keyof DeckCard, reverse?: boolean) => void;
 }
 
 /**
@@ -40,19 +40,19 @@ export function AdminDeckTableHeader({
         </span>
       </th>
       <th className="col-card-tags">Tags</th>
-      <FilteredHeader field="views" onClickField={onClickField}>
+      <FilteredHeader field="views" onClickField={onClickField} reversed>
         Views
       </FilteredHeader>
-      <FilteredHeader field="plays" onClickField={onClickField}>
+      <FilteredHeader field="plays" onClickField={onClickField} reversed>
         Plays
       </FilteredHeader>
-      <FilteredHeader field="likes" onClickField={onClickField}>
+      <FilteredHeader field="likes" onClickField={onClickField} reversed>
         Likes/Votes
       </FilteredHeader>
-      <FilteredHeader field="wins" onClickField={onClickField}>
+      <FilteredHeader field="wins" onClickField={onClickField} reversed>
         Wins
       </FilteredHeader>
-      <FilteredHeader field="discards" onClickField={onClickField}>
+      <FilteredHeader field="discards" onClickField={onClickField} reversed>
         Discards
       </FilteredHeader>
       <FilteredHeader field="rating" onClickField={onClickField}>
@@ -68,16 +68,22 @@ export function AdminDeckTableHeader({
 interface HeaderProps {
   children: ReactNode;
   field: keyof DeckCard;
-  onClickField?: (field: keyof DeckCard) => void;
+  reversed?: boolean;
+  onClickField?: (field: keyof DeckCard, reverse?: boolean) => void;
 }
 
-function FilteredHeader({ children, field, onClickField }: HeaderProps) {
+function FilteredHeader({
+  children,
+  field,
+  reversed,
+  onClickField,
+}: HeaderProps) {
   const [selected, setSelected] = useState(false);
   const classes = ['col-card-counter clickable'];
   if (selected) classes.push('selected');
   function handleClick() {
     setSelected(!selected);
-    onClickField && onClickField(field);
+    onClickField && onClickField(field, reversed ?? false);
   }
   return (
     <th className={classes.join(' ')} onClick={handleClick}>

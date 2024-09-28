@@ -77,14 +77,14 @@ export class DeckCardSet {
   }
 
   /** Returns a new set where cards are sorted by this field. */
-  sortByField(field: keyof DeckCard): DeckCardSet {
+  sortByField(field: keyof DeckCard, reversed: boolean = false): DeckCardSet {
     const cards = this.cards.slice();
     cards.sort((a, b) => {
       const f1 = a[field];
       const f2 = b[field];
       if (f1 == null || f2 == null) return 1;
-      if (f1 < f2) return -1;
-      if (f1 > f2) return 1;
+      if (f1 < f2) return reversed ? 1 : -1;
+      if (f1 > f2) return reversed ? -1 : 1;
       return 0;
     });
     return DeckCardSet.fromList(cards);

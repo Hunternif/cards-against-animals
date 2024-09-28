@@ -60,7 +60,9 @@ export function AdminDeck({ deckID }: Props) {
   const [filterText, setFilterText] = useState('');
   const [filterPrompts, setFilterPrompts] = useState(true);
   const [filterResponses, setFilterResponses] = useState(true);
-  const [sortFields, setSortFields] = useState<Array<keyof DeckCard>>([]);
+  const [sortFields, setSortFields] = useState<
+    Array<{ field: keyof DeckCard; reverse?: boolean }>
+  >([]);
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(cardTypedID(card));
@@ -113,14 +115,14 @@ export function AdminDeck({ deckID }: Props) {
     }
   }, [deckRepository, deck, selectedCards, refresh]);
 
-  function handleClickColumn(field: keyof DeckCard) {
+  function handleClickColumn(field: keyof DeckCard, reverse: boolean = false) {
     let fields = sortFields.slice();
     // TODO: sort up or down
-    if (fields.includes(field)) {
+    if (fields.find((f) => f.field == field)) {
       // toggle off:
-      fields = fields.filter((f) => f != field);
+      fields = fields.filter((f) => f.field != field);
     } else {
-      fields.push(field);
+      fields.push({ field, reverse });
     }
     setSortFields(fields);
   }
@@ -141,8 +143,8 @@ export function AdminDeck({ deckID }: Props) {
       );
       cardset = DeckCardSet.fromList(filteredCards);
     }
-    for (const field of sortFields) {
-      cardset = cardset.sortByField(field);
+    for (const { field, reverse } of sortFields) {
+      cardset = cardset.sortByField(field, reverse);
     }
     // TODO: filter by card IDs or by tags.
     return cardset;
