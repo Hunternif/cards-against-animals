@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
 import { ConfirmModal } from '../../../components/ConfirmModal';
@@ -14,6 +14,7 @@ import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { Modal, ModalBody, ModalFooter } from '../../../components/Modal';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { useDIContext } from '../../../di-context';
+import { useHandler } from '../../../hooks/data-hooks';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
 import { cardTypedID } from '../../../shared/deck-utils';
 import { Deck, DeckCard } from '../../../shared/types';
@@ -27,7 +28,6 @@ import { AdminDeckTableHeader } from './AdminDeckTableHeader';
 import { AdminEditCardModal } from './AdminEditCardModal';
 import { AdminNewCardModal } from './AdminNewCardModal';
 import { AdminTagsTable } from './AdminTagsTable';
-import { useHandler } from '../../../hooks/data-hooks';
 
 interface Props {
   deckID: string;
@@ -40,7 +40,6 @@ export function AdminDeck({ deckID }: Props) {
   const { deckRepository } = useDIContext();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [fullDeckCardset, setFullDeckCardset] = useState(emptySet);
-  const [currentCardset, setCurrentCardset] = useState(emptySet);
   const { setError } = useContext(ErrorContext);
   // Maps card 'typed id' to card
   const [selectedCards, setSelectedCards] = useState<Map<string, DeckCard>>(
@@ -59,6 +58,8 @@ export function AdminDeck({ deckID }: Props) {
 
   const [editedCard, setEditedCard] = useState<DeckCard>();
   const [filterText, setFilterText] = useState('');
+  const [filterPrompts, setFilterPrompts] = useState(true);
+  const [filterResponses, setFilterResponses] = useState(true);
 
   function isSelected(card: DeckCard): boolean {
     return selectedCards.has(cardTypedID(card));
@@ -89,33 +90,16 @@ export function AdminDeck({ deckID }: Props) {
           setDeck(val);
           const cardset = DeckCardSet.fromDeck(val).sortByIDs();
           setFullDeckCardset(cardset);
-          setCurrentCardset(cardset);
         })
         .catch((e) => setError(e));
     }
   });
-
-  async function filter(fullCardSet: DeckCardSet, text: string) {
-    setFilterText(text);
-    if (!deck) return;
-    if (text.length > 0) {
-      // Filter by content:
-      const filteredCards = fullCardSet.cards.filter((c) =>
-        c.content.toLowerCase().includes(text.toLowerCase()),
-      );
-      setCurrentCardset(DeckCardSet.fromList(filteredCards));
-      // TODO: filter by card IDs or by tags.
-    } else {
-      setCurrentCardset(fullCardSet);
-    }
-  }
 
   /** Recalculates deck set */
   const refresh = useCallback(() => {
     if (deck) {
       const fullCardSet = DeckCardSet.fromDeck(deck).sortByIDs();
       setFullDeckCardset(fullCardSet);
-      filter(fullCardSet, filterText);
     }
   }, [deck]);
 
@@ -127,6 +111,26 @@ export function AdminDeck({ deckID }: Props) {
       refresh();
     }
   }, [deckRepository, deck, selectedCards, refresh]);
+
+  // Compute final card list based on filters:
+  const currentCardset = useMemo(() => {
+    let cardset = fullDeckCardset;
+    if (!filterPrompts) {
+      cardset = DeckCardSet.fromList(cardset.responses);
+    }
+    if (!filterResponses) {
+      cardset = DeckCardSet.fromList(cardset.prompts);
+    }
+    if (filterText.length > 0) {
+      // Filter by content:
+      const filteredCards = cardset.cards.filter((c) =>
+        c.content.toLowerCase().includes(filterText.toLowerCase()),
+      );
+      cardset = DeckCardSet.fromList(filteredCards);
+    }
+    // TODO: filter by card IDs or by tags.
+    return cardset;
+  }, [fullDeckCardset, filterPrompts, filterResponses, filterText]);
 
   if (!deck) return <LoadingSpinner />;
 
@@ -239,12 +243,26 @@ export function AdminDeck({ deckID }: Props) {
         <GameButton inline light onClick={() => setShowTagsDialog(true)}>
           Tags
         </GameButton>
+        <GameButton
+          inline
+          light={filterPrompts}
+          onClick={() => setFilterPrompts(!filterPrompts)}
+        >
+          P
+        </GameButton>
+        <GameButton
+          inline
+          light={filterResponses}
+          onClick={() => setFilterResponses(!filterResponses)}
+        >
+          R
+        </GameButton>
         <TextInput
           inline
           className="search-input"
           debounceMs={200}
           placeholder="Search..."
-          onChange={(text) => filter(fullDeckCardset, text)}
+          onChange={(text) => setFilterText(text)}
           iconLeft={<IconSearch />}
         ></TextInput>
       </div>
