@@ -84,6 +84,23 @@ export class RNG implements IRNG {
   }
 
   /**
+   * Picks one option according to its weight.
+   * Weights should be >= 0, arbitrary numbers.
+   * At least one option should have weight > 0.
+   */
+  chooseWeighted<T>(options: Array<{ val: T, weight: number }>): T | undefined {
+    if (options.length === 0) return undefined;
+    const totalWeight = options.reduce((acc, cur) => acc + cur.weight, 0);
+    let toss = this.randomFloat() * totalWeight;
+    for (const opt of options) {
+      if (opt.weight <= 0) continue;
+      toss -= opt.weight;
+      if (toss <= 0) return opt.val;
+    }
+    return undefined;
+  }
+
+  /**
    * Creates a RNG function seeded with a.
    * The returned function will yield random 32-bit integers.
    */
