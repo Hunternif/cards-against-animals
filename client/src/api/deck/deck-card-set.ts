@@ -2,10 +2,13 @@ import {
   copyDeckCard,
   filterPromptDeckCard,
   filterResponseDeckCard,
+  inferCardTier,
 } from '../../shared/deck-utils';
 import {
+  allCardTiers,
   Deck,
   DeckCard,
+  defaultLobbySettings,
   PromptDeckCard,
   ResponseDeckCard,
 } from '../../shared/types';
@@ -78,6 +81,7 @@ export class DeckCardSet {
 
   /** Returns a new set where cards are sorted by this field. */
   sortByField(field: keyof DeckCard, reversed: boolean = false): DeckCardSet {
+    if (field === 'tier') return this.sortByInferredTier();
     const cards = this.cards.slice();
     cards.sort((a, b) => {
       const f1 = a[field];
@@ -86,6 +90,19 @@ export class DeckCardSet {
       if (f1 < f2) return reversed ? 1 : -1;
       if (f1 > f2) return reversed ? -1 : 1;
       return 0;
+    });
+    return DeckCardSet.fromList(cards);
+  }
+
+  /** Returns a new set where cards are sorted by tier, where tier could be inferred. */
+  sortByInferredTier(): DeckCardSet {
+    const cards = this.cards.slice();
+    cards.sort((a, b) => {
+      const t1 = a.tier ?? inferCardTier(a, defaultLobbySettings());
+      const t2 = b.tier ?? inferCardTier(b, defaultLobbySettings());
+      const i1 = allCardTiers.indexOf(t1);
+      const i2 = allCardTiers.indexOf(t2);
+      return i1 - i2;
     });
     return DeckCardSet.fromList(cards);
   }
