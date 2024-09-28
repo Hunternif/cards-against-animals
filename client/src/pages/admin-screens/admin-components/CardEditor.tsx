@@ -8,6 +8,8 @@ import {
 } from '../../../shared/deck-utils';
 import {
   allCardActions,
+  allCardTiers,
+  CardTier,
   CardType,
   Deck,
   DeckCard,
@@ -186,6 +188,22 @@ function PromptStats({ deck, card, onChange }: PropmtStatsProps) {
           onChange={onChange}
         />
       </StatsRow>
+      <StatsRow label="Tier">
+        <SelectInput
+          tiny
+          value={card.tier ?? '-'}
+          options={cardTiersOrNone.map((a) => [a, a])}
+          onChange={(v) => {
+            card.tier = v === '-' ? undefined : v;
+            if (onChange) onChange();
+          }}
+        />
+      </StatsRow>
+      <StatsRow label="Tier history">
+        {card.tier_history.map((t, i) => (
+          <div key={`${t}_${i}`}>t</div>
+        ))}
+      </StatsRow>
     </dl>
   );
 }
@@ -239,6 +257,22 @@ function ResponseStats({ deck, card, onChange }: ResponseStatsProps) {
           onChange={onChange}
         />
       </StatsRow>
+      <StatsRow label="Tier">
+        <SelectInput
+          tiny
+          value={card.tier ?? '-'}
+          options={cardTiersOrNone.map((a) => [a, a])}
+          onChange={(v) => {
+            card.tier = v === '-' ? undefined : v;
+            if (onChange) onChange();
+          }}
+        />
+      </StatsRow>
+      <StatsRow label="Tier history">
+        {card.tier_history.map((t, i) => (
+          <div key={`${t}_${i}`}>t</div>
+        ))}
+      </StatsRow>
     </dl>
   );
 }
@@ -285,3 +319,5 @@ function NumberPropInput<P extends string>({
     />
   );
 }
+
+const cardTiersOrNone: Array<CardTier | '-'> = ['-', ...allCardTiers];

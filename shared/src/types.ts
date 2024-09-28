@@ -492,6 +492,7 @@ export type LobbyStatus = 'new' | 'starting' | 'in_progress' | 'ended';
 export type CardType = 'prompt' | 'response';
 
 export type CardTier = 'top' | 'mid' | 'shit';
+export const allCardTiers: Array<CardTier> = ['top', 'mid', 'shit'];
 
 /** "kick" is re-joinable, "ban" is forever. */
 export type KickAction = 'kick' | 'ban';
