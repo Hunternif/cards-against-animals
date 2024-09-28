@@ -43,6 +43,7 @@ export function AdminDeckTableHeader({
       <th className="col-card-counter">Wins</th>
       <th className="col-card-counter">Discards</th>
       <th className="col-card-counter">Rating</th>
+      <th className="col-card-counter">Tier</th>
     </tr>
   );
 }

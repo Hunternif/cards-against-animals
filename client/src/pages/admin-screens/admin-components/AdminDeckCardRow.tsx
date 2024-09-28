@@ -4,9 +4,11 @@ import { GameButton } from '../../../components/Buttons';
 import { Twemoji } from '../../../components/Twemoji';
 import {
   DeckCard,
+  defaultLobbySettings,
   PromptDeckCard,
   ResponseDeckCard,
 } from '../../../shared/types';
+import { inferCardTier } from '../../../shared/deck-utils';
 
 interface RowProps {
   card: DeckCard;
@@ -66,6 +68,7 @@ export function AdminDeckCardRow({
       <CounterRow val={card.wins} />
       <CounterRow val={card.discards} />
       <CounterRow val={card.rating} />
+      <CardTierRow card={card} />
     </tr>
   );
 }
@@ -86,6 +89,19 @@ export function CardContentRow(props: CardContentRowProps) {
   return (
     <Twemoji {...props} className={`card-content-admin-row ${emojiClass}`} />
   );
+}
+
+function CardTierRow({ card }: { card: DeckCard }) {
+  const classes = ['col-card-tier'];
+  let tier = card.tier;
+  if (tier) {
+    classes.push('assigned');
+  } else {
+    tier = inferCardTier(card, defaultLobbySettings());
+    classes.push('inferred');
+  }
+  classes.push(`tier-${tier}`);
+  return <td className={classes.join(' ')}>{tier}</td>;
 }
 
 function EditButton({ onClick }: { onClick?: () => void }) {

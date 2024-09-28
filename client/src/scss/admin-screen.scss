@@ -81,6 +81,22 @@
       opacity: 0.4;
     }
   }
+  .col-card-tier {
+    text-align: end;
+    &.assigned {
+      font-weight: 600;
+    }
+    &.inferred {
+      font-weight: 300;
+      opacity: 0.7;
+    }
+    &.tier-top {
+      color: #73d478;
+    }
+    &.tier-shit {
+      color: #ee8157;
+    }
+  }
   .col-card-content {
     // padding: 0.1em 0.5em;
     border-radius: 0.4em;
