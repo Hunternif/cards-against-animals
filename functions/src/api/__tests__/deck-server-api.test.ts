@@ -217,17 +217,17 @@ test('sample card sorting factor', () => {
   okCard.discards = 5;
   okCard.rating - 1;
   expect(getCardFactor(okCard, settings)).toBeCloseTo(0.5, 1);
-  expect(inferCardTier(okCard, settings)).toBe('mid');
+  expect(inferCardTier(okCard, settings)).toBe('top');
 
   const betterCard = copyDeckCard(okCard);
   betterCard.likes = 70;
   expect(getCardFactor(betterCard, settings)).toBeCloseTo(0.7, 1);
-  expect(inferCardTier(betterCard, settings)).toBe('mid');
+  expect(inferCardTier(betterCard, settings)).toBe('top');
 
   const betterCard2 = copyDeckCard(okCard);
   betterCard2.likes = 80;
   expect(getCardFactor(betterCard2, settings)).toBeCloseTo(0.8, 1);
-  expect(inferCardTier(betterCard2, settings)).toBe('mid');
+  expect(inferCardTier(betterCard2, settings)).toBe('top');
 
   const badCard = copyDeckCard(betterCard2);
   badCard.discards = 10;

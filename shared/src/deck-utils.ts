@@ -144,8 +144,9 @@ export function inferCardTier(
   settings: LobbySettings,
 ): CardTier {
   if (card.tier) return card.tier;
+  // TODO: apply different rules to prompts and responses.
   const factor = getCardFactor(card, settings);
-  if (factor > 0.9) return 'top';
-  if (factor < 0.1) return 'shit';
+  if (factor > 0.5) return 'top';
+  if (factor < 0.05) return 'shit';
   return 'mid';
 }
