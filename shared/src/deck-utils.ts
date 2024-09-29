@@ -132,7 +132,17 @@ export function getCardFactor(card: DeckCard, settings: LobbySettings): number {
   if (!settings.sort_cards_in_front) {
     factor = Math.min(factor, 1.0);
   }
-  return factor;
+  switch (settings.sort_mode) {
+    case 'by_rank_linear_cutoff':
+      return factor;
+    case 'by_rank_sqrt_cutoff':
+      return Math.sqrt(factor);
+    case 'by_rank_sqrt2_cutoff':
+      return Math.sqrt(Math.sqrt(factor));
+    default:
+      assertExhaustive(settings.sort_mode);
+      return factor;
+  }
 }
 
 /**

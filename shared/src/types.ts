@@ -54,6 +54,7 @@ export interface LobbySettings {
   /** If ture, unviewed cards will be dealt first. */
   new_cards_first: boolean;
   /** If true, card order will be affected by their rating. */
+  sort_mode: SortMode;
   sort_cards_by_rating: boolean;
   sort_cards_by_views: boolean;
   sort_cards_by_discards: boolean;
@@ -102,6 +103,7 @@ export function defaultLobbySettings(): LobbySettings {
     turns_per_person: 3,
     cards_per_person: 12,
     new_cards_first: false,
+    sort_mode: 'by_rank_sqrt2_cutoff',
     sort_cards_by_rating: true,
     sort_cards_by_views: false,
     sort_cards_by_discards: true,
@@ -498,6 +500,14 @@ export const allCardTiers: Array<CardTier> = ['top', 'mid', 'shit'];
 export type KickAction = 'kick' | 'ban';
 
 export type DeckVisibility = 'public' | 'hidden' | 'locked';
+
+export type SortMode =
+  /** Cards with lower rank appear strictly later in the deck */
+  | 'by_rank_linear_cutoff'
+  /** Cards with lower rank appear gradually later in the deck */
+  | 'by_rank_sqrt_cutoff'
+  /** Cards with lower rank appear even more gradually later in the deck */
+  | 'by_rank_sqrt2_cutoff';
 
 /** Used for cards created during a game, e.g haiku. */
 export const GeneratedDeck = new Deck(
