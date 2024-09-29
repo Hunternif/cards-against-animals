@@ -2,6 +2,7 @@ import {
   copyDeckCard,
   filterPromptDeckCard,
   filterResponseDeckCard,
+  getCardFactor,
   inferCardTier,
 } from '../../shared/deck-utils';
 import {
@@ -13,6 +14,8 @@ import {
   ResponseDeckCard,
 } from '../../shared/types';
 import { stringComparator } from '../../shared/utils';
+
+export type CardSortField = keyof DeckCard | 'rank';
 
 /**
  * Convenience class for handling collections of cards which are not decks.
@@ -80,8 +83,9 @@ export class DeckCardSet {
   }
 
   /** Returns a new set where cards are sorted by this field. */
-  sortByField(field: keyof DeckCard, reversed: boolean = false): DeckCardSet {
+  sortByField(field: CardSortField, reversed: boolean = false): DeckCardSet {
     if (field === 'tier') return this.sortByInferredTier();
+    if (field === 'rank') return this.sortByRank();
     const cards = this.cards.slice();
     cards.sort((a, b) => {
       const f1 = a[field];
@@ -103,6 +107,19 @@ export class DeckCardSet {
       const i1 = allCardTiers.indexOf(t1);
       const i2 = allCardTiers.indexOf(t2);
       return i1 - i2;
+    });
+    return DeckCardSet.fromList(cards);
+  }
+
+  /** Returns a new set where cards are sorted by the calculated card rank. */
+  sortByRank(): DeckCardSet {
+    const cards = this.cards.slice();
+    cards.sort((a, b) => {
+      const t1 = getCardFactor(a, defaultLobbySettings());
+      const t2 = getCardFactor(b, defaultLobbySettings());
+      if (t1 < t2) return 1;
+      if (t1 > t2) return -1;
+      return 0;
     });
     return DeckCardSet.fromList(cards);
   }

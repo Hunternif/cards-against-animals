@@ -1,15 +1,14 @@
 import { ReactNode, useState } from 'react';
-import { DeckCardSet } from '../../../api/deck/deck-card-set';
+import { CardSortField, DeckCardSet } from '../../../api/deck/deck-card-set';
 import { Checkbox } from '../../../components/Checkbox';
 import { useScreenSize } from '../../../components/layout/ScreenSizeSwitch';
-import { DeckCard } from '../../../shared/types';
 
 interface Props {
   cards: DeckCardSet;
   onToggleAll?: (checked: boolean) => void;
   selected?: DeckCardSet;
   readOnly?: boolean;
-  onClickField?: (field: keyof DeckCard, reverse?: boolean) => void;
+  onClickField?: (field: CardSortField, reverse?: boolean) => void;
 }
 
 /**
@@ -61,15 +60,18 @@ export function AdminDeckTableHeader({
       <FilteredHeader field="tier" onClickField={onClickField}>
         Tier
       </FilteredHeader>
+      <FilteredHeader field="rank" onClickField={onClickField} reversed>
+        Rank
+      </FilteredHeader>
     </tr>
   );
 }
 
 interface HeaderProps {
   children: ReactNode;
-  field: keyof DeckCard;
+  field: CardSortField;
   reversed?: boolean;
-  onClickField?: (field: keyof DeckCard, reverse?: boolean) => void;
+  onClickField?: (field: CardSortField, reverse?: boolean) => void;
 }
 
 function FilteredHeader({

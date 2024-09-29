@@ -1,5 +1,9 @@
 import { useCallback, useContext, useMemo, useState } from 'react';
-import { DeckCardSet, emptySet } from '../../../api/deck/deck-card-set';
+import {
+  CardSortField,
+  DeckCardSet,
+  emptySet,
+} from '../../../api/deck/deck-card-set';
 import { GameButton } from '../../../components/Buttons';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { ErrorContext } from '../../../components/ErrorContext';
@@ -61,7 +65,7 @@ export function AdminDeck({ deckID }: Props) {
   const [filterPrompts, setFilterPrompts] = useState(true);
   const [filterResponses, setFilterResponses] = useState(true);
   const [sortFields, setSortFields] = useState<
-    Array<{ field: keyof DeckCard; reverse?: boolean }>
+    Array<{ field: CardSortField; reverse?: boolean }>
   >([]);
 
   function isSelected(card: DeckCard): boolean {
@@ -115,7 +119,7 @@ export function AdminDeck({ deckID }: Props) {
     }
   }, [deckRepository, deck, selectedCards, refresh]);
 
-  function handleClickColumn(field: keyof DeckCard, reverse: boolean = false) {
+  function handleClickColumn(field: CardSortField, reverse: boolean = false) {
     let fields = sortFields.slice();
     // TODO: sort up or down
     if (fields.find((f) => f.field == field)) {

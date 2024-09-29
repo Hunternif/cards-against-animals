@@ -2,13 +2,13 @@ import { CSSProperties, ReactNode } from 'react';
 import { isOnlyEmojis } from '../../../api/deck/deck-parser';
 import { GameButton } from '../../../components/Buttons';
 import { Twemoji } from '../../../components/Twemoji';
+import { getCardFactor, inferCardTier } from '../../../shared/deck-utils';
 import {
   DeckCard,
   defaultLobbySettings,
   PromptDeckCard,
   ResponseDeckCard,
 } from '../../../shared/types';
-import { inferCardTier } from '../../../shared/deck-utils';
 
 interface RowProps {
   card: DeckCard;
@@ -69,11 +69,17 @@ export function AdminDeckCardRow({
       <CounterRow val={card.discards} />
       <CounterRow val={card.rating} />
       <CardTierRow card={card} />
+      <CounterRow
+        val={getCardFactor(card, defaultLobbySettings()).toLocaleString(
+          undefined,
+          { maximumFractionDigits: 2 },
+        )}
+      />
     </tr>
   );
 }
 
-function CounterRow({ val }: { val: number }) {
+function CounterRow({ val }: { val: number | string }) {
   const classes = new Array<string>();
   classes.push('col-card-counter');
   if (val === 0) classes.push('empty');
