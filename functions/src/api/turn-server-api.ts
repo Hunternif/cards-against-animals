@@ -159,16 +159,19 @@ async function dealCardsForNewTurn(
   lastTurn: GameTurn | null,
   newTurn: GameTurn,
 ): Promise<void> {
-  // Remove cards from: all players (including temporary spectators).
   const playedCards = new Array<ResponseCardInGame>();
   const discardedCards = new Array<ResponseCardInGame>();
   const players = (await getPlayers(lobby.id)).filter(
     (p) => p.status !== 'banned',
   );
   players.sort((a, b) => a.random_index - b.random_index);
+  const playerStates = new Map<string, PlayerGameState>();
+
+  // 1. Remove cards from: all players (including temporary spectators).
   for (const player of players) {
     let playerState = await getPlayerState(lobby.id, player.uid);
     if (playerState) {
+      playerStates.set(player.uid, playerState);
       if (lastTurn) {
         const played = await removePlayedCards(lobby, lastTurn, playerState);
         playedCards.push(...played);
@@ -178,18 +181,9 @@ async function dealCardsForNewTurn(
       // These calls do not update the DB!
       // TODO: clean up this API.
     }
-    if (player.role === 'player') {
-      if (!playerState) {
-        playerState = await getOrCreatePlayerState(lobby, player.uid);
-      }
-      // Deal cards to: online players, players who left.
-      await dealCardsToPlayer(lobby, playerState);
-    } else if (playerState) {
-      // Don't forget to update the DB:
-      await updatePlayerState(lobby.id, playerState);
-    }
   }
-  // Reuse cards if needed:
+
+  // 2. Reuse cards if needed:
   const rng = RNG.fromStrSeedWithTimestamp('reused');
   if (lobby.settings.reuse_played_cards) {
     // TODO: reset content for actions cards
@@ -205,6 +199,21 @@ async function dealCardsForNewTurn(
       c.random_index *= 0.001 + 0.01 * rng.randomFloat();
     });
     await addResponsesToLobby(lobby, discardedCards);
+  }
+
+  // 3.  Finally deal cards to players:
+  for (const player of players) {
+    let playerState = playerStates.get(player.uid);;
+    if (player.role === 'player') {
+      if (!playerState) {
+        playerState = await getOrCreatePlayerState(lobby, player.uid);
+      }
+      // Deal cards to: online players, players who left.
+      await dealCardsToPlayer(lobby, playerState);
+    } else if (playerState) {
+      // Don't forget to update the DB:
+      await updatePlayerState(lobby.id, playerState);
+    }
   }
 }
 
