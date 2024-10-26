@@ -41,6 +41,7 @@ import {
 import {
   getLastTurn,
   getNewPlayerDiscard,
+  getPlayerDiscard,
   getPlayerResponse,
   getResponseLikeCount,
   getTurn,
@@ -203,7 +204,7 @@ async function dealCardsForNewTurn(
 
   // 3.  Finally deal cards to players:
   for (const player of players) {
-    let playerState = playerStates.get(player.uid);;
+    let playerState = playerStates.get(player.uid);
     if (player.role === 'player') {
       if (!playerState) {
         playerState = await getOrCreatePlayerState(lobby, player.uid);
@@ -236,17 +237,17 @@ export async function discardNowAndDealCardsToPlayer(
 }
 
 /**
- * Removes played cards from player responses.
+ * Removes discarded cards from the player's 'discarded' list.
  * Doesn't commit player state to the DB because following calls will do it.
  */
 async function removeDiscardedCards(
   lobby: GameLobby,
   playerState: PlayerGameState,
 ): Promise<ResponseCardInGame[]> {
-  const discard = await getNewPlayerDiscard(lobby.id, playerState);
+  const discard = await getPlayerDiscard(lobby.id, playerState);
   // TODO: maybe store all pool of discarded cards in a game somewhere.
   for (const card of discard) {
-    playerState.hand.delete(card.id);
+    playerState.discarded.delete(card.id);
   }
   return discard;
 }
