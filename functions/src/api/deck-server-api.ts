@@ -12,7 +12,9 @@ import {
   DeckCard,
   LobbySettings,
   PromptCardInGame,
+  PromptDeckCard,
   ResponseCardInGame,
+  ResponseDeckCard,
 } from '../shared/types';
 
 export function getDecksRef() {
@@ -29,6 +31,20 @@ export function getDeckResponsesRef(deckID: string) {
   return firestore
     .collection(`decks/${deckID}/responses`)
     .withConverter(responseDeckCardConverter);
+}
+
+export async function getDeckPromptCard(
+  deckID: string,
+  cardID: string,
+): Promise<PromptDeckCard | undefined> {
+  return (await getDeckPromptsRef(deckID).doc(cardID).get()).data();
+}
+
+export async function getDeckResponseCard(
+  deckID: string,
+  cardID: string,
+): Promise<ResponseDeckCard | undefined> {
+  return (await getDeckResponsesRef(deckID).doc(cardID).get()).data();
 }
 
 export async function getDeck(deckID: string): Promise<Deck> {

@@ -16,6 +16,7 @@ import {
   ResponseCardInGame,
 } from '../shared/types';
 import { assertExhaustive, countEveryN } from '../shared/utils';
+import { getDeckResponseCard } from './deck-server-api';
 import { exchangeCards } from './exchange-cards-server-api';
 import {
   addResponsesToLobby,
@@ -24,7 +25,6 @@ import {
 } from './lobby-server-api';
 import {
   countOnlinePlayers,
-  getLobby,
   getLobbyDeckResponsesRef,
   getOrCreatePlayerState,
   getPlayers,
@@ -52,7 +52,6 @@ import {
   updatePlayerResponse,
   updateTurn,
 } from './turn-server-repository';
-import { getCardIndex } from './deck-server-api';
 
 /**
  * Creates a new turn without a prompt, and returns it.
@@ -187,11 +186,20 @@ async function dealCardsForNewTurn(
   // 2. Reuse cards if needed:
   const rng = RNG.fromStrSeedWithTimestamp('reused');
   if (lobby.settings.reuse_played_cards) {
-    // TODO: reset content for actions cards
     // Reduce rank and add extra randomness:
-    playedCards.forEach((c) => {
-      c.random_index *= 0.01 + 0.1 * rng.randomFloat();
-    });
+    for (const card of playedCards) {
+      card.random_index *= 0.01 + 0.1 * rng.randomFloat();
+      // Reset content for actions cards:
+      if (card.action) {
+        const originalCard = await getDeckResponseCard(
+          card.deck_id,
+          card.card_id_in_deck,
+        );
+        if (originalCard) {
+          card.content = originalCard.content;
+        }
+      }
+    }
     await addResponsesToLobby(lobby, playedCards);
   }
   if (lobby.settings.reuse_discarded_cards) {
