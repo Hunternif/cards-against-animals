@@ -54,6 +54,7 @@ test('sort cards based on rating', () => {
     sort_cards_by_prompt_votes: true,
     sort_cards_by_response_likes: true,
     sort_min_factor: 0.0001,
+    sort_mode: 'by_rank_linear_cutoff',
   });
 
   // For new cards, index is unchanged:
@@ -204,6 +205,7 @@ test('sort cards based on rating', () => {
 
 test('sample card sorting factor', () => {
   const settings = defaultLobbySettings();
+  settings.sort_mode = 'by_rank_linear_cutoff';
 
   const newCard = makeResponse('01');
   expect(getCardFactor(newCard, settings)).toBe(1);
