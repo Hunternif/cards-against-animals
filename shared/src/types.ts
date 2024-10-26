@@ -92,6 +92,10 @@ export interface LobbySettings {
   init_discard_tokens: number;
   /** Max number of discard tokens any player can get. */
   max_discard_tokens: number;
+  /** If true, discarded cards will be put back into the deck, with a lower rank. */
+  reuse_discarded_cards: boolean;
+  /** If true, played cards will be put back into the deck, with a lower rank. */
+  reuse_played_cards: boolean;
 }
 
 export function defaultLobbySettings(): LobbySettings {
@@ -126,6 +130,8 @@ export function defaultLobbySettings(): LobbySettings {
     next_turn_time_sec: 5.0,
     init_discard_tokens: 1,
     max_discard_tokens: 4,
+    reuse_discarded_cards: false,
+    reuse_played_cards: false,
   };
 }
 

@@ -17,7 +17,11 @@ import {
 } from '../shared/types';
 import { assertExhaustive, countEveryN } from '../shared/utils';
 import { exchangeCards } from './exchange-cards-server-api';
-import { findNextPlayer, getPlayerSequence } from './lobby-server-api';
+import {
+  addResponsesToLobby,
+  findNextPlayer,
+  getPlayerSequence,
+} from './lobby-server-api';
 import {
   countOnlinePlayers,
   getLobby,
@@ -47,6 +51,7 @@ import {
   updatePlayerResponse,
   updateTurn,
 } from './turn-server-repository';
+import { getCardIndex } from './deck-server-api';
 
 /**
  * Creates a new turn without a prompt, and returns it.
@@ -155,6 +160,8 @@ async function dealCardsForNewTurn(
   newTurn: GameTurn,
 ): Promise<void> {
   // Remove cards from: all players (including temporary spectators).
+  const playedCards = new Array<ResponseCardInGame>();
+  const discardedCards = new Array<ResponseCardInGame>();
   const players = (await getPlayers(lobby.id)).filter(
     (p) => p.status !== 'banned',
   );
@@ -163,9 +170,11 @@ async function dealCardsForNewTurn(
     let playerState = await getPlayerState(lobby.id, player.uid);
     if (playerState) {
       if (lastTurn) {
-        await removePlayedCards(lobby, lastTurn, playerState);
+        const played = await removePlayedCards(lobby, lastTurn, playerState);
+        playedCards.push(...played);
       }
-      await removeDiscardedCards(lobby, playerState);
+      const discarded = await removeDiscardedCards(lobby, playerState);
+      discardedCards.push(...discarded);
       // These calls do not update the DB!
       // TODO: clean up this API.
     }
@@ -179,6 +188,23 @@ async function dealCardsForNewTurn(
       // Don't forget to update the DB:
       await updatePlayerState(lobby.id, playerState);
     }
+  }
+  // Reuse cards if needed:
+  const rng = RNG.fromStrSeedWithTimestamp('reused');
+  if (lobby.settings.reuse_played_cards) {
+    // TODO: reset content for actions cards
+    // Reduce rank and add extra randomness:
+    playedCards.forEach((c) => {
+      c.random_index *= 0.01 + 0.1 * rng.randomFloat();
+    });
+    await addResponsesToLobby(lobby, playedCards);
+  }
+  if (lobby.settings.reuse_discarded_cards) {
+    // Reduce rank and add extra randomness:
+    discardedCards.forEach((c) => {
+      c.random_index *= 0.001 + 0.01 * rng.randomFloat();
+    });
+    await addResponsesToLobby(lobby, discardedCards);
   }
 }
 
@@ -202,36 +228,36 @@ export async function discardNowAndDealCardsToPlayer(
 
 /**
  * Removes played cards from player responses.
- * Doesn't commit to the DB because following calls will do it.
+ * Doesn't commit player state to the DB because following calls will do it.
  */
 async function removeDiscardedCards(
   lobby: GameLobby,
   playerState: PlayerGameState,
-): Promise<PlayerGameState> {
+): Promise<ResponseCardInGame[]> {
   const discard = await getNewPlayerDiscard(lobby.id, playerState);
   // TODO: maybe store all pool of discarded cards in a game somewhere.
   for (const card of discard) {
     playerState.hand.delete(card.id);
   }
-  return playerState;
+  return discard;
 }
 
 /**
  * Removes played cards from player responses.
- * Doesn't commit to the DB because following calls will do it.
+ * Doesn't commit player state to the DB because following calls will do it.
  */
 async function removePlayedCards(
   lobby: GameLobby,
   turn: GameTurn,
   playerState: PlayerGameState,
-): Promise<PlayerGameState> {
+): Promise<ResponseCardInGame[]> {
   const response = await getPlayerResponse(lobby.id, turn.id, playerState.uid);
   if (response != null) {
     for (const card of response.cards) {
       playerState.hand.delete(card.id);
     }
   }
-  return playerState;
+  return response?.cards ?? [];
 }
 
 /**

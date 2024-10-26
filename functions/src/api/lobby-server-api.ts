@@ -9,7 +9,9 @@ import {
 } from '../shared/firestore-converters';
 import { RNG } from '../shared/rng';
 import {
+  CardInGame,
   Deck,
+  DeckCard,
   GameLobby,
   PlayerInLobby,
   PlayerRole,
@@ -28,6 +30,8 @@ import {
 import {
   countOnlinePlayers,
   getLobby,
+  getLobbyDeckPromptsRef,
+  getLobbyDeckResponsesRef,
   getOnlinePlayers,
   getOrCreatePlayerState,
   getPlayer,
@@ -329,12 +333,8 @@ async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
   // Count tags:
   lobby.response_tags = countResponseTags(decks, newResponses);
   // Write all cards to the lobby:
-  const lobbyPromptsRef = firestore
-    .collection(`lobbies/${lobby.id}/deck_prompts`)
-    .withConverter(promptCardInGameConverter);
-  const lobbyResponsesRef = firestore
-    .collection(`lobbies/${lobby.id}/deck_responses`)
-    .withConverter(responseCardInGameConverter);
+  const lobbyPromptsRef = getLobbyDeckPromptsRef(lobby.id);
+  const lobbyResponsesRef = getLobbyDeckResponsesRef(lobby.id);
   await firestore.runTransaction(async (transaction) => {
     newPrompts.forEach((card) =>
       transaction.set(lobbyPromptsRef.doc(card.id), card),
@@ -347,6 +347,19 @@ async function copyDecksToLobby(lobby: GameLobby): Promise<void> {
   logger.info(
     `Copied ${newPrompts.length} prompts and ${newResponses.length} responses to lobby ${lobby.id}`,
   );
+}
+
+export async function addResponsesToLobby(
+  lobby: GameLobby,
+  responses: ResponseCardInGame[],
+) {
+  const lobbyResponsesRef = getLobbyDeckResponsesRef(lobby.id);
+  await firestore.runTransaction(async (transaction) => {
+    responses.forEach((card) =>
+      transaction.set(lobbyResponsesRef.doc(card.id), card),
+    );
+  });
+  logger.info(`Added ${responses.length} responses to lobby ${lobby.id}`);
 }
 
 /** Sets lobby status to "ended", and performs any cleanup */
