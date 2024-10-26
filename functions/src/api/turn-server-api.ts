@@ -169,7 +169,7 @@ async function dealCardsForNewTurn(
 
   // 1. Remove cards from: all players (including temporary spectators).
   for (const player of players) {
-    let playerState = await getPlayerState(lobby.id, player.uid);
+    const playerState = await getPlayerState(lobby.id, player.uid);
     if (playerState) {
       playerStates.set(player.uid, playerState);
       if (lastTurn) {
