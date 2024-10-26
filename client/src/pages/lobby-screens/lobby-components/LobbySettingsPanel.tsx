@@ -76,6 +76,17 @@ export function LobbySettingsPanel(props: Props) {
         control={<EnableLikesControl {...props} />}
         hint="Non-czar players can add 'likes' to other people's responses."
       />
+
+      {/* Reusing cards: */}
+      <FormItem label="Reuse played cards"
+        control={<ReusePlayedControl {...props} />}
+        hint="Played cards will be put back in the deck."
+      />
+      <FormItem label="Reuse discarded cards"
+        control={<ReuseDiscardedControl {...props} />}
+        hint="Discarded cards will be put back in the deck."
+      />
+
       {props.settings.enable_likes && <>
         <FormItem label="Who can see likes"
           hint="By default, players can see the number of likes in real time. Hiding them can help the Czar to make an honest decision."
@@ -374,6 +385,27 @@ function EnableSoundboardControl({ settings, readOnly, onChange }: Props) {
     }}
   />;
 }
+
+function ReusePlayedControl({ settings, readOnly, onChange }: Props) {
+  return <ToggleInput disabled={readOnly}
+    value={settings.reuse_played_cards}
+    onChange={async (newValue) => {
+      settings.reuse_played_cards = newValue;
+      if (onChange) await onChange(settings);
+    }}
+  />;
+}
+
+function ReuseDiscardedControl({ settings, readOnly, onChange }: Props) {
+  return <ToggleInput disabled={readOnly}
+    value={settings.reuse_discarded_cards}
+    onChange={async (newValue) => {
+      settings.reuse_discarded_cards = newValue;
+      if (onChange) await onChange(settings);
+    }}
+  />;
+}
+
 
 
 interface ItemProps {
