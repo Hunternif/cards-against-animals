@@ -120,7 +120,7 @@ export function defaultLobbySettings(): LobbySettings {
     show_likes_to: 'all_except_czar',
     likes_limit: 'none',
     discard_cost: 'token',
-    enable_tag_exchange: false,
+    enable_tag_exchange: true,
     lobby_control: 'creator',
     answer_time_sec: 60.0,
     next_turn_time_sec: 5.0,
