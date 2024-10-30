@@ -70,6 +70,7 @@ import panda_002 from "../assets/avatars/panda_002.jpg"
 import snake_001 from "../assets/avatars/snake_001.jpg"
 import turtle_001 from "../assets/avatars/turtle_001.jpg"
 import zebra_001 from "../assets/avatars/zebra_001.jpg"
+import cheems_bot from "../assets/avatars/cheems_bot.jpg"
 import { RNG } from "../shared/rng"
 
 
@@ -87,7 +88,7 @@ export class Avatar {
 }
 
 /** All currently available avatars */
-export const avatars = [
+export const playerAvatars = [
   new Avatar("bird_001", bird_001, ["bird"]),
   new Avatar("bird_002", bird_002, ["bird"]),
   new Avatar("bird_003", bird_003, ["bird"]),
@@ -162,18 +163,22 @@ export const avatars = [
   new Avatar("zebra_001", zebra_001, ["zebra"]),
 ];
 
+export const botAvatars = [
+  new Avatar("cheems_bot", cheems_bot, ["bot", "dog"]),
+]
+
 /** Avatars mapped by id */
 export const avatarMap: Map<string, Avatar> =
-  new Map(avatars.map((a) => [a.id, a]));
+  new Map([...playerAvatars, ...botAvatars].map((a) => [a.id, a]));
 
 /** Returns a random avatar to be used until the user logs in */
-export function randomAvatarID(rng: RNG = RNG.fromTimestamp()): string {
-  const index = rng.randomIntClamped(0, avatars.length - 1);
+export function randomPlayerAvatarID(rng: RNG = RNG.fromTimestamp()): string {
+  const index = rng.randomIntClamped(0, playerAvatars.length - 1);
   return Array.from(avatarMap.keys())[index];
 }
 
 /** Returns a random avatar */
-export function randomAvatar(rng: RNG = RNG.fromTimestamp()): Avatar {
-  const index = rng.randomIntClamped(0, avatars.length - 1);
-  return avatars.at(index) ?? avatars[0];
+export function randomPlayerAvatar(rng: RNG = RNG.fromTimestamp()): Avatar {
+  const index = rng.randomIntClamped(0, playerAvatars.length - 1);
+  return playerAvatars.at(index) ?? playerAvatars[0];
 }

@@ -3,7 +3,7 @@ import { FormEvent, ReactNode, useContext, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "../../../firebase";
-import { randomAvatarID } from "../../../api/avatars";
+import { randomPlayerAvatarID } from "../../../api/avatars";
 import { getOrCreateCAAUser, updateUserData } from "../../../api/users-api";
 import { RNG } from "../../../shared/rng";
 import { CAAUser } from "../../../shared/types";
@@ -99,7 +99,7 @@ function AnonymousLoginWithUser(props: PropsWithUser) {
     // Only do this if login is not in progress:
     if (props.loginMode !== "new_user") {
       const name = props.user.displayName ?? randomNickname(props.rng);
-      const avatarID = randomAvatarID(props.rng);
+      const avatarID = randomPlayerAvatarID(props.rng);
       getOrCreateCAAUser(props.user.uid, name, avatarID)
         .then((newCaaUser) => setCaaUser(newCaaUser))
         .catch((e) => setError(e));
@@ -164,7 +164,7 @@ function LoginForm({
   const [newName, setNewName] = useState(name);
   const [newAvatarID, setNewAvatarID] = useState(avatarID);
   const [namePrompt] = useState(randomNickname(rng));
-  const [avatarPrompt] = useState(randomAvatarID(rng));
+  const [avatarPrompt] = useState(randomPlayerAvatarID(rng));
   // If the user loads late:
   if (newName == '' && name != '') setNewName(name);
   if (newAvatarID == '' && avatarID != '') setNewAvatarID(avatarID);

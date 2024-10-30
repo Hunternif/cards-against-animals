@@ -2,7 +2,7 @@ import { CSSProperties, ReactNode, useState } from "react";
 import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router-dom";
 import { GameButton } from "../components/Buttons";
 import { CenteredLayout } from "../components/layout/CenteredLayout";
-import { randomAvatar } from "../api/avatars";
+import { randomPlayerAvatar } from "../api/avatars";
 
 
 
@@ -31,7 +31,7 @@ const botRowStyle: CSSProperties = {
 export function ErrorPage() {
   const error = useRouteError();
   const navigate = useNavigate();
-  const [pic] = useState(randomAvatar());
+  const [pic] = useState(randomPlayerAvatar());
   return <CenteredLayout innerStyle={{ maxWidth: "500px" }}>
     <h1>Oops!</h1>
     <p>Sorry, an unexpected error has occurred.</p>

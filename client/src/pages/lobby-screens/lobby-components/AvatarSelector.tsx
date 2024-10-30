@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ConfirmModalFooter } from "../../../components/ConfirmModal";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { Modal, ModalBody } from "../../../components/Modal";
-import { avatarMap, avatars } from "../../../api/avatars";
+import { avatarMap, playerAvatars } from "../../../api/avatars";
 
 interface AvatarProps {
   /** Will not set a random avatar while it's loading */
@@ -18,7 +18,7 @@ interface AvatarProps {
  */
 export function AvatarSelector({ loading, avatarID, onSubmit, inline }: AvatarProps) {
   const [showSelector, setShowSelector] = useState(false);
-  const [nextAvatarID, setNextAvatarID] = useState(avatarID ?? avatars[0].id);
+  const [nextAvatarID, setNextAvatarID] = useState(avatarID ?? playerAvatars[0].id);
   const avatar = avatarID ? avatarMap.get(avatarID) : null;
   const inlineClass = inline ? "inline-avatar" : "";
 
@@ -43,7 +43,7 @@ export function AvatarSelector({ loading, avatarID, onSubmit, inline }: AvatarPr
       show={showSelector}
       onHide={closeSelector}>
       <ModalBody>
-        {avatars.map((av) =>
+        {playerAvatars.map((av) =>
           <img key={av.id} src={av.url}
             className={`avatar ${av.id === nextAvatarID ? "selected" : ""}`}
             onClick={() => setNextAvatarID(av.id)} />
