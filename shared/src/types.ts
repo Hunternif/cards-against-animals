@@ -125,7 +125,7 @@ export function defaultLobbySettings(): LobbySettings {
     likes_limit: 'none',
     discard_cost: 'token',
     enable_tag_exchange: true,
-    lobby_control: 'creator',
+    lobby_control: 'players',
     answer_time_sec: 60.0,
     next_turn_time_sec: 5.0,
     init_discard_tokens: 1,
