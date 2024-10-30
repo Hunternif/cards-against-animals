@@ -27,6 +27,7 @@ import {
   CardContent,
   LargeCard,
 } from './LargeCard';
+import { HALLOWEEN } from '../../../components/theme';
 
 type Props = CardStackProps & {
   showLikes?: boolean;
@@ -332,7 +333,16 @@ function CardInStack({
         {likable && (
           <CardCenterIcon className="like-response-container">
             <div className="like-response-button">
-              <IconHeart className="like-response-icon" onClick={onClickLike} />
+              {HALLOWEEN ? (
+                <Twemoji className="like-response-icon" onClick={onClickLike}>
+                  🎃
+                </Twemoji>
+              ) : (
+                <IconHeart
+                  className="like-response-icon"
+                  onClick={onClickLike}
+                />
+              )}
             </div>
           </CardCenterIcon>
         )}
@@ -391,6 +401,7 @@ function LikeIcon({ cards }: LikeProps) {
       }
     }
   }
+  if (HALLOWEEN) return <Twemoji className="emoji-like">🎃</Twemoji>;
   return <IconHeart className="heart-icon" />;
 }
 

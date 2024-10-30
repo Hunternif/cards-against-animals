@@ -270,6 +270,10 @@
       color: colors.$like;
       width: 100%;
       height: 100%;
+      .twemoji {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
   .emoji-like .emoji {
