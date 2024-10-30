@@ -27,7 +27,7 @@ export function ScoreboardScreen({ lobby, user, players }: Props) {
   useRedirectToNextLobby(lobby);
 
   const { soundError, retrySound } = useSound(soundMusicNge, {
-    volume: 0.2,
+    volume: 0.1,
     startTime: lobby.time_created,
     // Don't play if it's been more than 6 hours since the start of lobby:
     startThresholdMs: 1000 * 60 * 60 * 6,
