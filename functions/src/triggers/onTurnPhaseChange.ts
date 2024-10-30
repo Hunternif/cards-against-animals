@@ -15,6 +15,7 @@ import {
 } from '../api/turn-server-repository';
 import { turnConverter } from '../shared/firestore-converters';
 import { assertExhaustive } from '../shared/utils';
+import { processBots } from '../api/bot-server-api';
 
 /**
  * Logic to run after each turn phase.
@@ -69,5 +70,6 @@ export const createOnTurnPhaseChangeHandler = () =>
           await clearTurnTimer(lobbyID, turnAfter);
         }
       }
+      await processBots(lobby, turnAfter);
     }
   });

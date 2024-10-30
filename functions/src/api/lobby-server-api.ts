@@ -513,6 +513,7 @@ export async function createLobbyAsCopy(
         rng.randomInt(),
         p.role,
         p.status,
+        p.is_bot,
       ),
   );
   const newPlayersRef = getPlayersRef(newLobby.id);
