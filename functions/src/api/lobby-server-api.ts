@@ -410,6 +410,7 @@ export function findNextPlayer(
   sequence: Array<PlayerInLobby>,
   userID?: string,
 ): PlayerInLobby | null {
+  sequence = sequence.filter((p) => !p.is_bot);
   if (sequence.length === 0) return null;
   const lastIndex = sequence.findIndex((p) => p.uid === userID);
   if (lastIndex === -1) return sequence[0];
