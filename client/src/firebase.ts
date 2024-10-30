@@ -60,6 +60,11 @@ export const changePlayerRoleFun = httpsCallable<
   void
 >(functions, 'changePlayerRole');
 
+export const addBotToLobbyFun = httpsCallable<
+  { lobby_id: string; bot_uid: string },
+  void
+>(functions, 'addBotToLobby');
+
 export const startLobbyFun = httpsCallable<{ lobby_id: string }, void>(
   functions,
   'startLobby',

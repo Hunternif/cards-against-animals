@@ -1,4 +1,9 @@
-import { createLobbyAsCopyFun, findOrCreateLobbyAndJoinFun, joinLobbyFun } from '../../firebase';
+import {
+  addBotToLobbyFun,
+  createLobbyAsCopyFun,
+  findOrCreateLobbyAndJoinFun,
+  joinLobbyFun,
+} from '../../firebase';
 import { CAAUser, GameLobby } from '../../shared/types';
 import {
   getPlayerInLobby,
@@ -34,7 +39,7 @@ export async function joinLobby(lobbyID: string): Promise<void> {
  * Returns new lobby ID.
  */
 export async function createLobbyAsCopy(oldLobbyID: string): Promise<string> {
-  const res = await createLobbyAsCopyFun({old_lobby_id: oldLobbyID});
+  const res = await createLobbyAsCopyFun({ old_lobby_id: oldLobbyID });
   return res.data.new_lobby_id;
 }
 
@@ -75,4 +80,8 @@ async function isUserInLobby(
   } catch (e: any) {
     return false;
   }
+}
+
+export async function addBotToLobby(lobbyID: string, botUID: string) {
+  await addBotToLobbyFun({ lobby_id: lobbyID, bot_uid: botUID });
 }

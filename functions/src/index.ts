@@ -4,6 +4,7 @@ import { checkUserDeckKeyHandler } from './functions/deck/checkUserDeckKey';
 import { lockDeckHandler } from './functions/deck/lockDeck';
 import { unlockDeckForUserHandler } from './functions/deck/unlockDeckForUser';
 import { exportCallable } from './functions/function-utils';
+import { addBotToLobbyHandler } from './functions/lobby/addBotToLobby';
 import { changePlayerRoleHandler } from './functions/lobby/changePlayerRole';
 import { createLobbyAsCopyHandler } from './functions/lobby/createLobbyAsCopy';
 import { endLobbyHandler } from './functions/lobby/endLobby';
@@ -13,6 +14,7 @@ import { kickPlayerHandler } from './functions/lobby/kickPlayer';
 import { startLobbyHandler } from './functions/lobby/startLobby';
 import { updateLobbySettingsHandler } from './functions/lobby/updateLobbySettings';
 import { discardNowHandler } from './functions/turn/discardNow';
+import { exchangeCardsHandler } from './functions/turn/exchangeCards';
 import { logInteractionHandler } from './functions/turn/logInteraction';
 import { newTurnHandler } from './functions/turn/newTurn';
 import { createOnLobbyStatusChangeHandler } from './triggers/onLobbyStatusChange';
@@ -22,7 +24,6 @@ import { createOnUserPresenceChangeHandler } from './triggers/onUserPresenceChan
 
 // This import is copied during build
 import firebaseConfig from './firebase-config.json';
-import { exchangeCardsHandler } from './functions/turn/exchangeCards';
 
 setGlobalOptions({
   region: firebaseConfig.region,
@@ -33,6 +34,9 @@ setGlobalOptions({
  * will join as spectator.
  */
 export const joinLobby = exportCallable(joinLobbyHandler);
+
+/** Will attempt to add a bot as player. */
+export const addBotToLobby = exportCallable(addBotToLobbyHandler);
 
 /** Finds an existing active lobby for the user, or creates a new one,
  * and joins as player. */
