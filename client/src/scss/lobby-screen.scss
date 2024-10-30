@@ -128,7 +128,7 @@
     align-items: center;
   }
   &.empty,
-  &.potential-bot-card {
+  &.potential-bot-card:not(:hover) {
     border: 1px dashed rgba(#fff, 0.2);
     background-color: transparent;
     .card-body span {
@@ -137,6 +137,20 @@
     .avatar {
       opacity: 0.5;
       border: 1px dashed rgba(#fff, 0.5);
+    }
+  }
+  &.potential-bot-card {
+    cursor: pointer;
+    &.adding {
+      cursor: auto;
+    }
+    &:hover,
+    &.adding {
+      background-color: colors.$player-bot-bg-hover;
+      opacity: 1;
+      .avatar {
+        opacity: 1;
+      }
     }
   }
   &.me-card {

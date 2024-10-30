@@ -92,7 +92,9 @@ export function LobbyPlayerList({
           {slot}
         </li>
       ))}
-      {isCreator && <LobbyBotList lobby={lobby} user={user} />}
+      {isCreator && (
+        <LobbyBotList lobby={lobby} players={players} user={user} />
+      )}
     </ul>
   );
 }

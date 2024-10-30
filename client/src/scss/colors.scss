@@ -44,6 +44,7 @@ $scoreboard-bg: linear-gradient(to bottom, #030711, #324464);
 
 $player-bg: var(--bs-body-bg);
 $player-me-bg: #6c757d; // copied from Bootstrap
+$player-bot-bg-hover: color-mix(in srgb, $player-bg 70%, $button-light-bg);
 
 
 // Halloween theme!
