@@ -1,13 +1,11 @@
 import { CSSProperties, useEffect, useState } from 'react';
 import { getAllPlayersStates } from '../api/lobby/lobby-player-api';
 import { GameLobby, PlayerGameState, PlayerInLobby } from '../shared/types';
-import {
-  IconHeartInline,
-  IconRobot,
-  IconRobotInline,
-  IconStarInline,
-} from './Icons';
+import { IconHeartInline, IconRobotInline, IconStarInline } from './Icons';
 import { PlayerAvatar } from './PlayerAvatar';
+import { HALLOWEEN } from './theme';
+import { Twemoji } from './Twemoji';
+import { IconCounter } from './IconCounter';
 
 interface Props {
   lobby: GameLobby;
@@ -77,9 +75,16 @@ export function Scoreboard({ lobby, players }: Props) {
                 {showLikes && (
                   <td className="sb-col-score">
                     {player.likes > 0 && (
-                      <>
-                        <IconHeartInline /> {player.likes}
-                      </>
+                      <IconCounter
+                        icon={
+                          HALLOWEEN ? (
+                            <Twemoji className="like-icon">🎃</Twemoji>
+                          ) : (
+                            <IconHeartInline />
+                          )
+                        }
+                        count={player.likes}
+                      />
                     )}
                   </td>
                 )}
