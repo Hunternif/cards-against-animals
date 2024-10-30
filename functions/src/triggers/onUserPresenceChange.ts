@@ -4,7 +4,7 @@ import { rtdb } from '../firebase-server';
 import { DBPresence } from '../shared/types';
 
 /** How long to wait before acting on the user's 'offline' status. */
-const offlineDebounceMs = 3000;
+const offlineDebounceMs = 5000;
 
 /**
  * Monitors user presence from Realtime DB and updates it on Firestore.
