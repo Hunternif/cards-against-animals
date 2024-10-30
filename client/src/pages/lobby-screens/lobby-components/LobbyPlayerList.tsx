@@ -2,6 +2,7 @@ import { User } from 'firebase/auth';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { GameLobby, PlayerInLobby } from '../../../shared/types';
 import { EmptyPlayerCard, PlayerCard } from './PlayerCard';
+import { LobbyBotList } from './LobbyBotList';
 
 interface ListProps {
   lobby: GameLobby;
@@ -32,6 +33,7 @@ export function LobbyPlayerList({
   const [fillCount, setFillCount] = useState(1);
   const [slots, setSlots] = useState<Array<ReactNode>>([]);
   const ulRef = useRef<HTMLUListElement>(null);
+  const isCreator = lobby.creator_uid === user.uid;
 
   // Update number of slots, so there is always more than players:
   useEffect(() => {
@@ -60,7 +62,7 @@ export function LobbyPlayerList({
             isMe={user.uid === players[i].uid}
             // Using "isJudge" here, because the crown looks good here.
             isJudge={lobby.creator_uid === players[i].uid}
-            canKick={lobby.creator_uid === user.uid}
+            canKick={isCreator}
           />,
         );
       } else {
@@ -90,6 +92,7 @@ export function LobbyPlayerList({
           {slot}
         </li>
       ))}
+      {isCreator && <LobbyBotList lobby={lobby} user={user} />}
     </ul>
   );
 }

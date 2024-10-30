@@ -119,6 +119,7 @@
 /*------------------------- Player list in lobby -------------------------*/
 .player-card {
   margin: 0.5em 0;
+  background-color: colors.$player-bg;
   .card-body {
     padding: 0.5em 0.8em;
     overflow: hidden;
@@ -126,14 +127,16 @@
     display: flex;
     align-items: center;
   }
-  &.empty {
+  &.empty,
+  &.potential-bot-card {
     border: 1px dashed rgba(#fff, 0.2);
     background-color: transparent;
     .card-body span {
       opacity: 0.4;
     }
     .avatar {
-      border: 1px dashed rgba(#fff, 0.2);
+      opacity: 0.5;
+      border: 1px dashed rgba(#fff, 0.5);
     }
   }
   &.me-card {

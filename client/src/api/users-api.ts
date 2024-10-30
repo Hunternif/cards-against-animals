@@ -4,8 +4,11 @@ import {
   deleteField,
   doc,
   getDoc,
+  getDocs,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from 'firebase/firestore';
 import { firebaseAuth, firestore } from '../firebase';
 import {
@@ -124,4 +127,11 @@ export async function findPastLobbyID(userID: string): Promise<string | null> {
     return caaUser.current_lobby_id;
   }
   return null;
+}
+
+/** Returns all existing bot CAA users. */
+export async function getAllBots(): Promise<CAAUser[]> {
+  return (await getDocs(query(usersRef, where('is_bot', '==', true)))).docs.map(
+    (d) => d.data(),
+  );
 }
