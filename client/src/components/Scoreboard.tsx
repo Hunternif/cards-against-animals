@@ -1,7 +1,12 @@
 import { CSSProperties, useEffect, useState } from 'react';
 import { getAllPlayersStates } from '../api/lobby/lobby-player-api';
 import { GameLobby, PlayerGameState, PlayerInLobby } from '../shared/types';
-import { IconHeartInline, IconStarInline } from './Icons';
+import {
+  IconHeartInline,
+  IconRobot,
+  IconRobotInline,
+  IconStarInline,
+} from './Icons';
 import { PlayerAvatar } from './PlayerAvatar';
 
 interface Props {
@@ -20,7 +25,7 @@ const tableContainerStyle: CSSProperties = {
 /** Reusable scoreboard table component. */
 export function Scoreboard({ lobby, players }: Props) {
   const [playerStates, setPlayerStates] = useState<PlayerGameState[]>([]);
-  
+
   // Because Bootstrap renders the dropdown component even when it's invisible,
   // we need to fetch this data every new turn:
   // TODO: get rid of Bootstrap.
@@ -65,7 +70,9 @@ export function Scoreboard({ lobby, players }: Props) {
                 </td>
                 <td className="sb-col-name">
                   <PlayerAvatar player={player} />
-                  <span className="player-name">{player.name}</span>
+                  <span className="player-name">
+                    {player.name} {player.is_bot && <IconRobotInline />}
+                  </span>
                 </td>
                 {showLikes && (
                   <td className="sb-col-score">

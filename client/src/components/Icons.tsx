@@ -40,7 +40,7 @@ export function IconPlay({ width, height }: IconSvgProps) {
 export function IconHamburger({ width, height }: IconSvgProps) {
   // Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
   // License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.
-  return <Svg height={height ?? 16} width={width ?? 14} viewBox="0 0 448 512">
+  return <Svg height={height ?? 16} width={width ?? 16} viewBox="0 0 448 512">
     <path d="M16 132h416c8.8 0 16-7.2 16-16V76c0-8.8-7.2-16-16-16H16C7.2 60 0 67.2 0 76v40c0 8.8 7.2 16 16 16zm0 160h416c8.8 0 16-7.2 16-16v-40c0-8.8-7.2-16-16-16H16c-8.8 0-16 7.2-16 16v40c0 8.8 7.2 16 16 16zm0 160h416c8.8 0 16-7.2 16-16v-40c0-8.8-7.2-16-16-16H16c-8.8 0-16 7.2-16 16v40c0 8.8 7.2 16 16 16z" />
   </Svg>;
 }
@@ -262,4 +262,16 @@ export function IconPlus(props: IconSvgProps) {
   return <Svg {...props} height={props.height ?? 24} width={props.width ?? 24} viewBox="0 0 24 24">
     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
   </Svg>;
+}
+
+export function IconRobot({className, ...props}: IconSvgProps) {
+  // Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
+  return <Svg {...props} className={`icon-robot ${className ?? ""}`}
+    height={props.height ?? 20} width={props.width ?? 20} viewBox="0 0 640 512">
+    <path d="M32 224H64V416H32A32 32 0 0 1 0 384V256A32 32 0 0 1 32 224zm512-48V448a64.1 64.1 0 0 1 -64 64H160a64.1 64.1 0 0 1 -64-64V176a80 80 0 0 1 80-80H288V32a32 32 0 0 1 64 0V96H464A80 80 0 0 1 544 176zM264 256a40 40 0 1 0 -40 40A40 40 0 0 0 264 256zm-8 128H192v32h64zm96 0H288v32h64zM456 256a40 40 0 1 0 -40 40A40 40 0 0 0 456 256zm-8 128H384v32h64zM640 256V384a32 32 0 0 1 -32 32H576V224h32A32 32 0 0 1 640 256z"/>
+  </Svg>;
+}
+
+export function IconRobotInline({className, ...props}: IconSvgProps) {
+  return <IconRobot className={`icon-robot-inline ${className ?? ""}`} {...props}/>
 }

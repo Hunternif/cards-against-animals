@@ -9,6 +9,7 @@ import { updateUserData } from '../../../api/users-api';
 import { GameLobby, KickAction, PlayerInLobby } from '../../../shared/types';
 import { AvatarSelector } from './AvatarSelector';
 import { GameButton } from '../../../components/Buttons';
+import { IconRobot } from '../../../components/Icons';
 
 interface PlayerProps {
   lobby: GameLobby;
@@ -39,6 +40,7 @@ export function PlayerCard({
   if (isMe) classes.push('me-card');
   if (isJudge) classes.push('judge-card');
   if (isCreator) classes.push('creator-card');
+  if (player.is_bot) classes.push('bot-card');
 
   async function executeKick(action: KickAction) {
     setKicking(true);
@@ -105,9 +107,8 @@ export function PlayerCard({
           )}
           <span className="player-name">{player.name}</span>
           <span className="right-group">
-            {isJudge && (
-              <Twemoji className="right-icon">👑</Twemoji>
-            )}
+            {isJudge && <Twemoji className="right-icon">👑</Twemoji>}
+            {player.is_bot && <IconRobot />}
             {player.status === 'banned' ? (
               <Twemoji className="right-icon">💀</Twemoji>
             ) : (
