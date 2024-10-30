@@ -2,7 +2,6 @@ import { RNG } from '../shared/rng';
 import { GameLobby, GameTurn, PlayerInLobby } from '../shared/types';
 import { assertExhaustive } from '../shared/utils';
 import {
-  getOnlinePlayers,
   getPlayers,
   getPlayerState,
   updatePlayer,
@@ -19,7 +18,9 @@ export async function processBots(lobby: GameLobby, turn: GameTurn) {
     }
     case 'answering': {
       // Check all bots, answer immediately with random cards
-      const bots = (await getPlayers(lobby.id)).filter((p) => p.is_bot);
+      const bots = (await getPlayers(lobby.id)).filter(
+        (p) => p.is_bot && p.status === 'online' && p.role === 'player',
+      );
       if (bots.length > 0) {
         const prompt = await getTurnPrompt(lobby.id, turn);
         if (prompt) {
