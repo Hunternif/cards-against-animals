@@ -51,6 +51,7 @@ export interface LobbySettings {
   max_score: number;
   turns_per_person: number;
   cards_per_person: number;
+  cards_per_bot: number;
   /** If ture, unviewed cards will be dealt first. */
   new_cards_first: boolean;
   /** If true, card order will be affected by their rating. */
@@ -106,6 +107,7 @@ export function defaultLobbySettings(): LobbySettings {
     max_score: 5,
     turns_per_person: 3,
     cards_per_person: 12,
+    cards_per_bot: 6,
     new_cards_first: false,
     sort_mode: 'by_rank_sqrt2_cutoff',
     sort_cards_by_rating: true,
@@ -167,6 +169,7 @@ export class PlayerInLobby {
     public random_index: number,
     public role: PlayerRole,
     public status: PlayerStatus,
+    public is_bot: boolean = false,
   ) {}
 }
 
@@ -539,6 +542,7 @@ export class CAAUser {
     public name: string,
     public avatar_id: string | null | undefined = null,
     public is_admin: boolean = false,
+    public is_bot: boolean = false,
     public current_lobby_id: string | null | undefined = null,
   ) {}
   /** Maps deck ID to a lock key.

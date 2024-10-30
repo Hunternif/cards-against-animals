@@ -98,6 +98,7 @@ export const playerConverter: FConverter<PlayerInLobby> = {
       data.random_index ?? 0,
       data.role,
       data.status,
+      data.is_bot ?? false,
     );
     ret.time_joined =
       (data.time_joined as FTimestamp | null)?.toDate() ?? new Date();
@@ -287,6 +288,7 @@ export const userConverter: FConverter<CAAUser> = {
       data.name,
       data.avatar_id,
       data.is_admin ?? false,
+      data.is_bot ?? false,
       data.current_lobby_id,
     );
   },

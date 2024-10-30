@@ -161,6 +161,7 @@ export async function addPlayer(
       rng.randomInt(),
       role,
       'online',
+      caaUser.is_bot,
     );
     transaction.set(playerRef, player);
     logger.info(
@@ -180,7 +181,10 @@ export async function addPlayer(
     const turn = await getLastTurn(lobby);
     if (turn) {
       const playerState = await getOrCreatePlayerState(lobby, userID);
-      await dealCardsToPlayer(lobby, playerState);
+      const maxCards = player.is_bot
+        ? lobby.settings.cards_per_bot
+        : lobby.settings.cards_per_person;
+      await dealCardsToPlayer(lobby, playerState, [], maxCards);
     } else {
       logger.warn(
         `Could not deal cards. Lobby ${lobby.id} is in progess but has no turns.`,
@@ -227,7 +231,10 @@ export async function changePlayerRole(
     const turn = await getLastTurn(lobby);
     if (turn) {
       const playerState = await getOrCreatePlayerState(lobby, userID);
-      await dealCardsToPlayer(lobby, playerState);
+      const maxCards = player.is_bot
+        ? lobby.settings.cards_per_bot
+        : lobby.settings.cards_per_person;
+      await dealCardsToPlayer(lobby, playerState, [], maxCards);
     } else {
       logger.warn(
         `Could not deal cards. Lobby ${lobby.id} is in progess but has no turns.`,

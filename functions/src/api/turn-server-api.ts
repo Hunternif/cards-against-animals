@@ -217,8 +217,11 @@ async function dealCardsForNewTurn(
       if (!playerState) {
         playerState = await getOrCreatePlayerState(lobby, player.uid);
       }
-      // Deal cards to: online players, players who left.
-      await dealCardsToPlayer(lobby, playerState);
+      // Deal cards to: online players, players who left, bots.
+      const maxCards = player.is_bot
+        ? lobby.settings.cards_per_bot
+        : lobby.settings.cards_per_person;
+      await dealCardsToPlayer(lobby, playerState, [], maxCards);
     } else if (playerState) {
       // Don't forget to update the DB:
       await updatePlayerState(lobby.id, playerState);
@@ -290,11 +293,11 @@ export async function dealCardsToPlayer(
   lobby: GameLobby,
   playerState: PlayerGameState,
   tagNames: string[] = [],
+  cardsPerPerson: number = lobby.settings.cards_per_person,
 ) {
   const userID = playerState.uid;
   const deckResponsesRef = getLobbyDeckResponsesRef(lobby.id);
   // Find how many more cards we need:
-  const cardsPerPerson = lobby.settings.cards_per_person;
   const totalCardsNeeded = Math.max(0, cardsPerPerson - playerState.hand.size);
   logger.info(
     `Trying to deal ${totalCardsNeeded} cards to player ${userID}...`,
