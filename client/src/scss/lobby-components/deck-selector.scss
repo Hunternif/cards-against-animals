@@ -78,7 +78,7 @@
     /* Sticky header: */
     position: sticky;
     background-attachment: fixed;
-    background-image: linear-gradient(to bottom, #494f5c, #858792);
+    background-image: colors.$lobby-bg;
     z-index: 1;
     top: 0;
   }
@@ -92,13 +92,15 @@
 }
 
 .deck-totals-row {
-  height: 3rem;
-  position: sticky;
-  background-attachment: fixed;
-  background-image: linear-gradient(to bottom, #494f5c, #858792);
-  z-index: 1;
-  bottom: 0;
   td {
+    height: 3rem;
+    position: sticky;
+    background-attachment: fixed;
+    background-image: colors.$lobby_bg;
+    // Extremely weird Chrome bug: if background-color is unset, the bg gradient gets lighter:
+    background-color: #000000ba;
+    z-index: 1;
+    bottom: 0;
     border-top: 2px solid rgba(colors.$text, 0.25);
   }
 }

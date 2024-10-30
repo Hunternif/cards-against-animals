@@ -1,4 +1,4 @@
-@use "colors.scss";
+@use 'colors.scss';
 
 /*=========================== Lobby screen ===========================*/
 
@@ -26,6 +26,8 @@
       position: sticky;
       background-image: colors.$lobby-bg; // sticky bg gradient
       background-attachment: fixed;
+      // Extremely weird Chrome bug: if background-color is unset, the bg gradient gets lighter:
+      background-color: #000000ba;
       z-index: 1;
       bottom: 0;
       top: 0;
