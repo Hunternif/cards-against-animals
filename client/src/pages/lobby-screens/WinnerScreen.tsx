@@ -20,6 +20,7 @@ import { useGameContext } from './game-components/GameContext';
 import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
+import { HALLOWEEN } from '../../components/theme';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -37,9 +38,25 @@ export function WinnerScreen() {
     lobby.settings.enable_likes && audienceAwardResponses.length > 0;
 
   useEffectOnce(() => {
-    confetti({
-      ticks: 50,
-    });
+    if (!isConfettiInitialized) {
+      initializeConfetti(['👻', '🦇', '🎃']);
+    }
+    if (HALLOWEEN && confettiShapes) {
+      confetti({
+        shapes: confettiShapes,
+        flat: true, // this exists, but @types are outdated
+        scalar: confettiSize,
+        spread: 90,
+        particleCount: 15,
+        startVelocity: 25,
+        decay: 0.92,
+        ticks: 50,
+      } as confetti.Options);
+    } else {
+      confetti({
+        ticks: 50,
+      });
+    }
   });
 
   const { settings } = useLocalSettings();
@@ -130,4 +147,18 @@ function getApplauseSoundFromLikes(
   if (response.like_count > 1) return soundApplauseLow;
   if (response.like_count > 0) return soundGolfClap;
   return soundGolfClap;
+}
+
+const confettiSize = 3;
+let isConfettiInitialized = false;
+let confettiShapes: confetti.Shape[];
+
+function initializeConfetti(variants: string[]) {
+  // This fixes error on browsers that don't support OffscreenCanvas:
+  if (typeof OffscreenCanvas !== 'undefined') {
+    confettiShapes = variants.map((text) =>
+      confetti.shapeFromText({ text, scalar: confettiSize }),
+    );
+  }
+  isConfettiInitialized = true;
 }
