@@ -44,10 +44,9 @@ export function Scoreboard({ lobby, players }: Props) {
   const playersByScore = playersWithState
     .filter(
       (p) =>
-        (p.role === 'player' &&
-          // Show people who left, but only if they have > 0 score:
-          p.status !== 'left') ||
-        p.score > 0,
+        p.role === 'player' ||
+        // Show spectators, but only if they have > 0 score:
+        (p.role === 'spectator' && p.score > 0),
     )
     .sort((a, b) => (b.score - a.score) * 10000 + (b.likes - a.likes));
   const showLikes = lobby.settings.enable_likes;
