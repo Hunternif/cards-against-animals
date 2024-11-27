@@ -100,10 +100,10 @@ $panel-border: #374151;
 
 
 // Christmas!
-$welcome-bg: linear-gradient(to bottom, #1b2447, #335c7e);
-$lobby-bg: linear-gradient(to bottom, #303758, #335c7e);
+$welcome-bg: linear-gradient(to bottom, #1b2447, #3862b1);
+$lobby-bg: linear-gradient(to bottom, #303758, #3862b1);
 $lobby-player-list-bg: linear-gradient(to bottom, #3d373f, #312d38);
-$game-bg-image: linear-gradient(to bottom, #303758, #2a529ccc);
+$game-bg-image: linear-gradient(to bottom, #303758, #3862b1);
 $reading-vignette-merged: linear-gradient(to bottom,
     #0a1b30 0%, #243e6b 48%, #243e6b 52%, #0a1b30 100%); // Dark blue vignette
 $winner-vignette: linear-gradient(to bottom,
@@ -113,7 +113,6 @@ $scoreboard-bg: linear-gradient(to bottom, #1a1a2e 0%, #2b307e 50%, #805196 80%,
 $panel-bg: #312d38;
 $modal-bg: $panel-bg;
 $accent: #ff7c3f;
-// $accent: #ff3f49;
 $button-accent-border-hover: #ffe585;
 
 .login-card button, .modal-card button {
