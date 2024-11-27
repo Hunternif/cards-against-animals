@@ -166,6 +166,8 @@ service cloud.firestore {
       allow read, delete: if isLoggedIn() && request.auth.uid == userID;
       // allow creating & changing your data, except admin fields:
       allow write: if isLoggedIn() && request.auth.uid == userID && isAdminInfoUnchanged(userID);
+      // allow reading bots:
+      allow list: if isLoggedIn(); // TODO: this is a security risk!
 
       match /deck_keys/{deckID} {
         // Allow list to see which decks _should_ have keys.
