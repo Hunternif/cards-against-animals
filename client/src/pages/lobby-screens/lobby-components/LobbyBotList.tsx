@@ -30,7 +30,12 @@ export function LobbyBotList({ lobby, players, user }: ListProps) {
   );
 
   return availableBots.map((bot) => (
-    <PotentialBotCard bot={bot} adding={addingBot} onClick={handleClick} />
+    <PotentialBotCard
+      key={bot.uid}
+      bot={bot}
+      adding={addingBot}
+      onClick={handleClick}
+    />
   ));
 }
 
