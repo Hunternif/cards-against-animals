@@ -21,12 +21,14 @@ import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
 import { HALLOWEEN } from '../../components/theme';
+import { useCallback } from 'react';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
   const { lobby, turn, players, activePlayers, prompt, responses } =
     useGameContext();
   const winner = players.find((p) => p.uid === turn.winner_uid);
+  const playerMap = new Map(players.map((p) => [p.uid, p]));
 
   const winnerResponse = responses.find(
     (r) => r.player_uid === turn.winner_uid,
@@ -36,6 +38,16 @@ export function WinnerScreen() {
     .sort((a, b) => a.random_index - b.random_index);
   const showAudienceAward =
     lobby.settings.enable_likes && audienceAwardResponses.length > 0;
+
+  const isBot = useCallback(
+    (uid: string) => playerMap.get(uid)?.is_bot,
+    [playerMap],
+  );
+
+  const botResponses = responses.filter((r) => isBot(r.player_uid));
+  const shouldShowBot =
+    !isBot(winnerResponse?.player_uid ?? '') &&
+    !audienceAwardResponses.find((r) => isBot(r.player_uid));
 
   useEffectOnce(() => {
     if (!isConfettiInitialized) {
@@ -111,6 +123,24 @@ export function WinnerScreen() {
               </header>
               <section>
                 {audienceAwardResponses.map((r) => (
+                  <ResponseReading
+                    showName
+                    showLikes
+                    key={r.player_uid}
+                    response={r}
+                    player={players.find((p) => p.uid === r.player_uid)}
+                  />
+                ))}
+              </section>
+            </div>
+          )}
+          {shouldShowBot && (
+            <div className="winner-section bot-award-section">
+              <header>
+                <h2>Bot</h2>
+              </header>
+              <section>
+                {botResponses.map((r) => (
                   <ResponseReading
                     showName
                     showLikes
