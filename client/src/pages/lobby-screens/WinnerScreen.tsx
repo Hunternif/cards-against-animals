@@ -1,4 +1,5 @@
 import confetti from 'canvas-confetti';
+import { useCallback } from 'react';
 import { useRedirectToNextLobby } from '../../api/lobby/lobby-hooks';
 import {
   soundApplauseHigh,
@@ -11,6 +12,7 @@ import { Delay } from '../../components/Delay';
 import { IconHeartInline, IconStarInline } from '../../components/Icons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { GameLayout } from '../../components/layout/GameLayout';
+import { isSeason } from '../../components/theme';
 import { useSound } from '../../hooks/sound-hooks';
 import { useEffectOnce } from '../../hooks/ui-hooks';
 import { PlayerInLobby, PlayerResponse } from '../../shared/types';
@@ -20,8 +22,6 @@ import { useGameContext } from './game-components/GameContext';
 import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
-import { HALLOWEEN } from '../../components/theme';
-import { useCallback } from 'react';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -53,7 +53,7 @@ export function WinnerScreen() {
     if (!isConfettiInitialized) {
       initializeConfetti(['👻', '🦇', '🎃']);
     }
-    if (HALLOWEEN && confettiShapes) {
+    if (isSeason('halloween') && confettiShapes) {
       confetti({
         shapes: confettiShapes,
         flat: true, // this exists, but @types are outdated

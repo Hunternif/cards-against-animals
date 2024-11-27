@@ -19,6 +19,7 @@ import {
 } from '../../../components/Icons';
 import { Twemoji } from '../../../components/Twemoji';
 import { useScreenWiderThan } from '../../../components/layout/ScreenSizeSwitch';
+import { isSeason } from '../../../components/theme';
 import { CardInGame } from '../../../shared/types';
 import { CardOffsetContext } from './CardOffsetContext';
 import {
@@ -27,7 +28,6 @@ import {
   CardContent,
   LargeCard,
 } from './LargeCard';
-import { HALLOWEEN } from '../../../components/theme';
 
 type Props = CardStackProps & {
   showLikes?: boolean;
@@ -333,7 +333,7 @@ function CardInStack({
         {likable && (
           <CardCenterIcon className="like-response-container">
             <div className="like-response-button">
-              {HALLOWEEN ? (
+              {isSeason('halloween') ? (
                 <Twemoji className="like-response-icon" onClick={onClickLike}>
                   🎃
                 </Twemoji>
@@ -401,7 +401,9 @@ function LikeIcon({ cards }: LikeProps) {
       }
     }
   }
-  if (HALLOWEEN) return <Twemoji className="emoji-like">🎃</Twemoji>;
+  if (isSeason('halloween')) {
+    return <Twemoji className="emoji-like">🎃</Twemoji>;
+  }
   return <IconHeart className="heart-icon" />;
 }
 
