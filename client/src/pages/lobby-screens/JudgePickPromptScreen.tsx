@@ -112,7 +112,7 @@ export function JudgePickPromptScreen() {
   return (
     <GameLayout className="pick-prompt-screen">
       <header>
-        <h2 className="dim">
+        <h2>
           You are <i>Card Czar</i>! Pick a card:
         </h2>
       </header>

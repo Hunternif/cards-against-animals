@@ -337,6 +337,10 @@ function CardInStack({
                 <Twemoji className="like-response-icon" onClick={onClickLike}>
                   🎃
                 </Twemoji>
+              ) : isSeason('christmas') ? (
+                <Twemoji className="like-response-icon" onClick={onClickLike}>
+                  💝
+                </Twemoji>
               ) : (
                 <IconHeart
                   className="like-response-icon"
@@ -403,6 +407,8 @@ function LikeIcon({ cards }: LikeProps) {
   }
   if (isSeason('halloween')) {
     return <Twemoji className="emoji-like">🎃</Twemoji>;
+  } else if (isSeason('christmas')) {
+    return <Twemoji className="emoji-like">💝</Twemoji>;
   }
   return <IconHeart className="heart-icon" />;
 }

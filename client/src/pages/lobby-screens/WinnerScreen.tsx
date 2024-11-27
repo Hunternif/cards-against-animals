@@ -22,6 +22,7 @@ import { useGameContext } from './game-components/GameContext';
 import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
+import { Twemoji } from '../../components/Twemoji';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
@@ -51,9 +52,15 @@ export function WinnerScreen() {
 
   useEffectOnce(() => {
     if (!isConfettiInitialized) {
-      initializeConfetti(['👻', '🦇', '🎃']);
+      if (isSeason('halloween')) {
+        initializeConfetti(['👻', '🦇', '🎃']);
+      } else if (isSeason('christmas')) {
+        initializeConfetti(['❄', '❄', '⛄', '🎊']);
+      } else {
+        isConfettiInitialized = true;
+      }
     }
-    if (isSeason('halloween') && confettiShapes) {
+    if (confettiShapes) {
       confetti({
         shapes: confettiShapes,
         flat: true, // this exists, but @types are outdated
@@ -118,7 +125,12 @@ export function WinnerScreen() {
             <div className="winner-section audience-award-section">
               <header>
                 <h2>
-                  Audience Choice <IconHeartInline />
+                  Audience Choice{' '}
+                  {isSeason('christmas') ? (
+                    <Twemoji className="like-icon">💝</Twemoji>
+                  ) : (
+                    <IconHeartInline />
+                  )}
                 </h2>
               </header>
               <section>

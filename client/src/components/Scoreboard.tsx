@@ -78,6 +78,8 @@ export function Scoreboard({ lobby, players }: Props) {
                         icon={
                           isSeason('halloween') ? (
                             <Twemoji className="like-icon">🎃</Twemoji>
+                          ) : isSeason('christmas') ? (
+                            <Twemoji className="like-icon">💝</Twemoji>
                           ) : (
                             <IconHeartInline />
                           )
