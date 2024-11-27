@@ -9,7 +9,12 @@ import {
   soundKidsCheer,
 } from '../../api/sound-api';
 import { Delay } from '../../components/Delay';
-import { IconHeartInline, IconStarInline } from '../../components/Icons';
+import {
+  IconHeartInline,
+  IconRobot,
+  IconRobotInline,
+  IconStarInline,
+} from '../../components/Icons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { isSeason } from '../../components/theme';
@@ -149,7 +154,9 @@ export function WinnerScreen() {
           {shouldShowBot && (
             <div className="winner-section bot-award-section">
               <header>
-                <h2>Bot</h2>
+                <h2 style={{ alignContent: 'end', opacity: 0.5 }}>
+                  <IconRobotInline />
+                </h2>
               </header>
               <section>
                 {botResponses.map((r) => (
