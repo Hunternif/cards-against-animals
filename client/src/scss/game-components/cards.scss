@@ -123,10 +123,10 @@
 .game-card.response-reading.selected {
   color: colors.$burned-text;
   background-image: colors.$card-response-bg-selected;
-  box-shadow: 0px 0px 20px 4px rgba(colors.$burned-text, 0.8);
+  box-shadow: 0px 0px 20px 4px rgba(colors.$card-response-glow, 0.8);
 }
 .selected-response-index {
-  color: rgba(colors.$accent, 0.8);
+  color: colors.$card-response-index;
   font-size: 5rem;
   font-weight: bold;
   align-content: center;

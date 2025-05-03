@@ -1,3 +1,5 @@
+@use '../colors.scss';
+
 /*------------------------ Checkbox component ------------------------*/
 // From https://codepen.io/alvarotrigo/pen/YzezaMR
 .checkbox {
@@ -7,7 +9,7 @@
   // background: #fcfff4;
   // background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
   // box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
-  border: 2px solid;
+  border: 2px solid colors.$text;
   border-radius: 4px;
   // This fixes baseline position on this line
   display: flex;
@@ -28,7 +30,7 @@
       position: absolute;
       top: 3px;
       left: 3px;
-      border: 2px solid #fff;
+      border: 2px solid;
       border-top: none;
       border-right: none;
       background: transparent;

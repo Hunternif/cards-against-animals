@@ -15,6 +15,9 @@
   &.selected {
     color: #fff;
     background-color: rgba(colors.$bg-dark, 0.533);
+    .checkbox {
+      border-color: #fff;
+    }
   }
   &:not(.selected) {
     .deck-row-title {

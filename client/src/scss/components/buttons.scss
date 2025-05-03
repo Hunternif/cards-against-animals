@@ -51,7 +51,7 @@ button {
 // Bright accent button, for the primary CTA:
 .accent-button,
 .accent-control {
-  background-color: colors.$accent;
+  background-color: colors.$button-accent;
   color: colors.$button-accent-text;
   border: 2px solid transparent;
   &:hover:enabled {
