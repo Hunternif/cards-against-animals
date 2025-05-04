@@ -46,6 +46,7 @@ $scoreboard-bg: linear-gradient(to bottom, #030711, #324464);
 
 $player-bg: var(--bs-body-bg);
 $player-me-bg: #6c757d; // copied from Bootstrap
+$player-judge: #fff;
 $player-bot-bg-hover: color-mix(in srgb, $player-bg 70%, $button-light-bg);
 
 
@@ -142,6 +143,7 @@ $gray-7: #50495c;
 $like: #fc8181;
 $accent: #fc8181;
 $star: #ffc90f;
+$text: $gray-7;
 
 $spring-dark: #2e3270;
 $spring-blue: #5b9cec;
@@ -153,6 +155,7 @@ $welcome-bg: linear-gradient(to bottom, #5b9cec, #dceccb);
 $lobby-bg: linear-gradient(to bottom, #5b9cec, #fff9f1);
 $lobby-player-list-bg: linear-gradient(to bottom, $gray-0, #fff9f1);
 $player-me-bg: rgba(#5b9cec, 0.5);
+$player-judge: $gray-7;
 $game-bg-image: linear-gradient(to bottom, #5b9cec, #fff9f1);
 $reading-vignette-merged: linear-gradient(to bottom, #2e3270 0%, #5b9cec 50%, #2e3270 100%);
 $winner-vignette: linear-gradient(to bottom, #2e3270 0%, #5b9cec 25%, #dceccb 50%, #5b9cec 75%, #2e3270 100%);
@@ -167,7 +170,7 @@ $scoreboard-bg: linear-gradient(to bottom, #2e3270 0%, #5b9cec 30%, #fff9f1 100%
     color: #fff;
     text-shadow: rgba(255, 50, 80, 1.0) 0 0 10px;
 }
-i {
+header i {
     color: #fae5e5;
     text-shadow: rgba(255, 50, 80, 0.7) 0 0 8px;
 }
@@ -197,6 +200,12 @@ i {
         }
     }
 }
+.menu-row {
+    color: #fff;
+    .modal-container {
+        color: $text;
+    }
+}
 
 $control-bg: rgba(#fff, 0.5);
 $control-bg-focus: rgba(#fff, 0.8);
@@ -214,9 +223,10 @@ $card-response-bg-selected: linear-gradient(to bottom, rgba(#fc9696, 0.4), #fff)
 $burned-text: #d3416d;
 $card-response-glow: #ff919a;
 $card-response-index: rgba($like, 0.6);
+$card-response-bg-unrevealed: color-mix(in srgb, lighten($spring-blue, 10%) 40%, #aaa);
+$card-response-bg-unrevealed-hover: color-mix(in srgb, lighten($spring-blue, 20%) 40%, #ccc);
 
 $panel-bg: #f8e6e3;
-$text: $gray-7;
 $modal-bg: $panel-bg;
 $minicard-player-name: $gray-7;
 $minicard-stack-bg: rgba($spring-dark, 0.5);
