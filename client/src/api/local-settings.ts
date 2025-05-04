@@ -2,11 +2,13 @@
 export type LocalSettingsState = {
   enableAudienceSound: boolean;
   enableMusic: boolean;
+  enableParticles: boolean;
 };
 
 const defaultLocalSettings: LocalSettingsState = {
   enableAudienceSound: true,
   enableMusic: true,
+  enableParticles: true,
 };
 
 const settingsKey = 'caa-local-settings';
@@ -16,9 +18,11 @@ function load(): LocalSettingsState {
   const json = localStorage.getItem(settingsKey);
   if (json != null) {
     const parsed = JSON.parse(json);
-    // Remove extra properties:
+    // Remove extra properties and copy missing default values:
     for (const [key, val] of Object.entries(out)) {
-      if (typeof parsed[key] !== typeof val) {
+      if (parsed[key] === undefined) {
+        parsed[key] = val;
+      } else if (typeof parsed[key] !== typeof val) {
         delete parsed[key];
       }
     }

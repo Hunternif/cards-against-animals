@@ -132,6 +132,11 @@ export function GamePlayerMenu() {
     saveLocalSettings(localSettings);
   }
 
+  function toggleParticles() {
+    localSettings.enableParticles = !localSettings.enableParticles;
+    saveLocalSettings(localSettings);
+  }
+
   return (
     <>
       <ConfirmModal
@@ -215,6 +220,12 @@ export function GamePlayerMenu() {
             label="Music"
             icon={localSettings.enableMusic ? '🔊' : '🔇'}
             onClick={toggleMusic}
+            preventClose
+          />
+          <MenuItem
+            label="Particles"
+            icon={localSettings.enableParticles ? '✅' : '❌'}
+            onClick={toggleParticles}
             preventClose
           />
           <MenuItem
