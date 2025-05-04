@@ -18,7 +18,6 @@ export function SakuraOverlay() {
         minSize: 5,
         maxSize: 10,
         fallSpeed: 1.5,
-        lifeTime: 3000,
       });
       setSakura(newSakura);
     }
