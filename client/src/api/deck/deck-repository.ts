@@ -238,6 +238,8 @@ export type DeckWithCount = Deck & {
   responseCount: number;
 };
 
+export const TAG_HAIKU = 'haiku';
+
 export const haikuPrompt3 = new PromptCardInGame(
   'haiku_3',
   GeneratedDeck.id,
@@ -246,7 +248,7 @@ export const haikuPrompt3 = new PromptCardInGame(
   'Make a haiku:\n_\n_\n_',
   3,
   0,
-  [],
+  [TAG_HAIKU],
 );
 export const haikuPrompt4 = new PromptCardInGame(
   'haiku_4',
@@ -256,7 +258,7 @@ export const haikuPrompt4 = new PromptCardInGame(
   'Make a haiku:\n_\n_\n_\n_',
   4,
   0,
-  [],
+  [TAG_HAIKU],
 );
 export const haikuPrompt5 = new PromptCardInGame(
   'haiku_5',
@@ -266,7 +268,7 @@ export const haikuPrompt5 = new PromptCardInGame(
   'Make a haiku:\n_\n_\n_\n_\n_',
   5,
   0,
-  [],
+  [TAG_HAIKU],
 );
 export const haikuPrompt6 = new PromptCardInGame(
   'haiku_6',
@@ -276,5 +278,5 @@ export const haikuPrompt6 = new PromptCardInGame(
   'Make a haiku:\n_\n_\n_\n_\n_\n_',
   6,
   0,
-  [],
+  [TAG_HAIKU],
 );

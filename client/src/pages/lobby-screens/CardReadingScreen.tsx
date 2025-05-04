@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { TAG_HAIKU } from '../../api/deck/deck-repository';
 import { chooseWinner, startNewTurn } from '../../api/turn/turn-control-api';
 import { toggleLikeResponse } from '../../api/turn/turn-like-api';
 import { revealPlayerResponse } from '../../api/turn/turn-response-api';
@@ -11,6 +12,7 @@ import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { EndOfTurnControls } from './game-components/EndOfTurnControls';
 import { useGameContext } from './game-components/GameContext';
 import { ResponseReading } from './game-components/ResponseReading';
+import { SakuraOverlay } from './game-components/SakuraOverlay';
 import { Soundboard } from './game-components/Soundboard';
 
 // const dummyCard = new ResponseCardInGame("deck1_01", "deck1", "01", 123, "Poop", 0);
@@ -31,6 +33,7 @@ export function CardReadingScreen() {
     (r1, r2) => r1.random_index - r2.random_index,
   );
   const isActivePlayer = player.role === 'player';
+  const isSakuraTime = prompt && prompt.tags.includes(TAG_HAIKU);
 
   const settings = lobby.settings;
   let showLikes = false;
@@ -91,6 +94,7 @@ export function CardReadingScreen() {
 
   return (
     <GameLayout className="card-reading-screen reading-layout-container">
+      {isSakuraTime && <SakuraOverlay />}
       <header className="reading-control-row">
         {isJudge && (
           <>
