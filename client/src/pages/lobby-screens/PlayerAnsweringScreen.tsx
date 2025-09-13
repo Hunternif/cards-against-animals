@@ -7,6 +7,7 @@ import {
 import { ErrorContext } from '../../components/ErrorContext';
 import { CenteredLayout } from '../../components/layout/CenteredLayout';
 import { ScreenSizeSwitch } from '../../components/layout/ScreenSizeSwitch';
+import { useBackgroundMusic } from '../../hooks/bg-music-hooks';
 import { useSoundOnResponse } from '../../hooks/sound-hooks';
 import { PlayerResponse, ResponseCardInGame } from '../../shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
@@ -14,6 +15,7 @@ import { useGameContext } from './game-components/GameContext';
 import { GameControlRow } from './game-components/GameControlRow';
 import { GameHand } from './game-components/GameHand';
 import { GameMiniResponses } from './game-components/GameMiniResponses';
+import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseCount } from './game-components/ResponseCount';
 import { Soundboard } from './game-components/Soundboard';
 
@@ -68,15 +70,18 @@ export function PlayerAnsweringScreen() {
   // during discard.
   const [tempRsponse, setTempResponse] = useState<PlayerResponse | null>(null);
   const [discarding, setDiscarding] = useState(false);
+  const { settings } = useLocalSettings();
   const { setError } = useContext(ErrorContext);
 
+  
   // Synchronize selected cards with response on the server:
   useEffect(() => {
     if (response) setSelectedCards(response.cards);
   }, [response]);
-
+  
   // Whenever a new response is added, play a sound:
   useSoundOnResponse();
+  useBackgroundMusic(settings.enableMusic);
 
   /** When cards are clicked for response. */
   async function handleSelect(cards: ResponseCardInGame[]) {

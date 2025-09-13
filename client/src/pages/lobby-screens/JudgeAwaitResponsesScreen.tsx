@@ -12,6 +12,8 @@ import { useGameContext } from './game-components/GameContext';
 import { MiniCardResponse } from './game-components/MiniCardResponse';
 import { ResponseCount } from './game-components/ResponseCount';
 import { Soundboard } from './game-components/Soundboard';
+import { useLocalSettings } from './game-components/LocalSettingsContext';
+import { useBackgroundMusic } from '../../hooks/bg-music-hooks';
 
 // const dummyPlayer = new PlayerInLobby("01", "Dummy");
 // const dummyPlayers = new Array<PlayerInLobby>(10).fill(dummyPlayer, 0, 20);
@@ -21,10 +23,12 @@ export function JudgeAwaitResponsesScreen() {
   // const players = dummyPlayers;
   const { lobby, turn, activePlayers, isJudge, prompt, judge, responses } =
     useGameContext();
+  const { settings } = useLocalSettings();
   const { setError } = useContext(ErrorContext);
 
   // Whenever a new response is added, play a sound:
   useSoundOnResponse();
+  useBackgroundMusic(settings.enableMusic);
 
   function findResponse(player: PlayerInLobby): PlayerResponse | null {
     return responses.find((res) => res.player_uid === player.uid) ?? null;
