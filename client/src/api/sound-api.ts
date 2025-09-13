@@ -39,6 +39,10 @@ import yikes from '../assets/sounds/yikes.mp3';
 import nge_ed from '../assets/sounds/music/nge_ed.mp3';
 import robert_b_weide from '../assets/sounds/music/robert_b_weide.mp3';
 import roundabout from '../assets/sounds/music/roundabout.mp3';
+import bakemonogatari from '../assets/sounds/music/bakemonogatari.mp3';
+import dokidoki1 from '../assets/sounds/music/dokidoki1.mp3';
+import dokidoki2 from '../assets/sounds/music/dokidoki2.mp3';
+import sans from '../assets/sounds/music/sans.mp3';
 
 import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { soundEventConverter } from '../shared/firestore-converters';
@@ -79,6 +83,10 @@ export const soundYikes = 'yikes';
 export const soundMusicNge = 'nge_ed';
 export const soundMusicWeide = 'robert_b_weide';
 export const soundMusicRoundabout = 'roundabout';
+export const soundMusicBakemonogatari = 'bakemonogatari';
+export const soundMusicDokidoki1 = 'dokidoki1';
+export const soundMusicDokidoki2 = 'dokidoki2';
+export const soundMusicSans = 'sans';
 
 // Applause
 export const soundApplauseLow = 'applause_low';
@@ -123,6 +131,10 @@ const sounds = new Map<string, string>([
   [soundMusicNge, nge_ed],
   [soundMusicWeide, robert_b_weide],
   [soundMusicRoundabout, roundabout],
+  [soundMusicBakemonogatari, bakemonogatari],
+  [soundMusicDokidoki1, dokidoki1],
+  [soundMusicDokidoki2, dokidoki2],
+  [soundMusicSans, sans],
 
   // Applause
   [soundApplauseLow, applause_low],
@@ -196,8 +208,21 @@ const shortLaughs = [
   soundLaugh018,
 ];
 
+const bgm = [
+  soundMusicBakemonogatari,
+  soundMusicDokidoki1,
+  soundMusicDokidoki2,
+  soundMusicSans,
+]
+
 /** Returns random sound ID */
 export function randomLaugh(): string {
   const i = RNG.fromTimestamp().randomIntClamped(0, shortLaughs.length - 1);
   return shortLaughs[i];
+}
+
+/** Returns random sound ID */
+export function randomBgm(seed: number = Date.now()): string {
+  const i = RNG.fromIntSeed(seed).randomIntClamped(0, bgm.length - 1);
+  return bgm[i];
 }
