@@ -8,7 +8,7 @@ import { playSoundID, randomBgm } from '../api/sound-api';
  */
 export function useBackgroundMusic(
   enabled: boolean = true,
-  volume: number = 0.05,
+  volume: number = 0.1,
 ) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentSongRef = useRef<string | null>(null);
