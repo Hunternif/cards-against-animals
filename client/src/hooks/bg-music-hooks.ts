@@ -1,6 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { playSoundID, randomBgm } from '../api/sound-api';
 
+// Global state to prevent multiple instances from playing simultaneously
+const globalBgmState = {
+  isPlaying: false,
+  lockAcquired: false,
+};
+
 /**
  * Hook to play a random background song
  * @param enabled Whether the background music should play
@@ -11,62 +17,85 @@ export function useBackgroundMusic(
   volume: number = 0.1,
 ) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const currentSongRef = useRef<string | null>(null);
+  const isMountedRef = useRef<boolean>(true);
+  const hasGlobalLockRef = useRef<boolean>(false);
 
-  useEffect(() => {
-    // Only start playing if enabled and no current song is playing
-    if (enabled && !currentSongRef.current) {
-      startRandomBackgroundMusic();
-    }
-
-    // If disabled and a song is playing, stop it
-    if (!enabled && audioRef.current) {
+  const stopPlayback = () => {
+    if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
-      currentSongRef.current = null;
     }
+    if (hasGlobalLockRef.current) {
+      globalBgmState.isPlaying = false;
+      hasGlobalLockRef.current = false;
+    }
+  };
 
-    async function startRandomBackgroundMusic() {
-      // use current minute so that all players hear the same track:
-      const seed = Math.floor(Date.now() / 60000);
-      const selectedTrack = randomBgm(seed);
-      try {
-        const audio = await playSoundID(selectedTrack, volume);
-        if (audio) {
-          audioRef.current = audio;
-          currentSongRef.current = selectedTrack;
-
-          // When the song ends, queue the next song
-          audio.onended = () => {
-            audioRef.current = null;
-            currentSongRef.current = null;
-            startRandomBackgroundMusic();
-          };
-        }
-      } catch (error) {
-        console.error('Failed to play background music:', error);
+  const startRandomBackgroundMusic = async () => {
+    // Prevent duplicate calls
+    if (globalBgmState.isPlaying || globalBgmState.lockAcquired || !isMountedRef.current) {
+      return;
+    }
+    
+    // Acquire global lock FIRST before any async operations
+    globalBgmState.lockAcquired = true;
+    globalBgmState.isPlaying = true;
+    hasGlobalLockRef.current = true;
+    
+    // Use current minute so that all players hear the same track
+    const seed = Math.floor(Date.now() / 60000);
+    const selectedTrack = randomBgm(seed);
+    
+    try {
+      const audio = await playSoundID(selectedTrack, volume);
+      if (!isMountedRef.current) {
+        audio?.pause();
+        globalBgmState.isPlaying = false;
+        globalBgmState.lockAcquired = false;
+        hasGlobalLockRef.current = false;
+        return;
       }
+      if (audio) {
+        audioRef.current = audio;
+        globalBgmState.lockAcquired = false;
+
+        audio.onended = () => {
+          if (!isMountedRef.current) return;
+          audioRef.current = null;
+          globalBgmState.isPlaying = false;
+          hasGlobalLockRef.current = false;
+          startRandomBackgroundMusic();
+        };
+      } else {
+        globalBgmState.isPlaying = false;
+        globalBgmState.lockAcquired = false;
+        hasGlobalLockRef.current = false;
+      }
+    } catch (error) {
+      console.error('Failed to play background music:', error);
+      globalBgmState.isPlaying = false;
+      globalBgmState.lockAcquired = false;
+      hasGlobalLockRef.current = false;
+    }
+  };
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    
+    if (enabled) {
+      startRandomBackgroundMusic();
+    } else if (audioRef.current) {
+      stopPlayback();
     }
 
-    // Cleanup
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-        currentSongRef.current = null;
-      }
+      isMountedRef.current = false;
+      stopPlayback();
     };
   }, [enabled, volume]);
 
   return {
-    isPlaying: !!currentSongRef.current,
-    currentSong: currentSongRef.current,
-    stop: () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-        currentSongRef.current = null;
-      }
-    },
+    isPlaying: globalBgmState.isPlaying,
+    stop: stopPlayback,
   };
 }
