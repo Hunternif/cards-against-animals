@@ -1,5 +1,6 @@
 import mc_uh from '../../../assets/sounds/mc_uh.mp3';
 import { useGameContext } from './GameContext';
+import { TimerCountdown } from './TimerCountdown';
 import { TimerPie } from './TimerPie';
 
 interface Props {
@@ -25,6 +26,10 @@ export function TurnTimer({ onClear }: Props) {
           lastCallSec={3}
           onLastCall={handleLastCall}
           reverse
+        />
+        <TimerCountdown
+          startTime={turn.phase_start_time}
+          endTime={turn.phase_end_time}
         />
       </div>
     );
