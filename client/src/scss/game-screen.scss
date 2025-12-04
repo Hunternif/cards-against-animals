@@ -68,6 +68,26 @@
   gap: 1em;
 }
 
+.timer-overlay {
+  position: absolute;
+  top: 50;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background-color: rgba(colors.$bg-dark, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  .timer-pie {
+    width: 6rem;
+    height: 6rem;
+  }
+  .timer-countdown {
+    font-size: 3rem;
+  }
+}
+
 .player-control-row {
   width: 100%;
   display: flex;

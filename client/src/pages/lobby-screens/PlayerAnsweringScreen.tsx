@@ -18,6 +18,9 @@ import { GameMiniResponses } from './game-components/GameMiniResponses';
 import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseCount } from './game-components/ResponseCount';
 import { Soundboard } from './game-components/Soundboard';
+import { TurnTimer } from './game-components/TurnTimer';
+
+const SHOW_BIG_TIMER_OVERLAY = false;
 
 const containerStyle: CSSProperties = {
   display: 'flex',
@@ -56,6 +59,15 @@ const miniResponsesContainerStyle: CSSProperties = {
   marginTop: '1em',
 };
 
+/** Check if we're in the last 30 seconds of the turn */
+function isInLastSeconds(endTime: Date | undefined, seconds: number): boolean {
+  if (!endTime) return false;
+  const nowMs = new Date().getTime();
+  const endMs = endTime.getTime();
+  const remainingMs = endMs - nowMs;
+  return remainingMs <= seconds * 1000;
+}
+
 export function PlayerAnsweringScreen() {
   const { lobby, turn, player, playerState, prompt, responses, hand } =
     useGameContext();
@@ -72,13 +84,22 @@ export function PlayerAnsweringScreen() {
   const [discarding, setDiscarding] = useState(false);
   const { settings } = useLocalSettings();
   const { setError } = useContext(ErrorContext);
+  const [showTimer, setShowTimer] = useState(false);
 
-  
+  // Check every second if we should show the timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const shouldShow = isInLastSeconds(turn.phase_end_time, 30);
+      setShowTimer(shouldShow);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [turn.phase_end_time]);
+
   // Synchronize selected cards with response on the server:
   useEffect(() => {
     if (response) setSelectedCards(response.cards);
   }, [response]);
-  
+
   // Whenever a new response is added, play a sound:
   useSoundOnResponse();
   useBackgroundMusic(settings.enableMusic);
@@ -180,6 +201,11 @@ export function PlayerAnsweringScreen() {
               </div>
             }
           />
+        )}
+        {SHOW_BIG_TIMER_OVERLAY && showTimer && turn.phase_end_time && (
+          <div className="timer-overlay">
+            <TurnTimer />
+          </div>
         )}
       </div>
       <div className="game-mid-row" style={{ ...rowStyle, ...midRowStyle }}>
