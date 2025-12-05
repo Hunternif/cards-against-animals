@@ -1,4 +1,4 @@
-import mc_uh from '../../../assets/sounds/mc_uh.mp3';
+import clock_tick_loop from '../../../assets/sounds/clock/clock_tick_loop.mp3';
 import { useGameContext } from './GameContext';
 import { TimerCountdown } from './TimerCountdown';
 import { TimerPie } from './TimerPie';
@@ -11,8 +11,8 @@ export function TurnTimer({ onClear }: Props) {
   const { turn } = useGameContext();
 
   function handleLastCall() {
-    const audio = new Audio(mc_uh);
-    audio.volume = 0.05;
+    const audio = new Audio(clock_tick_loop);
+    audio.volume = 0.5;
     audio.play();
   }
 
