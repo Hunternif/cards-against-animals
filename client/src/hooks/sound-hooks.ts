@@ -195,12 +195,15 @@ export function useSound(
 export function useNotificationSound(
   soundFile: string,
   shouldPlay: boolean,
+  volume: number = 1.0,
 ): void {
   const [hasNotified, setHasNotified] = useState(false);
 
   useEffect(() => {
     if (shouldPlay && !hasNotified) {
-      new Audio(soundFile).play();
+      const audio = new Audio(soundFile);
+      audio.volume = volume;
+      audio.play();
       setHasNotified(true);
     }
   }, [soundFile, shouldPlay, hasNotified]);

@@ -10,7 +10,7 @@ import { useGameContext } from './game-components/GameContext';
 import { HaikuSizeSelector } from './lobby-components/HaikuSizeSelector';
 import { haikuPrompt3 } from '../../api/deck/deck-repository';
 import { logInteraction } from '../../api/log-api';
-import pop_3 from '../../assets/sounds/pop_3.mp3';
+import bugle from '../../assets/sounds/clock/bugle.mp3';
 import {
   discardPrompts,
   getPromptCount,
@@ -34,7 +34,7 @@ export function JudgePickPromptScreen() {
   const isHaiku = prompts.length === 1 && prompts[0].id === haikuPrompt.id;
 
   // Play notification sound when the user becomes the judge
-  useNotificationSound(pop_3, isJudge);
+  useNotificationSound(bugle, isJudge, 0.7);
 
   async function getInitialPrompts() {
     await pickNewPrompts(lobby)
