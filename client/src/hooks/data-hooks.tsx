@@ -1,6 +1,7 @@
 import {
   DocumentReference,
   DocumentSnapshot,
+  CollectionReference,
   FirestoreError,
   Query,
   QuerySnapshot,
@@ -43,12 +44,36 @@ export type FirestorDocumentDataHookNullSafe<T> = [
   snapshot?: DocumentSnapshot<T>,
 ];
 
-/** Same as Firestore useCollectionData, but the returned collection is non-null. */
+/**
+ * Same as Firestore useCollectionData, but the returned collection is non-null.
+ * Also prevents showing stale data when the query changes.
+ */
 export function useCollectionDataNonNull<T>(
-  query: Query<T>,
+  query: CollectionReference<T>,
 ): FirestoreCollectionDataHookNullSafe<T> {
+  // Track the query path for which we last accepted data
+  const [acceptedQueryPath, setAcceptedQueryPath] = useState(query.path);
+  const [items, setItems] = useState<T[]>([]);
+  
   const [data, loading, error, snapshot] = useCollectionData(query);
-  return [data || [], loading, error, snapshot];
+  
+  useEffect(() => {
+    if (query.path !== acceptedQueryPath) {
+      // Query changed, reset items and accepted path
+      setAcceptedQueryPath(query.path);
+      setItems([]);
+    } else if (data && data.length > 0) {
+      // Only update items for the current query
+      setItems(data);
+    }
+  }, [query.path, acceptedQueryPath, data]);
+  
+  // If query changed but state hasn't updated yet, return empty array immediately
+  if (query.path !== acceptedQueryPath) {
+    return [[], loading, error, snapshot];
+  }
+  
+  return [items, loading, error, snapshot];
 }
 
 /** Same as Firestore useDocumentData, but returns a default value if undefined. */
