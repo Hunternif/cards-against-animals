@@ -356,6 +356,20 @@
   background-color: colors.$discarded-bg;
   box-shadow: inset 0px 0px 20px 5px rgba(0, 0, 0, 0.2);
   opacity: 1;
+  &:not(.discarding) {
+    animation-name: card-slideout-top;
+    animation-duration: 0.4s;
+    animation-fill-mode: forwards;
+  }
+  @keyframes card-slideout-top {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-30px);
+      opacity: 0;
+    }
+  }
 }
 .card-response.discarded .card-discard-icon {
   opacity: 0.9;
