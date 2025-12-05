@@ -6,7 +6,7 @@ import {
   useDocumentData,
 } from 'react-firebase-hooks/firestore';
 import { useNavigate } from 'react-router-dom';
-import { useDocumentDataOrDefault } from '../../hooks/data-hooks';
+import { useDocumentDataWithCache } from '../../hooks/data-hooks';
 import { CAAUser, GameLobby, PlayerGameState } from '../../shared/types';
 import { getPromptCount, getResponseCount } from '../turn/turn-prompt-api';
 import { joinLobbyIfNeeded } from './lobby-join-api';
@@ -60,9 +60,8 @@ export function usePlayerInLobby(lobbyID: string, user: User) {
 
 /** React hook to fetch and subscribe to this player's game sate. */
 export function usePlayerState(lobby: GameLobby, userID: string) {
-  return useDocumentDataOrDefault(
+  return useDocumentDataWithCache(
     getPlayerStateRef(lobby.id, userID),
-    // This is a temporary dummy value
     new PlayerGameState(userID, 0, 0, 0, 0, 0),
   );
 }

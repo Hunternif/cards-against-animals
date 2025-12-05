@@ -5,7 +5,13 @@ import {
   Query,
   QuerySnapshot,
 } from 'firebase/firestore';
-import { DependencyList, useCallback, useEffect, useState } from 'react';
+import {
+  DependencyList,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   useCollectionData,
   useDocumentData,
@@ -52,6 +58,22 @@ export function useDocumentDataOrDefault<T>(
 ): FirestorDocumentDataHookNullSafe<T> {
   const [data, loading, error, snapshot] = useDocumentData(query);
   return [data || defaultValue, loading, error, snapshot];
+}
+
+export function useDocumentDataWithCache<T>(
+  query: DocumentReference<T>,
+  initialValue: T,
+): FirestorDocumentDataHookNullSafe<T> {
+  const cache = useRef<T>(initialValue); // Keep cached value across renders
+  const [_, setDataToForceRerender] = useState<T>(initialValue);
+  const [data, loading, error, snapshot] = useDocumentData(query);
+  useEffect(() => {
+    if (data) {
+      setDataToForceRerender(data);
+      cache.current = data;
+    }
+  }, [data]);
+  return [cache.current, loading, error, snapshot];
 }
 
 /** Convenience hook to get async data. */

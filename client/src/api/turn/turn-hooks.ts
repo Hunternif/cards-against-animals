@@ -10,6 +10,7 @@ import {
 import {
   FirestoreCollectionDataHookNullSafe,
   useCollectionDataNonNull,
+  useDocumentDataWithCache,
 } from '../../hooks/data-hooks';
 import {
   playerResponseConverter,
@@ -41,15 +42,11 @@ type LastTurnHook = [
 
 /** Returns and subscribes to the current turn in the lobby. */
 export function useLastTurn(lobby: GameLobby): LastTurnHook {
-  // While the new turn is loading, return the previous turn:
-  const [prevTurn, setPrevTurn] = useState<GameTurn | undefined>(undefined);
-  const [lastTurn, loading, error] = useDocumentData(
+  const [lastTurn, loading, error] = useDocumentDataWithCache(
     doc(getTurnsRef(lobby.id), lobby.current_turn_id ?? 'UNKNOWN'),
+    undefined,
   );
-  if (lastTurn && prevTurn != lastTurn) {
-    setPrevTurn(lastTurn);
-  }
-  return [lastTurn || prevTurn, loading, error];
+  return [lastTurn, loading, error];
 }
 
 /** Returns and subscribes to all turns in the lobby. */
