@@ -7,7 +7,8 @@ interface Props {
   /** Overrides percentage value */
   pctValue?: number;
   paused?: boolean;
-  onClear?: () => void;
+  /** Called when the timer reaches 100% */
+  onCompleted?: () => void;
   /** Called a few seconds before time runs out */
   onLastCall?: () => void;
   /** Seconds until the end when 'last call' is called. */
@@ -63,7 +64,7 @@ export function TimerPie({
   endTime,
   pctValue,
   paused,
-  onClear,
+  onCompleted,
   onLastCall,
   lastCallSec,
   reverse,
@@ -72,7 +73,7 @@ export function TimerPie({
   const [percent, setPercent] = useState(
     pctValue ?? calculateElapsedPercent(startTime, endTime),
   );
-  const [calledClear, setCalledClear] = useState(false);
+  const [calledCompleted, setCalledCompleted] = useState(false);
   const [calledLastCall, setCalledLastCall] = useState(false);
 
   useEffect(() => {
@@ -99,10 +100,10 @@ export function TimerPie({
           onLastCall();
         }
         if (newValue >= 100) {
-          if (onClear && !calledClear) {
+          if (onCompleted && !calledCompleted) {
             // console.log(`Cleared timer! ${new Date()}`);
-            onClear();
-            setCalledClear(true);
+            onCompleted();
+            setCalledCompleted(true);
           }
           stopTimer();
         }
@@ -119,17 +120,17 @@ export function TimerPie({
     startTime,
     endTime,
     pctValue,
-    calledClear,
+    calledCompleted,
     calledLastCall,
     lastCallSec,
     paused,
-    onClear,
+    onCompleted,
     onLastCall,
   ]);
 
   useEffect(() => {
     // Reset when start time changes:
-    setCalledClear(false);
+    setCalledCompleted(false);
   }, [startTime]);
 
   const classes = ['timer-pie'];
