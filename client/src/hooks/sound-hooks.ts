@@ -197,14 +197,15 @@ export function useNotificationSound(
   shouldPlay: boolean,
   volume: number = 1.0,
 ): void {
-  const [hasNotified, setHasNotified] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (shouldPlay && !hasNotified) {
+    if (shouldPlay && audioRef.current == null) {
       const audio = new Audio(soundFile);
+      audioRef.current = audio;
       audio.volume = volume;
       audio.play();
-      setHasNotified(true);
+      // console.log('Playing sound:', soundFile);
     }
-  }, [soundFile, shouldPlay, hasNotified]);
+  }, [soundFile, shouldPlay]);
 }
