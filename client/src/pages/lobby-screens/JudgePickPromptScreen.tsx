@@ -17,6 +17,7 @@ import {
   pickNewPrompts,
   playPrompt,
 } from '../../api/turn/turn-prompt-api';
+import { useNotificationSound } from '../../hooks/sound-hooks';
 
 export function JudgePickPromptScreen() {
   const { lobby, turn, isJudge } = useGameContext();
@@ -26,12 +27,14 @@ export function JudgePickPromptScreen() {
     null,
   );
   const [cardCount, setCardCount] = useState(-1);
-  const [notified, setNotified] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [ending, setEnding] = useState(false);
   const { setError } = useContext(ErrorContext);
   const isHaiku = prompts.length === 1 && prompts[0].id === haikuPrompt.id;
+
+  // Play notification sound when the user becomes the judge
+  useNotificationSound(pop_3, isJudge);
 
   async function getInitialPrompts() {
     await pickNewPrompts(lobby)
@@ -101,13 +104,6 @@ export function JudgePickPromptScreen() {
   useEffect(() => {
     getPromptCount(lobby).then((c) => setCardCount(c));
   }, [lobby, prompts]);
-
-  useEffect(() => {
-    if (!notified && isJudge) {
-      new Audio(pop_3).play();
-      setNotified(true);
-    }
-  }, [notified]);
 
   return (
     <GameLayout className="pick-prompt-screen">

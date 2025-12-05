@@ -187,3 +187,21 @@ export function useSound(
     },
   };
 }
+
+/**
+ * Plays a notification sound once when a condition becomes true.
+ * Useful for notifying the user when it's their turn or when an event occurs.
+ */
+export function useNotificationSound(
+  soundFile: string,
+  shouldPlay: boolean,
+): void {
+  const [hasNotified, setHasNotified] = useState(false);
+
+  useEffect(() => {
+    if (shouldPlay && !hasNotified) {
+      new Audio(soundFile).play();
+      setHasNotified(true);
+    }
+  }, [soundFile, shouldPlay, hasNotified]);
+}
