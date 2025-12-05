@@ -8,7 +8,10 @@ import { ErrorContext } from '../../components/ErrorContext';
 import { CenteredLayout } from '../../components/layout/CenteredLayout';
 import { ScreenSizeSwitch } from '../../components/layout/ScreenSizeSwitch';
 import { useBackgroundMusic } from '../../hooks/bg-music-hooks';
-import { useSoundOnResponse } from '../../hooks/sound-hooks';
+import {
+  useNotificationSound,
+  useSoundOnResponse,
+} from '../../hooks/sound-hooks';
 import { PlayerResponse, ResponseCardInGame } from '../../shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
@@ -19,6 +22,7 @@ import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseCount } from './game-components/ResponseCount';
 import { Soundboard } from './game-components/Soundboard';
 import { TurnTimer } from './game-components/TurnTimer';
+import drum_roll from '../../assets/sounds/clock/drum_roll.mp3';
 
 const SHOW_BIG_TIMER_OVERLAY = false;
 
@@ -100,7 +104,9 @@ export function PlayerAnsweringScreen() {
     if (response) setSelectedCards(response.cards);
   }, [response]);
 
-  // Whenever a new response is added, play a sound:
+  // Play a sound when the prompt is set:
+  useNotificationSound(drum_roll, prompt !== undefined, 0.6);
+  // Play a sound whenever a new response is added:
   useSoundOnResponse();
   useBackgroundMusic(settings.enableMusic);
 
