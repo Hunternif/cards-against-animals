@@ -340,6 +340,11 @@
   font-size: 5rem;
   opacity: 0.1;
 }
+.card-response.discarding:not(:hover):not(.discarded) {
+  background-color: rgba(colors.$card-response-bg, 0.7);
+  border: 0.5em dashed colors.$card-response-bg;
+  padding: 0.25em; // adjust for border
+}
 .card-response.discarding.hoverable-card:hover .card-discard-icon {
   opacity: 0.4;
 }

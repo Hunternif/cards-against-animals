@@ -69,12 +69,13 @@ export function CardResponse({
           {selectedIndex + 1}
         </CardCenterIcon>
       )}
+      {discarding || discarded ? (
+        <CardCenterIcon>
+          <IconRecycle width={100} height={100} className="card-discard-icon" />
+        </CardCenterIcon>
+      ) : null}
       <CardBottomRight>
-        {discarding || discarded ? (
-          <IconRecycle width={24} height={24} className="card-discard-icon" />
-        ) : downvotable ? (
-          <Downvote onClick={handleDownvote} />
-        ) : null}
+        {downvotable ? <Downvote onClick={handleDownvote} /> : null}
       </CardBottomRight>
     </LargeCard>
   );
