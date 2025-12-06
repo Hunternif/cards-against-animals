@@ -8,6 +8,7 @@ import {
 import { GameButton } from '../../components/Buttons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { ProgressBar } from '../../components/ProgressBar';
+import { useHandler } from '../../hooks/data-hooks';
 import '../../scss/components/progress-bar.scss';
 import { GameLobby } from '../../shared/types';
 import { AdminSubpage } from './admin-components/AdminSubpage';
@@ -15,50 +16,24 @@ import { AdminSubpage } from './admin-components/AdminSubpage';
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
   const [gameData, setGameData] = useState<GameLobby[] | null>(null);
-  const [loadingData, setLoadingData] = useState(false);
-  const [parsing, setParsing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [fetchProgress, setFetchProgress] = useState<FetchProgressInfo | null>(
     null,
   );
 
-  const handleFetchLobbyData = async () => {
-    setLoadingData(true);
-    setError(null);
+  const [handleFetchData, fetching] = useHandler(async () => {
     setFetchProgress(null);
-    try {
-      const lobbies = await fetchAllLobbyData((progressInfo) => {
-        setFetchProgress(progressInfo);
-      });
-      setGameData(lobbies);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to fetch lobby data',
-      );
-      console.error('Error fetching lobby data:', err);
-    } finally {
-      setLoadingData(false);
-      setFetchProgress(null);
-    }
-  };
+    const lobbies = await fetchAllLobbyData((progressInfo) => {
+      setFetchProgress(progressInfo);
+    });
+    setGameData(lobbies);
+    setFetchProgress(null);
+  }, []);
 
-  const handleParseStats = async () => {
+  const [handleParseStats, parsing] = useHandler(async () => {
     if (!gameData) return;
-
-    setParsing(true);
-    setError(null);
-    try {
-      const data = await parseUserStatistics(gameData);
-      setStats(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to parse statistics',
-      );
-      console.error('Error parsing stats:', err);
-    } finally {
-      setParsing(false);
-    }
-  };
+    const data = await parseUserStatistics(gameData);
+    setStats(data);
+  }, [gameData]);
 
   return (
     <AdminSubpage
@@ -66,7 +41,7 @@ export function AdminStatsPage() {
       headerContent={
         <>
           <div className="stats-controls">
-            <GameButton onClick={handleFetchLobbyData} loading={loadingData}>
+            <GameButton onClick={handleFetchData} loading={fetching}>
               Fetch Lobby Data
             </GameButton>
             <GameButton
@@ -98,8 +73,6 @@ export function AdminStatsPage() {
       }
     >
       <div className="user-stats">
-        {error && <div className="error-message">{error}</div>}
-
         {stats.length > 0 && (
           <table className="stats-table">
             <thead>

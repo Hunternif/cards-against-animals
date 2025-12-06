@@ -15,15 +15,6 @@
 .user-stats {
   width: max-content;
 
-  .error-message {
-    background-color: rgba(255, 0, 0, 0.1);
-    border: 1px solid rgba(255, 0, 0, 0.3);
-    color: #ff6b6b;
-    padding: 0.75rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-  }
-
   .stats-table {
     border-collapse: collapse;
     background-color: rgba(255, 255, 255, 0.05);
@@ -39,7 +30,7 @@
       th {
         padding: 0.75rem 1rem;
         text-align: left;
-        font-weight: 600;
+        font-weight: 200;
         color: rgba(colors.$text, 70%);
         border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         white-space: normal;
@@ -61,7 +52,6 @@
 
       td {
         padding: 0.75rem 1rem;
-        color: rgba(colors.$text, 70%);
 
         &.player-name {
           display: flex;
