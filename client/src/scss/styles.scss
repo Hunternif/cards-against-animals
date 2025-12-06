@@ -60,6 +60,7 @@ $font-family-sans-serif: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 
 // Admin components:
 @import "admin-components/card-editor.scss";
+@import "admin-components/admin-stats.scss";
 
 // Final overrides for mobile:
 @import "mobile.scss";
