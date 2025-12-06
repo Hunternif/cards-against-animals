@@ -26,16 +26,18 @@
   }
 
   .stats-table-container {
+    // TODO: figure out a better way to fit within the screen and allow scroll
+    max-height: 80vh;
     width: 100%;
     overflow-x: auto;
   }
 
   .stats-table {
-    width: 100%;
+    width: max-content;
+    table-layout: auto;
     border-collapse: collapse;
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    overflow: hidden;
 
     thead {
       background-color: rgba(0, 0, 0, 0.2);

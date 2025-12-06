@@ -54,6 +54,7 @@ export function AdminStatsPage() {
                   <th>Avg Score</th>
                   <th>Likes</th>
                   <th>Discards</th>
+                  <th>UID</th>
                 </tr>
               </thead>
               <tbody>
@@ -65,11 +66,12 @@ export function AdminStatsPage() {
                     <CounterRow val={stat.total_games} />
                     <CounterRow val={stat.total_turns_played} />
                     <CounterRow val={stat.total_wins} />
-                    <CounterRow val={`${(stat.win_rate * 100).toFixed(0)}%`}/>
+                    <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`}/>
                     <CounterRow val={stat.total_score} />
                     <CounterRow val={stat.average_score_per_game.toFixed(1)} />
                     <CounterRow val={stat.total_likes_received} />
                     <CounterRow val={stat.total_discards} />
+                    <td className="player-uid">{stat.uid}</td>
                   </tr>
                 ))}
               </tbody>
