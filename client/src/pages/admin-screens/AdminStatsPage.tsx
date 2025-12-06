@@ -1,43 +1,66 @@
 import { useState } from 'react';
-import { fetchUserStatistics, UserStats } from '../../api/stats-api';
+import {
+  fetchUserStatistics,
+  UserStats,
+  FetchProgressInfo,
+} from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
+import { ProgressBar } from '../../components/ProgressBar';
+import '../../scss/components/progress-bar.scss';
 
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<FetchProgressInfo | null>(null);
 
   const handleFetchStats = async () => {
     setLoading(true);
     setError(null);
+    setProgress(null);
     try {
-      const data = await fetchUserStatistics();
+      const data = await fetchUserStatistics((progressInfo) => {
+        setProgress(progressInfo);
+      });
       setStats(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch statistics');
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch statistics',
+      );
       console.error('Error fetching stats:', err);
     } finally {
       setLoading(false);
+      setProgress(null);
     }
   };
 
   return (
-    <AdminSubpage title="Statistics" headerContent={
-      <div className="stats-controls">
-      <GameButton onClick={handleFetchStats} loading={loading}>
-            Fetch User Statistics
-          </GameButton>
-          {stats.length > 0 && (
-            <span className="stats-summary">
-              {stats.length} users
-            </span>
-          )}
+    <AdminSubpage
+      title="Statistics"
+      headerContent={
+        <>
+          <div className="stats-controls">
+            <GameButton onClick={handleFetchStats} loading={loading}>
+              Fetch User Statistics
+            </GameButton>
+            {stats.length > 0 && (
+              <span className="stats-summary">{stats.length} users</span>
+            )}
           </div>
-    }>
+          {progress && (
+            <div className="stats-progress">
+              <p className="progress-text">
+                Loading lobby data: {progress.current} / {progress.total}
+              </p>
+              <ProgressBar value={progress.percentage} />
+            </div>
+          )}
+        </>
+      }
+    >
       <div className="user-stats">
-
         {error && <div className="error-message">{error}</div>}
 
         {stats.length > 0 && (
@@ -65,7 +88,7 @@ export function AdminStatsPage() {
                   <CounterRow val={stat.total_games} />
                   <CounterRow val={stat.total_turns_played} />
                   <CounterRow val={stat.total_wins} />
-                  <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`}/>
+                  <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`} />
                   <CounterRow val={stat.total_score} />
                   <CounterRow val={stat.average_score_per_game.toFixed(1)} />
                   <CounterRow val={stat.total_likes_received} />
@@ -88,14 +111,14 @@ function CounterRow({ val }: { val: number | string }) {
   return <td className={classes.join(' ')}>{val}</td>;
 }
 
-function PlayerNameCell({stat}: {stat: UserStats}) {
+function PlayerNameCell({ stat }: { stat: UserStats }) {
   const player = stat.playerInLobbyRefs.at(-1);
   const names = Array.from(new Set(stat.playerInLobbyRefs.map((p) => p.name)));
   if (!player) return <i>Unknown</i>;
   return (
     <>
-    <PlayerAvatar player={player} />
-    {names.join(', ')}
+      <PlayerAvatar player={player} />
+      {names.join(', ')}
     </>
   );
 }

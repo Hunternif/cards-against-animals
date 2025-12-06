@@ -55,11 +55,19 @@ function countResponsesByPlayerInLobby(
   return count;
 }
 
+export interface FetchProgressInfo {
+  current: number;
+  total: number;
+  percentage: number;
+}
+
 /**
  * Fetches statistics for all users who have played at least one turn
  * in a non-test game.
  */
-export async function fetchUserStatistics(): Promise<UserStats[]> {
+export async function fetchUserStatistics(
+  onProgress?: (progress: FetchProgressInfo) => void,
+): Promise<UserStats[]> {
   // Map to accumulate stats per user
   const userStatsMap = new Map<string, UserStats>();
 
@@ -74,6 +82,9 @@ export async function fetchUserStatistics(): Promise<UserStats[]> {
   // Deep-fetch lobbies, and responses in turns.
   // Filter lobbies with > 1 turns
   const validLobbies = new Array<GameLobby>();
+  let processedCount = 0;
+  const totalLobbies = nonTestLobbies.length;
+  
   for (const lobby of nonTestLobbies) {
     lobby.turns = await getAllTurns(lobby.id);
     if (lobby.turns.length > 1) {
@@ -84,6 +95,16 @@ export async function fetchUserStatistics(): Promise<UserStats[]> {
           responses.map((r) => [r.player_uid, r]),
         );
       }
+    }
+    
+    // Report progress
+    processedCount++;
+    if (onProgress) {
+      onProgress({
+        current: processedCount,
+        total: totalLobbies,
+        percentage: (processedCount / totalLobbies) * 100,
+      });
     }
   }
 
