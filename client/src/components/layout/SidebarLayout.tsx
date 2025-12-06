@@ -50,7 +50,14 @@ export function Sidebar({ links, loginNode }: LayoutProps) {
           {loginNode}
         </div>
       </Col>
-      <Col style={{ paddingTop: "1em", paddingBottom: "1em" }}>
+      <Col style={{
+        paddingTop: "1em", 
+        paddingBottom: "1em", 
+        flex: "1 1 0", 
+        minWidth: 0,
+        overflowX: "auto",
+        overflowY: "auto",
+      }}>
         <Outlet />
       </Col>
     </Row>

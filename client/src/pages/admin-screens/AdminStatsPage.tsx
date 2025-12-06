@@ -3,7 +3,6 @@ import { fetchUserStatistics, UserStats } from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
-import { ScrollContainer } from '../../components/layout/ScrollContainer';
 
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
@@ -25,10 +24,9 @@ export function AdminStatsPage() {
   };
 
   return (
-    <AdminSubpage title="Statistics">
-      <div className="user-stats">
-        <div className="stats-controls">
-          <GameButton onClick={handleFetchStats} loading={loading}>
+    <AdminSubpage title="Statistics" headerContent={
+      <div className="stats-controls">
+      <GameButton onClick={handleFetchStats} loading={loading}>
             Fetch User Statistics
           </GameButton>
           {stats.length > 0 && (
@@ -36,47 +34,47 @@ export function AdminStatsPage() {
               {stats.length} users
             </span>
           )}
-        </div>
+          </div>
+    }>
+      <div className="user-stats">
 
         {error && <div className="error-message">{error}</div>}
 
         {stats.length > 0 && (
-          <ScrollContainer scrollLight className="stats-table-container">
-            <table className="stats-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Games</th>
-                  <th>Turns</th>
-                  <th>Wins</th>
-                  <th>Win Rate</th>
-                  <th>Total Score</th>
-                  <th>Avg Score</th>
-                  <th>Likes</th>
-                  <th>Discards</th>
-                  <th>UID</th>
+          <table className="stats-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Games</th>
+                <th>Turns</th>
+                <th>Wins</th>
+                <th>Win Rate</th>
+                <th>Total Score</th>
+                <th>Avg Score</th>
+                <th>Likes</th>
+                <th>Discards</th>
+                <th>UID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stats.map((stat) => (
+                <tr key={stat.uid}>
+                  <td className="player-name">
+                    <PlayerNameCell stat={stat} />
+                  </td>
+                  <CounterRow val={stat.total_games} />
+                  <CounterRow val={stat.total_turns_played} />
+                  <CounterRow val={stat.total_wins} />
+                  <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`}/>
+                  <CounterRow val={stat.total_score} />
+                  <CounterRow val={stat.average_score_per_game.toFixed(1)} />
+                  <CounterRow val={stat.total_likes_received} />
+                  <CounterRow val={stat.total_discards} />
+                  <td className="player-uid">{stat.uid}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {stats.map((stat) => (
-                  <tr key={stat.uid}>
-                    <td className="player-name">
-                      <PlayerNameCell stat={stat} />
-                    </td>
-                    <CounterRow val={stat.total_games} />
-                    <CounterRow val={stat.total_turns_played} />
-                    <CounterRow val={stat.total_wins} />
-                    <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`}/>
-                    <CounterRow val={stat.total_score} />
-                    <CounterRow val={stat.average_score_per_game.toFixed(1)} />
-                    <CounterRow val={stat.total_likes_received} />
-                    <CounterRow val={stat.total_discards} />
-                    <td className="player-uid">{stat.uid}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </ScrollContainer>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </AdminSubpage>

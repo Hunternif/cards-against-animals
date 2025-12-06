@@ -70,7 +70,7 @@
   width: 100%;
   min-height: 0; // this prevents overflowing parent flexbox
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   display: flex;
   flex-direction: column;
 }
