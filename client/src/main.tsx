@@ -11,6 +11,7 @@ import { AdminDecksPage } from './pages/admin-screens/AdminDecksPage.tsx'
 import { AdminLobbiesPage } from './pages/admin-screens/AdminLobbiesPage.tsx'
 import { AdminUploadDeckPage } from './pages/admin-screens/AdminUploadDeckPage.tsx'
 import { AdminUploadDeckTsvPage } from './pages/admin-screens/AdminUploadDeckTsvPage.tsx'
+import { AdminStatsPage } from './pages/admin-screens/AdminStatsPage.tsx'
 
 
 const router = createBrowserRouter([
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "uploadDeckTsv",
         element: <AdminUploadDeckTsvPage />
+      },
+      {
+        path: "stats",
+        element: <AdminStatsPage />
       }
     ],
   }
