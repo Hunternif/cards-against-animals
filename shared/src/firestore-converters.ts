@@ -70,11 +70,12 @@ export const lobbyConverter: FConverter<GameLobby> = {
     ret.current_turn_id = data.current_turn_id;
     ret.time_created = (data.time_created as FTimestamp | null)?.toDate();
     ret.deck_ids = new Set<string>(data.deck_ids ?? []);
-    ret.response_tags = new Map(
-      (data.response_tags ?? [])
-        .map(mapTagInGame)
-        .map((t: TagInGame) => [t.name, t]),
-    );
+    if (data.response_tags != null && Array.isArray(data.response_tags)) {
+      ret.response_tags = new Map(
+        data.response_tags.map(mapTagInGame).map((t: TagInGame) => [t.name, t]),
+      );
+    }
+
     ret.next_lobby_id = data.next_lobby_id;
     return ret;
   },
