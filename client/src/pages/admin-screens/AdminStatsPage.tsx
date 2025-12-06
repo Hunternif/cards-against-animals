@@ -1,38 +1,62 @@
 import { useState } from 'react';
 import {
-  fetchUserStatistics,
-  UserStats,
+  fetchAllLobbyData,
   FetchProgressInfo,
+  parseUserStatistics,
+  UserStats,
 } from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
-import { AdminSubpage } from './admin-components/AdminSubpage';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { ProgressBar } from '../../components/ProgressBar';
 import '../../scss/components/progress-bar.scss';
+import { GameLobby } from '../../shared/types';
+import { AdminSubpage } from './admin-components/AdminSubpage';
 
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [gameData, setGameData] = useState<GameLobby[] | null>(null);
+  const [loadingData, setLoadingData] = useState(false);
+  const [parsing, setParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState<FetchProgressInfo | null>(null);
+  const [fetchProgress, setFetchProgress] = useState<FetchProgressInfo | null>(
+    null,
+  );
 
-  const handleFetchStats = async () => {
-    setLoading(true);
+  const handleFetchLobbyData = async () => {
+    setLoadingData(true);
     setError(null);
-    setProgress(null);
+    setFetchProgress(null);
     try {
-      const data = await fetchUserStatistics((progressInfo) => {
-        setProgress(progressInfo);
+      const lobbies = await fetchAllLobbyData((progressInfo) => {
+        setFetchProgress(progressInfo);
       });
+      setGameData(lobbies);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch lobby data',
+      );
+      console.error('Error fetching lobby data:', err);
+    } finally {
+      setLoadingData(false);
+      setFetchProgress(null);
+    }
+  };
+
+  const handleParseStats = async () => {
+    if (!gameData) return;
+
+    setParsing(true);
+    setError(null);
+    try {
+      const data = await parseUserStatistics(gameData);
       setStats(data);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to fetch statistics',
+        err instanceof Error ? err.message : 'Failed to parse statistics',
       );
-      console.error('Error fetching stats:', err);
+      console.error('Error parsing stats:', err);
     } finally {
-      setLoading(false);
-      setProgress(null);
+      setParsing(false);
     }
   };
 
@@ -42,19 +66,32 @@ export function AdminStatsPage() {
       headerContent={
         <>
           <div className="stats-controls">
-            <GameButton onClick={handleFetchStats} loading={loading}>
-              Fetch User Statistics
+            <GameButton onClick={handleFetchLobbyData} loading={loadingData}>
+              Fetch Lobby Data
             </GameButton>
+            <GameButton
+              onClick={handleParseStats}
+              loading={parsing}
+              disabled={!gameData}
+            >
+              Parse Statistics
+            </GameButton>
+            {gameData && (
+              <span className="stats-summary">
+                {gameData.length} games loaded
+              </span>
+            )}
             {stats.length > 0 && (
               <span className="stats-summary">{stats.length} users</span>
             )}
           </div>
-          {progress && (
+          {fetchProgress && (
             <div className="stats-progress">
               <p className="progress-text">
-                Loading lobby data: {progress.current} / {progress.total}
+                Loading lobby data: {fetchProgress.current} /{' '}
+                {fetchProgress.total}
               </p>
-              <ProgressBar value={progress.percentage} />
+              <ProgressBar value={fetchProgress.percentage} />
             </div>
           )}
         </>

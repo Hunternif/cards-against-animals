@@ -62,15 +62,12 @@ export interface FetchProgressInfo {
 }
 
 /**
- * Fetches statistics for all users who have played at least one turn
- * in a non-test game.
+ * Fetches and enriches all lobby data including turns and player responses.
+ * Returns only valid lobbies (non-test, with > 1 turn).
  */
-export async function fetchUserStatistics(
+export async function fetchAllLobbyData(
   onProgress?: (progress: FetchProgressInfo) => void,
-): Promise<UserStats[]> {
-  // Map to accumulate stats per user
-  const userStatsMap = new Map<string, UserStats>();
-
+): Promise<GameLobby[]> {
   // Fetch all played lobbies
   const lobbies = await getPlayedLobbies();
 
@@ -107,6 +104,18 @@ export async function fetchUserStatistics(
       });
     }
   }
+  
+  return validLobbies;
+}
+
+/**
+ * Parses lobby data to generate user statistics.
+ */
+export async function parseUserStatistics(
+  validLobbies: GameLobby[],
+): Promise<UserStats[]> {
+  // Map to accumulate stats per user
+  const userStatsMap = new Map<string, UserStats>();
 
   // Process each lobby
   for (const lobby of validLobbies) {
@@ -179,4 +188,15 @@ export async function fetchUserStatistics(
   ); // Sort by games played
 
   return stats;
+}
+
+/**
+ * Fetches statistics for all users who have played at least one turn
+ * in a non-test game.
+ */
+export async function fetchUserStatistics(
+  onProgress?: (progress: FetchProgressInfo) => void,
+): Promise<UserStats[]> {
+  const validLobbies = await fetchAllLobbyData(onProgress);
+  return await parseUserStatistics(validLobbies);
 }
