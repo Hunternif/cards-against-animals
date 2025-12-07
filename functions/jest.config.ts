@@ -21,7 +21,8 @@ export default {
 
   // Map @shared alias to the actual path
   moduleNameMapper: {
-    '^@shared/(.*)$': '<rootDir>/../shared/src/$1'
+    '^@shared/firestore-adapter$': '<rootDir>/src/firestore-adapter',
+    '^@shared/(.*)$': '<rootDir>/../shared/src/$1',
   },
 
   // Match only files containing ".test.ts"

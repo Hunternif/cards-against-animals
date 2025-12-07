@@ -18,7 +18,8 @@
     /* Path mapping for shared code */
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["../shared/src/*"]
+      "@shared/*": ["../shared/src/*"],
+      "@shared/firestore-adapter": ["./src/firestore-adapter"]
     },
 
     /* Linting */

@@ -9,6 +9,9 @@
     "target": "es2017",
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "paths": {
+      "@shared/firestore-adapter": ["./src/firestore-adapter"]
+    },
   },
   "compileOnSave": true,
   "include": [

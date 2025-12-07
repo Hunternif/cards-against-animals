@@ -12,6 +12,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@shared': resolve(__dirname, '../shared/src'),
+      '@shared/firestore-adapter': resolve(__dirname, './src/firestore-adapter'),
     },
   },
   // The following scrip keeps file names without hashes.

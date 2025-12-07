@@ -3,7 +3,7 @@ import {
   FDocSnapshot,
   FTimestamp,
   fServerTimestamp,
-} from '../firestore-adapter';
+} from '@shared/firestore-adapter';
 import {
   CAAUser,
   Deck,
