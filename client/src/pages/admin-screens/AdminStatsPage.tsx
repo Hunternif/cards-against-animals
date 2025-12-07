@@ -10,6 +10,8 @@ import {
   recalculateDerivedStats,
   UserStats,
   YearFilter,
+  UserMergeMap,
+  createUserMergeMap,
 } from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
 import { Checkbox } from '../../components/Checkbox';
@@ -61,6 +63,7 @@ export function AdminStatsPage() {
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<YearFilter>('all');
   const [availableYears, setAvailableYears] = useState<number[]>([]);
+  const [userMergeMap, setUserMergeMap] = useState<UserMergeMap>(new Map());
   const yearOptions: SelectOption<string>[] = [
     ['all', 'All Years'],
     ...availableYears.map(
@@ -85,9 +88,9 @@ export function AdminStatsPage() {
   const [handleParseStats, parsing] = useHandler(async () => {
     if (!gameData) return;
     const filteredLobbies = filterLobbiesByYear(gameData, selectedYear);
-    const data = await parseUserStatistics(filteredLobbies);
+    const data = await parseUserStatistics(filteredLobbies, userMergeMap);
     setStats(data);
-  }, [gameData, selectedYear]);
+  }, [gameData, selectedYear, userMergeMap]);
 
   // Auto-parse stats when game data is loaded:
   useEffect(() => {
@@ -115,22 +118,25 @@ export function AdminStatsPage() {
     const usersToMerge = stats.filter((s) => selectedUsers.has(s.uid));
     const primaryUser = usersToMerge[0];
 
-    const merged = mergeUserStats(
+    const { merged, mergedUids } = mergeUserStats(
       usersToMerge,
       primaryUser.uid,
       primaryUser.name,
     );
 
-    // Remove merged users and add the combined one
-    const newStats = stats.filter((s) => !selectedUsers.has(s.uid));
-    newStats.push(merged);
+    // Update the merge map with the new merge
+    const newMergeMap = new Map(userMergeMap);
+    // Add or update the merge entry
+    newMergeMap.set(primaryUser.uid, mergedUids);
+    setUserMergeMap(newMergeMap);
 
-    // Recalculate derived stats for the merged user
-    await recalculateDerivedStats(newStats);
+    // Re-parse stats with the updated merge map
+    if (gameData) {
+      const filteredLobbies = filterLobbiesByYear(gameData, selectedYear);
+      const newStats = await parseUserStatistics(filteredLobbies, newMergeMap);
+      setStats(newStats);
+    }
 
-    newStats.sort((a, b) => b.total_games - a.total_games);
-
-    setStats(newStats);
     setSelectedUsers(new Set());
     setMergeMode(false);
   };
@@ -151,7 +157,7 @@ export function AdminStatsPage() {
     // Auto re-parse if we already have game data
     if (gameData) {
       const filteredLobbies = filterLobbiesByYear(gameData, newYear);
-      parseUserStatistics(filteredLobbies).then(setStats);
+      parseUserStatistics(filteredLobbies, userMergeMap).then(setStats);
     }
 
     // Reset merge mode

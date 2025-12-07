@@ -271,6 +271,12 @@ export interface YearlyGameData {
 }
 
 /**
+ * Maps canonical UID to a list of all UIDs that should be merged into it.
+ * The canonical UID should also be included in the list.
+ */
+export type UserMergeMap = Map<string, string[]>;
+
+/**
  * Fetches and enriches all lobby data including turns and player responses.
  * Returns only valid lobbies (non-test, with > 1 turn).
  */
@@ -354,12 +360,26 @@ export function filterLobbiesByYear(
 
 /**
  * Parses lobby data to generate user statistics.
+ * @param validLobbies The lobbies to parse
+ * @param userMergeMap Optional map of canonical UID to merged UIDs
  */
 export async function parseUserStatistics(
   validLobbies: GameLobby[],
+  userMergeMap?: UserMergeMap,
 ): Promise<UserStats[]> {
   // Map to accumulate stats per user
   const userStatsMap = new Map<string, UserStats>();
+
+  // Helper to get canonical UID (handles merged users)
+  const getCanonicalUid = (uid: string): string => {
+    if (!userMergeMap) return uid;
+    for (const [canonicalUid, mergedUids] of userMergeMap.entries()) {
+      if (mergedUids.includes(uid)) {
+        return canonicalUid;
+      }
+    }
+    return uid;
+  };
 
   // Process each lobby
   for (const lobby of validLobbies) {
@@ -378,11 +398,14 @@ export async function parseUserStatistics(
 
       const turnsCount = countResponsesByPlayerInLobby(lobby, player.uid);
 
+      // Get canonical UID for this player (may be merged)
+      const canonicalUid = getCanonicalUid(player.uid);
+
       // Get or create stats entry for this user
-      let userStat = userStatsMap.get(player.uid);
+      let userStat = userStatsMap.get(canonicalUid);
       if (!userStat) {
         userStat = {
-          uid: player.uid,
+          uid: canonicalUid,
           name: player.name,
           playerInLobbyRefs: [],
           is_bot: player.is_bot,
@@ -407,7 +430,7 @@ export async function parseUserStatistics(
           top_teammates: [],
           top_prompts_played: [],
         };
-        userStatsMap.set(player.uid, userStat);
+        userStatsMap.set(canonicalUid, userStat);
       }
       userStat.playerInLobbyRefs.push(player);
       userStat.total_turns_played += turnsCount;
@@ -518,7 +541,28 @@ export async function fetchUserStatistics(
 }
 
 /**
+ * Creates a user merge map from a list of stats.
+ * This extracts which UIDs are merged together based on playerInLobbyRefs.
+ */
+export function createUserMergeMap(stats: UserStats[]): UserMergeMap {
+  const mergeMap: UserMergeMap = new Map();
+  
+  for (const stat of stats) {
+    const allUids = Array.from(
+      new Set(stat.playerInLobbyRefs.map((p) => p.uid))
+    );
+    // Only add to map if there are multiple UIDs (i.e., merged users)
+    if (allUids.length > 1 || allUids[0] !== stat.uid) {
+      mergeMap.set(stat.uid, allUids);
+    }
+  }
+  
+  return mergeMap;
+}
+
+/**
  * Merges multiple user stats into a single combined user stat.
+ * Returns the merged stats and the UIDs that were merged.
  * @param users Array of UserStats to merge
  * @param primaryUid The UID to use for the merged user (typically the first one)
  * @param primaryName The name to use for the merged user
@@ -527,7 +571,7 @@ export function mergeUserStats(
   users: UserStats[],
   primaryUid: string,
   primaryName: string,
-): UserStats {
+): { merged: UserStats; mergedUids: string[] } {
   if (users.length === 0) {
     throw new Error('Cannot merge empty user list');
   }
@@ -535,6 +579,7 @@ export function mergeUserStats(
   const mergedGames = new Set<GameLobby>();
   const mergedPlayerRefs: PlayerInLobby[] = [];
   const mergedGamesPerMonth = new Map<string, number>();
+  const mergedUids = new Set<string>();
   let totalTurnsPlayed = 0;
   let totalWins = 0;
   let totalLikes = 0;
@@ -550,6 +595,10 @@ export function mergeUserStats(
   // Combine all stats
   for (const user of users) {
     mergedPlayerRefs.push(...user.playerInLobbyRefs);
+    // Collect all UIDs from this user
+    for (const ref of user.playerInLobbyRefs) {
+      mergedUids.add(ref.uid);
+    }
     totalTurnsPlayed += user.total_turns_played;
     totalWins += user.total_wins;
     totalLikes += user.total_likes_received;
@@ -639,7 +688,10 @@ export function mergeUserStats(
     top_prompts_played: [],
   };
 
-  return merged;
+  return {
+    merged,
+    mergedUids: Array.from(mergedUids),
+  };
 }
 
 /**
