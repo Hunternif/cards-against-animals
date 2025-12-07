@@ -270,6 +270,15 @@ export interface YearlyGameData {
   lobbies: GameLobby[];
 }
 
+export interface GlobalStats {
+  /** Top prompts played across all games */
+  top_prompts: Array<{ prompt: PromptCardStats; count: number }>;
+  /** Top response cards played across all games */
+  top_responses: Array<{ card: ResponseCardStats; count: number }>;
+  /** Top months by number of games played */
+  top_months: Array<{ month: string; games: number }>;
+}
+
 /**
  * Maps canonical UID to a list of all UIDs that should be merged into it.
  * The canonical UID should also be included in the list.
@@ -359,6 +368,74 @@ export function filterLobbiesByYear(
 }
 
 /**
+ * Calculates global statistics across all lobbies and players.
+ */
+function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
+  const promptUsage = new Map<string, { prompt: PromptCardStats; count: number }>();
+  const responseUsage = new Map<string, { card: ResponseCardStats; count: number }>();
+  const gamesPerMonth = new Map<string, number>();
+
+  for (const lobby of lobbies) {
+    // Track games per month
+    const lobbyTime = lobby.time_created || new Date();
+    const monthKey = `${lobbyTime.getFullYear()}-${String(
+      lobbyTime.getMonth() + 1,
+    ).padStart(2, '0')}`;
+    const currentMonthCount = gamesPerMonth.get(monthKey) || 0;
+    gamesPerMonth.set(monthKey, currentMonthCount + 1);
+
+    // Process each turn
+    for (const turn of lobby.turns) {
+      // Track prompts
+      if (turn.prompts && turn.prompts.length > 0) {
+        const prompt = turn.prompts[0];
+        const existing = promptUsage.get(prompt.content);
+        if (existing) {
+          existing.count++;
+        } else {
+          promptUsage.set(prompt.content, {
+            prompt: copyPromptCardStats(prompt),
+            count: 1,
+          });
+        }
+      }
+
+      // Track response cards played
+      for (const [_, response] of turn.player_responses) {
+        for (const card of response.cards) {
+          const existing = responseUsage.get(card.content);
+          if (existing) {
+            existing.count++;
+            // Prefer non-action cards
+            if (existing.card.action && !card.action) {
+              existing.card = copyResponseCardStats(card);
+            }
+          } else {
+            responseUsage.set(card.content, {
+              card: copyResponseCardStats(card),
+              count: 1,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    top_prompts: Array.from(promptUsage.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5),
+    top_responses: Array.from(responseUsage.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5),
+    top_months: Array.from(gamesPerMonth.entries())
+      .map(([month, games]) => ({ month, games }))
+      .sort((a, b) => b.games - a.games)
+      .slice(0, 5),
+  };
+}
+
+/**
  * Parses lobby data to generate user statistics.
  * @param validLobbies The lobbies to parse
  * @param userMergeMap Optional map of canonical UID to merged UIDs
@@ -366,7 +443,7 @@ export function filterLobbiesByYear(
 export async function parseUserStatistics(
   validLobbies: GameLobby[],
   userMergeMap?: UserMergeMap,
-): Promise<UserStats[]> {
+): Promise<{ userStats: UserStats[]; globalStats: GlobalStats }> {
   // Map to accumulate stats per user
   const userStatsMap = new Map<string, UserStats>();
 
@@ -526,7 +603,10 @@ export async function parseUserStatistics(
     (a, b) => b.total_games - a.total_games,
   ); // Sort by games played
 
-  return stats;
+  // Calculate global statistics
+  const globalStats = calculateGlobalStats(validLobbies);
+
+  return { userStats: stats, globalStats };
 }
 
 /**
@@ -535,7 +615,7 @@ export async function parseUserStatistics(
  */
 export async function fetchUserStatistics(
   onProgress?: (progress: FetchProgressInfo) => void,
-): Promise<UserStats[]> {
+): Promise<{ userStats: UserStats[]; globalStats: GlobalStats }> {
   const validLobbies = await fetchAllLobbyData(onProgress);
   return await parseUserStatistics(validLobbies);
 }

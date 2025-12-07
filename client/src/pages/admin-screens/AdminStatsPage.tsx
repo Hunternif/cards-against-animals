@@ -5,13 +5,12 @@ import {
   FetchProgressInfo,
   filterLobbiesByYear,
   getAvailableYears,
+  GlobalStats,
   mergeUserStats,
   parseUserStatistics,
-  recalculateDerivedStats,
-  UserStats,
-  YearFilter,
   UserMergeMap,
-  createUserMergeMap,
+  UserStats,
+  YearFilter
 } from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
 import { Checkbox } from '../../components/Checkbox';
@@ -26,6 +25,7 @@ import { ProgressBar } from '../../components/ProgressBar';
 import { useHandler } from '../../hooks/data-hooks';
 import '../../scss/components/progress-bar.scss';
 import { GameLobby } from '../../shared/types';
+import { AdminGlobalStatsSection } from './admin-components/AdminGlobalStatsSection';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 
 /**
@@ -54,6 +54,7 @@ function formatDate(date: Date | undefined) {
 
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
+  const [globalStats, setGlobalStats] = useState<GlobalStats | null>(null);
   const [gameData, setGameData] = useState<GameLobby[] | null>(null);
   const [fetchProgress, setFetchProgress] = useState<FetchProgressInfo | null>(
     null,
@@ -88,8 +89,12 @@ export function AdminStatsPage() {
   const [handleParseStats, parsing] = useHandler(async () => {
     if (!gameData) return;
     const filteredLobbies = filterLobbiesByYear(gameData, selectedYear);
-    const data = await parseUserStatistics(filteredLobbies, userMergeMap);
-    setStats(data);
+    const { userStats, globalStats } = await parseUserStatistics(
+      filteredLobbies,
+      userMergeMap,
+    );
+    setStats(userStats);
+    setGlobalStats(globalStats);
   }, [gameData, selectedYear, userMergeMap]);
 
   // Auto-parse stats when game data is loaded:
@@ -133,8 +138,12 @@ export function AdminStatsPage() {
     // Re-parse stats with the updated merge map
     if (gameData) {
       const filteredLobbies = filterLobbiesByYear(gameData, selectedYear);
-      const newStats = await parseUserStatistics(filteredLobbies, newMergeMap);
-      setStats(newStats);
+      const { userStats, globalStats } = await parseUserStatistics(
+        filteredLobbies,
+        newMergeMap,
+      );
+      setStats(userStats);
+      setGlobalStats(globalStats);
     }
 
     setSelectedUsers(new Set());
@@ -151,13 +160,18 @@ export function AdminStatsPage() {
     exportGameDataToFile(gameData);
   };
 
-  const handleSelectYear = (newYear: YearFilter) => {
+  const handleSelectYear = async (newYear: YearFilter) => {
     setSelectedYear(newYear);
 
     // Auto re-parse if we already have game data
     if (gameData) {
       const filteredLobbies = filterLobbiesByYear(gameData, newYear);
-      parseUserStatistics(filteredLobbies, userMergeMap).then(setStats);
+      const { userStats, globalStats } = await parseUserStatistics(
+        filteredLobbies,
+        userMergeMap,
+      );
+      setStats(userStats);
+      setGlobalStats(globalStats);
     }
 
     // Reset merge mode
@@ -249,6 +263,8 @@ export function AdminStatsPage() {
       }
     >
       <div className="user-stats">
+        {globalStats && <AdminGlobalStatsSection globalStats={globalStats} />}
+
         {stats.length > 0 && (
           <table className="stats-table">
             <thead>
@@ -420,7 +436,8 @@ function UserStatsDetails({ stat }: { stat: UserStats }) {
           <ul>
             {stat.top_liked_responses.map((item, idx) => (
               <li key={idx}>
-                {item.cards.map((c) => c.content).join(' / ')} ({(item.normalized_likes * 100).toFixed(0)}% of{' '}
+                {item.cards.map((c) => c.content).join(' / ')} (
+                {(item.normalized_likes * 100).toFixed(0)}% of{' '}
                 {item.lobby_size - 1} players)
               </li>
             ))}
