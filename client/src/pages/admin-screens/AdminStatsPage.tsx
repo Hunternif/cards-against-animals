@@ -6,6 +6,9 @@ import {
   UserStats,
   mergeUserStats,
   recalculateDerivedStats,
+  getAvailableYears,
+  filterLobbiesByYear,
+  YearFilter,
 } from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
@@ -19,6 +22,7 @@ import {
   IconChevronDownInline,
   IconChevronUpInline,
 } from '../../components/Icons';
+import { SelectInput, SelectOption } from '../../components/FormControls';
 
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
@@ -29,6 +33,14 @@ export function AdminStatsPage() {
   const [mergeMode, setMergeMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<YearFilter>('all');
+  const [availableYears, setAvailableYears] = useState<number[]>([]);
+  const yearOptions: SelectOption<string>[] = [
+    ['all', 'All Years'],
+    ...availableYears.map(
+      (year) => [year.toString(), year.toString()] as SelectOption<string>,
+    ),
+  ];
 
   const [handleFetchData, fetching] = useHandler(async () => {
     setFetchProgress(null);
@@ -37,13 +49,19 @@ export function AdminStatsPage() {
     });
     setGameData(lobbies);
     setFetchProgress(null);
+
+    // Extract available years
+    const years = getAvailableYears(lobbies);
+    setAvailableYears(years);
+    setSelectedYear('all');
   }, []);
 
   const [handleParseStats, parsing] = useHandler(async () => {
     if (!gameData) return;
-    const data = await parseUserStatistics(gameData);
+    const filteredLobbies = filterLobbiesByYear(gameData, selectedYear);
+    const data = await parseUserStatistics(filteredLobbies);
     setStats(data);
-  }, [gameData]);
+  }, [gameData, selectedYear]);
 
   const toggleUserSelection = (uid: string) => {
     const newSelection = new Set(selectedUsers);
@@ -64,7 +82,11 @@ export function AdminStatsPage() {
     const usersToMerge = stats.filter((s) => selectedUsers.has(s.uid));
     const primaryUser = usersToMerge[0];
 
-    const merged = mergeUserStats(usersToMerge, primaryUser.uid, primaryUser.name);
+    const merged = mergeUserStats(
+      usersToMerge,
+      primaryUser.uid,
+      primaryUser.name,
+    );
 
     // Remove merged users and add the combined one
     const newStats = stats.filter((s) => !selectedUsers.has(s.uid));
@@ -85,36 +107,67 @@ export function AdminStatsPage() {
     setSelectedUsers(new Set());
   };
 
+  const handleSelectYear = (newYear: YearFilter) => {
+    setSelectedYear(newYear);
+
+    // Auto re-parse if we already have game data
+    if (gameData) {
+      const filteredLobbies = filterLobbiesByYear(gameData, newYear);
+      parseUserStatistics(filteredLobbies).then(setStats);
+    }
+
+    // Reset merge mode
+    setMergeMode(false);
+    setSelectedUsers(new Set());
+  };
+
   return (
     <AdminSubpage
       title="Statistics"
       headerContent={
         <>
           <div className="stats-controls">
-            <GameButton onClick={handleFetchData} loading={fetching}>
-              Fetch Lobby Data
+            <GameButton small onClick={handleFetchData} loading={fetching}>
+              Fetch Game Data
             </GameButton>
             <GameButton
+              small
               onClick={handleParseStats}
               loading={parsing}
               disabled={!gameData}
             >
               Parse Statistics
             </GameButton>
+            {availableYears.length > 0 && (
+              <SelectInput
+                small
+                value={selectedYear.toString()}
+                options={yearOptions}
+                onChange={async (value) => {
+                  const newYear = value === 'all' ? 'all' : parseInt(value);
+                  handleSelectYear(newYear);
+                }}
+                className="year-selector"
+                disabled={parsing || fetching}
+              />
+            )}
             {stats.length > 0 && !mergeMode && (
-              <GameButton onClick={() => setMergeMode(true)}>
+              <GameButton secondary small onClick={() => setMergeMode(true)}>
                 Merge Users
               </GameButton>
             )}
             {mergeMode && (
               <>
                 <GameButton
+                  small
                   onClick={handleMergeUsers}
                   disabled={selectedUsers.size < 2}
                 >
                   Merge Selected ({selectedUsers.size})
                 </GameButton>
-                <GameButton onClick={cancelMerge}>Cancel</GameButton>
+                <GameButton small onClick={cancelMerge}>
+                  Cancel
+                </GameButton>
               </>
             )}
             {gameData && (
@@ -123,7 +176,10 @@ export function AdminStatsPage() {
               </span>
             )}
             {stats.length > 0 && (
-              <span className="stats-summary">{stats.length} users</span>
+              <span className="stats-summary">
+                {stats.length} users
+                {selectedYear !== 'all' && ` (${selectedYear})`}
+              </span>
             )}
           </div>
           {fetchProgress && (

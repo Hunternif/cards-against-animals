@@ -183,6 +183,13 @@ export interface FetchProgressInfo {
   percentage: number;
 }
 
+export type YearFilter = number | 'all';
+
+export interface YearlyGameData {
+  year: YearFilter;
+  lobbies: GameLobby[];
+}
+
 /**
  * Fetches and enriches all lobby data including turns and player responses.
  * Returns only valid lobbies (non-test, with > 1 turn).
@@ -228,6 +235,35 @@ export async function fetchAllLobbyData(
   }
 
   return validLobbies;
+}
+
+/**
+ * Groups lobbies by year and returns available years.
+ */
+export function getAvailableYears(lobbies: GameLobby[]): number[] {
+  const years = new Set<number>();
+  for (const lobby of lobbies) {
+    if (lobby.time_created) {
+      years.add(lobby.time_created.getFullYear());
+    }
+  }
+  return Array.from(years).sort((a, b) => b - a); // Most recent first
+}
+
+/**
+ * Filters lobbies by year.
+ */
+export function filterLobbiesByYear(
+  lobbies: GameLobby[],
+  year: YearFilter,
+): GameLobby[] {
+  if (year === 'all') {
+    return lobbies;
+  }
+  return lobbies.filter((lobby) => {
+    if (!lobby.time_created) return false;
+    return lobby.time_created.getFullYear() === year;
+  });
 }
 
 /**
