@@ -329,9 +329,11 @@ export function AdminStatsPage() {
                   </tr>
                   {expandedUser === stat.uid && (
                     <tr className="detail-row">
-                      <td colSpan={mergeMode ? 17 : 16}>
+                      <td></td>
+                      <td colSpan={9}>
                         <UserStatsDetails stat={stat} />
                       </td>
+                      <td colSpan={6}></td>
                     </tr>
                   )}
                 </Fragment>

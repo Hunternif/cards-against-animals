@@ -111,6 +111,11 @@
           z-index: 5;
           background-color: inherit;
         }
+
+        &.detail-row {
+          position: sticky;
+          left: 50px;
+        }
       }
 
       .col-counter {
@@ -125,6 +130,10 @@
       .col-date {
         font-family: monospace;
         text-align: center;
+      }
+
+      .user-stats-details {
+        padding: 0.5rem;
       }
     }
   }
