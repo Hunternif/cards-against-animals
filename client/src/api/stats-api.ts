@@ -1,22 +1,27 @@
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { firestore } from '../firebase';
 import { lobbyConverter } from '@shared/firestore-converters';
 import {
   GameLobby,
+  GlobalStats,
   PlayerInLobby,
   PromptCardInGame,
+  PromptCardStats,
   ResponseCardInGame,
-  ResponseCardInHand,
+  ResponseCardStats,
+  UserMergeMap,
+  UserStats,
+  YearFilter,
 } from '@shared/types';
+import { copyFields } from '@shared/utils';
+import { saveAs } from 'file-saver';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { firestore } from '../firebase';
 import {
   getAllPlayersInLobby,
   getAllPlayersStates,
 } from './lobby/lobby-player-api';
+import { getTurnPrompt } from './turn/turn-prompt-api';
 import { getAllTurns } from './turn/turn-repository';
 import { getAllPlayerResponses } from './turn/turn-response-api';
-import { saveAs } from 'file-saver';
-import { copyFields } from '@shared/utils';
-import { getTurnPrompt } from './turn/turn-prompt-api';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -24,67 +29,20 @@ import { getTurnPrompt } from './turn/turn-prompt-api';
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-export type ResponseCardStats = Omit<
-  ResponseCardInGame,
-  'random_index' | 'rating' | 'type'
->;
-
-export type PromptCardStats = Omit<
-  PromptCardInGame,
-  'random_index' | 'rating' | 'type'
->;
+// Re-export types from shared for backward compatibility
+export type {
+  GlobalStats,
+  PromptCardStats,
+  ResponseCardStats,
+  UserMergeMap,
+  UserStats,
+} from '@shared/types';
 
 function copyResponseCardStats(card: ResponseCardInGame): ResponseCardStats {
   return copyFields(card, ['random_index', 'rating', 'type']);
 }
 function copyPromptCardStats(card: PromptCardInGame): PromptCardStats {
   return copyFields(card, ['random_index', 'rating', 'type']);
-}
-
-export interface UserStats {
-  uid: string;
-  name: string; // the last known name
-  playerInLobbyRefs: PlayerInLobby[];
-  is_bot: boolean;
-  total_games: number;
-  total_turns_played: number;
-  total_wins: number;
-  total_likes_received: number;
-  total_score: number;
-  total_discards: number;
-  average_score_per_game: number;
-  win_rate: number; // wins per turn
-  // To track unique games played
-  games: Set<GameLobby>;
-  // New fields:
-  first_time_played?: Date;
-  last_time_played?: Date;
-  /** Total time spent playing in milliseconds */
-  total_time_played_ms: number;
-  /** Average time per game in milliseconds */
-  average_time_per_game_ms: number;
-  /** Median time per game in milliseconds */
-  median_time_per_game_ms: number;
-  /** Median score per game */
-  median_score_per_game: number;
-  /** Individual game durations for calculating median */
-  game_durations_ms: number[];
-  /** Individual game scores for calculating median */
-  game_scores: number[];
-  /** Maps month string (YYYY-MM) to number of games played */
-  games_per_month: Map<string, number>;
-  /** Top cards used, sorted by frequency */
-  top_cards_played: Array<{ card: ResponseCardStats; count: number }>;
-  /** Top responses that received likes, normalized by lobby size */
-  top_liked_responses: Array<{
-    cards: ResponseCardStats[];
-    normalized_likes: number;
-    lobby_size: number;
-  }>;
-  /** Top players this user has played with, sorted by frequency */
-  top_teammates: Array<{ uid: string; name: string; games: number }>;
-  /** Top prompts this user has chosen as judge, sorted by frequency */
-  top_prompts_played: Array<{ prompt: PromptCardStats; count: number }>;
 }
 
 const lobbiesRef = collection(firestore, 'lobbies').withConverter(
@@ -154,6 +112,8 @@ async function calculateDerivedStats(
     >();
 
     // Process each game this user played
+    if (!userStat.games) continue;
+
     for (const lobby of userStat.games) {
       const lobbySize = lobby.players.length; // including spectators
 
@@ -263,30 +223,6 @@ export interface FetchProgressInfo {
   percentage: number;
 }
 
-export type YearFilter = number | 'all';
-
-export interface YearlyGameData {
-  year: YearFilter;
-  lobbies: GameLobby[];
-}
-
-export interface GlobalStats {
-  /** Top prompts played across all games */
-  top_prompts: Array<{ prompt: PromptCardStats; count: number }>;
-  /** Top response cards played across all games */
-  top_responses: Array<{ card: ResponseCardStats; count: number }>;
-  /** Top decks used across all games */
-  top_decks: Array<{ deck_id: string; games: number }>;
-  /** Top months by number of games played */
-  top_months: Array<{ month: string; games: number }>;
-}
-
-/**
- * Maps canonical UID to a list of all UIDs that should be merged into it.
- * The canonical UID should also be included in the list.
- */
-export type UserMergeMap = Map<string, string[]>;
-
 /**
  * Fetches and enriches all lobby data including turns and player responses.
  * Returns only valid lobbies (non-test, with > 1 turn).
@@ -373,8 +309,14 @@ export function filterLobbiesByYear(
  * Calculates global statistics across all lobbies and players.
  */
 function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
-  const promptUsage = new Map<string, { prompt: PromptCardStats; count: number }>();
-  const responseUsage = new Map<string, { card: ResponseCardStats; count: number }>();
+  const promptUsage = new Map<
+    string,
+    { prompt: PromptCardStats; count: number }
+  >();
+  const responseUsage = new Map<
+    string,
+    { card: ResponseCardStats; count: number }
+  >();
   const deckUsage = new Map<string, number>();
   const gamesPerMonth = new Map<string, number>();
 
@@ -508,6 +450,7 @@ export async function parseUserStatistics(
           average_score_per_game: 0,
           win_rate: 0,
           games: new Set<GameLobby>(),
+          lobby_ids: new Set<string>(),
           total_time_played_ms: 0,
           average_time_per_game_ms: 0,
           median_time_per_game_ms: 0,
@@ -524,7 +467,10 @@ export async function parseUserStatistics(
       }
       userStat.playerInLobbyRefs.push(player);
       userStat.total_turns_played += turnsCount;
-      userStat.games.add(lobby);
+      userStat.lobby_ids.add(lobby.id);
+      if (userStat.games) {
+        userStat.games.add(lobby);
+      }
 
       // Track time played
       if (
@@ -574,15 +520,16 @@ export async function parseUserStatistics(
 
   for (const stats of userStatsMap.values()) {
     // Ensure total_games is accurate
-    stats.total_games = stats.games.size;
+    const gamesSize = stats.games?.size ?? 0;
+    stats.total_games = gamesSize;
     stats.average_score_per_game =
-      stats.games.size > 0 ? stats.total_score / stats.games.size : 0;
+      gamesSize > 0 ? stats.total_score / gamesSize : 0;
     stats.win_rate =
       stats.total_turns_played > 0
         ? stats.total_wins / stats.total_turns_played
         : 0;
     stats.average_time_per_game_ms =
-      stats.games.size > 0 ? stats.total_time_played_ms / stats.games.size : 0;
+      gamesSize > 0 ? stats.total_time_played_ms / gamesSize : 0;
 
     // Calculate median time per game
     if (stats.game_durations_ms.length > 0) {
@@ -639,17 +586,17 @@ export async function fetchUserStatistics(
  */
 export function createUserMergeMap(stats: UserStats[]): UserMergeMap {
   const mergeMap: UserMergeMap = new Map();
-  
+
   for (const stat of stats) {
     const allUids = Array.from(
-      new Set(stat.playerInLobbyRefs.map((p) => p.uid))
+      new Set(stat.playerInLobbyRefs.map((p) => p.uid)),
     );
     // Only add to map if there are multiple UIDs (i.e., merged users)
     if (allUids.length > 1 || allUids[0] !== stat.uid) {
       mergeMap.set(stat.uid, allUids);
     }
   }
-  
+
   return mergeMap;
 }
 
@@ -670,6 +617,7 @@ export function mergeUserStats(
   }
 
   const mergedGames = new Set<GameLobby>();
+  const mergedLobbyIds = new Set<string>();
   const mergedPlayerRefs: PlayerInLobby[] = [];
   const mergedGamesPerMonth = new Map<string, number>();
   const mergedUids = new Set<string>();
@@ -703,8 +651,11 @@ export function mergeUserStats(
     isBot = isBot || user.is_bot;
 
     // Add all games from this user
-    for (const game of user.games) {
-      mergedGames.add(game);
+    if (user.games) {
+      for (const game of user.games) {
+        mergedGames.add(game);
+        mergedLobbyIds.add(game.id);
+      }
     }
 
     // Track first/last time
@@ -766,6 +717,7 @@ export function mergeUserStats(
     average_score_per_game: totalGames > 0 ? totalScore / totalGames : 0,
     win_rate: totalTurnsPlayed > 0 ? totalWins / totalTurnsPlayed : 0,
     games: mergedGames,
+    lobby_ids: mergedLobbyIds,
     first_time_played: firstTime,
     last_time_played: lastTime,
     total_time_played_ms: totalTimePlayed,

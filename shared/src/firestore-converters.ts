@@ -12,6 +12,7 @@ import {
   DeckTag,
   GameLobby,
   GameTurn,
+  GlobalStats,
   LobbySettings,
   PlayerGameState,
   PlayerInLobby,
@@ -23,6 +24,7 @@ import {
   ResponseDeckCard,
   SoundEvent,
   TagInGame,
+  UserStats,
   Vote,
   defaultLobbySettings,
 } from './types';
@@ -426,5 +428,92 @@ export const deckLockConverter: FConverter<DeckLock> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return new DeckLock(data.deck_id, data.hash);
+  },
+};
+
+export const userStatsConverter: FConverter<UserStats> = {
+  toFirestore: (stats: UserStats) => {
+    return copyFields2(
+      stats,
+      {
+        lobby_ids: Array.from(stats.lobby_ids || []),
+        first_time_played: stats.first_time_played ?? null,
+        last_time_played: stats.last_time_played ?? null,
+        games_per_month: mapToObject(stats.games_per_month),
+      },
+      ['games'], // Exclude the games Set from being persisted
+    );
+  },
+  fromFirestore: (snapshot: FDocSnapshot) => {
+    const data = snapshot.data();
+    return {
+      uid: data.uid,
+      name: data.name,
+      playerInLobbyRefs: (data.playerInLobbyRefs || []).map((p: any) => ({
+        uid: p.uid,
+        name: p.name,
+        avatar_id: p.avatar_id,
+        random_index: p.random_index ?? 0,
+        role: p.role,
+        status: p.status,
+        is_bot: p.is_bot ?? false,
+        time_joined:
+          (p.time_joined as FTimestamp | null)?.toDate() ?? new Date(),
+      })),
+      is_bot: data.is_bot ?? false,
+      total_games: data.total_games ?? 0,
+      total_turns_played: data.total_turns_played ?? 0,
+      total_wins: data.total_wins ?? 0,
+      total_likes_received: data.total_likes_received ?? 0,
+      total_score: data.total_score ?? 0,
+      total_discards: data.total_discards ?? 0,
+      average_score_per_game: data.average_score_per_game ?? 0,
+      win_rate: data.win_rate ?? 0,
+      lobby_ids: new Set<string>(data.lobby_ids || []),
+      first_time_played: (
+        data.first_time_played as FTimestamp | null
+      )?.toDate(),
+      last_time_played: (data.last_time_played as FTimestamp | null)?.toDate(),
+      total_time_played_ms: data.total_time_played_ms ?? 0,
+      average_time_per_game_ms: data.average_time_per_game_ms ?? 0,
+      median_time_per_game_ms: data.median_time_per_game_ms ?? 0,
+      median_score_per_game: data.median_score_per_game ?? 0,
+      game_durations_ms: data.game_durations_ms ?? [],
+      game_scores: data.game_scores ?? [],
+      games_per_month: objectToMap(data.games_per_month ?? {}),
+      top_liked_responses: data.top_liked_responses ?? [],
+      top_teammates: data.top_teammates ?? [],
+      top_cards_played:
+        (data.top_cards_played as Array<any>)?.map((p: any) => ({
+          card: mapResponseCardInGame(p.card),
+          count: p.count,
+        })) ?? [],
+      top_prompts_played:
+        (data.top_prompts_played as Array<any>)?.map((p: any) => ({
+          prompt: mapPromptCardInGame(p.prompt),
+          count: p.count,
+        })) ?? [],
+    };
+  },
+};
+
+export const globalStatsConverter: FConverter<GlobalStats> = {
+  toFirestore: (stats: GlobalStats) => copyFields(stats),
+  fromFirestore: (snapshot: FDocSnapshot) => {
+    const data = snapshot.data();
+    return {
+      top_prompts:
+        (data.top_prompts as Array<any>)?.map((p: any) => ({
+          prompt: mapPromptCardInGame(p.prompt),
+          count: p.count,
+        })) ?? [],
+      top_responses:
+        (data.top_responses as Array<any>)?.map((p: any) => ({
+          card: mapResponseCardInGame(p.card),
+          count: p.count,
+        })) ?? [],
+      top_decks: data.top_decks ?? [],
+      top_months: data.top_months ?? [],
+    };
   },
 };

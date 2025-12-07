@@ -597,3 +597,86 @@ export type DBPresence = {
 export type DBPresenceToWrite = Omit<DBPresence, 'last_changed'> & {
   last_changed: object; // placeholder for server timestamp
 };
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Statistics types
+//
+///////////////////////////////////////////////////////////////////////////////
+
+export type ResponseCardStats = Omit<
+  ResponseCardInGame,
+  'random_index' | 'rating' | 'type'
+>;
+
+export type PromptCardStats = Omit<
+  PromptCardInGame,
+  'random_index' | 'rating' | 'type'
+>;
+
+export type YearFilter = number | 'all';
+
+/** Stored under /stats/{year}/{uid} */
+export interface UserStats {
+  uid: string;
+  name: string; // the last known name
+  playerInLobbyRefs: PlayerInLobby[];
+  is_bot: boolean;
+  total_games: number;
+  total_turns_played: number;
+  total_wins: number;
+  total_likes_received: number;
+  total_score: number;
+  total_discards: number;
+  average_score_per_game: number;
+  win_rate: number; // wins per turn
+  // To track unique games played (not persisted in Firestore)
+  games?: Set<GameLobby>;
+  lobby_ids: Set<string>;
+  // New fields:
+  first_time_played?: Date;
+  last_time_played?: Date;
+  /** Total time spent playing in milliseconds */
+  total_time_played_ms: number;
+  /** Average time per game in milliseconds */
+  average_time_per_game_ms: number;
+  /** Median time per game in milliseconds */
+  median_time_per_game_ms: number;
+  /** Median score per game */
+  median_score_per_game: number;
+  /** Individual game durations for calculating median */
+  game_durations_ms: number[];
+  /** Individual game scores for calculating median */
+  game_scores: number[];
+  /** Maps month string (YYYY-MM) to number of games played */
+  games_per_month: Map<string, number>;
+  /** Top cards used, sorted by frequency */
+  top_cards_played: Array<{ card: ResponseCardStats; count: number }>;
+  /** Top responses that received likes, normalized by lobby size */
+  top_liked_responses: Array<{
+    cards: ResponseCardStats[];
+    normalized_likes: number;
+    lobby_size: number;
+  }>;
+  /** Top players this user has played with, sorted by frequency */
+  top_teammates: Array<{ uid: string; name: string; games: number }>;
+  /** Top prompts this user has chosen as judge, sorted by frequency */
+  top_prompts_played: Array<{ prompt: PromptCardStats; count: number }>;
+}
+
+export interface GlobalStats {
+  /** Top prompts played across all games */
+  top_prompts: Array<{ prompt: PromptCardStats; count: number }>;
+  /** Top response cards played across all games */
+  top_responses: Array<{ card: ResponseCardStats; count: number }>;
+  /** Top decks used across all games */
+  top_decks: Array<{ deck_id: string; games: number }>;
+  /** Top months by number of games played */
+  top_months: Array<{ month: string; games: number }>;
+}
+
+/**
+ * Maps canonical UID to a list of all UIDs that should be merged into it.
+ * The canonical UID should also be included in the list.
+ */
+export type UserMergeMap = Map<string, string[]>;

@@ -10,7 +10,6 @@ import {
   parseUserStatistics,
   UserMergeMap,
   UserStats,
-  YearFilter
 } from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
 import { Checkbox } from '../../components/Checkbox';
@@ -24,7 +23,7 @@ import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { ProgressBar } from '../../components/ProgressBar';
 import { useHandler } from '../../hooks/data-hooks';
 import '../../scss/components/progress-bar.scss';
-import { GameLobby } from '@shared/types';
+import { GameLobby, YearFilter } from '@shared/types';
 import { AdminGlobalStatsSection } from './admin-components/AdminGlobalStatsSection';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 
