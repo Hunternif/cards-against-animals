@@ -34,6 +34,13 @@ export type PromptCardStats = Omit<
   'random_index' | 'rating' | 'type'
 >;
 
+function copyResponseCardStats(card: ResponseCardInGame): ResponseCardStats {
+  return copyFields(card, ['random_index', 'rating', 'type']);
+}
+function copyPromptCardStats(card: PromptCardInGame): PromptCardStats {
+  return copyFields(card, ['random_index', 'rating', 'type']);
+}
+
 export interface UserStats {
   uid: string;
   name: string; // the last known name
@@ -127,7 +134,7 @@ async function calculateDerivedStats(
   for (const [uid, userStat] of userStatsMap.entries()) {
     const allPlayerUids = new Set(userStat.playerInLobbyRefs.map((p) => p.uid));
 
-    // Track cards used by this user (keyed by card id)
+    // Track cards used by this user (keyed by card content)
     const cardUsage = new Map<
       string,
       { card: ResponseCardStats; count: number }
@@ -140,7 +147,7 @@ async function calculateDerivedStats(
     }> = [];
     // Track teammates (other players in same games)
     const teammateGames = new Map<string, { name: string; count: number }>();
-    // Track prompts chosen by this user as judge (keyed by prompt id)
+    // Track prompts chosen by this user as judge (keyed by prompt content)
     const promptsChosen = new Map<
       string,
       { prompt: PromptCardStats; count: number }
@@ -176,12 +183,12 @@ async function calculateDerivedStats(
           turn.prompts.length > 0
         ) {
           const prompt = turn.prompts[0];
-          const existing = promptsChosen.get(prompt.id);
+          const existing = promptsChosen.get(prompt.content);
           if (existing) {
             existing.count++;
           } else {
-            promptsChosen.set(prompt.id, {
-              prompt: copyFields(prompt, ['random_index', 'rating', 'type']),
+            promptsChosen.set(prompt.content, {
+              prompt: copyPromptCardStats(prompt),
               count: 1,
             });
           }
@@ -194,12 +201,16 @@ async function calculateDerivedStats(
 
           // Count cards used
           for (const card of response.cards) {
-            const existing = cardUsage.get(card.id);
+            const existing = cardUsage.get(card.content);
             if (existing) {
               existing.count++;
+              // Prefer card data when it's a non-action card (i.e. original):
+              if (existing.card.action && !card.action) {
+                existing.card = copyResponseCardStats(card);
+              }
             } else {
-              cardUsage.set(card.id, {
-                card: copyFields(card, ['random_index', 'rating', 'type']),
+              cardUsage.set(card.content, {
+                card: copyResponseCardStats(card),
                 count: 1,
               });
             }
@@ -210,7 +221,7 @@ async function calculateDerivedStats(
             const normalizedLikes =
               lobbySize > 1 ? response.like_count / (lobbySize - 1) : 0;
             likedResponses.push({
-              cards: response.cards.map((c) => cardUsage.get(c.id)!.card),
+              cards: response.cards.map((c) => cardUsage.get(c.content)!.card),
               normalized_likes: normalizedLikes,
               lobby_size: lobbySize,
             });
