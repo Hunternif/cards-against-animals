@@ -30,6 +30,21 @@ export interface UserStats {
   win_rate: number; // wins per turn
   // To track unique games played
   games: Set<GameLobby>;
+  // New fields:
+  first_time_played?: Date;
+  last_time_played?: Date;
+  /** Maps month string (YYYY-MM) to number of games played */
+  games_per_month: Map<string, number>;
+  /** Top cards used, sorted by frequency */
+  top_cards_used: Array<{ card: string; count: number }>;
+  /** Top responses that received likes, normalized by lobby size */
+  top_liked_responses: Array<{
+    response: string;
+    normalized_likes: number;
+    lobby_size: number;
+  }>;
+  /** Top players this user has played with, sorted by frequency */
+  top_teammates: Array<{ uid: string; name: string; games: number }>;
 }
 
 const lobbiesRef = collection(firestore, 'lobbies').withConverter(
@@ -53,6 +68,113 @@ function countResponsesByPlayerInLobby(
     }
   }
   return count;
+}
+
+/**
+ * Calculate derived statistics like top cards, top teammates, etc.
+ */
+async function calculateDerivedStats(
+  userStatsMap: Map<string, UserStats>,
+): Promise<void> {
+  // Create a map to track merged users (multiple UIDs -> same person)
+  const uidToCanonicalUid = new Map<string, string>();
+  for (const [uid, stats] of userStatsMap.entries()) {
+    // All player refs for this user point to the same canonical UID
+    for (const ref of stats.playerInLobbyRefs) {
+      uidToCanonicalUid.set(ref.uid, uid);
+    }
+  }
+
+  // Helper to get canonical UID (handles merged users)
+  const getCanonicalUid = (uid: string): string => {
+    return uidToCanonicalUid.get(uid) || uid;
+  };
+
+  // For each user, calculate their detailed stats
+  for (const [uid, userStat] of userStatsMap.entries()) {
+    const allPlayerUids = new Set(userStat.playerInLobbyRefs.map((p) => p.uid));
+
+    // Track cards used by this user
+    const cardUsage = new Map<string, number>();
+    // Track responses with their likes
+    const likedResponses: Array<{
+      response: string;
+      normalized_likes: number;
+      lobby_size: number;
+    }> = [];
+    // Track teammates (other players in same games)
+    const teammateGames = new Map<string, { name: string; count: number }>();
+
+    // Process each game this user played
+    for (const lobby of userStat.games) {
+      const lobbyPlayers = await getAllPlayersInLobby(lobby.id);
+      const lobbySize = lobbyPlayers.length;
+
+      // Track all other players in this lobby (teammates)
+      for (const player of lobbyPlayers) {
+        const canonicalTeammateUid = getCanonicalUid(player.uid);
+        // Don't count self
+        if (canonicalTeammateUid === uid) continue;
+
+        const existing = teammateGames.get(canonicalTeammateUid);
+        if (existing) {
+          existing.count++;
+        } else {
+          teammateGames.set(canonicalTeammateUid, {
+            name: player.name,
+            count: 1,
+          });
+        }
+      }
+
+      // Process each turn to find cards used and liked responses
+      for (const turn of lobby.turns) {
+        // Find this user's response in this turn
+        for (const [responsePlayerUid, response] of turn.player_responses) {
+          // Check if this response belongs to our user (could be any of their UIDs)
+          if (!allPlayerUids.has(responsePlayerUid)) continue;
+
+          // Count cards used
+          for (const card of response.cards) {
+            const currentCount = cardUsage.get(card.content) || 0;
+            cardUsage.set(card.content, currentCount + 1);
+          }
+
+          // Track liked responses (normalize by lobby size)
+          if (response.like_count && response.like_count > 0) {
+            const normalizedLikes =
+              lobbySize > 1 ? response.like_count / (lobbySize - 1) : 0;
+            likedResponses.push({
+              response: response.cards.map((c) => c.content).join(' / '),
+              normalized_likes: normalizedLikes,
+              lobby_size: lobbySize,
+            });
+          }
+        }
+      }
+    }
+
+    // Sort and take top 5 cards
+    userStat.top_cards_used = Array.from(cardUsage.entries())
+      .map(([card, count]) => ({ card, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // Sort and take top 5 liked responses
+    userStat.top_liked_responses = likedResponses
+      .sort((a, b) => b.normalized_likes - a.normalized_likes)
+      .slice(0, 5);
+
+    // Sort and take top 5 teammates
+    userStat.top_teammates = Array.from(teammateGames.entries())
+      .map(([teammateUid, data]) => ({
+        uid: teammateUid,
+        name: data.name,
+        games: data.count,
+      }))
+      .sort((a, b) => b.games - a.games)
+      .slice(0, 5);
+  }
 }
 
 export interface FetchProgressInfo {
@@ -81,7 +203,7 @@ export async function fetchAllLobbyData(
   const validLobbies = new Array<GameLobby>();
   let processedCount = 0;
   const totalLobbies = nonTestLobbies.length;
-  
+
   for (const lobby of nonTestLobbies) {
     lobby.turns = await getAllTurns(lobby.id);
     if (lobby.turns.length > 1) {
@@ -93,7 +215,7 @@ export async function fetchAllLobbyData(
         );
       }
     }
-    
+
     // Report progress
     processedCount++;
     if (onProgress) {
@@ -104,7 +226,7 @@ export async function fetchAllLobbyData(
       });
     }
   }
-  
+
   return validLobbies;
 }
 
@@ -126,11 +248,13 @@ export async function parseUserStatistics(
     // Create a map of player states for quick lookup
     const statesMap = new Map(playerStates.map((s) => [s.uid, s]));
 
+    const lobbyTime = lobby.time_created || new Date();
+    const monthKey = `${lobbyTime.getFullYear()}-${String(
+      lobbyTime.getMonth() + 1,
+    ).padStart(2, '0')}`;
+
     // Process each player
     for (const player of players) {
-      // Skip spectators
-      // if (player.role !== 'player') continue;
-
       const state = statesMap.get(player.uid);
       if (!state) continue;
 
@@ -144,7 +268,7 @@ export async function parseUserStatistics(
           name: player.name,
           playerInLobbyRefs: [],
           is_bot: player.is_bot,
-          total_turns_played: turnsCount,
+          total_turns_played: 0,
           total_games: 0,
           total_wins: 0,
           total_likes_received: 0,
@@ -152,8 +276,11 @@ export async function parseUserStatistics(
           total_discards: 0,
           average_score_per_game: 0,
           win_rate: 0,
-          // To track unique games played
           games: new Set<GameLobby>(),
+          games_per_month: new Map<string, number>(),
+          top_cards_used: [],
+          top_liked_responses: [],
+          top_teammates: [],
         };
         userStatsMap.set(player.uid, userStat);
       }
@@ -161,15 +288,31 @@ export async function parseUserStatistics(
       userStat.total_turns_played += turnsCount;
       userStat.games.add(lobby);
 
+      // Track time played
+      if (
+        !userStat.first_time_played ||
+        lobbyTime < userStat.first_time_played
+      ) {
+        userStat.first_time_played = lobbyTime;
+      }
+      if (!userStat.last_time_played || lobbyTime > userStat.last_time_played) {
+        userStat.last_time_played = lobbyTime;
+      }
+
+      // Track games per month
+      const currentMonthCount = userStat.games_per_month.get(monthKey) || 0;
+      userStat.games_per_month.set(monthKey, currentMonthCount + 1);
+
       // Accumulate stats
-      // Note: We can estimate turns played from the lobby's turn count
-      // or from the player's actual participation
       userStat.total_wins += state.wins;
       userStat.total_likes_received += state.likes;
       userStat.total_score += state.score;
       userStat.total_discards += state.discards_used;
     }
   }
+
+  // Calculate derived stats and top items for each user
+  await calculateDerivedStats(userStatsMap);
 
   for (const stats of userStatsMap.values()) {
     // Ensure total_games is accurate
@@ -218,12 +361,15 @@ export function mergeUserStats(
 
   const mergedGames = new Set<GameLobby>();
   const mergedPlayerRefs: PlayerInLobby[] = [];
+  const mergedGamesPerMonth = new Map<string, number>();
   let totalTurnsPlayed = 0;
   let totalWins = 0;
   let totalLikes = 0;
   let totalScore = 0;
   let totalDiscards = 0;
   let isBot = false;
+  let firstTime: Date | undefined = undefined;
+  let lastTime: Date | undefined = undefined;
 
   // Combine all stats
   for (const user of users) {
@@ -234,16 +380,36 @@ export function mergeUserStats(
     totalScore += user.total_score;
     totalDiscards += user.total_discards;
     isBot = isBot || user.is_bot;
-    
+
     // Add all games from this user
     for (const game of user.games) {
       mergedGames.add(game);
     }
+
+    // Track first/last time
+    if (user.first_time_played) {
+      if (!firstTime || user.first_time_played < firstTime) {
+        firstTime = user.first_time_played;
+      }
+    }
+    if (user.last_time_played) {
+      if (!lastTime || user.last_time_played > lastTime) {
+        lastTime = user.last_time_played;
+      }
+    }
+
+    // Merge games per month
+    for (const [month, count] of user.games_per_month.entries()) {
+      const currentCount = mergedGamesPerMonth.get(month) || 0;
+      mergedGamesPerMonth.set(month, currentCount + count);
+    }
   }
 
   const totalGames = mergedGames.size;
-  
-  return {
+
+  // For the merged user, we need to recalculate top cards, responses, and teammates
+  // by treating all the merged UIDs as the same person
+  const merged: UserStats = {
     uid: primaryUid,
     name: primaryName,
     playerInLobbyRefs: mergedPlayerRefs,
@@ -257,5 +423,28 @@ export function mergeUserStats(
     average_score_per_game: totalGames > 0 ? totalScore / totalGames : 0,
     win_rate: totalTurnsPlayed > 0 ? totalWins / totalTurnsPlayed : 0,
     games: mergedGames,
+    first_time_played: firstTime,
+    last_time_played: lastTime,
+    games_per_month: mergedGamesPerMonth,
+    top_cards_used: [],
+    top_liked_responses: [],
+    top_teammates: [],
   };
+
+  return merged;
+}
+
+/**
+ * Recalculates derived statistics for a merged user.
+ * This should be called after merging users to properly calculate top cards, teammates, etc.
+ */
+export async function recalculateDerivedStats(
+  userStats: UserStats,
+  allStats: UserStats[],
+): Promise<void> {
+  const userStatsMap = new Map<string, UserStats>();
+  for (const stat of allStats) {
+    userStatsMap.set(stat.uid, stat);
+  }
+  await calculateDerivedStats(userStatsMap);
 }
