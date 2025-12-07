@@ -1,7 +1,12 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import { lobbyConverter } from '../shared/firestore-converters';
-import { GameLobby, PlayerInLobby } from '../shared/types';
+import {
+  GameLobby,
+  PlayerInLobby,
+  ResponseCardInGame,
+  ResponseCardInHand,
+} from '../shared/types';
 import {
   getAllPlayersInLobby,
   getAllPlayersStates,
@@ -9,6 +14,7 @@ import {
 import { getAllTurns } from './turn/turn-repository';
 import { getAllPlayerResponses } from './turn/turn-response-api';
 import { saveAs } from 'file-saver';
+import { copyFields } from '../shared/utils';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -108,11 +114,10 @@ async function calculateDerivedStats(
 
     // Process each game this user played
     for (const lobby of userStat.games) {
-      const lobbyPlayers = await getAllPlayersInLobby(lobby.id);
-      const lobbySize = lobbyPlayers.length;
+      const lobbySize = lobby.players.length; // including spectators
 
       // Track all other players in this lobby (teammates)
-      for (const player of lobbyPlayers) {
+      for (const player of lobby.players) {
         const canonicalTeammateUid = getCanonicalUid(player.uid);
         // Don't count self
         if (canonicalTeammateUid === uid) continue;
@@ -216,6 +221,8 @@ export async function fetchAllLobbyData(
     lobby.turns = await getAllTurns(lobby.id);
     if (lobby.turns.length > 1) {
       validLobbies.push(lobby);
+      lobby.players = await getAllPlayersInLobby(lobby.id);
+      lobby.player_states = await getAllPlayersStates(lobby.id);
       for (const turn of lobby.turns) {
         const responses = await getAllPlayerResponses(lobby.id, turn.id);
         turn.player_responses = new Map(
@@ -278,13 +285,8 @@ export async function parseUserStatistics(
 
   // Process each lobby
   for (const lobby of validLobbies) {
-    // Get players and their states
-    const players = await getAllPlayersInLobby(lobby.id);
-    const playerStates = await getAllPlayersStates(lobby.id);
-    lobby.players = players;
-
     // Create a map of player states for quick lookup
-    const statesMap = new Map(playerStates.map((s) => [s.uid, s]));
+    const statesMap = new Map(lobby.player_states.map((s) => [s.uid, s]));
 
     const lobbyTime = lobby.time_created || new Date();
     const monthKey = `${lobbyTime.getFullYear()}-${String(
@@ -292,7 +294,7 @@ export async function parseUserStatistics(
     ).padStart(2, '0')}`;
 
     // Process each player
-    for (const player of players) {
+    for (const player of lobby.players) {
       const state = statesMap.get(player.uid);
       if (!state) continue;
 
@@ -486,37 +488,35 @@ export async function recalculateDerivedStats(
   await calculateDerivedStats(userStatsMap);
 }
 
-export function exportGameDataToFile(
-  gameData: GameLobby[],
-) {
-  // Convert game data to a serializable format
+export function exportGameDataToFile(gameData: GameLobby[]) {
+  function mapResponseCard(card: ResponseCardInGame) {
+    return copyFields(card, ['random_index', 'rating', 'type']);
+  }
   const exportData = {
     version: 1,
     date_exported: new Date().toISOString(),
     total_games: gameData.length,
     games: gameData.map((lobby) => ({
-      id: lobby.id,
-      time_created: lobby.time_created?.toISOString(),
-      status: lobby.status,
-      creator_uid: lobby.creator_uid,
-      settings: lobby.settings,
+      ...lobby,
       turns: lobby.turns.map((turn) => ({
-        id: turn.id,
-        ordinal: turn.ordinal,
-        judge_uid: turn.judge_uid,
-        winner_uid: turn.winner_uid,
-        time_created: turn.time_created?.toISOString(),
-        phase: turn.phase,
+        ...turn,
         player_responses: Array.from(turn.player_responses.entries()).map(
           ([uid, response]) => ({
             player_uid: uid,
             player_name: response.player_name,
-            cards: response.cards,
+            cards: response.cards.map(mapResponseCard),
             like_count: response.like_count,
           }),
         ),
       })),
       players: lobby.players,
+      player_states: lobby.player_states.map((state) => ({
+        ...state,
+        // Not actually fetching this, but just in case:
+        hand: Array.from(state.hand.values()).map(mapResponseCard),
+        discarded: Array.from(state.discarded.values()).map(mapResponseCard),
+        downvoted: Array.from(state.downvoted.values()).map(mapResponseCard),
+      })),
     })),
   };
 

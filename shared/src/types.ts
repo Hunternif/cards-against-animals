@@ -12,6 +12,8 @@ export class GameLobby {
 
   /* Must be fetched separately from a Firebase subcollection. */
   players: Array<PlayerInLobby> = [];
+  /* Must be fetched separately from a Firebase subcollection. */
+  player_states: Array<PlayerGameState> = [];
   /** The last "turn" is the current state of the game board.
    * Must be fetched separately from a Firebase subcollection. */
   turns: Array<GameTurn> = [];
@@ -181,8 +183,8 @@ export class PlayerGameState {
 
   /** Cards in the player's hand. Maps card id to data. */
   hand: Map<string, ResponseCardInHand> = new Map();
-  /** Cards that were discarded throughout the game. Maps card id to data. */
 
+  /** Cards that were discarded throughout the game. Maps card id to data. */
   discarded: Map<string, ResponseCardInGame> = new Map();
 
   /** Whenever the player downvotes a card, it goes here.
