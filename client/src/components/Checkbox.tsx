@@ -25,7 +25,11 @@ export function Checkbox({ label, onToggle, className, ...props }: CheckProps) {
 
   return (
     <LabelGroup label={label} onClick={handleLabelClick}>
-      <div className={`checkbox ${className ?? ''}`} style={props.style}>
+      <div
+        className={`checkbox ${className ?? ''}`}
+        style={props.style}
+        onClick={(e) => e.stopPropagation()}
+      >
         <input
           type="checkbox"
           name="check"
@@ -54,7 +58,9 @@ function LabelGroup({ label, onClick, children }: LabelProps) {
     return (
       <div className="checkbox-label-group">
         {children}
-        <label className="label" onClick={onClick}>{label}</label>
+        <label className="label" onClick={onClick}>
+          {label}
+        </label>
       </div>
     );
   } else {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import {
   exportGameDataToFile,
   fetchAllLobbyData,
@@ -216,15 +216,16 @@ export function AdminStatsPage() {
           <table className="stats-table">
             <thead>
               <tr>
-                <th></th> {/* expand/collapse column */}
-                {mergeMode && <th></th> /* checkbox column */}
+                <th></th>
+                {/* expand/collapse column */}
+                {mergeMode && <th></th>}
+                {/* checkbox column */}
                 <th>Name</th>
                 <th>Games</th>
                 <th>Turns</th>
                 <th>Wins</th>
                 <th>Win Rate</th>
-                {/* <th>Total Score</th> */
-                /* -- duplicates win count */}
+                {/* <th>Total Score</th> -- duplicates win count */}
                 <th>Avg Score</th>
                 <th>Likes</th>
                 <th>Discards</th>
@@ -234,9 +235,8 @@ export function AdminStatsPage() {
             </thead>
             <tbody>
               {stats.map((stat) => (
-                <>
+                <Fragment key={stat.uid}>
                   <tr
-                    key={stat.uid}
                     className={selectedUsers.has(stat.uid) ? 'selected' : ''}
                     onClick={() => mergeMode && toggleUserSelection(stat.uid)}
                   >
@@ -286,13 +286,13 @@ export function AdminStatsPage() {
                     </td>
                   </tr>
                   {expandedUser === stat.uid && (
-                    <tr key={`${stat.uid}-details`} className="detail-row">
+                    <tr className="detail-row">
                       <td colSpan={mergeMode ? 14 : 13}>
                         <UserStatsDetails stat={stat} />
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
