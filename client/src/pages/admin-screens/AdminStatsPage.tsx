@@ -1,28 +1,30 @@
 import { useState } from 'react';
 import {
+  exportGameDataToFile,
   fetchAllLobbyData,
   FetchProgressInfo,
-  parseUserStatistics,
-  UserStats,
-  mergeUserStats,
-  recalculateDerivedStats,
-  getAvailableYears,
   filterLobbiesByYear,
+  getAvailableYears,
+  mergeUserStats,
+  parseUserStatistics,
+  recalculateDerivedStats,
+  UserStats,
   YearFilter,
 } from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
+import { Checkbox } from '../../components/Checkbox';
+import { SelectInput, SelectOption } from '../../components/FormControls';
+import {
+  IconChevronDownInline,
+  IconChevronUpInline,
+  IconLink,
+} from '../../components/Icons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { ProgressBar } from '../../components/ProgressBar';
 import { useHandler } from '../../hooks/data-hooks';
 import '../../scss/components/progress-bar.scss';
 import { GameLobby } from '../../shared/types';
 import { AdminSubpage } from './admin-components/AdminSubpage';
-import { Checkbox } from '../../components/Checkbox';
-import {
-  IconChevronDownInline,
-  IconChevronUpInline,
-} from '../../components/Icons';
-import { SelectInput, SelectOption } from '../../components/FormControls';
 
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
@@ -93,7 +95,7 @@ export function AdminStatsPage() {
     newStats.push(merged);
 
     // Recalculate derived stats for the merged user
-    await recalculateDerivedStats(merged, newStats);
+    await recalculateDerivedStats(newStats);
 
     newStats.sort((a, b) => b.total_games - a.total_games);
 
@@ -105,6 +107,11 @@ export function AdminStatsPage() {
   const cancelMerge = () => {
     setMergeMode(false);
     setSelectedUsers(new Set());
+  };
+
+  const handleExportGameData = () => {
+    if (!gameData) return;
+    exportGameDataToFile(gameData);
   };
 
   const handleSelectYear = (newYear: YearFilter) => {
@@ -132,12 +139,22 @@ export function AdminStatsPage() {
             </GameButton>
             <GameButton
               small
+              onClick={handleExportGameData}
+              disabled={!gameData}
+              iconLeft={<IconLink />}
+            >
+              Export Data
+            </GameButton>
+
+            <GameButton
+              small
               onClick={handleParseStats}
               loading={parsing}
               disabled={!gameData}
             >
               Parse Statistics
             </GameButton>
+
             {availableYears.length > 0 && (
               <SelectInput
                 small

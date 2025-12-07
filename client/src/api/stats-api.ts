@@ -8,6 +8,7 @@ import {
 } from './lobby/lobby-player-api';
 import { getAllTurns } from './turn/turn-repository';
 import { getAllPlayerResponses } from './turn/turn-response-api';
+import { saveAs } from 'file-saver';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -280,6 +281,7 @@ export async function parseUserStatistics(
     // Get players and their states
     const players = await getAllPlayersInLobby(lobby.id);
     const playerStates = await getAllPlayersStates(lobby.id);
+    lobby.players = players;
 
     // Create a map of player states for quick lookup
     const statesMap = new Map(playerStates.map((s) => [s.uid, s]));
@@ -475,7 +477,6 @@ export function mergeUserStats(
  * This should be called after merging users to properly calculate top cards, teammates, etc.
  */
 export async function recalculateDerivedStats(
-  userStats: UserStats,
   allStats: UserStats[],
 ): Promise<void> {
   const userStatsMap = new Map<string, UserStats>();
@@ -483,4 +484,46 @@ export async function recalculateDerivedStats(
     userStatsMap.set(stat.uid, stat);
   }
   await calculateDerivedStats(userStatsMap);
+}
+
+export function exportGameDataToFile(
+  gameData: GameLobby[],
+) {
+  // Convert game data to a serializable format
+  const exportData = {
+    version: 1,
+    date_exported: new Date().toISOString(),
+    total_games: gameData.length,
+    games: gameData.map((lobby) => ({
+      id: lobby.id,
+      time_created: lobby.time_created?.toISOString(),
+      status: lobby.status,
+      creator_uid: lobby.creator_uid,
+      settings: lobby.settings,
+      turns: lobby.turns.map((turn) => ({
+        id: turn.id,
+        ordinal: turn.ordinal,
+        judge_uid: turn.judge_uid,
+        winner_uid: turn.winner_uid,
+        time_created: turn.time_created?.toISOString(),
+        phase: turn.phase,
+        player_responses: Array.from(turn.player_responses.entries()).map(
+          ([uid, response]) => ({
+            player_uid: uid,
+            player_name: response.player_name,
+            cards: response.cards,
+            like_count: response.like_count,
+          }),
+        ),
+      })),
+      players: lobby.players,
+    })),
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+    type: 'application/json',
+  });
+
+  const filename = `caa_game_data_${new Date().toISOString()}.json`;
+  saveAs(blob, filename);
 }
