@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react';
 import { Plugin, defineConfig } from 'vite';
+import { resolve } from 'path';
 import firebaseConfig from '../firebase-config.json';
 
 // https://vitejs.dev/config/
@@ -8,6 +9,11 @@ export default defineConfig({
     react(),
     transformHtmlPlugin({ webUrl: firebaseConfig.webUrl }),
   ],
+  resolve: {
+    alias: {
+      '@shared': resolve(__dirname, '../shared/src'),
+    },
+  },
   // The following scrip keeps file names without hashes.
   // Thanks to https://www.fabiofranchino.com/log/how-to-remove-hashing-in-vite-built-file-names/
   // But we need the hashes so that browsers don't cache modified files.

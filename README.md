@@ -8,7 +8,7 @@ This project relies on the backend features of Firebase that work out of the box
 This repo contains 3 web projects:
 - `client` - client app written in TypeScript using React.js;
 - `functions` - additional server logic written in TypeScript.
-- `shared` - is not really a project, just a collection of files that are re-used between `client` and `functions`.
+- `shared` - shared TypeScript code used by both `client` and `functions` via the `@shared` import alias.
 
 The file `package.json` in the root directory contains NPM scripts to manage all these projects.
 
@@ -21,7 +21,7 @@ Then, to set up this project, from command line, run the install script:
 npm install
 ```
 
-During install, files from the `shared` directory and `firebase-config.json` will be copied to `client` and `functions`, and the new copies will be ignored by Git. As the last step it will trigger Firebase setup.
+During install, the example Firebase config file will be copied. As the last step it will trigger Firebase setup.
 
 ### Firebase setup
 

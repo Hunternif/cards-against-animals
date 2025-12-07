@@ -3,16 +3,20 @@
     "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": false,
-    "rootDir": "src",
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/src/*"]
+    },
   },
   "compileOnSave": true,
   "include": [
-    "src"
+    "src",
+    "../shared/src"
   ]
 }

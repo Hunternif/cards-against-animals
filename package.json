@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "install": "(npm install -g firebase-tools) && (cd functions && npm i) && (cd ../client && npm i) && firebase login && firebase init",
-    "postinstall": "cp -n firebase-config.json.example firebase-config.json && cp -R shared/src/. functions/src/shared && cp -R shared/src/. client/src/shared",
+    "postinstall": "cp -n firebase-config.json.example firebase-config.json",
     "dev-client": "cd client && npm run dev",
     "dev-server": "firebase emulators:start --import=exported-dev-data --export-on-exit=exported-dev-data",
-    "copy-shared": "(cd functions && npm run copy-shared) && (cd ../client && npm run copy-shared)",
     "build": "(cd functions && npm run build) && (cd ../client && npm run build)",
     "lint": "(cd functions && npm run lint) && (cd ../client && npm run lint)",
     "test": "(cd functions && npm run test) && (cd ../client && npm run test)",
