@@ -26,6 +26,22 @@ import '../../scss/components/progress-bar.scss';
 import { GameLobby } from '../../shared/types';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 
+/**
+ * Formats milliseconds into a human-readable time string (e.g., "2h 30m")
+ */
+function formatPlayTime(ms: number): string {
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else if (minutes > 0) {
+    return `${minutes}m`;
+  } else {
+    return '<1m';
+  }
+}
+
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
   const [gameData, setGameData] = useState<GameLobby[] | null>(null);
@@ -229,6 +245,8 @@ export function AdminStatsPage() {
                 <th>Avg Score</th>
                 <th>Likes</th>
                 <th>Discards</th>
+                <th>Time Played</th>
+                <th>Avg Time</th>
                 <th>First Played</th>
                 <th>Last Played</th>
               </tr>
@@ -275,6 +293,12 @@ export function AdminStatsPage() {
                     <CounterRow val={stat.total_likes_received} />
                     <CounterRow val={stat.total_discards} />
                     <td className="col-counter">
+                      {formatPlayTime(stat.total_time_played_ms)}
+                    </td>
+                    <td className="col-counter">
+                      {formatPlayTime(stat.average_time_per_game_ms)}
+                    </td>
+                    <td className="col-counter">
                       {stat.first_time_played
                         ? new Date(stat.first_time_played).toLocaleDateString()
                         : '-'}
@@ -287,7 +311,7 @@ export function AdminStatsPage() {
                   </tr>
                   {expandedUser === stat.uid && (
                     <tr className="detail-row">
-                      <td colSpan={mergeMode ? 14 : 13}>
+                      <td colSpan={mergeMode ? 16 : 15}>
                         <UserStatsDetails stat={stat} />
                       </td>
                     </tr>

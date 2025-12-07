@@ -41,6 +41,10 @@ export interface UserStats {
   // New fields:
   first_time_played?: Date;
   last_time_played?: Date;
+  /** Total time spent playing in milliseconds */
+  total_time_played_ms: number;
+  /** Average time per game in milliseconds */
+  average_time_per_game_ms: number;
   /** Maps month string (YYYY-MM) to number of games played */
   games_per_month: Map<string, number>;
   /** Top cards used, sorted by frequency */
@@ -322,6 +326,8 @@ export async function parseUserStatistics(
           average_score_per_game: 0,
           win_rate: 0,
           games: new Set<GameLobby>(),
+          total_time_played_ms: 0,
+          average_time_per_game_ms: 0,
           games_per_month: new Map<string, number>(),
           top_cards_used: [],
           top_liked_responses: [],
@@ -342,6 +348,22 @@ export async function parseUserStatistics(
       }
       if (!userStat.last_time_played || lobbyTime > userStat.last_time_played) {
         userStat.last_time_played = lobbyTime;
+      }
+
+      // Calculate game duration - only turns where this player was active
+      const playedTurns = lobby.turns.filter(
+        (turn) =>
+          turn.player_responses.has(player.uid) ||
+          turn.judge_uid === player.uid,
+      );
+      if (playedTurns.length > 1) {
+        const firstTurn = playedTurns[0];
+        const lastTurn = playedTurns[playedTurns.length - 1];
+        if (firstTurn.time_created && lastTurn.time_created) {
+          const gameDurationMs =
+            lastTurn.time_created.getTime() - firstTurn.time_created.getTime();
+          userStat.total_time_played_ms += gameDurationMs;
+        }
       }
 
       // Track games per month
@@ -368,6 +390,8 @@ export async function parseUserStatistics(
       stats.total_turns_played > 0
         ? stats.total_wins / stats.total_turns_played
         : 0;
+    stats.average_time_per_game_ms =
+      stats.games.size > 0 ? stats.total_time_played_ms / stats.games.size : 0;
   }
 
   // Convert to final stats format and filter
@@ -412,6 +436,7 @@ export function mergeUserStats(
   let totalLikes = 0;
   let totalScore = 0;
   let totalDiscards = 0;
+  let totalTimePlayed = 0;
   let isBot = false;
   let firstTime: Date | undefined = undefined;
   let lastTime: Date | undefined = undefined;
@@ -424,6 +449,7 @@ export function mergeUserStats(
     totalLikes += user.total_likes_received;
     totalScore += user.total_score;
     totalDiscards += user.total_discards;
+    totalTimePlayed += user.total_time_played_ms;
     isBot = isBot || user.is_bot;
 
     // Add all games from this user
@@ -470,6 +496,8 @@ export function mergeUserStats(
     games: mergedGames,
     first_time_played: firstTime,
     last_time_played: lastTime,
+    total_time_played_ms: totalTimePlayed,
+    average_time_per_game_ms: totalGames > 0 ? totalTimePlayed / totalGames : 0,
     games_per_month: mergedGamesPerMonth,
     top_cards_used: [],
     top_liked_responses: [],
