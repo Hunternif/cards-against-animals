@@ -28,7 +28,6 @@ export function AdminStatsPage() {
   );
   const [mergeMode, setMergeMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-  const [mergeName, setMergeName] = useState('');
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
   const [handleFetchData, fetching] = useHandler(async () => {
@@ -64,9 +63,8 @@ export function AdminStatsPage() {
 
     const usersToMerge = stats.filter((s) => selectedUsers.has(s.uid));
     const primaryUser = usersToMerge[0];
-    const nameToUse = mergeName.trim() || primaryUser.name;
 
-    const merged = mergeUserStats(usersToMerge, primaryUser.uid, nameToUse);
+    const merged = mergeUserStats(usersToMerge, primaryUser.uid, primaryUser.name);
 
     // Remove merged users and add the combined one
     const newStats = stats.filter((s) => !selectedUsers.has(s.uid));
@@ -80,13 +78,11 @@ export function AdminStatsPage() {
     setStats(newStats);
     setSelectedUsers(new Set());
     setMergeMode(false);
-    setMergeName('');
   };
 
   const cancelMerge = () => {
     setMergeMode(false);
     setSelectedUsers(new Set());
-    setMergeName('');
   };
 
   return (
@@ -119,13 +115,6 @@ export function AdminStatsPage() {
                   Merge Selected ({selectedUsers.size})
                 </GameButton>
                 <GameButton onClick={cancelMerge}>Cancel</GameButton>
-                <input
-                  type="text"
-                  placeholder="Merged name (optional)"
-                  value={mergeName}
-                  onChange={(e) => setMergeName(e.target.value)}
-                  className="merge-name-input"
-                />
               </>
             )}
             {gameData && (
