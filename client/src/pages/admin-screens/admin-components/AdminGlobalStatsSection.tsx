@@ -47,6 +47,19 @@ export function AdminGlobalStatsSection({
             </ol>
           </div>
         )}
+
+        {globalStats.top_decks.length > 0 && (
+          <div className="global-stat-card">
+            <h4>Top 5 Most Used Decks</h4>
+            <ol>
+              {globalStats.top_decks.map((item, idx) => (
+                <li key={idx}>
+                  {item.deck_id}: {item.games} games
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
       </div>
     </div>
   );

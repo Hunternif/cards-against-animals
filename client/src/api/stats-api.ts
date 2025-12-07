@@ -275,6 +275,8 @@ export interface GlobalStats {
   top_prompts: Array<{ prompt: PromptCardStats; count: number }>;
   /** Top response cards played across all games */
   top_responses: Array<{ card: ResponseCardStats; count: number }>;
+  /** Top decks used across all games */
+  top_decks: Array<{ deck_id: string; games: number }>;
   /** Top months by number of games played */
   top_months: Array<{ month: string; games: number }>;
 }
@@ -373,6 +375,7 @@ export function filterLobbiesByYear(
 function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
   const promptUsage = new Map<string, { prompt: PromptCardStats; count: number }>();
   const responseUsage = new Map<string, { card: ResponseCardStats; count: number }>();
+  const deckUsage = new Map<string, number>();
   const gamesPerMonth = new Map<string, number>();
 
   for (const lobby of lobbies) {
@@ -383,6 +386,12 @@ function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
     ).padStart(2, '0')}`;
     const currentMonthCount = gamesPerMonth.get(monthKey) || 0;
     gamesPerMonth.set(monthKey, currentMonthCount + 1);
+
+    // Track decks used in this lobby
+    for (const deckId of lobby.deck_ids) {
+      const currentDeckCount = deckUsage.get(deckId) || 0;
+      deckUsage.set(deckId, currentDeckCount + 1);
+    }
 
     // Process each turn
     for (const turn of lobby.turns) {
@@ -427,6 +436,10 @@ function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
       .slice(0, 5),
     top_responses: Array.from(responseUsage.values())
       .sort((a, b) => b.count - a.count)
+      .slice(0, 5),
+    top_decks: Array.from(deckUsage.entries())
+      .map(([deck_id, games]) => ({ deck_id, games }))
+      .sort((a, b) => b.games - a.games)
       .slice(0, 5),
     top_months: Array.from(gamesPerMonth.entries())
       .map(([month, games]) => ({ month, games }))
