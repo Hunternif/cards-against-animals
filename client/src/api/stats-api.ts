@@ -200,3 +200,62 @@ export async function fetchUserStatistics(
   const validLobbies = await fetchAllLobbyData(onProgress);
   return await parseUserStatistics(validLobbies);
 }
+
+/**
+ * Merges multiple user stats into a single combined user stat.
+ * @param users Array of UserStats to merge
+ * @param primaryUid The UID to use for the merged user (typically the first one)
+ * @param primaryName The name to use for the merged user
+ */
+export function mergeUserStats(
+  users: UserStats[],
+  primaryUid: string,
+  primaryName: string,
+): UserStats {
+  if (users.length === 0) {
+    throw new Error('Cannot merge empty user list');
+  }
+
+  const mergedGames = new Set<GameLobby>();
+  const mergedPlayerRefs: PlayerInLobby[] = [];
+  let totalTurnsPlayed = 0;
+  let totalWins = 0;
+  let totalLikes = 0;
+  let totalScore = 0;
+  let totalDiscards = 0;
+  let isBot = false;
+
+  // Combine all stats
+  for (const user of users) {
+    mergedPlayerRefs.push(...user.playerInLobbyRefs);
+    totalTurnsPlayed += user.total_turns_played;
+    totalWins += user.total_wins;
+    totalLikes += user.total_likes_received;
+    totalScore += user.total_score;
+    totalDiscards += user.total_discards;
+    isBot = isBot || user.is_bot;
+    
+    // Add all games from this user
+    for (const game of user.games) {
+      mergedGames.add(game);
+    }
+  }
+
+  const totalGames = mergedGames.size;
+  
+  return {
+    uid: primaryUid,
+    name: primaryName,
+    playerInLobbyRefs: mergedPlayerRefs,
+    is_bot: isBot,
+    total_games: totalGames,
+    total_turns_played: totalTurnsPlayed,
+    total_wins: totalWins,
+    total_likes_received: totalLikes,
+    total_score: totalScore,
+    total_discards: totalDiscards,
+    average_score_per_game: totalGames > 0 ? totalScore / totalGames : 0,
+    win_rate: totalTurnsPlayed > 0 ? totalWins / totalTurnsPlayed : 0,
+    games: mergedGames,
+  };
+}

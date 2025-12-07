@@ -4,6 +4,7 @@ import {
   FetchProgressInfo,
   parseUserStatistics,
   UserStats,
+  mergeUserStats,
 } from '../../api/stats-api';
 import { GameButton } from '../../components/Buttons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
@@ -12,6 +13,7 @@ import { useHandler } from '../../hooks/data-hooks';
 import '../../scss/components/progress-bar.scss';
 import { GameLobby } from '../../shared/types';
 import { AdminSubpage } from './admin-components/AdminSubpage';
+import { Checkbox } from '../../components/Checkbox';
 
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
@@ -19,6 +21,9 @@ export function AdminStatsPage() {
   const [fetchProgress, setFetchProgress] = useState<FetchProgressInfo | null>(
     null,
   );
+  const [mergeMode, setMergeMode] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [mergeName, setMergeName] = useState('');
 
   const [handleFetchData, fetching] = useHandler(async () => {
     setFetchProgress(null);
@@ -34,6 +39,45 @@ export function AdminStatsPage() {
     const data = await parseUserStatistics(gameData);
     setStats(data);
   }, [gameData]);
+
+  const toggleUserSelection = (uid: string) => {
+    const newSelection = new Set(selectedUsers);
+    if (newSelection.has(uid)) {
+      newSelection.delete(uid);
+    } else {
+      newSelection.add(uid);
+    }
+    setSelectedUsers(newSelection);
+  };
+
+  const handleMergeUsers = () => {
+    if (selectedUsers.size < 2) {
+      alert('Please select at least 2 users to merge');
+      return;
+    }
+
+    const usersToMerge = stats.filter((s) => selectedUsers.has(s.uid));
+    const primaryUser = usersToMerge[0];
+    const nameToUse = mergeName.trim() || primaryUser.name;
+
+    const merged = mergeUserStats(usersToMerge, primaryUser.uid, nameToUse);
+
+    // Remove merged users and add the combined one
+    const newStats = stats.filter((s) => !selectedUsers.has(s.uid));
+    newStats.push(merged);
+    newStats.sort((a, b) => b.total_games - a.total_games);
+
+    setStats(newStats);
+    setSelectedUsers(new Set());
+    setMergeMode(false);
+    setMergeName('');
+  };
+
+  const cancelMerge = () => {
+    setMergeMode(false);
+    setSelectedUsers(new Set());
+    setMergeName('');
+  };
 
   return (
     <AdminSubpage
@@ -51,6 +95,29 @@ export function AdminStatsPage() {
             >
               Parse Statistics
             </GameButton>
+            {stats.length > 0 && !mergeMode && (
+              <GameButton onClick={() => setMergeMode(true)}>
+                Merge Users
+              </GameButton>
+            )}
+            {mergeMode && (
+              <>
+                <GameButton
+                  onClick={handleMergeUsers}
+                  disabled={selectedUsers.size < 2}
+                >
+                  Merge Selected ({selectedUsers.size})
+                </GameButton>
+                <GameButton onClick={cancelMerge}>Cancel</GameButton>
+                <input
+                  type="text"
+                  placeholder="Merged name (optional)"
+                  value={mergeName}
+                  onChange={(e) => setMergeName(e.target.value)}
+                  className="merge-name-input"
+                />
+              </>
+            )}
             {gameData && (
               <span className="stats-summary">
                 {gameData.length} games loaded
@@ -77,6 +144,7 @@ export function AdminStatsPage() {
           <table className="stats-table">
             <thead>
               <tr>
+                {mergeMode && <th></th>}
                 <th>Name</th>
                 <th>Games</th>
                 <th>Turns</th>
@@ -91,10 +159,20 @@ export function AdminStatsPage() {
             </thead>
             <tbody>
               {stats.map((stat) => (
-                <tr key={stat.uid}>
-                  <td className="player-name">
+                <tr
+                  key={stat.uid}
+                  className={selectedUsers.has(stat.uid) ? 'selected' : ''}
+                  onClick={() => mergeMode && toggleUserSelection(stat.uid)}
+                >
+                  {mergeMode && (
+                    <td>
+                      <Checkbox
+                        checked={selectedUsers.has(stat.uid)}
+                        onChange={() => toggleUserSelection(stat.uid)}
+                      />
+                    </td>
+                  )}
                     <PlayerNameCell stat={stat} />
-                  </td>
                   <CounterRow val={stat.total_games} />
                   <CounterRow val={stat.total_turns_played} />
                   <CounterRow val={stat.total_wins} />
@@ -103,7 +181,7 @@ export function AdminStatsPage() {
                   <CounterRow val={stat.average_score_per_game.toFixed(1)} />
                   <CounterRow val={stat.total_likes_received} />
                   <CounterRow val={stat.total_discards} />
-                  <td className="player-uid">{stat.uid}</td>
+                  <PlayerUidCell stat={stat} />
                 </tr>
               ))}
             </tbody>
@@ -126,9 +204,14 @@ function PlayerNameCell({ stat }: { stat: UserStats }) {
   const names = Array.from(new Set(stat.playerInLobbyRefs.map((p) => p.name)));
   if (!player) return <i>Unknown</i>;
   return (
-    <>
+    <td className="player-name">
       <PlayerAvatar player={player} />
       {names.join(', ')}
-    </>
+    </td>
   );
+}
+
+function PlayerUidCell({ stat }: { stat: UserStats }) {
+  const uids = Array.from(new Set(stat.playerInLobbyRefs.map((p) => p.uid)));
+  return <td className="player-uid">{uids.join(', ')}</td>;
 }
