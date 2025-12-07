@@ -15,6 +15,7 @@ import { getAllTurns } from './turn/turn-repository';
 import { getAllPlayerResponses } from './turn/turn-response-api';
 import { saveAs } from 'file-saver';
 import { copyFields } from '../shared/utils';
+import { getTurnPrompt } from './turn/turn-prompt-api';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -224,6 +225,10 @@ export async function fetchAllLobbyData(
       lobby.players = await getAllPlayersInLobby(lobby.id);
       lobby.player_states = await getAllPlayersStates(lobby.id);
       for (const turn of lobby.turns) {
+        const prompt = await getTurnPrompt(lobby.id, turn);
+        if (prompt) {
+          turn.prompts = [prompt];
+        }
         const responses = await getAllPlayerResponses(lobby.id, turn.id);
         turn.player_responses = new Map(
           responses.map((r) => [r.player_uid, r]),
@@ -500,6 +505,9 @@ export function exportGameDataToFile(gameData: GameLobby[]) {
       ...lobby,
       turns: lobby.turns.map((turn) => ({
         ...turn,
+        prompts: turn.prompts.map((p) =>
+          copyFields(p, ['random_index', 'rating']),
+        ),
         player_responses: Array.from(turn.player_responses.entries()).map(
           ([uid, response]) => ({
             player_uid: uid,
