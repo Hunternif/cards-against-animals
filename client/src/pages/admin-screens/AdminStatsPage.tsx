@@ -257,10 +257,12 @@ export function AdminStatsPage() {
                 <th>Win Rate</th>
                 {/* <th>Total Score</th> -- duplicates win count */}
                 <th>Avg Score</th>
+                <th>Med Score</th>
                 <th>Likes</th>
                 <th>Discards</th>
                 <th>Time Played</th>
                 <th>Avg Time</th>
+                <th>Med Time</th>
               </tr>
             </thead>
             <tbody>
@@ -312,6 +314,7 @@ export function AdminStatsPage() {
                     <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`} />
                     {/* <CounterRow val={stat.total_score} /> */}
                     <CounterRow val={stat.average_score_per_game.toFixed(1)} />
+                    <CounterRow val={stat.median_score_per_game.toFixed(1)} />
                     <CounterRow val={stat.total_likes_received} />
                     <CounterRow val={stat.total_discards} />
                     <CounterRow
@@ -320,10 +323,13 @@ export function AdminStatsPage() {
                     <CounterRow
                       val={formatPlayTime(stat.average_time_per_game_ms)}
                     />
+                    <CounterRow
+                      val={formatPlayTime(stat.median_time_per_game_ms)}
+                    />
                   </tr>
                   {expandedUser === stat.uid && (
                     <tr className="detail-row">
-                      <td colSpan={mergeMode ? 16 : 15}>
+                      <td colSpan={mergeMode ? 17 : 16}>
                         <UserStatsDetails stat={stat} />
                       </td>
                     </tr>

@@ -45,6 +45,14 @@ export interface UserStats {
   total_time_played_ms: number;
   /** Average time per game in milliseconds */
   average_time_per_game_ms: number;
+  /** Median time per game in milliseconds */
+  median_time_per_game_ms: number;
+  /** Median score per game */
+  median_score_per_game: number;
+  /** Individual game durations for calculating median */
+  game_durations_ms: number[];
+  /** Individual game scores for calculating median */
+  game_scores: number[];
   /** Maps month string (YYYY-MM) to number of games played */
   games_per_month: Map<string, number>;
   /** Top cards used, sorted by frequency */
@@ -328,6 +336,10 @@ export async function parseUserStatistics(
           games: new Set<GameLobby>(),
           total_time_played_ms: 0,
           average_time_per_game_ms: 0,
+          median_time_per_game_ms: 0,
+          median_score_per_game: 0,
+          game_durations_ms: [],
+          game_scores: [],
           games_per_month: new Map<string, number>(),
           top_cards_used: [],
           top_liked_responses: [],
@@ -363,8 +375,12 @@ export async function parseUserStatistics(
           const gameDurationMs =
             lastTurn.time_created.getTime() - firstTurn.time_created.getTime();
           userStat.total_time_played_ms += gameDurationMs;
+          userStat.game_durations_ms.push(gameDurationMs);
         }
       }
+
+      // Track individual game score
+      userStat.game_scores.push(state.score);
 
       // Track games per month
       const currentMonthCount = userStat.games_per_month.get(monthKey) || 0;
@@ -392,6 +408,30 @@ export async function parseUserStatistics(
         : 0;
     stats.average_time_per_game_ms =
       stats.games.size > 0 ? stats.total_time_played_ms / stats.games.size : 0;
+    
+    // Calculate median time per game
+    if (stats.game_durations_ms.length > 0) {
+      const sortedDurations = [...stats.game_durations_ms].sort((a, b) => a - b);
+      const mid = Math.floor(sortedDurations.length / 2);
+      stats.median_time_per_game_ms =
+        sortedDurations.length % 2 === 0
+          ? (sortedDurations[mid - 1] + sortedDurations[mid]) / 2
+          : sortedDurations[mid];
+    } else {
+      stats.median_time_per_game_ms = 0;
+    }
+
+    // Calculate median score per game
+    if (stats.game_scores.length > 0) {
+      const sortedScores = [...stats.game_scores].sort((a, b) => a - b);
+      const mid = Math.floor(sortedScores.length / 2);
+      stats.median_score_per_game =
+        sortedScores.length % 2 === 0
+          ? (sortedScores[mid - 1] + sortedScores[mid]) / 2
+          : sortedScores[mid];
+    } else {
+      stats.median_score_per_game = 0;
+    }
   }
 
   // Convert to final stats format and filter
@@ -437,6 +477,8 @@ export function mergeUserStats(
   let totalScore = 0;
   let totalDiscards = 0;
   let totalTimePlayed = 0;
+  const allGameDurations: number[] = [];
+  const allGameScores: number[] = [];
   let isBot = false;
   let firstTime: Date | undefined = undefined;
   let lastTime: Date | undefined = undefined;
@@ -450,6 +492,8 @@ export function mergeUserStats(
     totalScore += user.total_score;
     totalDiscards += user.total_discards;
     totalTimePlayed += user.total_time_played_ms;
+    allGameDurations.push(...user.game_durations_ms);
+    allGameScores.push(...user.game_scores);
     isBot = isBot || user.is_bot;
 
     // Add all games from this user
@@ -477,6 +521,28 @@ export function mergeUserStats(
   }
 
   const totalGames = mergedGames.size;
+  
+  // Calculate median time from all game durations
+  let medianTime = 0;
+  if (allGameDurations.length > 0) {
+    const sortedDurations = [...allGameDurations].sort((a, b) => a - b);
+    const mid = Math.floor(sortedDurations.length / 2);
+    medianTime =
+      sortedDurations.length % 2 === 0
+        ? (sortedDurations[mid - 1] + sortedDurations[mid]) / 2
+        : sortedDurations[mid];
+  }
+
+  // Calculate median score from all game scores
+  let medianScore = 0;
+  if (allGameScores.length > 0) {
+    const sortedScores = [...allGameScores].sort((a, b) => a - b);
+    const mid = Math.floor(sortedScores.length / 2);
+    medianScore =
+      sortedScores.length % 2 === 0
+        ? (sortedScores[mid - 1] + sortedScores[mid]) / 2
+        : sortedScores[mid];
+  }
 
   // For the merged user, we need to recalculate top cards, responses, and teammates
   // by treating all the merged UIDs as the same person
@@ -498,6 +564,10 @@ export function mergeUserStats(
     last_time_played: lastTime,
     total_time_played_ms: totalTimePlayed,
     average_time_per_game_ms: totalGames > 0 ? totalTimePlayed / totalGames : 0,
+    median_time_per_game_ms: medianTime,
+    median_score_per_game: medianScore,
+    game_durations_ms: allGameDurations,
+    game_scores: allGameScores,
     games_per_month: mergedGamesPerMonth,
     top_cards_used: [],
     top_liked_responses: [],
