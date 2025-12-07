@@ -27,6 +27,9 @@ input.control {
   &.tiny-control {
     font-weight: inherit;
   }
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 .with-icon-left {
   position: relative;

@@ -34,4 +34,7 @@ select.control {
     background-position: right 0.25rem center;
     background-size: 0.8em;
   }
+  &:disabled {
+    opacity: 0.5;
+  }
 }
