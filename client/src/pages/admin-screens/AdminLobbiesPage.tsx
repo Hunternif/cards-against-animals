@@ -1,4 +1,7 @@
-import { useCollection } from 'react-firebase-hooks/firestore';
+import {
+  useCollection,
+  useCollectionData,
+} from 'react-firebase-hooks/firestore';
 import { usePlayers } from '../../api/lobby/lobby-hooks';
 import { lobbiesRef } from '../../api/lobby/lobby-repository';
 import {
@@ -30,10 +33,26 @@ interface TurnProps {
   players: PlayerInLobby[];
 }
 
+function formatDate(date: Date | undefined) {
+  if (!date) return '-';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function LobbyData({ lobby }: LobbyProps) {
   const [players] = usePlayers(lobby.id);
   return (
-    <AccordionItem key={lobby.id} header={lobby.id}>
+    <AccordionItem
+      key={lobby.id}
+      header={
+        <div className="lobby-header" style={{ display: 'flex', gap: '1rem' }}>
+          <span className="date">{formatDate(lobby.time_created)}</span>
+          <span className="id">{lobby.id}</span>
+        </div>
+      }
+    >
       <ul>
         <div className="data-subsection">
           <li>Creator: {lobby.creator_uid}</li>
@@ -120,14 +139,21 @@ function PlayerInTurnData({ turn, player, responses }: PlayerProps) {
 }
 
 export function AdminLobbiesPage() {
-  const [lobbies] = useCollection(lobbiesRef);
+  const [lobbies] = useCollectionData(lobbiesRef);
+  const sortedLobbies =
+    lobbies &&
+    lobbies.sort((a, b) => {
+      const timeA = a.time_created?.getTime() ?? 0;
+      const timeB = b.time_created?.getTime() ?? 0;
+      return timeB - timeA;
+    });
 
   return (
     <AdminSubpage title="Lobbies">
       <Accordion>
-        {lobbies &&
-          lobbies.docs.map((doc) => (
-            <LobbyData lobby={doc.data()} key={doc.id} />
+        {sortedLobbies &&
+          sortedLobbies.map((lobby) => (
+            <LobbyData lobby={lobby} key={lobby.id} />
           ))}
       </Accordion>
     </AdminSubpage>
