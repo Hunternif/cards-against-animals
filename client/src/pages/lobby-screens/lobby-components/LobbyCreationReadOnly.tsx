@@ -4,7 +4,7 @@ import { GameButton } from '../../../components/Buttons';
 import { Timed } from '../../../components/Delay';
 import { IconLink } from '../../../components/Icons';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
-import { GameLobby } from '../../../shared/types';
+import { GameLobby } from '@shared/types';
 import { DeckSelector } from './DeckSelector';
 import { LobbySettingsPanel } from './LobbySettingsPanel';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';

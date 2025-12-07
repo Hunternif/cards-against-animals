@@ -13,8 +13,8 @@ import {
   getAllPlayerResponses,
   updateTurn,
 } from '../api/turn-server-repository';
-import { turnConverter } from '../shared/firestore-converters';
-import { assertExhaustive } from '../shared/utils';
+import { turnConverter } from '@shared/firestore-converters';
+import { assertExhaustive } from '@shared/utils';
 import { processBots } from '../api/bot-server-api';
 
 /**

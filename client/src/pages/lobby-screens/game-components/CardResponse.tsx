@@ -1,4 +1,4 @@
-import { ResponseCardInGame } from '../../../shared/types';
+import { ResponseCardInGame } from '@shared/types';
 import { Downvote } from './CardVotes';
 import { IconRecycle, IconTrash } from '../../../components/Icons';
 import {

@@ -1,7 +1,7 @@
 import * as logger from 'firebase-functions/logger';
 import { setPlayerOffline } from '../api/lobby-server-api';
 import { rtdb } from '../firebase-server';
-import { DBPresence } from '../shared/types';
+import { DBPresence } from '@shared/types';
 
 /** How long to wait before acting on the user's 'offline' status. */
 const offlineDebounceMs = 5000;

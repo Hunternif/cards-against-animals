@@ -12,7 +12,7 @@ import { changePlayerRoleFun, kickPlayerFun } from '../../firebase';
 import {
   playerConverter,
   playerStateConverter,
-} from '../../shared/firestore-converters';
+} from '@shared/firestore-converters';
 import {
   GameLobby,
   KickAction,
@@ -20,7 +20,7 @@ import {
   PlayerInLobby,
   PlayerRole,
   PlayerStatus,
-} from '../../shared/types';
+} from '@shared/types';
 import { lobbiesRef } from './lobby-repository';
 
 ///////////////////////////////////////////////////////////////////////////////

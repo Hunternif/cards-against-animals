@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { TextInput } from '../../../components/FormControls';
-import { Deck, DeckTag } from '../../../shared/types';
+import { Deck, DeckTag } from '@shared/types';
 import { useDIContext } from '../../../di-context';
 import { useErrorContext } from '../../../components/ErrorContext';
 

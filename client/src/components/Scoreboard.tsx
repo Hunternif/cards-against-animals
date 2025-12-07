@@ -1,6 +1,6 @@
 import { CSSProperties, useEffect, useState } from 'react';
 import { getAllPlayersStates } from '../api/lobby/lobby-player-api';
-import { GameLobby, PlayerGameState, PlayerInLobby } from '../shared/types';
+import { GameLobby, PlayerGameState, PlayerInLobby } from '@shared/types';
 import { IconCounter } from './IconCounter';
 import { IconHeartInline, IconRobotInline, IconStarInline } from './Icons';
 import { PlayerAvatar } from './PlayerAvatar';

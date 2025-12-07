@@ -4,7 +4,7 @@ import {
   useResponseReveal,
 } from '../../../api/turn/turn-hooks';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
-import { PlayerInLobby, PlayerResponse } from '../../../shared/types';
+import { PlayerInLobby, PlayerResponse } from '@shared/types';
 import { CardStack } from './CardStack';
 import { useGameContext } from './GameContext';
 import { LaughTrack } from './LaughTrack';

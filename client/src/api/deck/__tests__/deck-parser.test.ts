@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from '../../../shared/types';
+import { Deck, DeckTag, PromptDeckCard, ResponseDeckCard } from '@shared/types';
 import {
   detectCat,
   detectDeer,

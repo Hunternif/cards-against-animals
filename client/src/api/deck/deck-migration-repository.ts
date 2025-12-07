@@ -1,7 +1,7 @@
 import { collection, doc, runTransaction } from 'firebase/firestore';
 import { firestore } from '../../firebase';
-import { deckMigrationConverter } from '../../shared/firestore-converters';
-import { Deck, DeckCard, DeckMigrationItem } from '../../shared/types';
+import { deckMigrationConverter } from '@shared/firestore-converters';
+import { Deck, DeckCard, DeckMigrationItem } from '@shared/types';
 
 const deckMigRef = collection(firestore, 'deck_migrations').withConverter(
   deckMigrationConverter,

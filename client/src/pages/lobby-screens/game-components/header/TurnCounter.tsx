@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { IconStarInline } from "../../../../components/Icons";
-import { assertExhaustive } from "../../../../shared/utils";
+import { assertExhaustive } from "@shared/utils";
 import { useGameContext } from "../GameContext";
 
 /** Shows current turn number and total turns. */

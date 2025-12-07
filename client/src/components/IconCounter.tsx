@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { copyFields } from "../shared/utils";
+import { copyFields } from "@shared/utils";
 
 interface CounterProps extends React.HTMLProps<HTMLSpanElement> {
   icon: ReactNode;

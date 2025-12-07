@@ -8,7 +8,7 @@ import { ErrorContext } from '../../../components/ErrorContext';
 import { IconLink, IconPlay } from '../../../components/Icons';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
-import { GameLobby } from '../../../shared/types';
+import { GameLobby } from '@shared/types';
 import { DeckSelector } from './DeckSelector';
 import { LobbySettingsPanel } from './LobbySettingsPanel';
 import { useHandler } from '../../../hooks/data-hooks';

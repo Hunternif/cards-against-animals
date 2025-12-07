@@ -1,6 +1,6 @@
 import { IconCheck } from "../../../components/Icons";
 import { PlayerAvatar } from "../../../components/PlayerAvatar";
-import { PlayerInLobby } from "../../../shared/types";
+import { PlayerInLobby } from "@shared/types";
 
 interface Props {
   ready: boolean,

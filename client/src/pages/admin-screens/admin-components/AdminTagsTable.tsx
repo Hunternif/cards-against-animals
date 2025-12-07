@@ -9,7 +9,7 @@ import {
   DeckCard,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../../shared/types';
+} from '@shared/types';
 import {
   adminDeckRowHeight,
   adminDeckRowHeightWithBorder,

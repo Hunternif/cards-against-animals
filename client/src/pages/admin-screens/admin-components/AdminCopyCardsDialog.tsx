@@ -14,8 +14,8 @@ import { TextInput } from '../../../components/FormControls';
 import { VirtualTable } from '../../../components/VirtualTable';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
 import { useDIContext } from '../../../di-context';
-import { cardTypedID } from '../../../shared/deck-utils';
-import { Deck, DeckCard } from '../../../shared/types';
+import { cardTypedID } from '@shared/deck-utils';
+import { Deck, DeckCard } from '@shared/types';
 import {
   AdminDeckCardRow,
   adminDeckRowHeightWithBorder,

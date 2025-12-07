@@ -26,7 +26,7 @@ import {
   getLastTurn,
   updateTurn,
 } from '../api/turn-server-repository';
-import { anyTagsKey, PromptCardInGame } from '../shared/types';
+import { anyTagsKey, PromptCardInGame } from '@shared/types';
 import { mockRNG } from './mock-rng';
 
 // This test requries emulator to be running.

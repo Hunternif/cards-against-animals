@@ -3,7 +3,7 @@ import {
   DeckTag,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../shared/types';
+} from '@shared/types';
 
 /**
  * Parses collection data. `promptList` and `responseList` are strings where

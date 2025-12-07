@@ -6,9 +6,9 @@ import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { Twemoji } from '../../../components/Twemoji';
 import { useDIContext } from '../../../di-context';
 import { useAsyncData } from '../../../hooks/data-hooks';
-import { formatPrompt } from '../../../shared/deck-utils';
-import { PromptCardInGame, VoteChoice } from '../../../shared/types';
-import { copyFields2 } from '../../../shared/utils';
+import { formatPrompt } from '@shared/deck-utils';
+import { PromptCardInGame, VoteChoice } from '@shared/types';
+import { copyFields2 } from '@shared/utils';
 import { Downvote, Upvote } from './CardVotes';
 import { useGameContext } from './GameContext';
 import {

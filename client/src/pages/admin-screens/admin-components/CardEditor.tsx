@@ -5,7 +5,7 @@ import {
   filterPromptDeckCard,
   filterResponseDeckCard,
   formatPrompt,
-} from '../../../shared/deck-utils';
+} from '@shared/deck-utils';
 import {
   allCardActions,
   allCardTiers,
@@ -15,7 +15,7 @@ import {
   DeckCard,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../../shared/types';
+} from '@shared/types';
 import { PromptPick } from '../../lobby-screens/game-components/CardPrompt';
 import {
   CardBottomRight,

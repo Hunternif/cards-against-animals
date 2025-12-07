@@ -20,7 +20,7 @@ import {
 import { Twemoji } from '../../../components/Twemoji';
 import { useScreenWiderThan } from '../../../components/layout/ScreenSizeSwitch';
 import { isSeason } from '../../../components/theme';
-import { CardInGame } from '../../../shared/types';
+import { CardInGame } from '@shared/types';
 import { CardOffsetContext } from './CardOffsetContext';
 import {
   CardBottomLeft,

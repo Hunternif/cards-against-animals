@@ -1,5 +1,5 @@
 import { HttpsError } from 'firebase-functions/v1/auth';
-import { DeckLock } from '../shared/types';
+import { DeckLock } from '@shared/types';
 import {
   getDeckLock,
   getUserDeckKey,

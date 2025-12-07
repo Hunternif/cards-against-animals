@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { RNG } from '../../shared/rng';
+import { RNG } from '@shared/rng';
 
 test('fair random distribution', () => {
   const results = new Array<number>(10).fill(0);

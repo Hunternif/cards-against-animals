@@ -3,7 +3,7 @@ import { lockDeck } from '../../../api/deck/deck-lock-api';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { useErrorContext } from '../../../components/ErrorContext';
 import { TextInput } from '../../../components/FormControls';
-import { Deck } from '../../../shared/types';
+import { Deck } from '@shared/types';
 
 type DeckPasswordProps = {
   deck?: Deck;

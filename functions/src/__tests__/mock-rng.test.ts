@@ -1,4 +1,4 @@
-import { RNG } from '../shared/rng';
+import { RNG } from '@shared/rng';
 import './mock-rng';
 import { mockRNG } from './mock-rng';
 

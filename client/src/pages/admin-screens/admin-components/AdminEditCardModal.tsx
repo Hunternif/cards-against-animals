@@ -6,8 +6,8 @@ import {
   copyDeckCard,
   filterPromptDeckCard,
   filterResponseDeckCard,
-} from '../../../shared/deck-utils';
-import { Deck, DeckCard } from '../../../shared/types';
+} from '@shared/deck-utils';
+import { Deck, DeckCard } from '@shared/types';
 import { CardEditor } from './CardEditor';
 
 interface Props {

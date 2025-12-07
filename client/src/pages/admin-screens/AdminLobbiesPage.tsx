@@ -15,7 +15,7 @@ import {
   GameTurn,
   PlayerInLobby,
   PlayerResponse,
-} from '../../shared/types';
+} from '@shared/types';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 
 interface LobbyProps {

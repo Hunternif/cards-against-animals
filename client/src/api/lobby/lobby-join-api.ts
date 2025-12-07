@@ -4,7 +4,7 @@ import {
   findOrCreateLobbyAndJoinFun,
   joinLobbyFun,
 } from '../../firebase';
-import { CAAUser, GameLobby } from '../../shared/types';
+import { CAAUser, GameLobby } from '@shared/types';
 import {
   getPlayerInLobby,
   setPlayerStatus,

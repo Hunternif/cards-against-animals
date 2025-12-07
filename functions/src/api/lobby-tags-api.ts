@@ -9,8 +9,8 @@ import {
   TagInGame,
   anyTagsKey,
   noTagsKey,
-} from '../shared/types';
-import { stringComparator } from '../shared/utils';
+} from '@shared/types';
+import { stringComparator } from '@shared/utils';
 import { getLobbyDeckResponsesRef } from './lobby-server-repository';
 
 /** Counts cards for each tag. */

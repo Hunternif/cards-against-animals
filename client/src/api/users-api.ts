@@ -14,8 +14,8 @@ import { firebaseAuth, firestore } from '../firebase';
 import {
   deckLockConverter,
   userConverter,
-} from '../shared/firestore-converters';
-import { CAAUser } from '../shared/types';
+} from '@shared/firestore-converters';
+import { CAAUser } from '@shared/types';
 import { avatarMap } from './avatars';
 import { leaveLobby } from './lobby/lobby-join-api';
 import { getPlayerInLobby } from './lobby/lobby-player-api';

@@ -1,6 +1,6 @@
 import { doc, runTransaction } from 'firebase/firestore';
 import { firestore, newTurnFun } from '../../firebase';
-import { GameLobby, GameTurn } from '../../shared/types';
+import { GameLobby, GameTurn } from '@shared/types';
 import { getActivePlayerCount } from '../lobby/lobby-player-api';
 import { getResponseLikeCount } from './turn-like-api';
 import { updateTurn } from './turn-repository';

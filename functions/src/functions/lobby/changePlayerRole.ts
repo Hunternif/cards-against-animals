@@ -1,7 +1,7 @@
 import { assertLoggedIn } from '../../api/auth-api';
 import { changePlayerRole } from '../../api/lobby-server-api';
 import { getLobby } from '../../api/lobby-server-repository';
-import { PlayerRole } from '../../shared/types';
+import { PlayerRole } from '@shared/types';
 import { CallableHandler } from '../function-utils';
 
 /**

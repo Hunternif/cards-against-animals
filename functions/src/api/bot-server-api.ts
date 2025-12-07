@@ -1,6 +1,6 @@
-import { RNG } from '../shared/rng';
-import { GameLobby, GameTurn, PlayerInLobby } from '../shared/types';
-import { assertExhaustive } from '../shared/utils';
+import { RNG } from '@shared/rng';
+import { GameLobby, GameTurn, PlayerInLobby } from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import {
   getPlayers,
   getPlayerState,

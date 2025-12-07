@@ -1,4 +1,4 @@
-import { anyTagsKey, noTagsKey, ResponseCardInGame } from '../../shared/types';
+import { anyTagsKey, noTagsKey, ResponseCardInGame } from '@shared/types';
 import {
   CardTagRepository,
   fetchCardsForTags,

@@ -6,8 +6,8 @@ import { firestore } from '../firebase-server';
 import {
   promptCardInGameConverter,
   responseCardInGameConverter,
-} from '../shared/firestore-converters';
-import { RNG } from '../shared/rng';
+} from '@shared/firestore-converters';
+import { RNG } from '@shared/rng';
 import {
   CardInGame,
   Deck,
@@ -18,8 +18,8 @@ import {
   PromptCardInGame,
   ResponseCardInGame,
   defaultLobbySettings,
-} from '../shared/types';
-import { assertExhaustive } from '../shared/utils';
+} from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import { assertNotAnonymous } from './auth-api';
 import { verifyUserHasDeckKey } from './deck-lock-server-api';
 import {

@@ -1,12 +1,12 @@
 import { HttpsError } from 'firebase-functions/v1/auth';
 import { firestore } from '../firebase-server';
-import { getCardFactor } from '../shared/deck-utils';
+import { getCardFactor } from '@shared/deck-utils';
 import {
   deckConverter,
   promptDeckCardConverter,
   responseDeckCardConverter,
-} from '../shared/firestore-converters';
-import { IRNG, RNG } from '../shared/rng';
+} from '@shared/firestore-converters';
+import { IRNG, RNG } from '@shared/rng';
 import {
   Deck,
   DeckCard,
@@ -15,7 +15,7 @@ import {
   PromptDeckCard,
   ResponseCardInGame,
   ResponseDeckCard,
-} from '../shared/types';
+} from '@shared/types';
 
 export function getDecksRef() {
   return firestore.collection(`decks`).withConverter(deckConverter);

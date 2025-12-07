@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { AuthStateHook, useAuthState } from 'react-firebase-hooks/auth';
 import { useErrorContext } from '../components/ErrorContext';
 import { database, firebaseAuth } from '../firebase';
-import { DBPresenceToWrite } from '../shared/types';
+import { DBPresenceToWrite } from '@shared/types';
 
 const isOfflineForDB: DBPresenceToWrite = {
   state: 'offline',

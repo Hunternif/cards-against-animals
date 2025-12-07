@@ -4,8 +4,8 @@ import {
   GameTurn,
   PlayerGameState,
   PlayerRole,
-} from '../../shared/types';
-import { copyFields } from '../../shared/utils';
+} from '@shared/types';
+import { copyFields } from '@shared/utils';
 import { getLobby, getOrCreatePlayerState } from '../lobby-server-repository';
 import { payDiscardCost, updatePlayerScoresFromTurn } from '../turn-server-api';
 

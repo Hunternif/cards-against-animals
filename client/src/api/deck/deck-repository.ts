@@ -14,7 +14,7 @@ import {
   deckConverter,
   promptDeckCardConverter,
   responseDeckCardConverter,
-} from '../../shared/firestore-converters';
+} from '@shared/firestore-converters';
 import {
   Deck,
   DeckCard,
@@ -23,7 +23,7 @@ import {
   PromptCardInGame,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../shared/types';
+} from '@shared/types';
 import { DeckCardSet } from './deck-card-set';
 import { makeNewID } from './deck-merger';
 

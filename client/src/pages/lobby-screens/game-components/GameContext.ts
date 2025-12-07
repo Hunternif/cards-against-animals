@@ -8,7 +8,7 @@ import {
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInHand
-} from "../../../shared/types";
+} from "@shared/types";
 
 /** State of the game in progress. */
 export interface GameContextState {

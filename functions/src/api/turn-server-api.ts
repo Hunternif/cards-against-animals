@@ -3,8 +3,8 @@
 import * as logger from 'firebase-functions/logger';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { firestore } from '../firebase-server';
-import { promptCardInGameConverter } from '../shared/firestore-converters';
-import { RNG } from '../shared/rng';
+import { promptCardInGameConverter } from '@shared/firestore-converters';
+import { RNG } from '@shared/rng';
 import {
   DiscardCost,
   GameLobby,
@@ -14,8 +14,8 @@ import {
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame,
-} from '../shared/types';
-import { assertExhaustive, countEveryN } from '../shared/utils';
+} from '@shared/types';
+import { assertExhaustive, countEveryN } from '@shared/utils';
 import { getDeckResponseCard } from './deck-server-api';
 import { exchangeCards } from './exchange-cards-server-api';
 import {

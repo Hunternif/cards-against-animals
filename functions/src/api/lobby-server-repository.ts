@@ -7,13 +7,13 @@ import {
   playerStateConverter,
   promptCardInGameConverter,
   responseCardInGameConverter,
-} from '../shared/firestore-converters';
+} from '@shared/firestore-converters';
 import {
   GameLobby,
   PlayerGameState,
   PlayerInLobby,
   PlayerRole,
-} from '../shared/types';
+} from '@shared/types';
 
 ///////////////////////////////////////////////////////////////////////////////
 //

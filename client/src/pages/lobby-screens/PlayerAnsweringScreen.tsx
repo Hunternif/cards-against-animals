@@ -12,7 +12,7 @@ import {
   useNotificationSound,
   useSoundOnResponse,
 } from '../../hooks/sound-hooks';
-import { PlayerResponse, ResponseCardInGame } from '../../shared/types';
+import { PlayerResponse, ResponseCardInGame } from '@shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
 import { GameControlRow } from './game-components/GameControlRow';

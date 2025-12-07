@@ -2,9 +2,9 @@ import {
   combinedCardList,
   copyDeck,
   copyDeckCard,
-} from '../../shared/deck-utils';
-import { Deck, DeckCard, DeckTag, ResponseDeckCard } from '../../shared/types';
-import { stringComparator } from '../../shared/utils';
+} from '@shared/deck-utils';
+import { Deck, DeckCard, DeckTag, ResponseDeckCard } from '@shared/types';
+import { stringComparator } from '@shared/utils';
 import { DeckCardSet } from './deck-card-set';
 import { cardOrdinalToID } from './deck-parser';
 

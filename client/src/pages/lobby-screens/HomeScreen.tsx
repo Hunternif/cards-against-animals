@@ -13,7 +13,7 @@ import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { firebaseAuth } from "../../firebase";
 import { useEffectOnce } from "../../hooks/ui-hooks";
-import { CAAUser } from "../../shared/types";
+import { CAAUser } from "@shared/types";
 import { AnonymousLogin } from "./login-components/AnonymousLogin";
 
 interface Props {

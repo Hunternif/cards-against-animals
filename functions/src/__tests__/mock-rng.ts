@@ -1,4 +1,4 @@
-import { RNG } from '../shared/rng';
+import { RNG } from '@shared/rng';
 
 /** Returns a callback that resets it back to original */
 export function mockRNG(): () => void {

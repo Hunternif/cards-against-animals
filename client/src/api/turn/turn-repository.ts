@@ -8,8 +8,8 @@ import {
 import {
   responseCardInGameConverter,
   turnConverter,
-} from '../../shared/firestore-converters';
-import { GameTurn, ResponseCardInGame } from '../../shared/types';
+} from '@shared/firestore-converters';
+import { GameTurn, ResponseCardInGame } from '@shared/types';
 import { getPlayerRef } from '../lobby/lobby-player-api';
 import { lobbiesRef } from '../lobby/lobby-repository';
 

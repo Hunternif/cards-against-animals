@@ -1,5 +1,5 @@
 import * as logger from 'firebase-functions/logger';
-import { assertExhaustive } from '../shared/utils';
+import { assertExhaustive } from '@shared/utils';
 import {
   getLobby,
   getOnlinePlayers,
@@ -23,7 +23,7 @@ import {
   PlayerResponse,
   PromptCardInGame,
   ResponseCardInGame,
-} from '../shared/types';
+} from '@shared/types';
 import { getDeckPromptsRef, getDeckResponsesRef } from './deck-server-api';
 
 export interface LogData {

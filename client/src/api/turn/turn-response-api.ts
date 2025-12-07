@@ -9,15 +9,15 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { playerResponseConverter } from '../../shared/firestore-converters';
-import { RNG } from '../../shared/rng';
+import { playerResponseConverter } from '@shared/firestore-converters';
+import { RNG } from '@shared/rng';
 import {
   GameLobby,
   GameTurn,
   PlayerInLobby,
   PlayerResponse,
   ResponseCardInGame,
-} from '../../shared/types';
+} from '@shared/types';
 import { getTurnRef } from './turn-repository';
 
 ///////////////////////////////////////////////////////////////////////////////

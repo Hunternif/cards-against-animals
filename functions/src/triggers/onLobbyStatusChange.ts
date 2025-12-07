@@ -1,7 +1,7 @@
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { cleanUpEndedLobby } from '../api/lobby-server-api';
 import { logDownvotes } from '../api/log-server-api';
-import { lobbyConverter } from '../shared/firestore-converters';
+import { lobbyConverter } from '@shared/firestore-converters';
 
 /**
  * Logic to run after lobby status changes.

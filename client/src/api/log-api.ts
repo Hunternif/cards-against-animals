@@ -3,7 +3,7 @@ import {
   CardInGame,
   PromptCardInGame,
   ResponseCardInGame,
-} from '../shared/types';
+} from '@shared/types';
 
 /** Logs impressions and interactions with cards */
 export async function logInteraction(

@@ -1,6 +1,6 @@
 import { firestore } from '../firebase-server';
-import { deckLockConverter } from '../shared/firestore-converters';
-import { DeckLock } from '../shared/types';
+import { deckLockConverter } from '@shared/firestore-converters';
+import { DeckLock } from '@shared/types';
 import { hashDeckKey } from './deck-lock-server-api';
 
 function getDeckLockRef(deckID: string) {

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useErrorContext } from '../../../components/ErrorContext';
 import { createLobbyAsCopy } from '../../../api/lobby/lobby-join-api';
 import { ButtonProps, GameButton } from '../../../components/Buttons';
-import { GameLobby } from '../../../shared/types';
+import { GameLobby } from '@shared/types';
 import { useState } from 'react';
 
 interface Props extends ButtonProps {

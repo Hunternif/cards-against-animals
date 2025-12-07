@@ -6,7 +6,7 @@ import { IconAddPerson } from '../../../components/Icons';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { UserAvatar } from '../../../components/UserAvatar';
 import { useAsyncData, useHandler1 } from '../../../hooks/data-hooks';
-import { CAAUser, GameLobby, PlayerInLobby } from '../../../shared/types';
+import { CAAUser, GameLobby, PlayerInLobby } from '@shared/types';
 
 interface ListProps {
   lobby: GameLobby;

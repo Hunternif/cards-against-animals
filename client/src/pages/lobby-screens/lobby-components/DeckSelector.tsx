@@ -10,7 +10,7 @@ import { LoadingSpinner } from '../../../components/LoadingSpinner';
 import { useDIContext } from '../../../di-context';
 import { useMarkedData } from '../../../hooks/data-hooks';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
-import { GameLobby } from '../../../shared/types';
+import { GameLobby } from '@shared/types';
 import { DeckPasswordModal } from './DeckPasswordModal';
 import { checkUserDeckKey } from '../../../api/deck/deck-lock-api';
 

@@ -2,7 +2,7 @@ import * as logger from 'firebase-functions/logger';
 
 import { assertLobbyControl, assertLoggedIn } from '../../api/auth-api';
 import { getLobby, updateLobby } from '../../api/lobby-server-repository';
-import { LobbySettings } from '../../shared/types';
+import { LobbySettings } from '@shared/types';
 import { CallableHandler } from '../function-utils';
 
 /** Updates lobby settings. Allowed for creator and current judge. */

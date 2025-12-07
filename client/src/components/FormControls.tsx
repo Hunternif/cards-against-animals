@@ -1,5 +1,5 @@
 import { ChangeEvent, ReactNode, useContext, useMemo, useState } from 'react';
-import { debounce } from '../shared/utils';
+import { debounce } from '@shared/utils';
 import { Checkbox } from './Checkbox';
 import { ErrorContext } from './ErrorContext';
 

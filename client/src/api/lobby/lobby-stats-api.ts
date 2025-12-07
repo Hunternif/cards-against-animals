@@ -1,4 +1,4 @@
-import { PlayerResponse, PromptCardInGame } from '../../shared/types';
+import { PlayerResponse, PromptCardInGame } from '@shared/types';
 import { getTurnPrompt } from '../turn/turn-prompt-api';
 import { getAllTurns } from '../turn/turn-repository';
 import { getAllPlayerResponses } from '../turn/turn-response-api';

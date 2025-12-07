@@ -3,8 +3,8 @@ import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 
 import { cleanUpPlayer } from '../api/lobby-server-api';
 import { setUsersCurrentLobby } from '../api/user-server-api';
-import { playerConverter } from '../shared/firestore-converters';
-import { assertExhaustive } from '../shared/utils';
+import { playerConverter } from '@shared/firestore-converters';
+import { assertExhaustive } from '@shared/utils';
 
 /**
  * Clean-up logic to run when a player changes their status.

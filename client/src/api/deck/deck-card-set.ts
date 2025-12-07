@@ -4,7 +4,7 @@ import {
   filterResponseDeckCard,
   getCardFactor,
   inferCardTier,
-} from '../../shared/deck-utils';
+} from '@shared/deck-utils';
 import {
   allCardTiers,
   Deck,
@@ -12,8 +12,8 @@ import {
   defaultLobbySettings,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../shared/types';
-import { stringComparator } from '../../shared/utils';
+} from '@shared/types';
+import { stringComparator } from '@shared/utils';
 
 export type CardSortField = keyof DeckCard | 'rank';
 

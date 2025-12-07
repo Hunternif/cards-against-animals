@@ -2,14 +2,14 @@ import {
   copyDeckCard,
   getCardFactor,
   inferCardTier,
-} from '../../shared/deck-utils';
-import { newPromptCard, newResponseCard } from '../../shared/mock-data';
+} from '@shared/deck-utils';
+import { newPromptCard, newResponseCard } from '@shared/mock-data';
 import {
   defaultLobbySettings,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../shared/types';
-import { copyFields2 } from '../../shared/utils';
+} from '@shared/types';
+import { copyFields2 } from '@shared/utils';
 import { getCardIndex } from '../deck-server-api';
 
 test('update card index to put new cards first', () => {

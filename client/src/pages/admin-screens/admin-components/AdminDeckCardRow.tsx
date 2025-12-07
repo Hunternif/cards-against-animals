@@ -2,13 +2,13 @@ import { CSSProperties, ReactNode } from 'react';
 import { isOnlyEmojis } from '../../../api/deck/deck-parser';
 import { GameButton } from '../../../components/Buttons';
 import { Twemoji } from '../../../components/Twemoji';
-import { getCardFactor, inferCardTier } from '../../../shared/deck-utils';
+import { getCardFactor, inferCardTier } from '@shared/deck-utils';
 import {
   DeckCard,
   defaultLobbySettings,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../../shared/types';
+} from '@shared/types';
 
 interface RowProps {
   card: DeckCard;

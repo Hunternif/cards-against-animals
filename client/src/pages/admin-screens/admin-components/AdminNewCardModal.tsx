@@ -9,8 +9,8 @@ import {
   DeckCard,
   PromptDeckCard,
   ResponseDeckCard,
-} from '../../../shared/types';
-import { assertExhaustive } from '../../../shared/utils';
+} from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import { CardEditor } from './CardEditor';
 
 interface Props {

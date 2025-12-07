@@ -1,5 +1,5 @@
-import { GameTurn, PlayerResponse, ResponseCardInGame } from '../shared/types';
-import { assertExhaustive } from '../shared/utils';
+import { GameTurn, PlayerResponse, ResponseCardInGame } from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import { getPlayer } from './lobby-server-repository';
 import {
   getAllPlayerResponses,

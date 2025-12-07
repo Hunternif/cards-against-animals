@@ -18,7 +18,7 @@ import {
   PlayerRole,
   PromptCardInGame,
   ResponseCardInGame,
-} from './shared/types';
+} from '@shared/types';
 import { connectDatabaseEmulator, getDatabase } from 'firebase/database';
 
 const firebaseApp = initializeApp(firebaseConfig);

@@ -9,7 +9,7 @@ import { Twemoji } from '../../components/Twemoji';
 import { FillLayout } from '../../components/layout/FillLayout';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { useSound } from '../../hooks/sound-hooks';
-import { GameLobby, PlayerInLobby } from '../../shared/types';
+import { GameLobby, PlayerInLobby } from '@shared/types';
 import { BestAnswersShowcase } from './game-components/BestAnswersShowcase';
 import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { NewGameButton } from './game-components/NewGameButton';

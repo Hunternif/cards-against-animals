@@ -10,8 +10,8 @@ import {
   GameTurn,
   LobbySettings,
   PlayerInLobby,
-} from '../../shared/types';
-import { assertExhaustive } from '../../shared/utils';
+} from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import { getAllPlayersStates } from './lobby-player-api';
 import { getLobby, updateLobby } from './lobby-repository';
 

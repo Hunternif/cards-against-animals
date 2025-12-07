@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import twemoji from 'twemoji';
-import { copyFields } from '../shared/utils';
+import { copyFields } from '@shared/utils';
 
 interface Props extends React.HTMLAttributes<HTMLSpanElement> {}
 

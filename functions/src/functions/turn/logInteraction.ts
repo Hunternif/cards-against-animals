@@ -3,7 +3,7 @@ import * as logger from 'firebase-functions/logger';
 import { assertLoggedIn, assertPlayerInLobby } from '../../api/auth-api';
 import { getLobby } from '../../api/lobby-server-repository';
 import { logCardInteractions } from '../../api/log-server-api';
-import { PromptCardInGame, ResponseCardInGame } from '../../shared/types';
+import { PromptCardInGame, ResponseCardInGame } from '@shared/types';
 import { CallableHandler } from '../function-utils';
 
 /**

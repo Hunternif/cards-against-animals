@@ -6,7 +6,7 @@ import { ErrorContext } from '../../components/ErrorContext';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { ScreenSizeSwitch } from '../../components/layout/ScreenSizeSwitch';
 import { useSoundOnResponse } from '../../hooks/sound-hooks';
-import { PlayerInLobby, PlayerResponse } from '../../shared/types';
+import { PlayerInLobby, PlayerResponse } from '@shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
 import { MiniCardResponse } from './game-components/MiniCardResponse';

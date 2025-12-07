@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { randomLaugh } from '../../../api/sound-api';
 import { useSound } from '../../../hooks/sound-hooks';
-import { PlayerResponse } from '../../../shared/types';
+import { PlayerResponse } from '@shared/types';
 import { useLocalSettings } from './LocalSettingsContext';
 
 interface Props {

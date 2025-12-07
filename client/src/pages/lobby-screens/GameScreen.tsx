@@ -15,8 +15,8 @@ import {
   GameTurn,
   PlayerInLobby,
   ResponseCardInGame,
-} from '../../shared/types';
-import { assertExhaustive } from '../../shared/utils';
+} from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import { CardReadingScreen } from './CardReadingScreen';
 import { JudgeAwaitResponsesScreen } from './JudgeAwaitResponsesScreen';
 import { JudgePickPromptScreen } from './JudgePickPromptScreen';

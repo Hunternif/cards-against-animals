@@ -6,7 +6,7 @@ import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { Twemoji } from '../../../components/Twemoji';
 import { kickPlayer, updatePlayer } from '../../../api/lobby/lobby-player-api';
 import { updateUserData } from '../../../api/users-api';
-import { GameLobby, KickAction, PlayerInLobby } from '../../../shared/types';
+import { GameLobby, KickAction, PlayerInLobby } from '@shared/types';
 import { AvatarSelector } from './AvatarSelector';
 import { GameButton } from '../../../components/Buttons';
 import { IconRobot } from '../../../components/Icons';

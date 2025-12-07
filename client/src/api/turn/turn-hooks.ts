@@ -17,13 +17,13 @@ import {
   promptCardInGameConverter,
   turnConverter,
   voteConverter,
-} from '../../shared/firestore-converters';
+} from '@shared/firestore-converters';
 import {
   GameLobby,
   GameTurn,
   PlayerResponse,
   PromptCardInGame,
-} from '../../shared/types';
+} from '@shared/types';
 import { lobbiesRef } from '../lobby/lobby-repository';
 import { getResponseLikesRef } from './turn-like-api';
 import { getTurnsRef } from './turn-repository';

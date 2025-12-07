@@ -4,7 +4,7 @@ import {
   GameLobby,
   PlayerGameState,
   ResponseCardInGame,
-} from '../shared/types';
+} from '@shared/types';
 import { logCardInteractions } from './log-server-api';
 import { dealCardsToPlayer, payDiscardCost } from './turn-server-api';
 

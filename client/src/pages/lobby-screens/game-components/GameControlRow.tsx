@@ -4,8 +4,8 @@ import { GameButton } from '../../../components/Buttons';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { useErrorContext } from '../../../components/ErrorContext';
 import { IconCards, IconRecycleInline } from '../../../components/Icons';
-import { DiscardCost, ResponseCardInGame } from '../../../shared/types';
-import { assertExhaustive } from '../../../shared/utils';
+import { DiscardCost, ResponseCardInGame } from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import { CardTagExchangePanel } from './CardTagExchangePanel';
 import { useGameContext } from './GameContext';
 

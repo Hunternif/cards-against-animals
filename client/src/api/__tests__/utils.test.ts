@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { countEveryN, mapToObject, objectToMap } from '../../shared/utils';
+import { countEveryN, mapToObject, objectToMap } from '@shared/utils';
 
 test('convert object to Map', () => {
   const obj = { foo: { bar: 'baz' } };

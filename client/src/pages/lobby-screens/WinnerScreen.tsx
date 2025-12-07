@@ -20,7 +20,7 @@ import { GameLayout } from '../../components/layout/GameLayout';
 import { isSeason } from '../../components/theme';
 import { useSound } from '../../hooks/sound-hooks';
 import { useEffectOnce } from '../../hooks/ui-hooks';
-import { PlayerInLobby, PlayerResponse } from '../../shared/types';
+import { PlayerInLobby, PlayerResponse } from '@shared/types';
 import { CardPromptWithCzar } from './game-components/CardPrompt';
 import { EndOfTurnControls } from './game-components/EndOfTurnControls';
 import { useGameContext } from './game-components/GameContext';

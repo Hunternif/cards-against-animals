@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SelectInput } from "../../../components/FormControls";
-import { PromptCardInGame } from "../../../shared/types";
+import { PromptCardInGame } from "@shared/types";
 import {
   haikuPrompt3,
   haikuPrompt4,

@@ -1,4 +1,4 @@
-import { DeckLock } from '../../shared/types';
+import { DeckLock } from '@shared/types';
 import { createDeckLock, verifyDeckPassword } from '../deck-lock-server-api';
 
 const mockLockDb = new Map<string, DeckLock>();

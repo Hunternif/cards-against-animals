@@ -3,7 +3,7 @@ import {
   GameLobby,
   PlayerGameState,
   ResponseCardInGame,
-} from '../../shared/types';
+} from '@shared/types';
 import { updatePlayerState } from '../lobby/lobby-player-api';
 
 ///////////////////////////////////////////////////////////////////////////////

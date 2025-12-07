@@ -10,7 +10,7 @@ import { ErrorContext, useErrorContext } from '../components/ErrorContext';
 import { ErrorModal } from '../components/ErrorModal';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useAuthWithPresence } from '../hooks/auth-hooks';
-import { assertExhaustive } from '../shared/utils';
+import { assertExhaustive } from '@shared/utils';
 import { GameScreen } from './lobby-screens/GameScreen';
 import { HomeScreen } from './lobby-screens/HomeScreen';
 import { NewLobbyScreen } from './lobby-screens/NewLobbyScreen';

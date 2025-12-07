@@ -8,7 +8,7 @@ import { startNewTurn } from '../../../api/turn/turn-control-api';
 import { GameButton } from '../../../components/Buttons';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { useErrorContext } from '../../../components/ErrorContext';
-import { sleep } from '../../../shared/utils';
+import { sleep } from '@shared/utils';
 import { useGameContext } from './GameContext';
 
 /**

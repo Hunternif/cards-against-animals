@@ -1,7 +1,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { firestore } from "../firebase-server";
-import { userConverter } from "../shared/firestore-converters";
-import { CAAUser } from "../shared/types";
+import { userConverter } from "@shared/firestore-converters";
+import { CAAUser } from "@shared/types";
 import { getUserName } from "./auth-api";
 
 export const usersRef = firestore

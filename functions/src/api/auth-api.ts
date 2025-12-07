@@ -1,7 +1,7 @@
 import { CallableRequest, HttpsError } from 'firebase-functions/v2/https';
 import { firebaseAuth } from '../firebase-server';
-import { GameLobby } from '../shared/types';
-import { assertExhaustive } from '../shared/utils';
+import { GameLobby } from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import { getPlayersRef } from './lobby-server-repository';
 import { getLastTurn } from './turn-server-repository';
 import { getCAAUser } from './user-server-api';

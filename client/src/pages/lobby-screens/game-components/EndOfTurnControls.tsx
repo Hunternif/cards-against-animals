@@ -1,6 +1,6 @@
 import { checkIfShouldEndGame } from '../../../api/lobby/lobby-control-api';
 import { useAsyncData } from '../../../hooks/data-hooks';
-import { assertExhaustive } from '../../../shared/utils';
+import { assertExhaustive } from '@shared/utils';
 import { EndGameControls } from './EndGameControls';
 import { useGameContext } from './GameContext';
 import { NextTurnButton } from './NextTurnButton';

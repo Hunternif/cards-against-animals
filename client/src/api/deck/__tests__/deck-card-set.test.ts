@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { PromptDeckCard, ResponseDeckCard } from '../../../shared/types';
+import { PromptDeckCard, ResponseDeckCard } from '@shared/types';
 import { DeckCardSet } from '../deck-card-set';
 
 const prompt1 = new PromptDeckCard(

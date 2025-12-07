@@ -6,8 +6,8 @@ import {
   getPlayer,
   updatePlayer,
 } from '../../api/lobby-server-repository';
-import { KickAction } from '../../shared/types';
-import { assertExhaustive } from '../../shared/utils';
+import { KickAction } from '@shared/types';
+import { assertExhaustive } from '@shared/utils';
 import { CallableHandler } from '../function-utils';
 
 /** Kicks player from the game. Allowed for creator and current judge. */

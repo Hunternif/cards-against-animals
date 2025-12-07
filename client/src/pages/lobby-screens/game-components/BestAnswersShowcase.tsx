@@ -5,8 +5,8 @@ import {
 } from '../../../api/lobby/lobby-stats-api';
 import { useScreenSize } from '../../../components/layout/ScreenSizeSwitch';
 import { useAsyncData } from '../../../hooks/data-hooks';
-import { RNG } from '../../../shared/rng';
-import { GameLobby } from '../../../shared/types';
+import { RNG } from '@shared/rng';
+import { GameLobby } from '@shared/types';
 import { CardStack } from './CardStack';
 
 interface Props {

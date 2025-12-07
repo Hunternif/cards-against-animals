@@ -4,7 +4,7 @@ import { ErrorContext } from '../../components/ErrorContext';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { GameLayout } from '../../components/layout/GameLayout';
 import { endLobby } from '../../api/lobby/lobby-control-api';
-import { PromptCardInGame } from '../../shared/types';
+import { PromptCardInGame } from '@shared/types';
 import { CardPrompt } from './game-components/CardPrompt';
 import { useGameContext } from './game-components/GameContext';
 import { HaikuSizeSelector } from './lobby-components/HaikuSizeSelector';

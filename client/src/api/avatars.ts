@@ -71,7 +71,7 @@ import snake_001 from "../assets/avatars/snake_001.jpg"
 import turtle_001 from "../assets/avatars/turtle_001.jpg"
 import zebra_001 from "../assets/avatars/zebra_001.jpg"
 import cheems_bot from "../assets/avatars/cheems_bot.jpg"
-import { RNG } from "../shared/rng"
+import { RNG } from "@shared/rng"
 
 
 /** Avatar image that a player can use. */

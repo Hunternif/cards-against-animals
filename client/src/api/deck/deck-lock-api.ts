@@ -3,7 +3,7 @@ import {
   lockDeckFun,
   unlockDeckForUserFun,
 } from '../../firebase';
-import { Deck } from '../../shared/types';
+import { Deck } from '@shared/types';
 
 // API for verifying access to locked decks.
 

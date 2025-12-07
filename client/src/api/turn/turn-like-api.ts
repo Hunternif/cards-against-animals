@@ -5,10 +5,10 @@ import {
   PlayerInLobby,
   PlayerResponse,
   Vote,
-} from "../../shared/types";
-import { assertExhaustive } from "../../shared/utils";
+} from "@shared/types";
+import { assertExhaustive } from "@shared/utils";
 import { getTurnRef } from "./turn-repository";
-import { voteConverter } from "../../shared/firestore-converters";
+import { voteConverter } from "@shared/firestore-converters";
 
 ///////////////////////////////////////////////////////////////////////////////
 //

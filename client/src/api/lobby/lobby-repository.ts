@@ -6,8 +6,8 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { firestore } from '../../firebase';
-import { lobbyConverter } from '../../shared/firestore-converters';
-import { GameLobby } from '../../shared/types';
+import { lobbyConverter } from '@shared/firestore-converters';
+import { GameLobby } from '@shared/types';
 
 ///////////////////////////////////////////////////////////////////////////////
 //

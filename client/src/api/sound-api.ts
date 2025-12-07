@@ -45,10 +45,10 @@ import dokidoki2 from '../assets/sounds/music/dokidoki2.mp3';
 import sans from '../assets/sounds/music/sans.mp3';
 
 import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
-import { soundEventConverter } from '../shared/firestore-converters';
-import { GameLobby, PlayerInLobby, SoundEvent } from '../shared/types';
+import { soundEventConverter } from '@shared/firestore-converters';
+import { GameLobby, PlayerInLobby, SoundEvent } from '@shared/types';
 import { getLobbyRef } from './lobby/lobby-repository';
-import { RNG } from '../shared/rng';
+import { RNG } from '@shared/rng';
 
 export function getSoundsRef(lobbyID: string) {
   const lobbyRef = getLobbyRef(lobbyID);

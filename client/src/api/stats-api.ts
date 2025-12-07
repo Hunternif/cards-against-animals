@@ -1,13 +1,13 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../firebase';
-import { lobbyConverter } from '../shared/firestore-converters';
+import { lobbyConverter } from '@shared/firestore-converters';
 import {
   GameLobby,
   PlayerInLobby,
   PromptCardInGame,
   ResponseCardInGame,
   ResponseCardInHand,
-} from '../shared/types';
+} from '@shared/types';
 import {
   getAllPlayersInLobby,
   getAllPlayersStates,
@@ -15,7 +15,7 @@ import {
 import { getAllTurns } from './turn/turn-repository';
 import { getAllPlayerResponses } from './turn/turn-response-api';
 import { saveAs } from 'file-saver';
-import { copyFields } from '../shared/utils';
+import { copyFields } from '@shared/utils';
 import { getTurnPrompt } from './turn/turn-prompt-api';
 
 ///////////////////////////////////////////////////////////////////////////////

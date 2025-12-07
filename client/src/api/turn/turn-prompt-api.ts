@@ -10,8 +10,8 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { firestore } from "../../firebase";
-import { promptCardInGameConverter, responseCardInGameConverter } from "../../shared/firestore-converters";
-import { GameLobby, GameTurn, PromptCardInGame } from "../../shared/types";
+import { promptCardInGameConverter, responseCardInGameConverter } from "@shared/firestore-converters";
+import { GameLobby, GameTurn, PromptCardInGame } from "@shared/types";
 import { lobbiesRef } from "../lobby/lobby-repository";
 import { getTurnRef, updateTurn } from "./turn-repository";
 

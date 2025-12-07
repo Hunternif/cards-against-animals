@@ -3,7 +3,7 @@ import { useErrorContext } from '../../../components/ErrorContext';
 import { SelectInput, SelectOption } from '../../../components/FormControls';
 import { useDIContext } from '../../../di-context';
 import { useAsyncData } from '../../../hooks/data-hooks';
-import { Deck } from '../../../shared/types';
+import { Deck } from '@shared/types';
 
 interface Props {
   exceptIDs?: string[];

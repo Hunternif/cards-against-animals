@@ -20,8 +20,8 @@ import { VirtualTable } from '../../../components/VirtualTable';
 import { useDIContext } from '../../../di-context';
 import { useHandler } from '../../../hooks/data-hooks';
 import { useEffectOnce } from '../../../hooks/ui-hooks';
-import { cardTypedID } from '../../../shared/deck-utils';
-import { Deck, DeckCard } from '../../../shared/types';
+import { cardTypedID } from '@shared/deck-utils';
+import { Deck, DeckCard } from '@shared/types';
 import { AdminCopyCardsDialog } from './AdminCopyCardsDialog';
 import {
   AdminDeckCardRow,

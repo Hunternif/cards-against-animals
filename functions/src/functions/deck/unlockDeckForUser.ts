@@ -1,7 +1,7 @@
 import { assertLoggedIn } from '../../api/auth-api';
 import { setUserDeckKey } from '../../api/deck-lock-repository';
 import { verifyDeckPassword } from '../../api/deck-lock-server-api';
-import { sleep } from '../../shared/utils';
+import { sleep } from '@shared/utils';
 import { CallableHandler } from '../function-utils';
 
 /**

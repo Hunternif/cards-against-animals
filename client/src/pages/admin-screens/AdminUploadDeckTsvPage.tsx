@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import { useDIContext } from '../../di-context';
 import { useEffectOnce } from '../../hooks/ui-hooks';
 import { parseDeckTsv } from '../../api/deck/deck-parser';
-import { Deck } from '../../shared/types';
+import { Deck } from '@shared/types';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 import { mergeDecks } from '../../api/deck/deck-merger';
 

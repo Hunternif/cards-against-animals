@@ -7,7 +7,7 @@ import {
 } from 'react-firebase-hooks/firestore';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentDataWithCache } from '../../hooks/data-hooks';
-import { CAAUser, GameLobby, PlayerGameState } from '../../shared/types';
+import { CAAUser, GameLobby, PlayerGameState } from '@shared/types';
 import { getPromptCount, getResponseCount } from '../turn/turn-prompt-api';
 import { joinLobbyIfNeeded } from './lobby-join-api';
 import {

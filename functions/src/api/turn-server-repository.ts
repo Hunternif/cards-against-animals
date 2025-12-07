@@ -6,7 +6,7 @@ import {
   promptCardInGameConverter,
   turnConverter,
   voteConverter,
-} from '../shared/firestore-converters';
+} from '@shared/firestore-converters';
 import {
   GameLobby,
   GameTurn,
@@ -16,7 +16,7 @@ import {
   ResponseCardInGame,
   ResponseCardInHand,
   Vote,
-} from '../shared/types';
+} from '@shared/types';
 import { updatePlayerState } from './lobby-server-repository';
 
 ///////////////////////////////////////////////////////////////////////////////

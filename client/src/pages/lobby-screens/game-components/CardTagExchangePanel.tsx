@@ -5,7 +5,7 @@ import {
   TagInGame,
   anyTagsKey,
   noTagsKey,
-} from '../../../shared/types';
+} from '@shared/types';
 import { useGameContext } from './GameContext';
 
 interface Props {
