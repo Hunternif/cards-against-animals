@@ -39,9 +39,7 @@ export const lobbyConverter: FConverter<GameLobby> = {
     return copyFields2(
       lobby,
       {
-        time_created: lobby.time_created
-          ? FTimestamp.fromDate(lobby.time_created)
-          : fServerTimestamp(), // set new time when creating a new lobby
+        time_created: lobby.time_created ?? fServerTimestamp(),
         deck_ids: Array.from(lobby.deck_ids),
         // Store tags as an array to maintain order:
         response_tags: lobby.orderedTags().map((t) => copyFields(t)),
@@ -86,10 +84,7 @@ function mapSettings(data: any): LobbySettings {
 }
 
 export const playerConverter: FConverter<PlayerInLobby> = {
-  toFirestore: (player: PlayerInLobby) =>
-    copyFields2(player, {
-      time_joined: FTimestamp.fromDate(player.time_joined),
-    }),
+  toFirestore: (player: PlayerInLobby) => copyFields(player),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     const ret = new PlayerInLobby(
@@ -110,7 +105,6 @@ export const playerConverter: FConverter<PlayerInLobby> = {
 export const playerStateConverter: FConverter<PlayerGameState> = {
   toFirestore: (player: PlayerGameState) =>
     copyFields2(player, {
-      time_dealt_cards: FTimestamp.fromDate(player.time_dealt_cards),
       hand: mapToObject(player.hand, (c) => copyFields(c, [])),
       discarded: mapToObject(player.discarded, (c) => copyFields(c, [])),
       downvoted: mapToObject(player.downvoted, (c) => copyFields(c, [])),
@@ -144,9 +138,7 @@ export const deckConverter: FConverter<Deck> = {
         tags: [
           ...new Map(deck.tags.map((t) => [t.name, copyFields(t)])).values(),
         ],
-        time_created: deck.time_created
-          ? FTimestamp.fromDate(deck.time_created)
-          : fServerTimestamp(),
+        time_created: deck.time_created ?? fServerTimestamp(),
       },
       ['prompts', 'responses'],
     );
@@ -174,11 +166,6 @@ export const turnConverter: FConverter<GameTurn> = {
     copyFields2(
       turn,
       {
-        time_created: FTimestamp.fromDate(turn.time_created),
-        phase_start_time: FTimestamp.fromDate(turn.phase_start_time),
-        phase_end_time: turn.phase_end_time
-          ? FTimestamp.fromDate(turn.phase_end_time)
-          : undefined,
         // if legacy prompt exists, keep it:
         prompt: turn.legacy_prompt && copyFields(turn.legacy_prompt, []),
       },
@@ -300,9 +287,7 @@ export const promptDeckCardConverter: FConverter<PromptDeckCard> = {
     copyFields2(
       card,
       {
-        time_created: card.time_created
-          ? FTimestamp.fromDate(card.time_created)
-          : fServerTimestamp(), // set new time when creating a new card
+        time_created: card.time_created ?? fServerTimestamp(),
       },
       ['id', 'type'],
     ),
@@ -333,9 +318,7 @@ export const responseDeckCardConverter: FConverter<ResponseDeckCard> = {
     copyFields2(
       card,
       {
-        time_created: card.time_created
-          ? FTimestamp.fromDate(card.time_created)
-          : fServerTimestamp(), // set new time when creating a new card
+        time_created: card.time_created ?? fServerTimestamp(),
       },
       ['id', 'type'],
     ),
@@ -395,14 +378,7 @@ export const responseCardInGameConverter: FConverter<ResponseCardInGame> = {
 };
 
 export const responseCardInHandConverter: FConverter<ResponseCardInHand> = {
-  toFirestore: (card: ResponseCardInHand) =>
-    copyFields2(
-      card,
-      {
-        time_received: FTimestamp.fromDate(card.time_received),
-      },
-      ['type'],
-    ),
+  toFirestore: (card: ResponseCardInHand) => copyFields(card, ['type']),
   fromFirestore: (snapshot: FDocSnapshot) => {
     return mapResponseCardInHand(snapshot.data());
   },
@@ -411,9 +387,7 @@ export const responseCardInHandConverter: FConverter<ResponseCardInHand> = {
 export const deckMigrationConverter: FConverter<DeckMigrationItem> = {
   toFirestore: (row: DeckMigrationItem) =>
     copyFields2(row, {
-      time_created: row.time_created
-        ? FTimestamp.fromDate(row.time_created)
-        : fServerTimestamp(),
+      time_created: row.time_created ?? fServerTimestamp(),
     }),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
@@ -434,10 +408,7 @@ export const deckMigrationConverter: FConverter<DeckMigrationItem> = {
 export const soundEventConverter: FConverter<SoundEvent> = {
   toFirestore: (event: SoundEvent) =>
     copyFields2(event, {
-      time:
-        event.time.getTime() > 0
-          ? FTimestamp.fromDate(event.time)
-          : fServerTimestamp(),
+      time: event.time.getTime() > 0 ? event.time : fServerTimestamp(),
     }),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();

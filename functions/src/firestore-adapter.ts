@@ -11,7 +11,8 @@ import {
 
 export type FConverter<T> = FirestoreDataConverter<T>;
 export type FDocSnapshot = QueryDocumentSnapshot;
-export class FTimestamp extends Timestamp { }
+export const FTimestamp = Timestamp;
+export type FTimestamp = Timestamp;
 export function fServerTimestamp() {
   return Timestamp.now();
 }

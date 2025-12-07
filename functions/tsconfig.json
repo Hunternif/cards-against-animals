@@ -10,6 +10,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "baseUrl": ".",
+    "rootDirs": ["src", "../shared/src"],
     "paths": {
       "@shared/*": ["../shared/src/*"],
       "@shared/firestore-adapter": ["./src/firestore-adapter"]
