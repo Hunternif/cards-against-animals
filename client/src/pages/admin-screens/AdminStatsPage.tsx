@@ -395,13 +395,13 @@ function UserStatsDetails({ stat }: { stat: UserStats }) {
         </div>
       )}
 
-      {stat.top_cards_used.length > 0 && (
+      {stat.top_cards_played.length > 0 && (
         <div className="detail-section">
           <h4>Top 5 Cards Used</h4>
           <ul>
-            {stat.top_cards_used.map((item, idx) => (
+            {stat.top_cards_played.map((item, idx) => (
               <li key={idx}>
-                {item.card} ({item.count}x)
+                {item.card.content} ({item.count}x)
               </li>
             ))}
           </ul>
@@ -414,7 +414,7 @@ function UserStatsDetails({ stat }: { stat: UserStats }) {
           <ul>
             {stat.top_liked_responses.map((item, idx) => (
               <li key={idx}>
-                {item.response} ({(item.normalized_likes * 100).toFixed(0)}% of{' '}
+                {item.cards.map((c) => c.content).join(' / ')} ({(item.normalized_likes * 100).toFixed(0)}% of{' '}
                 {item.lobby_size - 1} players)
               </li>
             ))}
@@ -429,6 +429,19 @@ function UserStatsDetails({ stat }: { stat: UserStats }) {
             {stat.top_teammates.map((teammate) => (
               <li key={teammate.uid}>
                 {teammate.name} ({teammate.games} games)
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {stat.top_prompts_played.length > 0 && (
+        <div className="detail-section">
+          <h4>Top 5 Prompts Chosen (as Czar)</h4>
+          <ul>
+            {stat.top_prompts_played.map((item, idx) => (
+              <li key={idx}>
+                {item.prompt.content} ({item.count}x)
               </li>
             ))}
           </ul>

@@ -4,6 +4,7 @@ import { lobbyConverter } from '../shared/firestore-converters';
 import {
   GameLobby,
   PlayerInLobby,
+  PromptCardInGame,
   ResponseCardInGame,
   ResponseCardInHand,
 } from '../shared/types';
@@ -22,6 +23,16 @@ import { getTurnPrompt } from './turn/turn-prompt-api';
 //  This module contains methods to fetch statistics about users and games.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+export type ResponseCardStats = Omit<
+  ResponseCardInGame,
+  'random_index' | 'rating' | 'type'
+>;
+
+export type PromptCardStats = Omit<
+  PromptCardInGame,
+  'random_index' | 'rating' | 'type'
+>;
 
 export interface UserStats {
   uid: string;
@@ -56,15 +67,17 @@ export interface UserStats {
   /** Maps month string (YYYY-MM) to number of games played */
   games_per_month: Map<string, number>;
   /** Top cards used, sorted by frequency */
-  top_cards_used: Array<{ card: string; count: number }>;
+  top_cards_played: Array<{ card: ResponseCardStats; count: number }>;
   /** Top responses that received likes, normalized by lobby size */
   top_liked_responses: Array<{
-    response: string;
+    cards: ResponseCardStats[];
     normalized_likes: number;
     lobby_size: number;
   }>;
   /** Top players this user has played with, sorted by frequency */
   top_teammates: Array<{ uid: string; name: string; games: number }>;
+  /** Top prompts this user has chosen as judge, sorted by frequency */
+  top_prompts_played: Array<{ prompt: PromptCardStats; count: number }>;
 }
 
 const lobbiesRef = collection(firestore, 'lobbies').withConverter(
@@ -114,16 +127,24 @@ async function calculateDerivedStats(
   for (const [uid, userStat] of userStatsMap.entries()) {
     const allPlayerUids = new Set(userStat.playerInLobbyRefs.map((p) => p.uid));
 
-    // Track cards used by this user
-    const cardUsage = new Map<string, number>();
+    // Track cards used by this user (keyed by card id)
+    const cardUsage = new Map<
+      string,
+      { card: ResponseCardStats; count: number }
+    >();
     // Track responses with their likes
     const likedResponses: Array<{
-      response: string;
+      cards: ResponseCardStats[];
       normalized_likes: number;
       lobby_size: number;
     }> = [];
     // Track teammates (other players in same games)
     const teammateGames = new Map<string, { name: string; count: number }>();
+    // Track prompts chosen by this user as judge (keyed by prompt id)
+    const promptsChosen = new Map<
+      string,
+      { prompt: PromptCardStats; count: number }
+    >();
 
     // Process each game this user played
     for (const lobby of userStat.games) {
@@ -148,6 +169,24 @@ async function calculateDerivedStats(
 
       // Process each turn to find cards used and liked responses
       for (const turn of lobby.turns) {
+        // Track prompts chosen by this user as judge
+        if (
+          allPlayerUids.has(turn.judge_uid) &&
+          turn.prompts &&
+          turn.prompts.length > 0
+        ) {
+          const prompt = turn.prompts[0];
+          const existing = promptsChosen.get(prompt.id);
+          if (existing) {
+            existing.count++;
+          } else {
+            promptsChosen.set(prompt.id, {
+              prompt: copyFields(prompt, ['random_index', 'rating', 'type']),
+              count: 1,
+            });
+          }
+        }
+
         // Find this user's response in this turn
         for (const [responsePlayerUid, response] of turn.player_responses) {
           // Check if this response belongs to our user (could be any of their UIDs)
@@ -155,8 +194,15 @@ async function calculateDerivedStats(
 
           // Count cards used
           for (const card of response.cards) {
-            const currentCount = cardUsage.get(card.content) || 0;
-            cardUsage.set(card.content, currentCount + 1);
+            const existing = cardUsage.get(card.id);
+            if (existing) {
+              existing.count++;
+            } else {
+              cardUsage.set(card.id, {
+                card: copyFields(card, ['random_index', 'rating', 'type']),
+                count: 1,
+              });
+            }
           }
 
           // Track liked responses (normalize by lobby size)
@@ -164,7 +210,7 @@ async function calculateDerivedStats(
             const normalizedLikes =
               lobbySize > 1 ? response.like_count / (lobbySize - 1) : 0;
             likedResponses.push({
-              response: response.cards.map((c) => c.content).join(' / '),
+              cards: response.cards.map((c) => cardUsage.get(c.id)!.card),
               normalized_likes: normalizedLikes,
               lobby_size: lobbySize,
             });
@@ -174,8 +220,7 @@ async function calculateDerivedStats(
     }
 
     // Sort and take top 5 cards
-    userStat.top_cards_used = Array.from(cardUsage.entries())
-      .map(([card, count]) => ({ card, count }))
+    userStat.top_cards_played = Array.from(cardUsage.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -192,6 +237,11 @@ async function calculateDerivedStats(
         games: data.count,
       }))
       .sort((a, b) => b.games - a.games)
+      .slice(0, 5);
+
+    // Sort and take top 5 prompts chosen
+    userStat.top_prompts_played = Array.from(promptsChosen.values())
+      .sort((a, b) => b.count - a.count)
       .slice(0, 5);
   }
 }
@@ -341,9 +391,10 @@ export async function parseUserStatistics(
           game_durations_ms: [],
           game_scores: [],
           games_per_month: new Map<string, number>(),
-          top_cards_used: [],
+          top_cards_played: [],
           top_liked_responses: [],
           top_teammates: [],
+          top_prompts_played: [],
         };
         userStatsMap.set(player.uid, userStat);
       }
@@ -408,10 +459,12 @@ export async function parseUserStatistics(
         : 0;
     stats.average_time_per_game_ms =
       stats.games.size > 0 ? stats.total_time_played_ms / stats.games.size : 0;
-    
+
     // Calculate median time per game
     if (stats.game_durations_ms.length > 0) {
-      const sortedDurations = [...stats.game_durations_ms].sort((a, b) => a - b);
+      const sortedDurations = [...stats.game_durations_ms].sort(
+        (a, b) => a - b,
+      );
       const mid = Math.floor(sortedDurations.length / 2);
       stats.median_time_per_game_ms =
         sortedDurations.length % 2 === 0
@@ -521,7 +574,7 @@ export function mergeUserStats(
   }
 
   const totalGames = mergedGames.size;
-  
+
   // Calculate median time from all game durations
   let medianTime = 0;
   if (allGameDurations.length > 0) {
@@ -569,9 +622,10 @@ export function mergeUserStats(
     game_durations_ms: allGameDurations,
     game_scores: allGameScores,
     games_per_month: mergedGamesPerMonth,
-    top_cards_used: [],
+    top_cards_played: [],
     top_liked_responses: [],
     top_teammates: [],
+    top_prompts_played: [],
   };
 
   return merged;
