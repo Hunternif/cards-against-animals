@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   exportGameDataToFile,
   fetchAllLobbyData,
@@ -80,6 +80,13 @@ export function AdminStatsPage() {
     const data = await parseUserStatistics(filteredLobbies);
     setStats(data);
   }, [gameData, selectedYear]);
+
+  // Auto-parse stats when game data is loaded:
+  useEffect(() => {
+    if (gameData) {
+      handleParseStats();
+    }
+  }, [gameData, handleParseStats]);
 
   const toggleUserSelection = (uid: string) => {
     const newSelection = new Set(selectedUsers);
@@ -166,7 +173,7 @@ export function AdminStatsPage() {
               small
               onClick={handleParseStats}
               loading={parsing}
-              disabled={!gameData}
+              disabled={!gameData || parsing}
             >
               Parse Statistics
             </GameButton>
