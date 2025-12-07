@@ -18,7 +18,7 @@
   .stats-table {
     border-collapse: collapse;
     // border-spacing: 0 2px;
-    background-color: rgba(255, 255, 255, 0.05);
+    // background-color: rgba(255, 255, 255, 0.05);
 
     thead {
       tr {
@@ -35,22 +35,36 @@
         color: rgba(colors.$text, 70%);
         border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         white-space: normal;
+
+        &:nth-child(1) {
+          position: sticky;
+          left: 0;
+          z-index: 5;
+          background-color: inherit;
+        }
+        &:nth-child(2) {
+          position: sticky;
+          left: 50px;
+          z-index: 5;
+          background-color: inherit;
+        }
       }
     }
 
     tbody {
       tr {
+        background-color: colors.$panel-bg;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         
         &.selected {
           background-color: colors.$accent;
           &:hover {
-            background-color: rgba(colors.$accent, 0.8);
+            background-color: color-mix(in srgb, colors.$accent 80%, colors.$panel-bg);
           }
         }
 
         &:hover:not(.selected) {
-          background-color: rgba(255, 255, 255, 0.08);
+          background-color: colors.$button-light-bg;
         }
 
         &:last-child {
@@ -62,12 +76,14 @@
         padding: 0.25rem 0.5rem;
         max-width: 300px;
 
-        // &.expand-cell, &.checkbox-cell {
-        //   width: 3%;
-        // }
+        &.control-cell .group {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
 
         &.player-name {
-          max-width: 200px;
+          max-width: 250px;
           display: flex;
           align-items: center;
           gap: 0.5rem;
@@ -77,6 +93,19 @@
           .avatar-icon {
             font-size: 1.2rem;
           }
+        }
+
+        &:nth-child(1) {
+          position: sticky;
+          left: 0;
+          z-index: 5;
+          background-color: inherit;
+        }
+        &:nth-child(2) {
+          position: sticky;
+          left: 50px;
+          z-index: 5;
+          background-color: inherit;
         }
       }
 

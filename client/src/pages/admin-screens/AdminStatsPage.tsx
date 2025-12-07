@@ -32,7 +32,7 @@ import { AdminSubpage } from './admin-components/AdminSubpage';
 function formatPlayTime(ms: number): string {
   const hours = Math.floor(ms / (1000 * 60 * 60));
   const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-  
+
   if (hours > 0) {
     return `${hours}h ${minutes}m`;
   } else if (minutes > 0) {
@@ -233,9 +233,6 @@ export function AdminStatsPage() {
             <thead>
               <tr>
                 <th></th>
-                {/* expand/collapse column */}
-                {mergeMode && <th></th>}
-                {/* checkbox column */}
                 <th>Name</th>
                 <th>Games</th>
                 <th>Turns</th>
@@ -258,31 +255,31 @@ export function AdminStatsPage() {
                     className={selectedUsers.has(stat.uid) ? 'selected' : ''}
                     onClick={() => mergeMode && toggleUserSelection(stat.uid)}
                   >
-                    <td className="expand-cell">
-                      <GameButton
-                        inline
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedUser(
-                            expandedUser === stat.uid ? null : stat.uid,
-                          );
-                        }}
-                      >
-                        {expandedUser === stat.uid ? (
-                          <IconChevronUpInline />
-                        ) : (
-                          <IconChevronDownInline />
+                    <td className="control-cell">
+                      <div className="group">
+                        <GameButton
+                          inline
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedUser(
+                              expandedUser === stat.uid ? null : stat.uid,
+                            );
+                          }}
+                        >
+                          {expandedUser === stat.uid ? (
+                            <IconChevronUpInline />
+                          ) : (
+                            <IconChevronDownInline />
+                          )}
+                        </GameButton>
+                        {mergeMode && (
+                          <Checkbox
+                            checked={selectedUsers.has(stat.uid)}
+                            onChange={() => toggleUserSelection(stat.uid)}
+                          />
                         )}
-                      </GameButton>
+                      </div>
                     </td>
-                    {mergeMode && (
-                      <td className="checkbox-cell">
-                        <Checkbox
-                          checked={selectedUsers.has(stat.uid)}
-                          onChange={() => toggleUserSelection(stat.uid)}
-                        />
-                      </td>
-                    )}
                     <PlayerNameCell stat={stat} />
                     <CounterRow val={stat.total_games} />
                     <CounterRow val={stat.total_turns_played} />
