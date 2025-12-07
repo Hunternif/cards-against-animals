@@ -1,16 +1,16 @@
-@use "../colors.scss";
+@use '../colors.scss';
 
 .stats-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 
-    .stats-summary {
-      color: colors.$text;
-      font-size: 0.9rem;
-    }
+  .stats-summary {
+    color: colors.$text;
+    font-size: 0.9rem;
   }
+}
 
 .user-stats {
   width: max-content;
@@ -27,7 +27,7 @@
         z-index: 10;
         background-color: var(--bs-body-bg); // bg color
       }
-      
+
       th {
         padding: 0.75rem 1rem;
         text-align: left;
@@ -55,11 +55,15 @@
       tr {
         background-color: colors.$panel-bg;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        
+
         &.selected {
           background-color: colors.$accent;
           &:hover {
-            background-color: color-mix(in srgb, colors.$accent 80%, colors.$panel-bg);
+            background-color: color-mix(
+              in srgb,
+              colors.$accent 80%,
+              colors.$panel-bg
+            );
           }
         }
 
@@ -116,6 +120,11 @@
         &.empty {
           color: rgba(colors.$text, 0.4);
         }
+      }
+
+      .col-date {
+        font-family: monospace;
+        text-align: center;
       }
     }
   }

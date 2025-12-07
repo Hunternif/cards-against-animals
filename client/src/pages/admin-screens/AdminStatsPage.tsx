@@ -42,6 +42,14 @@ function formatPlayTime(ms: number): string {
   }
 }
 
+function formatDate(date: Date | undefined) {
+  if (!date) return '-';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function AdminStatsPage() {
   const [stats, setStats] = useState<UserStats[]>([]);
   const [gameData, setGameData] = useState<GameLobby[] | null>(null);
@@ -241,6 +249,8 @@ export function AdminStatsPage() {
               <tr>
                 <th></th>
                 <th>Name</th>
+                <th>First Played</th>
+                <th>Last Played</th>
                 <th>Games</th>
                 <th>Turns</th>
                 <th>Wins</th>
@@ -251,8 +261,6 @@ export function AdminStatsPage() {
                 <th>Discards</th>
                 <th>Time Played</th>
                 <th>Avg Time</th>
-                <th>First Played</th>
-                <th>Last Played</th>
               </tr>
             </thead>
             <tbody>
@@ -288,6 +296,16 @@ export function AdminStatsPage() {
                       </div>
                     </td>
                     <PlayerNameCell stat={stat} />
+                    <td className="col-date">
+                      {stat.first_time_played
+                        ? formatDate(new Date(stat.first_time_played))
+                        : '-'}
+                    </td>
+                    <td className="col-date">
+                      {stat.last_time_played
+                        ? formatDate(new Date(stat.last_time_played))
+                        : '-'}
+                    </td>
                     <CounterRow val={stat.total_games} />
                     <CounterRow val={stat.total_turns_played} />
                     <CounterRow val={stat.total_wins} />
@@ -296,22 +314,12 @@ export function AdminStatsPage() {
                     <CounterRow val={stat.average_score_per_game.toFixed(1)} />
                     <CounterRow val={stat.total_likes_received} />
                     <CounterRow val={stat.total_discards} />
-                    <td className="col-counter">
-                      {formatPlayTime(stat.total_time_played_ms)}
-                    </td>
-                    <td className="col-counter">
-                      {formatPlayTime(stat.average_time_per_game_ms)}
-                    </td>
-                    <td className="col-counter">
-                      {stat.first_time_played
-                        ? new Date(stat.first_time_played).toLocaleDateString()
-                        : '-'}
-                    </td>
-                    <td className="col-counter">
-                      {stat.last_time_played
-                        ? new Date(stat.last_time_played).toLocaleDateString()
-                        : '-'}
-                    </td>
+                    <CounterRow
+                      val={formatPlayTime(stat.total_time_played_ms)}
+                    />
+                    <CounterRow
+                      val={formatPlayTime(stat.average_time_per_game_ms)}
+                    />
                   </tr>
                   {expandedUser === stat.uid && (
                     <tr className="detail-row">
