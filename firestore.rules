@@ -177,7 +177,7 @@ service cloud.firestore {
     match /deck_migrations/{document=**} {
       allow read, write: if userIsAdmin();
     }
-    match /stats/{year}/{document=**} {
+    match /stats/{document=**} {
       // Anyone can read stats
       allow read: if isLoggedIn();
       // Only admins can write stats

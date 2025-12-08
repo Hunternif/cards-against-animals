@@ -616,7 +616,7 @@ export type PromptCardStats = Omit<
 
 export type YearFilter = number | 'all_time';
 
-/** Stored under /stats/{year}/{uid} */
+/** Stored under /stats/{year}/users/{uid} */
 export interface UserStats {
   uid: string;
   name: string; // the last known name

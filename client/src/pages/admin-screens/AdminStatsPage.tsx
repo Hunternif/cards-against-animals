@@ -11,6 +11,14 @@ import {
   UserMergeMap,
   UserStats,
 } from '../../api/stats-api';
+import {
+  loadGlobalStats,
+  loadUserMergeMap,
+  loadUserStats,
+  saveGlobalStats,
+  saveUserMergeMap,
+  saveUserStats,
+} from '../../api/stats-repository';
 import { GameButton } from '../../components/Buttons';
 import { Checkbox } from '../../components/Checkbox';
 import { SelectInput, SelectOption } from '../../components/FormControls';
@@ -60,15 +68,44 @@ export function AdminStatsPage() {
   const [mergeMode, setMergeMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<YearFilter>('all');
+  const [selectedYear, setSelectedYear] = useState<YearFilter>('all_time');
   const [availableYears, setAvailableYears] = useState<number[]>([]);
   const [userMergeMap, setUserMergeMap] = useState<UserMergeMap>(new Map());
+  const [isModified, setIsModified] = useState(false);
+  const [loadingFromFirestore, setLoadingFromFirestore] = useState(false);
   const yearOptions: SelectOption<string>[] = [
-    ['all', 'All Years'],
+    ['all_time', 'All Years'],
     ...availableYears.map(
       (year) => [year.toString(), year.toString()] as SelectOption<string>,
     ),
   ];
+
+  // Load stats from Firestore on mount
+  useEffect(() => {
+    const loadStatsFromFirestore = async () => {
+      setLoadingFromFirestore(true);
+      try {
+        const [userStats, globalStatsData, mergeMap] = await Promise.all([
+          loadUserStats(selectedYear),
+          loadGlobalStats(selectedYear),
+          loadUserMergeMap(),
+        ]);
+
+        if (userStats.length > 0) {
+          setStats(userStats);
+          setGlobalStats(globalStatsData);
+          setUserMergeMap(mergeMap);
+          setIsModified(false);
+        }
+      } catch (error) {
+        console.error('Error loading stats from Firestore:', error);
+      } finally {
+        setLoadingFromFirestore(false);
+      }
+    };
+
+    loadStatsFromFirestore();
+  }, []); // Only run on mount
 
   const [handleFetchData, fetching] = useHandler(async () => {
     setFetchProgress(null);
@@ -81,7 +118,7 @@ export function AdminStatsPage() {
     // Extract available years
     const years = getAvailableYears(lobbies);
     setAvailableYears(years);
-    setSelectedYear('all');
+    setSelectedYear('all_time');
   }, []);
 
   const [handleParseStats, parsing] = useHandler(async () => {
@@ -93,6 +130,7 @@ export function AdminStatsPage() {
     );
     setStats(userStats);
     setGlobalStats(globalStats);
+    setIsModified(true); // Mark as modified when manually parsing
   }, [gameData, selectedYear, userMergeMap]);
 
   // Auto-parse stats when game data is loaded:
@@ -142,6 +180,7 @@ export function AdminStatsPage() {
       );
       setStats(userStats);
       setGlobalStats(globalStats);
+      setIsModified(true); // Mark as modified when merging
     }
 
     setSelectedUsers(new Set());
@@ -170,6 +209,7 @@ export function AdminStatsPage() {
       );
       setStats(userStats);
       setGlobalStats(globalStats);
+      setIsModified(true); // Mark as modified when changing year
     }
 
     // Reset merge mode
@@ -177,9 +217,38 @@ export function AdminStatsPage() {
     setSelectedUsers(new Set());
   };
 
+  const [handleSaveToFirestore, saving] = useHandler(async () => {
+    if (!stats.length || !globalStats) {
+      alert('No stats to save');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `This will overwrite all statistics in Firestore for ${
+        selectedYear === 'all_time' ? 'all years' : selectedYear
+      }. Continue?`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await Promise.all([
+        saveUserStats(stats, selectedYear),
+        saveGlobalStats(globalStats, selectedYear),
+        saveUserMergeMap(userMergeMap),
+      ]);
+
+      setIsModified(false);
+      alert('Statistics saved successfully!');
+    } catch (error) {
+      console.error('Error saving stats to Firestore:', error);
+      alert('Failed to save statistics. Check console for details.');
+    }
+  }, [stats, globalStats, selectedYear, userMergeMap]);
+
   return (
     <AdminSubpage
-      title="Statistics"
+      title={`Statistics ${isModified ? '*' : ''}`}
       headerContent={
         <>
           <div className="stats-controls">
@@ -210,7 +279,8 @@ export function AdminStatsPage() {
                 value={selectedYear.toString()}
                 options={yearOptions}
                 onChange={async (value) => {
-                  const newYear = value === 'all' ? 'all' : parseInt(value);
+                  const newYear =
+                    value === 'all_time' ? 'all_time' : parseInt(value);
                   handleSelectYear(newYear);
                 }}
                 className="year-selector"
@@ -236,6 +306,16 @@ export function AdminStatsPage() {
                 </GameButton>
               </>
             )}
+            {stats.length > 0 && (
+              <GameButton
+                small
+                onClick={handleSaveToFirestore}
+                loading={saving}
+                disabled={!isModified || saving}
+              >
+                {isModified ? 'Save to Firestore *' : 'Saved'}
+              </GameButton>
+            )}
             {gameData && (
               <span className="stats-summary">
                 {gameData.length} games loaded
@@ -244,8 +324,11 @@ export function AdminStatsPage() {
             {stats.length > 0 && (
               <span className="stats-summary">
                 {stats.length} users
-                {selectedYear !== 'all' && ` (${selectedYear})`}
+                {selectedYear !== 'all_time' && ` (${selectedYear})`}
               </span>
+            )}
+            {loadingFromFirestore && (
+              <span className="stats-summary">Loading from Firestore...</span>
             )}
           </div>
           {fetchProgress && (
@@ -374,8 +457,8 @@ function CounterRow({ val }: { val: number | string }) {
 }
 
 function PlayerNameCell({ stat }: { stat: UserStats }) {
-  const player = stat.playerInLobbyRefs.at(-1);
-  const names = Array.from(new Set(stat.playerInLobbyRefs.map((p) => p.name)));
+  const player = stat.player_in_lobby_refs.at(-1);
+  const names = Array.from(new Set(stat.player_in_lobby_refs.map((p) => p.name)));
   if (!player) return <i>Unknown</i>;
   return (
     <td className="player-name">
@@ -396,7 +479,7 @@ function UserStatsDetails({ stat }: { stat: UserStats }) {
       <div className="detail-section">
         <h4>UIDs</h4>
         <p>
-          {Array.from(new Set(stat.playerInLobbyRefs.map((p) => p.uid))).join(
+          {Array.from(new Set(stat.player_in_lobby_refs.map((p) => p.uid))).join(
             ', ',
           )}
         </p>

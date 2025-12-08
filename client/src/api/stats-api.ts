@@ -560,8 +560,8 @@ export async function parseUserStatistics(
 
   // Convert to final stats format and filter
   const stats: UserStats[] = Array.from(userStatsMap.values()).sort(
-    (a, b) => b.total_games - a.total_games,
-  ); // Sort by games played
+    (a, b) => b.last_time_played!.getTime() - a.last_time_played!.getTime(),
+  ); // Sort by latest played day
 
   // Calculate global statistics
   const globalStats = calculateGlobalStats(validLobbies);
