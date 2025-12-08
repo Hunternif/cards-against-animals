@@ -257,22 +257,31 @@ export function AdminStatsPage() {
             </GameButton>
             <GameButton
               small
-              onClick={handleExportGameData}
-              disabled={!gameData}
-              iconLeft={<IconLink />}
-            >
-              Export Data
-            </GameButton>
-
-            <GameButton
-              small
               onClick={handleParseStats}
               loading={parsing}
-              disabled={!gameData || parsing}
+              disabled={!gameData || fetching}
             >
               Parse Statistics
             </GameButton>
 
+            <GameButton
+              small
+              onClick={handleSaveToFirestore}
+              loading={saving}
+              disabled={!isModified || fetching || stats.length === 0}
+            >
+              {isModified ? 'Save to Firestore *' : 'Saved'}
+            </GameButton>
+            <GameButton
+              small
+              onClick={handleExportGameData}
+              disabled={!gameData || fetching}
+              iconLeft={<IconLink />}
+            >
+              Export Data
+            </GameButton>
+          </div>
+          <div className="stats-summaries">
             {availableYears.length > 0 && (
               <SelectInput
                 small
@@ -287,8 +296,22 @@ export function AdminStatsPage() {
                 disabled={parsing || fetching}
               />
             )}
-            {stats.length > 0 && !mergeMode && (
-              <GameButton secondary small onClick={() => setMergeMode(true)}>
+            {gameData && (
+              <span className="stats-summary">{gameData.length} games</span>
+            )}
+            {stats.length > 0 && (
+              <span className="stats-summary">{stats.length} users</span>
+            )}
+            {loadingFromFirestore && (
+              <span className="stats-summary">Loading from Firestore...</span>
+            )}
+            {!mergeMode && (
+              <GameButton
+                secondary
+                small
+                inline
+                onClick={() => setMergeMode(true)}
+              >
                 Merge Users
               </GameButton>
             )}
@@ -296,39 +319,16 @@ export function AdminStatsPage() {
               <>
                 <GameButton
                   small
+                  inline
                   onClick={handleMergeUsers}
                   disabled={selectedUsers.size < 2}
                 >
                   Merge Selected ({selectedUsers.size})
                 </GameButton>
-                <GameButton small onClick={cancelMerge}>
+                <GameButton small inline onClick={cancelMerge}>
                   Cancel
                 </GameButton>
               </>
-            )}
-            {stats.length > 0 && (
-              <GameButton
-                small
-                onClick={handleSaveToFirestore}
-                loading={saving}
-                disabled={!isModified || saving}
-              >
-                {isModified ? 'Save to Firestore *' : 'Saved'}
-              </GameButton>
-            )}
-            {gameData && (
-              <span className="stats-summary">
-                {gameData.length} games loaded
-              </span>
-            )}
-            {stats.length > 0 && (
-              <span className="stats-summary">
-                {stats.length} users
-                {selectedYear !== 'all_time' && ` (${selectedYear})`}
-              </span>
-            )}
-            {loadingFromFirestore && (
-              <span className="stats-summary">Loading from Firestore...</span>
             )}
           </div>
           {fetchProgress && (
@@ -458,7 +458,9 @@ function CounterRow({ val }: { val: number | string }) {
 
 function PlayerNameCell({ stat }: { stat: UserStats }) {
   const player = stat.player_in_lobby_refs.at(-1);
-  const names = Array.from(new Set(stat.player_in_lobby_refs.map((p) => p.name)));
+  const names = Array.from(
+    new Set(stat.player_in_lobby_refs.map((p) => p.name)),
+  );
   if (!player) return <i>Unknown</i>;
   return (
     <td className="player-name">
@@ -479,9 +481,9 @@ function UserStatsDetails({ stat }: { stat: UserStats }) {
       <div className="detail-section">
         <h4>UIDs</h4>
         <p>
-          {Array.from(new Set(stat.player_in_lobby_refs.map((p) => p.uid))).join(
-            ', ',
-          )}
+          {Array.from(
+            new Set(stat.player_in_lobby_refs.map((p) => p.uid)),
+          ).join(', ')}
         </p>
       </div>
 
