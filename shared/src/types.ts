@@ -614,13 +614,13 @@ export type PromptCardStats = Omit<
   'random_index' | 'rating' | 'type'
 >;
 
-export type YearFilter = number | 'all';
+export type YearFilter = number | 'all_time';
 
 /** Stored under /stats/{year}/{uid} */
 export interface UserStats {
   uid: string;
   name: string; // the last known name
-  playerInLobbyRefs: PlayerInLobby[];
+  player_in_lobby_refs: PlayerInLobby[];
   is_bot: boolean;
   total_games: number;
   total_turns_played: number;

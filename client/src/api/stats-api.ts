@@ -78,7 +78,7 @@ async function calculateDerivedStats(
   const uidToCanonicalUid = new Map<string, string>();
   for (const [uid, stats] of userStatsMap.entries()) {
     // All player refs for this user point to the same canonical UID
-    for (const ref of stats.playerInLobbyRefs) {
+    for (const ref of stats.player_in_lobby_refs) {
       uidToCanonicalUid.set(ref.uid, uid);
     }
   }
@@ -90,7 +90,7 @@ async function calculateDerivedStats(
 
   // For each user, calculate their detailed stats
   for (const [uid, userStat] of userStatsMap.entries()) {
-    const allPlayerUids = new Set(userStat.playerInLobbyRefs.map((p) => p.uid));
+    const allPlayerUids = new Set(userStat.player_in_lobby_refs.map((p) => p.uid));
 
     // Track cards used by this user (keyed by card content)
     const cardUsage = new Map<
@@ -296,7 +296,7 @@ export function filterLobbiesByYear(
   lobbies: GameLobby[],
   year: YearFilter,
 ): GameLobby[] {
-  if (year === 'all') {
+  if (year === 'all_time') {
     return lobbies;
   }
   return lobbies.filter((lobby) => {
@@ -439,7 +439,7 @@ export async function parseUserStatistics(
         userStat = {
           uid: canonicalUid,
           name: player.name,
-          playerInLobbyRefs: [],
+          player_in_lobby_refs: [],
           is_bot: player.is_bot,
           total_turns_played: 0,
           total_games: 0,
@@ -465,7 +465,7 @@ export async function parseUserStatistics(
         };
         userStatsMap.set(canonicalUid, userStat);
       }
-      userStat.playerInLobbyRefs.push(player);
+      userStat.player_in_lobby_refs.push(player);
       userStat.total_turns_played += turnsCount;
       userStat.lobby_ids.add(lobby.id);
       if (userStat.games) {
@@ -589,7 +589,7 @@ export function createUserMergeMap(stats: UserStats[]): UserMergeMap {
 
   for (const stat of stats) {
     const allUids = Array.from(
-      new Set(stat.playerInLobbyRefs.map((p) => p.uid)),
+      new Set(stat.player_in_lobby_refs.map((p) => p.uid)),
     );
     // Only add to map if there are multiple UIDs (i.e., merged users)
     if (allUids.length > 1 || allUids[0] !== stat.uid) {
@@ -635,9 +635,9 @@ export function mergeUserStats(
 
   // Combine all stats
   for (const user of users) {
-    mergedPlayerRefs.push(...user.playerInLobbyRefs);
+    mergedPlayerRefs.push(...user.player_in_lobby_refs);
     // Collect all UIDs from this user
-    for (const ref of user.playerInLobbyRefs) {
+    for (const ref of user.player_in_lobby_refs) {
       mergedUids.add(ref.uid);
     }
     totalTurnsPlayed += user.total_turns_played;
@@ -706,7 +706,7 @@ export function mergeUserStats(
   const merged: UserStats = {
     uid: primaryUid,
     name: primaryName,
-    playerInLobbyRefs: mergedPlayerRefs,
+    player_in_lobby_refs: mergedPlayerRefs,
     is_bot: isBot,
     total_games: totalGames,
     total_turns_played: totalTurnsPlayed,

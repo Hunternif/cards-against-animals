@@ -89,20 +89,24 @@ export const playerConverter: FConverter<PlayerInLobby> = {
   toFirestore: (player: PlayerInLobby) => copyFields(player),
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
-    const ret = new PlayerInLobby(
-      data.uid,
-      data.name,
-      data.avatar_id,
-      data.random_index ?? 0,
-      data.role,
-      data.status,
-      data.is_bot ?? false,
-    );
-    ret.time_joined =
-      (data.time_joined as FTimestamp | null)?.toDate() ?? new Date();
-    return ret;
+    return mapPlayerInLobby(data);
   },
 };
+
+function mapPlayerInLobby(data: any): PlayerInLobby {
+  const ret = new PlayerInLobby(
+    data.uid,
+    data.name,
+    data.avatar_id,
+    data.random_index ?? 0,
+    data.role,
+    data.status,
+    data.is_bot ?? false,
+  );
+  ret.time_joined =
+    (data.time_joined as FTimestamp | null)?.toDate() ?? new Date();
+  return ret;
+}
 
 export const playerStateConverter: FConverter<PlayerGameState> = {
   toFirestore: (player: PlayerGameState) =>
@@ -436,6 +440,9 @@ export const userStatsConverter: FConverter<UserStats> = {
     return copyFields2(
       stats,
       {
+        player_in_lobby_refs: stats.player_in_lobby_refs.map((p) =>
+          playerConverter.toFirestore(p),
+        ),
         lobby_ids: Array.from(stats.lobby_ids || []),
         first_time_played: stats.first_time_played ?? null,
         last_time_played: stats.last_time_played ?? null,
@@ -449,17 +456,9 @@ export const userStatsConverter: FConverter<UserStats> = {
     return {
       uid: data.uid,
       name: data.name,
-      playerInLobbyRefs: (data.playerInLobbyRefs || []).map((p: any) => ({
-        uid: p.uid,
-        name: p.name,
-        avatar_id: p.avatar_id,
-        random_index: p.random_index ?? 0,
-        role: p.role,
-        status: p.status,
-        is_bot: p.is_bot ?? false,
-        time_joined:
-          (p.time_joined as FTimestamp | null)?.toDate() ?? new Date(),
-      })),
+      player_in_lobby_refs: ((data.player_in_lobby_refs as any[]) || []).map(
+        mapPlayerInLobby,
+      ),
       is_bot: data.is_bot ?? false,
       total_games: data.total_games ?? 0,
       total_turns_played: data.total_turns_played ?? 0,
