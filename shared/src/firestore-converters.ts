@@ -501,6 +501,13 @@ export const globalStatsConverter: FConverter<GlobalStats> = {
   fromFirestore: (snapshot: FDocSnapshot) => {
     const data = snapshot.data();
     return {
+      total_games: data.total_games ?? 0,
+      total_turns: data.total_turns ?? 0,
+      unique_players: data.unique_players ?? 0,
+      total_time_played_ms: data.total_time_played_ms ?? 0,
+      median_time_per_game_ms: data.median_time_per_game_ms ?? 0,
+      median_players_per_game: data.median_players_per_game ?? 0,
+      median_turns_per_game: data.median_turns_per_game ?? 0,
       top_prompts:
         (data.top_prompts as Array<any>)?.map((p: any) => ({
           prompt: mapPromptCardInGame(p.prompt),

@@ -90,7 +90,9 @@ async function calculateDerivedStats(
 
   // For each user, calculate their detailed stats
   for (const [uid, userStat] of userStatsMap.entries()) {
-    const allPlayerUids = new Set(userStat.player_in_lobby_refs.map((p) => p.uid));
+    const allPlayerUids = new Set(
+      userStat.player_in_lobby_refs.map((p) => p.uid),
+    );
 
     // Track cards used by this user (keyed by card content)
     const cardUsage = new Map<
@@ -308,7 +310,10 @@ export function filterLobbiesByYear(
 /**
  * Calculates global statistics across all lobbies and players.
  */
-function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
+function calculateGlobalStats(
+  lobbies: GameLobby[],
+  userMergeMap?: UserMergeMap,
+): GlobalStats {
   const promptUsage = new Map<
     string,
     { prompt: PromptCardStats; count: number }
@@ -319,6 +324,25 @@ function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
   >();
   const deckUsage = new Map<string, number>();
   const gamesPerMonth = new Map<string, number>();
+
+  // Helper to get canonical UID (handles merged users)
+  const getCanonicalUid = (uid: string): string => {
+    if (!userMergeMap) return uid;
+    for (const [canonicalUid, mergedUids] of userMergeMap.entries()) {
+      if (mergedUids.includes(uid)) {
+        return canonicalUid;
+      }
+    }
+    return uid;
+  };
+
+  // New aggregate statistics
+  let totalTurns = 0;
+  let totalTimePlayed = 0;
+  const uniquePlayers = new Set<string>();
+  const gameDurations: number[] = [];
+  const playerCounts: number[] = [];
+  const turnCounts: number[] = [];
 
   for (const lobby of lobbies) {
     // Track games per month
@@ -333,6 +357,35 @@ function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
     for (const deckId of lobby.deck_ids) {
       const currentDeckCount = deckUsage.get(deckId) || 0;
       deckUsage.set(deckId, currentDeckCount + 1);
+    }
+
+    // Track total turns in this lobby
+    const lobbyTurns = lobby.turns.length;
+    totalTurns += lobbyTurns;
+    turnCounts.push(lobbyTurns);
+
+    // Track unique players across all lobbies (using canonical UIDs for merged users)
+    const lobbyPlayers = lobby.players.length;
+    for (const player of lobby.players) {
+      const canonicalUid = getCanonicalUid(player.uid);
+      uniquePlayers.add(canonicalUid);
+    }
+    playerCounts.push(lobbyPlayers);
+
+    // Calculate time played in this lobby
+    if (lobby.turns.length > 0) {
+      const firstTurn = lobby.turns[0];
+      const lastTurn = lobby.turns[lobby.turns.length - 1];
+      if (
+        firstTurn.time_created &&
+        (lastTurn.time_created || lastTurn.phase_end_time)
+      ) {
+        const endTime = lastTurn.phase_end_time ?? lastTurn.time_created;
+        const gameDuration =
+          endTime.getTime() - firstTurn.time_created.getTime();
+        totalTimePlayed += gameDuration;
+        gameDurations.push(gameDuration);
+      }
     }
 
     // Process each turn
@@ -372,7 +425,32 @@ function calculateGlobalStats(lobbies: GameLobby[]): GlobalStats {
     }
   }
 
+  const totalGames = lobbies.length;
+
+  // Calculate medians
+  const medianTime =
+    gameDurations.length > 0
+      ? gameDurations.sort((a, b) => a - b)[
+          Math.floor(gameDurations.length / 2)
+        ]
+      : 0;
+  const medianPlayers =
+    playerCounts.length > 0
+      ? playerCounts.sort((a, b) => a - b)[Math.floor(playerCounts.length / 2)]
+      : 0;
+  const medianTurns =
+    turnCounts.length > 0
+      ? turnCounts.sort((a, b) => a - b)[Math.floor(turnCounts.length / 2)]
+      : 0;
+
   return {
+    total_games: totalGames,
+    total_turns: totalTurns,
+    unique_players: uniquePlayers.size,
+    total_time_played_ms: totalTimePlayed,
+    median_time_per_game_ms: medianTime,
+    median_players_per_game: medianPlayers,
+    median_turns_per_game: medianTurns,
     top_prompts: Array.from(promptUsage.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, 5),
@@ -492,9 +570,13 @@ export async function parseUserStatistics(
       if (playedTurns.length > 1) {
         const firstTurn = playedTurns[0];
         const lastTurn = playedTurns[playedTurns.length - 1];
-        if (firstTurn.time_created && lastTurn.time_created) {
+        if (
+          firstTurn.time_created &&
+          (lastTurn.time_created || lastTurn.phase_end_time)
+        ) {
+          const endTime = lastTurn.phase_end_time ?? lastTurn.time_created;
           const gameDurationMs =
-            lastTurn.time_created.getTime() - firstTurn.time_created.getTime();
+            endTime.getTime() - firstTurn.time_created.getTime();
           userStat.total_time_played_ms += gameDurationMs;
           userStat.game_durations_ms.push(gameDurationMs);
         }
@@ -564,7 +646,7 @@ export async function parseUserStatistics(
   ); // Sort by latest played day
 
   // Calculate global statistics
-  const globalStats = calculateGlobalStats(validLobbies);
+  const globalStats = calculateGlobalStats(validLobbies, userMergeMap);
 
   return { userStats: stats, globalStats };
 }

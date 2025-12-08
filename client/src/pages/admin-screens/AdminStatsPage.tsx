@@ -296,8 +296,8 @@ export function AdminStatsPage() {
                 disabled={parsing || fetching}
               />
             )}
-            {gameData && (
-              <span className="stats-summary">{gameData.length} games</span>
+            {globalStats && (
+              <span className="stats-summary">{globalStats.total_games} games</span>
             )}
             {stats.length > 0 && (
               <span className="stats-summary">{stats.length} users</span>

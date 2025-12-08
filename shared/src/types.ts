@@ -611,7 +611,7 @@ export type ResponseCardStats = Omit<
 
 export type PromptCardStats = Omit<
   PromptCardInGame,
-  'random_index' | 'rating' | 'type'
+  'random_index' | 'rating' | 'type' | 'votes'
 >;
 
 export type YearFilter = number | 'all_time';
@@ -665,6 +665,13 @@ export interface UserStats {
 }
 
 export interface GlobalStats {
+  total_games: number;
+  total_turns: number;
+  unique_players: number;
+  total_time_played_ms: number;
+  median_time_per_game_ms: number;
+  median_players_per_game: number;
+  median_turns_per_game: number;
   /** Top prompts played across all games */
   top_prompts: Array<{ prompt: PromptCardStats; count: number }>;
   /** Top response cards played across all games */
