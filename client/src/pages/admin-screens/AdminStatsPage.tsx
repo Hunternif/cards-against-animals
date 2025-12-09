@@ -5,11 +5,8 @@ import {
   FetchProgressInfo,
   filterLobbiesByYear,
   getAvailableYears,
-  GlobalStats,
   mergeUserStats,
   parseUserStatistics,
-  UserMergeMap,
-  UserStats,
 } from '../../api/stats-api';
 import {
   loadGlobalStats,
@@ -30,7 +27,7 @@ import {
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { ProgressBar } from '../../components/ProgressBar';
 import { useHandler } from '../../hooks/data-hooks';
-import { GameLobby, YearFilter } from '@shared/types';
+import { GameLobby, GlobalStats, UserMergeMap, UserStats, YearFilter } from '@shared/types';
 import { AdminGlobalStatsSection } from './admin-components/AdminGlobalStatsSection';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 
@@ -70,7 +67,9 @@ export function AdminStatsPage() {
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<YearFilter>('all_time');
   const [availableYears, setAvailableYears] = useState<number[]>([]);
-  const [userMergeMap, setUserMergeMap] = useState<UserMergeMap>(new Map());
+  const [userMergeMap, setUserMergeMap] = useState<UserMergeMap>(
+    new UserMergeMap(),
+  );
   const [isModified, setIsModified] = useState(false);
   const [loadingFromFirestore, setLoadingFromFirestore] = useState(false);
   const yearOptions: SelectOption<string>[] = [
@@ -166,7 +165,7 @@ export function AdminStatsPage() {
     );
 
     // Update the merge map with the new merge
-    const newMergeMap = new Map(userMergeMap);
+    const newMergeMap = new UserMergeMap(userMergeMap.entries());
     // Add or update the merge entry
     newMergeMap.set(primaryUser.uid, mergedUids);
     setUserMergeMap(newMergeMap);

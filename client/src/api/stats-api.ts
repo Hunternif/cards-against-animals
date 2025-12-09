@@ -29,15 +29,6 @@ import { getAllPlayerResponses } from './turn/turn-response-api';
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-// Re-export types from shared for backward compatibility
-export type {
-  GlobalStats,
-  PromptCardStats,
-  ResponseCardStats,
-  UserMergeMap,
-  UserStats,
-} from '@shared/types';
-
 function copyResponseCardStats(card: ResponseCardInGame): ResponseCardStats {
   return copyFields(card, ['random_index', 'rating', 'type']);
 }
@@ -312,7 +303,7 @@ export function filterLobbiesByYear(
  */
 function calculateGlobalStats(
   lobbies: GameLobby[],
-  userMergeMap?: UserMergeMap,
+  userMergeMap: UserMergeMap,
 ): GlobalStats {
   const promptUsage = new Map<
     string,
@@ -324,17 +315,6 @@ function calculateGlobalStats(
   >();
   const deckUsage = new Map<string, number>();
   const gamesPerMonth = new Map<string, number>();
-
-  // Helper to get canonical UID (handles merged users)
-  const getCanonicalUid = (uid: string): string => {
-    if (!userMergeMap) return uid;
-    for (const [canonicalUid, mergedUids] of userMergeMap.entries()) {
-      if (mergedUids.includes(uid)) {
-        return canonicalUid;
-      }
-    }
-    return uid;
-  };
 
   // New aggregate statistics
   let totalTurns = 0;
@@ -367,7 +347,7 @@ function calculateGlobalStats(
     // Track unique players across all lobbies (using canonical UIDs for merged users)
     const lobbyPlayers = lobby.players.length;
     for (const player of lobby.players) {
-      const canonicalUid = getCanonicalUid(player.uid);
+      const canonicalUid = userMergeMap.getCanonicalUid(player.uid);
       uniquePlayers.add(canonicalUid);
     }
     playerCounts.push(lobbyPlayers);
@@ -475,21 +455,10 @@ function calculateGlobalStats(
  */
 export async function parseUserStatistics(
   validLobbies: GameLobby[],
-  userMergeMap?: UserMergeMap,
+  userMergeMap: UserMergeMap,
 ): Promise<{ userStats: UserStats[]; globalStats: GlobalStats }> {
   // Map to accumulate stats per user
   const userStatsMap = new Map<string, UserStats>();
-
-  // Helper to get canonical UID (handles merged users)
-  const getCanonicalUid = (uid: string): string => {
-    if (!userMergeMap) return uid;
-    for (const [canonicalUid, mergedUids] of userMergeMap.entries()) {
-      if (mergedUids.includes(uid)) {
-        return canonicalUid;
-      }
-    }
-    return uid;
-  };
 
   // Process each lobby
   for (const lobby of validLobbies) {
@@ -509,7 +478,7 @@ export async function parseUserStatistics(
       const turnsCount = countResponsesByPlayerInLobby(lobby, player.uid);
 
       // Get canonical UID for this player (may be merged)
-      const canonicalUid = getCanonicalUid(player.uid);
+      const canonicalUid = userMergeMap.getCanonicalUid(player.uid);
 
       // Get or create stats entry for this user
       let userStat = userStatsMap.get(canonicalUid);
@@ -652,22 +621,11 @@ export async function parseUserStatistics(
 }
 
 /**
- * Fetches statistics for all users who have played at least one turn
- * in a non-test game.
- */
-export async function fetchUserStatistics(
-  onProgress?: (progress: FetchProgressInfo) => void,
-): Promise<{ userStats: UserStats[]; globalStats: GlobalStats }> {
-  const validLobbies = await fetchAllLobbyData(onProgress);
-  return await parseUserStatistics(validLobbies);
-}
-
-/**
  * Creates a user merge map from a list of stats.
  * This extracts which UIDs are merged together based on playerInLobbyRefs.
  */
 export function createUserMergeMap(stats: UserStats[]): UserMergeMap {
-  const mergeMap: UserMergeMap = new Map();
+  const mergeMap = new UserMergeMap();
 
   for (const stat of stats) {
     const allUids = Array.from(

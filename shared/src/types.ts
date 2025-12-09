@@ -682,8 +682,4 @@ export interface GlobalStats {
   top_months: Array<{ month: string; games: number }>;
 }
 
-/**
- * Maps canonical UID to a list of all UIDs that should be merged into it.
- * The canonical UID should also be included in the list.
- */
-export type UserMergeMap = Map<string, string[]>;
+export { UserMergeMap } from './user-merge-map';

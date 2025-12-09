@@ -1,4 +1,4 @@
-import { GlobalStats } from '../../../api/stats-api';
+import { GlobalStats } from '@shared/types';
 
 export function AdminGlobalStatsSection({
   globalStats,
@@ -17,7 +17,7 @@ export function AdminGlobalStatsSection({
   return (
     <div className="global-stats-section">
       <h3>Global</h3>
-      
+
       <div className="global-stats-grid">
         <div className="global-stat-card">
           <h4>Overview</h4>
@@ -25,10 +25,21 @@ export function AdminGlobalStatsSection({
             <li>Total Games: {globalStats.total_games}</li>
             <li>Total Turns: {globalStats.total_turns}</li>
             <li>Unique Players: {globalStats.unique_players}</li>
-            <li>Total Time Played: {formatTime(globalStats.total_time_played_ms)}</li>
-            <li>Median Time per Game: {formatTime(globalStats.median_time_per_game_ms)}</li>
-            <li>Median Players per Game: {globalStats.median_players_per_game.toFixed(1)}</li>
-            <li>Median Turns per Game: {globalStats.median_turns_per_game.toFixed(1)}</li>
+            <li>
+              Total Time Played: {formatTime(globalStats.total_time_played_ms)}
+            </li>
+            <li>
+              Median Time per Game:{' '}
+              {formatTime(globalStats.median_time_per_game_ms)}
+            </li>
+            <li>
+              Median Players per Game:{' '}
+              {globalStats.median_players_per_game.toFixed(1)}
+            </li>
+            <li>
+              Median Turns per Game:{' '}
+              {globalStats.median_turns_per_game.toFixed(1)}
+            </li>
           </ul>
         </div>
 
