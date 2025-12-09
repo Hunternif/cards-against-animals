@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { GameButton } from '../../../components/Buttons';
 import { SelectInput, SelectOption } from '../../../components/FormControls';
 import {
   filterLobbiesByYear,

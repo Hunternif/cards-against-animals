@@ -8,6 +8,7 @@ import {
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { UserMergeMap, UserStats } from '@shared/types';
 import { mergeUserStats } from '../../../api/stats-api';
+import { ScrollContainer } from '../../../components/layout/ScrollContainer';
 
 /**
  * Formats milliseconds into a human-readable time string (e.g., "2h 30m")
@@ -116,98 +117,100 @@ export function UserStatsTable({
         )}
       </div>
 
-      <table className="stats-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>First Played</th>
-            <th>Last Played</th>
-            <th>Games</th>
-            <th>Turns</th>
-            <th>Wins</th>
-            <th>Win Rate</th>
-            <th>Avg Score</th>
-            <th>Med Score</th>
-            <th>Likes</th>
-            <th>Discards</th>
-            <th>Time Played</th>
-            <th>Avg Time</th>
-            <th>Med Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stats.map((stat) => (
-            <Fragment key={stat.uid}>
-              <tr
-                className={selectedUsers.has(stat.uid) ? 'selected' : ''}
-                onClick={() => mergeMode && toggleUserSelection(stat.uid)}
-              >
-                <td className="control-cell">
-                  <div className="group">
-                    <GameButton
-                      inline
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedUser(
-                          expandedUser === stat.uid ? null : stat.uid,
-                        );
-                      }}
-                    >
-                      {expandedUser === stat.uid ? (
-                        <IconChevronUpInline />
-                      ) : (
-                        <IconChevronDownInline />
+      <ScrollContainer scrollLight className="user-stats-scroll">
+        <table className="stats-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>First Played</th>
+              <th>Last Played</th>
+              <th>Games</th>
+              <th>Turns</th>
+              <th>Wins</th>
+              <th>Win Rate</th>
+              <th>Avg Score</th>
+              <th>Med Score</th>
+              <th>Likes</th>
+              <th>Discards</th>
+              <th>Time Played</th>
+              <th>Avg Time</th>
+              <th>Med Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stats.map((stat) => (
+              <Fragment key={stat.uid}>
+                <tr
+                  className={selectedUsers.has(stat.uid) ? 'selected' : ''}
+                  onClick={() => mergeMode && toggleUserSelection(stat.uid)}
+                >
+                  <td className="control-cell">
+                    <div className="group">
+                      <GameButton
+                        inline
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedUser(
+                            expandedUser === stat.uid ? null : stat.uid,
+                          );
+                        }}
+                      >
+                        {expandedUser === stat.uid ? (
+                          <IconChevronUpInline />
+                        ) : (
+                          <IconChevronDownInline />
+                        )}
+                      </GameButton>
+                      {mergeMode && (
+                        <Checkbox
+                          checked={selectedUsers.has(stat.uid)}
+                          onChange={() => toggleUserSelection(stat.uid)}
+                        />
                       )}
-                    </GameButton>
-                    {mergeMode && (
-                      <Checkbox
-                        checked={selectedUsers.has(stat.uid)}
-                        onChange={() => toggleUserSelection(stat.uid)}
-                      />
-                    )}
-                  </div>
-                </td>
-                <PlayerNameCell stat={stat} />
-                <td className="col-date">
-                  {stat.first_time_played
-                    ? formatDate(new Date(stat.first_time_played))
-                    : '-'}
-                </td>
-                <td className="col-date">
-                  {stat.last_time_played
-                    ? formatDate(new Date(stat.last_time_played))
-                    : '-'}
-                </td>
-                <CounterRow val={stat.total_games} />
-                <CounterRow val={stat.total_turns_played} />
-                <CounterRow val={stat.total_wins} />
-                <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`} />
-                <CounterRow val={stat.average_score_per_game.toFixed(1)} />
-                <CounterRow val={stat.median_score_per_game.toFixed(1)} />
-                <CounterRow val={stat.total_likes_received} />
-                <CounterRow val={stat.total_discards} />
-                <CounterRow val={formatPlayTime(stat.total_time_played_ms)} />
-                <CounterRow
-                  val={formatPlayTime(stat.average_time_per_game_ms)}
-                />
-                <CounterRow
-                  val={formatPlayTime(stat.median_time_per_game_ms)}
-                />
-              </tr>
-              {expandedUser === stat.uid && (
-                <tr className="detail-row">
-                  <td></td>
-                  <td colSpan={9}>
-                    <UserStatsDetails stat={stat} />
+                    </div>
                   </td>
-                  <td colSpan={6}></td>
+                  <PlayerNameCell stat={stat} />
+                  <td className="col-date">
+                    {stat.first_time_played
+                      ? formatDate(new Date(stat.first_time_played))
+                      : '-'}
+                  </td>
+                  <td className="col-date">
+                    {stat.last_time_played
+                      ? formatDate(new Date(stat.last_time_played))
+                      : '-'}
+                  </td>
+                  <CounterRow val={stat.total_games} />
+                  <CounterRow val={stat.total_turns_played} />
+                  <CounterRow val={stat.total_wins} />
+                  <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`} />
+                  <CounterRow val={stat.average_score_per_game.toFixed(1)} />
+                  <CounterRow val={stat.median_score_per_game.toFixed(1)} />
+                  <CounterRow val={stat.total_likes_received} />
+                  <CounterRow val={stat.total_discards} />
+                  <CounterRow val={formatPlayTime(stat.total_time_played_ms)} />
+                  <CounterRow
+                    val={formatPlayTime(stat.average_time_per_game_ms)}
+                  />
+                  <CounterRow
+                    val={formatPlayTime(stat.median_time_per_game_ms)}
+                  />
                 </tr>
-              )}
-            </Fragment>
-          ))}
-        </tbody>
-      </table>
+                {expandedUser === stat.uid && (
+                  <tr className="detail-row">
+                    <td></td>
+                    <td colSpan={9}>
+                      <UserStatsDetails stat={stat} />
+                    </td>
+                    <td colSpan={6}></td>
+                  </tr>
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </ScrollContainer>
     </>
   );
 }

@@ -17,10 +17,11 @@
 }
 
 .user-stats {
-  width: max-content;
+  width: 100%;
+  padding-right: 1rem;
 
   .global-stats-scroll {
-    width: inherit;
+    width: 100%;
   }
 
   .global-stats-section {
@@ -32,12 +33,15 @@
     }
 
     .global-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      display: flex;
+      flex-wrap: nowrap;
       gap: 1.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
+      width: max-content;
 
       .global-stat-card {
+        flex: 0 0 350px;
+        min-width: 350px;
         background-color: colors.$menu-lvl1;
         border-radius: 8px;
         padding: 1.5rem;
