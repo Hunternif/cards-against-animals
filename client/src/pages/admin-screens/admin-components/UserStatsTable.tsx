@@ -229,9 +229,11 @@ function PlayerNameCell({ stat }: { stat: UserStats }) {
   );
   if (!player) return <i>Unknown</i>;
   return (
-    <td className="player-name">
-      <PlayerAvatar player={player} />
-      {names.join(', ')}
+    <td>
+      <div className='player-name'>
+        <PlayerAvatar player={player} />
+        {names.join(', ')}
+      </div>
     </td>
   );
 }

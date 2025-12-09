@@ -142,19 +142,6 @@
           gap: 0.5rem;
         }
 
-        &.player-name {
-          max-width: 250px;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-weight: 500;
-          color: colors.$text;
-
-          .avatar-icon {
-            font-size: 1.2rem;
-          }
-        }
-
         &:nth-child(1) {
           position: sticky;
           left: 0;
@@ -174,6 +161,18 @@
         }
       }
 
+      .player-name {
+        max-width: 250px;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        color: colors.$text;
+
+        .avatar-icon {
+          font-size: 1.2rem;
+        }
+      }
+
       .col-counter {
         // width: 5%;
         font-variant-numeric: tabular-nums;
@@ -186,6 +185,7 @@
       .col-date {
         font-family: monospace;
         text-align: center;
+        white-space: nowrap;
       }
 
       .user-stats-details {
