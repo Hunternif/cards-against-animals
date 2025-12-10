@@ -1,9 +1,11 @@
-import { GameLobby, StatsContainer, YearFilter } from '@shared/types';
+import { GameLobby, StatsContainer, UserMergeMap, YearFilter } from '@shared/types';
 import { useEffect, useState } from 'react';
 import {
   exportGameDataToFile,
   fetchAllLobbyData,
   FetchProgressInfo,
+  filterLobbiesByYear,
+  getAvailableYears,
   parseUserStatistics,
 } from '../../api/stats-api';
 import {
@@ -11,14 +13,16 @@ import {
   saveAllStats
 } from '../../api/stats-repository';
 import { GameButton } from '../../components/Buttons';
+import { SelectInput, SelectOption } from '../../components/FormControls';
 import { IconLink } from '../../components/Icons';
 import { ProgressBar } from '../../components/ProgressBar';
 import { useHandler } from '../../hooks/data-hooks';
-import { AdminStatsViewer } from './admin-components/AdminStatsViewer';
+import { AdminGlobalStatsSection } from './admin-components/AdminGlobalStatsSection';
 import { AdminSubpage } from './admin-components/AdminSubpage';
+import { UserStatsTable } from './admin-components/UserStatsTable';
 
 /**
- * Outer container component that manages data fetching, parsing, and saving.
+ * Admin page for managing and viewing game statistics.
  * Loads stats from Firestore, allows fetching full game data to parse new stats,
  * and provides saving functionality back to Firestore.
  */
@@ -29,7 +33,15 @@ export function AdminStatsPage() {
     null,
   );
   const [selectedYear, setSelectedYear] = useState<YearFilter>('all_time');
+  const [availableYears, setAvailableYears] = useState<number[]>([]);
   const [isModified, setIsModified] = useState(false);
+
+  const yearOptions: SelectOption<string>[] = [
+    ['all_time', 'All Years'],
+    ...availableYears.map(
+      (year) => [year.toString(), year.toString()] as SelectOption<string>,
+    ),
+  ];
 
   // Load stats from Firestore on mount
   const [loadStatsFromFirestore, loadingFromFirestore] =
@@ -41,6 +53,14 @@ export function AdminStatsPage() {
   useEffect(() => {
     loadStatsFromFirestore();
   }, [loadStatsFromFirestore]);
+
+  // Extract available years from game data
+  useEffect(() => {
+    if (gameData) {
+      const years = getAvailableYears(gameData);
+      setAvailableYears(years);
+    }
+  }, [gameData]);
 
   const [handleFetchData, fetching] = useHandler(async () => {
     setFetchProgress(null);
@@ -60,6 +80,33 @@ export function AdminStatsPage() {
     setStats(newContainer);
     setIsModified(true);
   }, [gameData, stats.userMergeMap]);
+
+  const handleSelectYear = async (newYear: YearFilter) => {
+    setSelectedYear(newYear);
+
+    if (gameData) {
+      const filteredLobbies = filterLobbiesByYear(gameData, newYear);
+      const newContainer = await parseUserStatistics(
+        filteredLobbies,
+        stats.userMergeMap,
+      );
+      setStats(newContainer);
+      setIsModified(true);
+    }
+  };
+
+  const handleMergeMapChange = async (newMergeMap: UserMergeMap) => {
+    // Re-parse stats with the updated merge map
+    if (gameData) {
+      const filteredLobbies = filterLobbiesByYear(gameData, selectedYear);
+      const newContainer = await parseUserStatistics(
+        filteredLobbies,
+        newMergeMap,
+      );
+      setStats(newContainer);
+      setIsModified(true);
+    }
+  };
 
   const handleStatsChange = (newContainer: StatsContainer) => {
     setStats(newContainer);
@@ -147,11 +194,40 @@ export function AdminStatsPage() {
         </>
       }
     >
-      <AdminStatsViewer
-        gameData={gameData}
-        initialStats={stats}
-        onStatsChange={handleStatsChange}
-      />
+      <div className="stats-summaries">
+        {availableYears.length > 0 && (
+          <SelectInput
+            small
+            value={selectedYear.toString()}
+            options={yearOptions}
+            onChange={async (value) => {
+              const newYear =
+                value === 'all_time' ? 'all_time' : parseInt(value);
+              handleSelectYear(newYear);
+            }}
+            className="year-selector"
+          />
+        )}
+        {stats.globalStats && (
+          <span className="stats-summary">
+            {stats.globalStats.total_games} games
+          </span>
+        )}
+        {stats.userStats.length > 0 && (
+          <span className="stats-summary">{stats.userStats.length} users</span>
+        )}
+      </div>
+
+      <div className="user-stats">
+        {stats.globalStats && (
+          <AdminGlobalStatsSection globalStats={stats.globalStats} />
+        )}
+        <UserStatsTable
+          stats={stats.userStats}
+          userMergeMap={stats.userMergeMap}
+          onMergeMapChange={handleMergeMapChange}
+        />
+      </div>
     </AdminSubpage>
   );
 }
