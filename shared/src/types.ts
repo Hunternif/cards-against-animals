@@ -683,3 +683,4 @@ export interface GlobalStats {
 }
 
 export { UserMergeMap } from './user-merge-map';
+export { StatsContainer } from './stats-container';

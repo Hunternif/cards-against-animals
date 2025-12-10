@@ -7,9 +7,8 @@ import {
 } from '../../../api/stats-api';
 import {
   GameLobby,
-  GlobalStats,
+  StatsContainer,
   UserMergeMap,
-  UserStats,
   YearFilter,
 } from '@shared/types';
 import { AdminGlobalStatsSection } from './AdminGlobalStatsSection';
@@ -18,18 +17,10 @@ import { UserStatsTable } from './UserStatsTable';
 interface AdminStatsViewerProps {
   /** All game data, used to derive available years and filter by year */
   gameData: GameLobby[] | null;
-  /** Initial stats to display */
-  initialStats: UserStats[];
-  /** Initial global stats to display */
-  initialGlobalStats: GlobalStats | null;
-  /** Initial user merge map */
-  initialUserMergeMap: UserMergeMap;
+  /** Stats container to display */
+  initialStats: StatsContainer;
   /** Callback when stats are modified and need to be saved */
-  onStatsChange: (
-    stats: UserStats[],
-    globalStats: GlobalStats | null,
-    mergeMap: UserMergeMap,
-  ) => void;
+  onStatsChange: (container: StatsContainer) => void;
 }
 
 /**
@@ -40,16 +31,9 @@ interface AdminStatsViewerProps {
 export function AdminStatsViewer({
   gameData,
   initialStats,
-  initialGlobalStats,
-  initialUserMergeMap,
   onStatsChange,
 }: AdminStatsViewerProps) {
-  const [stats, setStats] = useState<UserStats[]>(initialStats);
-  const [globalStats, setGlobalStats] = useState<GlobalStats | null>(
-    initialGlobalStats,
-  );
-  const [userMergeMap, setUserMergeMap] =
-    useState<UserMergeMap>(initialUserMergeMap);
+  const [stats, setStats] = useState<StatsContainer>(initialStats);
   const [selectedYear, setSelectedYear] = useState<YearFilter>('all_time');
   const [availableYears, setAvailableYears] = useState<number[]>([]);
 
@@ -63,9 +47,7 @@ export function AdminStatsViewer({
   // Update internal state when props change
   useEffect(() => {
     setStats(initialStats);
-    setGlobalStats(initialGlobalStats);
-    setUserMergeMap(initialUserMergeMap);
-  }, [initialStats, initialGlobalStats, initialUserMergeMap]);
+  }, [initialStats]);
 
   // Extract available years from game data
   useEffect(() => {
@@ -80,29 +62,25 @@ export function AdminStatsViewer({
 
     if (gameData) {
       const filteredLobbies = filterLobbiesByYear(gameData, newYear);
-      const { userStats, globalStats } = await parseUserStatistics(
+      const newContainer = await parseUserStatistics(
         filteredLobbies,
-        userMergeMap,
+        stats.userMergeMap,
       );
-      setStats(userStats);
-      setGlobalStats(globalStats);
-      onStatsChange(userStats, globalStats, userMergeMap);
+      setStats(newContainer);
+      onStatsChange(newContainer);
     }
   };
 
   const handleMergeMapChange = async (newMergeMap: UserMergeMap) => {
-    setUserMergeMap(newMergeMap);
-
     // Re-parse stats with the updated merge map
     if (gameData) {
       const filteredLobbies = filterLobbiesByYear(gameData, selectedYear);
-      const { userStats, globalStats } = await parseUserStatistics(
+      const newContainer = await parseUserStatistics(
         filteredLobbies,
         newMergeMap,
       );
-      setStats(userStats);
-      setGlobalStats(globalStats);
-      onStatsChange(userStats, globalStats, newMergeMap);
+      setStats(newContainer);
+      onStatsChange(newContainer);
     }
   };
 
@@ -122,19 +100,23 @@ export function AdminStatsViewer({
             className="year-selector"
           />
         )}
-        {globalStats && (
-          <span className="stats-summary">{globalStats.total_games} games</span>
+        {stats.globalStats && (
+          <span className="stats-summary">
+            {stats.globalStats.total_games} games
+          </span>
         )}
-        {stats.length > 0 && (
-          <span className="stats-summary">{stats.length} users</span>
+        {stats.userStats.length > 0 && (
+          <span className="stats-summary">{stats.userStats.length} users</span>
         )}
       </div>
 
       <div className="user-stats">
-        {globalStats && <AdminGlobalStatsSection globalStats={globalStats} />}
+        {stats.globalStats && (
+          <AdminGlobalStatsSection globalStats={stats.globalStats} />
+        )}
         <UserStatsTable
-          stats={stats}
-          userMergeMap={userMergeMap}
+          stats={stats.userStats}
+          userMergeMap={stats.userMergeMap}
           onMergeMapChange={handleMergeMapChange}
         />
       </div>

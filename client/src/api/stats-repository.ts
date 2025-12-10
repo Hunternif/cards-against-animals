@@ -4,6 +4,7 @@ import {
 } from '@shared/firestore-converters';
 import {
   GlobalStats,
+  StatsContainer,
   UserMergeMap,
   UserStats,
   YearFilter,
@@ -18,6 +19,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { firestore } from '../firebase';
+import { sleep } from '@shared/utils';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -109,7 +111,9 @@ export async function loadUserStats(year: YearFilter): Promise<UserStats[]> {
   return snapshot.docs
     .filter((doc) => doc.id !== 'global')
     .map((doc) => doc.data())
-    .sort((a, b) => b.last_time_played!.getTime() - a.last_time_played!.getTime());
+    .sort(
+      (a, b) => b.last_time_played!.getTime() - a.last_time_played!.getTime(),
+    );
 }
 
 /**
@@ -179,6 +183,34 @@ export async function loadUserMergeMap(): Promise<UserMergeMap> {
   }
 
   return mergeMap;
+}
+
+/**
+ * Loads all stats (user stats, global stats, and merge map) from Firestore in parallel.
+ * @param year The year to load from ('all_time' or a year number)
+ * @returns A StatsContainer with all loaded data
+ */
+export async function loadAllStats(year: YearFilter): Promise<StatsContainer> {
+  const [userStats, globalStats, mergeMap] = await Promise.all([
+    loadUserStats(year),
+    loadGlobalStats(year),
+    loadUserMergeMap(),
+  ]);
+
+  return new StatsContainer(userStats, globalStats, mergeMap);
+}
+
+export async function saveAllStats(
+  statsContainer: StatsContainer,
+  year: YearFilter,
+) {
+  await Promise.all([
+    saveUserStats(statsContainer.userStats, year),
+    statsContainer.globalStats
+      ? saveGlobalStats(statsContainer.globalStats, year)
+      : Promise.resolve(),
+    saveUserMergeMap(statsContainer.userMergeMap),
+  ]);
 }
 
 /**

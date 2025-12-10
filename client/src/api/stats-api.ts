@@ -7,6 +7,7 @@ import {
   PromptCardStats,
   ResponseCardInGame,
   ResponseCardStats,
+  StatsContainer,
   UserMergeMap,
   UserStats,
   YearFilter,
@@ -456,7 +457,7 @@ function calculateGlobalStats(
 export async function parseUserStatistics(
   validLobbies: GameLobby[],
   userMergeMap: UserMergeMap,
-): Promise<{ userStats: UserStats[]; globalStats: GlobalStats }> {
+): Promise<StatsContainer> {
   // Map to accumulate stats per user
   const userStatsMap = new Map<string, UserStats>();
 
@@ -617,7 +618,7 @@ export async function parseUserStatistics(
   // Calculate global statistics
   const globalStats = calculateGlobalStats(validLobbies, userMergeMap);
 
-  return { userStats: stats, globalStats };
+  return new StatsContainer(stats, globalStats, userMergeMap);
 }
 
 /**

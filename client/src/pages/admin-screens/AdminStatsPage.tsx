@@ -1,3 +1,4 @@
+import { GameLobby, StatsContainer, YearFilter } from '@shared/types';
 import { useEffect, useState } from 'react';
 import {
   exportGameDataToFile,
@@ -6,18 +7,13 @@ import {
   parseUserStatistics,
 } from '../../api/stats-api';
 import {
-  loadGlobalStats,
-  loadUserMergeMap,
-  loadUserStats,
-  saveGlobalStats,
-  saveUserMergeMap,
-  saveUserStats,
+  loadAllStats,
+  saveAllStats
 } from '../../api/stats-repository';
 import { GameButton } from '../../components/Buttons';
 import { IconLink } from '../../components/Icons';
 import { ProgressBar } from '../../components/ProgressBar';
 import { useHandler } from '../../hooks/data-hooks';
-import { GameLobby, GlobalStats, UserMergeMap, UserStats, YearFilter } from '@shared/types';
 import { AdminStatsViewer } from './admin-components/AdminStatsViewer';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 
@@ -27,45 +23,24 @@ import { AdminSubpage } from './admin-components/AdminSubpage';
  * and provides saving functionality back to Firestore.
  */
 export function AdminStatsPage() {
-  const [stats, setStats] = useState<UserStats[]>([]);
-  const [globalStats, setGlobalStats] = useState<GlobalStats | null>(null);
+  const [stats, setStats] = useState<StatsContainer>(new StatsContainer());
   const [gameData, setGameData] = useState<GameLobby[] | null>(null);
   const [fetchProgress, setFetchProgress] = useState<FetchProgressInfo | null>(
     null,
   );
   const [selectedYear, setSelectedYear] = useState<YearFilter>('all_time');
-  const [userMergeMap, setUserMergeMap] = useState<UserMergeMap>(
-    new UserMergeMap(),
-  );
   const [isModified, setIsModified] = useState(false);
-  const [loadingFromFirestore, setLoadingFromFirestore] = useState(false);
 
   // Load stats from Firestore on mount
+  const [loadStatsFromFirestore, loadingFromFirestore] =
+    useHandler(async () => {
+      const loadedStats = await loadAllStats('all_time');
+      setStats(loadedStats);
+      setIsModified(false);
+    }, []);
   useEffect(() => {
-    const loadStatsFromFirestore = async () => {
-      setLoadingFromFirestore(true);
-      try {
-        const [userStats, globalStatsData, mergeMap] = await Promise.all([
-          loadUserStats('all_time'),
-          loadGlobalStats('all_time'),
-          loadUserMergeMap(),
-        ]);
-
-        if (userStats.length > 0) {
-          setStats(userStats);
-          setGlobalStats(globalStatsData);
-          setUserMergeMap(mergeMap);
-          setIsModified(false);
-        }
-      } catch (error) {
-        console.error('Error loading stats from Firestore:', error);
-      } finally {
-        setLoadingFromFirestore(false);
-      }
-    };
-
     loadStatsFromFirestore();
-  }, []);
+  }, [loadStatsFromFirestore]);
 
   const [handleFetchData, fetching] = useHandler(async () => {
     setFetchProgress(null);
@@ -78,23 +53,16 @@ export function AdminStatsPage() {
 
   const [handleParseStats, parsing] = useHandler(async () => {
     if (!gameData) return;
-    const { userStats, globalStats } = await parseUserStatistics(
+    const newContainer = await parseUserStatistics(
       gameData,
-      userMergeMap,
+      stats.userMergeMap,
     );
-    setStats(userStats);
-    setGlobalStats(globalStats);
+    setStats(newContainer);
     setIsModified(true);
-  }, [gameData, userMergeMap]);
+  }, [gameData, stats.userMergeMap]);
 
-  const handleStatsChange = (
-    newStats: UserStats[],
-    newGlobalStats: GlobalStats | null,
-    newMergeMap: UserMergeMap,
-  ) => {
-    setStats(newStats);
-    setGlobalStats(newGlobalStats);
-    setUserMergeMap(newMergeMap);
+  const handleStatsChange = (newContainer: StatsContainer) => {
+    setStats(newContainer);
     setIsModified(true);
   };
 
@@ -104,7 +72,7 @@ export function AdminStatsPage() {
   };
 
   const [handleSaveToFirestore, saving] = useHandler(async () => {
-    if (!stats.length || !globalStats) {
+    if (!stats.hasStats) {
       alert('No stats to save');
       return;
     }
@@ -118,19 +86,14 @@ export function AdminStatsPage() {
     if (!confirmed) return;
 
     try {
-      await Promise.all([
-        saveUserStats(stats, selectedYear),
-        saveGlobalStats(globalStats, selectedYear),
-        saveUserMergeMap(userMergeMap),
-      ]);
-
+      await saveAllStats(stats, selectedYear);
       setIsModified(false);
       alert('Statistics saved successfully!');
     } catch (error) {
       console.error('Error saving stats to Firestore:', error);
       alert('Failed to save statistics. Check console for details.');
     }
-  }, [stats, globalStats, selectedYear, userMergeMap]);
+  }, [stats, selectedYear]);
 
   return (
     <AdminSubpage
@@ -154,7 +117,7 @@ export function AdminStatsPage() {
               small
               onClick={handleSaveToFirestore}
               loading={saving}
-              disabled={!isModified || fetching || stats.length === 0}
+              disabled={!isModified || fetching || !stats.hasStats}
             >
               {isModified ? 'Save to Firestore *' : 'Saved'}
             </GameButton>
@@ -187,8 +150,6 @@ export function AdminStatsPage() {
       <AdminStatsViewer
         gameData={gameData}
         initialStats={stats}
-        initialGlobalStats={globalStats}
-        initialUserMergeMap={userMergeMap}
         onStatsChange={handleStatsChange}
       />
     </AdminSubpage>
