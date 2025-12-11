@@ -682,5 +682,5 @@ export interface GlobalStats {
   top_months: Array<{ month: string; games: number }>;
 }
 
-export { UserMergeMap } from './user-merge-map';
-export { StatsContainer } from './stats-container';
+export * from './user-merge-map';
+export * from './stats-container';

@@ -11,6 +11,7 @@ import {
   UserMergeMap,
   UserStats,
   YearFilter,
+  YearStats,
 } from '@shared/types';
 import { copyFields } from '@shared/utils';
 import { saveAs } from 'file-saver';
@@ -302,7 +303,7 @@ export function filterLobbiesByYear(
 /**
  * Calculates global statistics across all lobbies and players.
  */
-function calculateGlobalStats(
+export function calculateGlobalStats(
   lobbies: GameLobby[],
   userMergeMap: UserMergeMap,
 ): GlobalStats {
@@ -454,10 +455,10 @@ function calculateGlobalStats(
  * @param validLobbies The lobbies to parse
  * @param userMergeMap Optional map of canonical UID to merged UIDs
  */
-export async function parseUserStats(
+export async function calculateUserStats(
   validLobbies: GameLobby[],
   userMergeMap: UserMergeMap,
-): Promise<StatsContainer> {
+): Promise<UserStats[]> {
   // Map to accumulate stats per user
   const userStatsMap = new Map<string, UserStats>();
 
@@ -614,10 +615,7 @@ export async function parseUserStats(
   const stats: UserStats[] = Array.from(userStatsMap.values()).sort(
     (a, b) => b.last_time_played!.getTime() - a.last_time_played!.getTime(),
   ); // Sort by latest played day
-
-  const globalStats = calculateGlobalStats(validLobbies, userMergeMap);
-
-  return new StatsContainer(stats, globalStats, userMergeMap);
+  return stats;
 }
 
 /**
@@ -801,18 +799,19 @@ export async function recalculateDerivedStats(
 export async function parseAllYearStats(
   gameData: GameLobby[],
   userMergeMap: UserMergeMap,
-): Promise<Map<YearFilter, StatsContainer>> {
+): Promise<StatsContainer> {
   const years = getAvailableYears(gameData);
   const allYears: YearFilter[] = ['all_time', ...years];
+  const yearMap = new Map<YearFilter, YearStats>();
 
-  const statsPromises = allYears.map(async (year) => {
+  for (const year of allYears) {
     const filteredLobbies = filterLobbiesByYear(gameData, year);
-    const container = await parseUserStats(filteredLobbies, userMergeMap);
-    return [year, container] as const;
-  });
+    const userStats = await calculateUserStats(filteredLobbies, userMergeMap);
+    const globalStats = calculateGlobalStats(filteredLobbies, userMergeMap);
+    yearMap.set(year, { year, userStats, globalStats });
+  }
 
-  const statsEntries = await Promise.all(statsPromises);
-  return new Map(statsEntries);
+  return new StatsContainer(yearMap, userMergeMap);
 }
 
 export function exportGameDataToFile(gameData: GameLobby[]) {

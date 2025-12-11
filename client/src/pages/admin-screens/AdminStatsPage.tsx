@@ -11,10 +11,7 @@ import {
   FetchProgressInfo,
   parseAllYearStats,
 } from '../../api/stats-api';
-import {
-  loadStatsFromAllYears,
-  saveAllStats,
-} from '../../api/stats-repository';
+import { loadAllStats, saveAllStats } from '../../api/stats-repository';
 import { GameButton } from '../../components/Buttons';
 import { SelectInput, SelectOption } from '../../components/FormControls';
 import { IconLink } from '../../components/Icons';
@@ -30,9 +27,7 @@ import { UserStatsTable } from './admin-components/UserStatsTable';
  * and provides saving functionality back to Firestore.
  */
 export function AdminStatsPage() {
-  const [statsMap, setStatsMap] = useState<Map<YearFilter, StatsContainer>>(
-    new Map(),
-  );
+  const [stats, setStats] = useState<StatsContainer>(new StatsContainer());
   const [gameData, setGameData] = useState<GameLobby[] | null>(null);
   const [fetchProgress, setFetchProgress] = useState<FetchProgressInfo | null>(
     null,
@@ -40,24 +35,31 @@ export function AdminStatsPage() {
   const [selectedYear, setSelectedYear] = useState<YearFilter>('all_time');
   const [isModified, setIsModified] = useState(false);
 
-  const availableYears = useMemo(() => Array.from(statsMap.keys()), [statsMap]);
-  const stats = useMemo(
-    () => statsMap.get(selectedYear) ?? new StatsContainer(),
-    [statsMap, selectedYear],
+  const availableYears = useMemo(
+    () => Array.from(stats.yearMap.keys()),
+    [stats],
+  );
+  const selectedStats = useMemo(
+    () => stats.yearMap.get(selectedYear),
+    [stats, selectedYear],
   );
 
-  const yearOptions: SelectOption<string>[] = availableYears.map(
-    (year) =>
-      [
-        year.toString(),
-        year === 'all_time' ? 'All Years' : year.toString(),
-      ] as SelectOption<string>,
+  const yearOptions: SelectOption<string>[] = useMemo(
+    () =>
+      availableYears.map(
+        (year) =>
+          [
+            year.toString(),
+            year === 'all_time' ? 'All Years' : year.toString(),
+          ] as SelectOption<string>,
+      ),
+    [availableYears],
   );
 
   const [loadStatsFromFirestore, loadingFromFirestore] =
     useHandler(async () => {
-      const data = await loadStatsFromAllYears();
-      setStatsMap(data);
+      const data = await loadAllStats();
+      setStats(data);
       setIsModified(false);
     }, []);
 
@@ -67,9 +69,9 @@ export function AdminStatsPage() {
   }, [loadStatsFromFirestore]);
 
   const parseStats = useCallback(
-    async (lobbies: GameLobby[], mergeMap: UserMergeMap) => {
-      const newStatsMap = await parseAllYearStats(lobbies, mergeMap);
-      setStatsMap(newStatsMap);
+    async (lobbies: GameLobby[], userMergeMap: UserMergeMap) => {
+      const newStats = await parseAllYearStats(lobbies, userMergeMap);
+      setStats(newStats);
       setIsModified(true);
     },
     [],
@@ -98,28 +100,21 @@ export function AdminStatsPage() {
   };
 
   const [handleSaveToFirestore, saving] = useHandler(async () => {
-    if (!stats.hasStats) {
-      alert('No stats to save');
-      return;
-    }
-
     const confirmed = window.confirm(
-      `This will overwrite all statistics in Firestore for ${
-        selectedYear === 'all_time' ? 'all years' : selectedYear
-      }. Continue?`,
+      `This will overwrite all statistics in Firestore. Continue?`,
     );
 
     if (!confirmed) return;
 
     try {
-      await saveAllStats(stats, selectedYear);
+      await saveAllStats(stats);
       setIsModified(false);
       alert('Statistics saved successfully!');
     } catch (error) {
       console.error('Error saving stats to Firestore:', error);
       alert('Failed to save statistics. Check console for details.');
     }
-  }, [stats, selectedYear]);
+  }, [stats]);
 
   return (
     <AdminSubpage
@@ -138,7 +133,7 @@ export function AdminStatsPage() {
               small
               onClick={handleSaveToFirestore}
               loading={saving}
-              disabled={!isModified || fetchingGameData || !stats.hasStats}
+              disabled={!isModified || fetchingGameData || !selectedStats}
             >
               {isModified ? 'Save to Firestore *' : 'Saved'}
             </GameButton>
@@ -182,25 +177,29 @@ export function AdminStatsPage() {
             className="year-selector"
           />
         )}
-        {stats.globalStats && (
+        {selectedStats && (
           <span className="stats-summary">
-            {stats.globalStats.total_games} games
+            {selectedStats.globalStats.total_games} games
           </span>
         )}
-        {stats.userStats.length > 0 && (
-          <span className="stats-summary">{stats.userStats.length} users</span>
+        {selectedStats && selectedStats.userStats.length > 0 && (
+          <span className="stats-summary">
+            {selectedStats.userStats.length} users
+          </span>
         )}
       </div>
 
       <div className="user-stats">
-        {stats.globalStats && (
-          <AdminGlobalStatsSection globalStats={stats.globalStats} />
+        {selectedStats && (
+          <>
+            <AdminGlobalStatsSection globalStats={selectedStats.globalStats} />
+            <UserStatsTable
+              stats={selectedStats.userStats}
+              userMergeMap={stats.userMergeMap}
+              onMergeMapChange={handleMergeMapChange}
+            />
+          </>
         )}
-        <UserStatsTable
-          stats={stats.userStats}
-          userMergeMap={stats.userMergeMap}
-          onMergeMapChange={handleMergeMapChange}
-        />
       </div>
     </AdminSubpage>
   );

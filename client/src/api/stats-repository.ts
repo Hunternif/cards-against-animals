@@ -8,6 +8,7 @@ import {
   UserMergeMap,
   UserStats,
   YearFilter,
+  YearStats,
 } from '@shared/types';
 import {
   collection,
@@ -167,10 +168,7 @@ export async function saveUserMergeMap(mergeMap: UserMergeMap): Promise<void> {
   await batch.commit();
 }
 
-/**
- * Loads the user merge map from Firestore.
- * @returns The user merge map
- */
+/** Loads the user merge map from Firestore. */
 export async function loadUserMergeMap(): Promise<UserMergeMap> {
   const mergedUsersRef = await getMergedUsersColRef();
   const snapshot = await getDocs(mergedUsersRef);
@@ -184,10 +182,7 @@ export async function loadUserMergeMap(): Promise<UserMergeMap> {
   return mergeMap;
 }
 
-/**
- * Loads the available years that have stats data in Firestore.
- * @returns Array of year numbers, sorted descending (most recent first)
- */
+/** Loads the available years that have stats data in Firestore. */
 export async function loadAvailableYears(): Promise<YearFilter[]> {
   const snapshot = await getDocs(statsRef);
   const years: YearFilter[] = [];
@@ -207,43 +202,47 @@ export async function loadAvailableYears(): Promise<YearFilter[]> {
   return years.sort((a, b) => b.toString().localeCompare(a.toString()));
 }
 
-export async function loadStatsFromAllYears(): Promise<
-  Map<YearFilter, StatsContainer>
-> {
+/** Loads all stats from Firestore */
+export async function loadAllStats(): Promise<StatsContainer> {
+  const userMergeMap = await loadUserMergeMap();
   const years = await loadAvailableYears();
-  const statsPromises = years.map((year) =>
-    loadStatsFromYear(year).then((stats) => [year, stats] as const),
-  );
-  const statsEntries = await Promise.all(statsPromises);
-  return new Map(statsEntries);
+  const yearMap = new Map<YearFilter, YearStats>();
+  for (const year of years) {
+    yearMap.set(year, await loadStatsFromYear(year));
+  }
+  return new StatsContainer(yearMap, userMergeMap);
 }
 
-/**
- * Loads all stats (user stats, global stats, and merge map) from Firestore in parallel.
- * @param year The year to load from ('all_time' or a year number)
- * @returns A StatsContainer with all loaded data
- */
-export async function loadStatsFromYear(year: YearFilter): Promise<StatsContainer> {
-  const [userStats, globalStats, mergeMap] = await Promise.all([
+const emptyGlobalStats: GlobalStats = {
+  total_games: 0,
+  total_turns: 0,
+  unique_players: 0,
+  total_time_played_ms: 0,
+  median_time_per_game_ms: 0,
+  median_players_per_game: 0,
+  median_turns_per_game: 0,
+  top_prompts: [],
+  top_responses: [],
+  top_decks: [],
+  top_months: [],
+};
+
+/** Loads all stats (user stats, global stats) from Firestore. */
+export async function loadStatsFromYear(year: YearFilter): Promise<YearStats> {
+  const [userStats, globalStats] = await Promise.all([
     loadUserStats(year),
     loadGlobalStats(year),
-    loadUserMergeMap(),
   ]);
-
-  return new StatsContainer(userStats, globalStats, mergeMap);
+  return { year, userStats, globalStats: globalStats ?? emptyGlobalStats };
 }
 
-export async function saveAllStats(
-  statsContainer: StatsContainer,
-  year: YearFilter,
-) {
-  await Promise.all([
-    saveUserStats(statsContainer.userStats, year),
-    statsContainer.globalStats
-      ? saveGlobalStats(statsContainer.globalStats, year)
-      : Promise.resolve(),
-    saveUserMergeMap(statsContainer.userMergeMap),
-  ]);
+/** Saves stats in firestore */
+export async function saveAllStats(statsContainer: StatsContainer) {
+  await saveUserMergeMap(statsContainer.userMergeMap);
+  for (const [year, stats] of statsContainer.yearMap) {
+    await saveGlobalStats(stats.globalStats, year);
+    await saveUserStats(stats.userStats, year);
+  }
 }
 
 /**
