@@ -145,6 +145,29 @@ export function AdminStatsPage() {
             >
               Export Data
             </GameButton>
+            {availableYears.length > 0 && (
+              <SelectInput
+                small
+                value={selectedYear.toString()}
+                options={yearOptions}
+                onChange={(value) => {
+                  const newYear =
+                    value === 'all_time' ? 'all_time' : parseInt(value);
+                  setSelectedYear(newYear);
+                }}
+                className="year-selector"
+              />
+            )}
+            {selectedStats && (
+              <span className="stats-summary">
+                {selectedStats.globalStats.total_games} games
+              </span>
+            )}
+            {selectedStats && selectedStats.userStats.length > 0 && (
+              <span className="stats-summary">
+                {selectedStats.userStats.length} users
+              </span>
+            )}
           </div>
           {loadingFromFirestore && (
             <div className="stats-summaries">
@@ -163,32 +186,6 @@ export function AdminStatsPage() {
         </>
       }
     >
-      <div className="stats-summaries">
-        {availableYears.length > 0 && (
-          <SelectInput
-            small
-            value={selectedYear.toString()}
-            options={yearOptions}
-            onChange={(value) => {
-              const newYear =
-                value === 'all_time' ? 'all_time' : parseInt(value);
-              setSelectedYear(newYear);
-            }}
-            className="year-selector"
-          />
-        )}
-        {selectedStats && (
-          <span className="stats-summary">
-            {selectedStats.globalStats.total_games} games
-          </span>
-        )}
-        {selectedStats && selectedStats.userStats.length > 0 && (
-          <span className="stats-summary">
-            {selectedStats.userStats.length} users
-          </span>
-        )}
-      </div>
-
       <div className="user-stats">
         {selectedStats && (
           <>
