@@ -615,10 +615,10 @@ export async function parseUserStatistics(
     (a, b) => b.last_time_played!.getTime() - a.last_time_played!.getTime(),
   ); // Sort by latest played day
 
-  // Calculate global statistics
   const globalStats = calculateGlobalStats(validLobbies, userMergeMap);
+  const availableYears = getAvailableYears(validLobbies);
 
-  return new StatsContainer(stats, globalStats, userMergeMap);
+  return new StatsContainer(stats, globalStats, userMergeMap, availableYears);
 }
 
 /**

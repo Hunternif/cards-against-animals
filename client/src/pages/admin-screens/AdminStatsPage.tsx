@@ -1,5 +1,10 @@
-import { GameLobby, StatsContainer, UserMergeMap, YearFilter } from '@shared/types';
-import { useEffect, useState } from 'react';
+import {
+  GameLobby,
+  StatsContainer,
+  UserMergeMap,
+  YearFilter,
+} from '@shared/types';
+import { useEffect, useMemo, useState } from 'react';
 import {
   exportGameDataToFile,
   fetchAllLobbyData,
@@ -8,15 +13,12 @@ import {
   getAvailableYears,
   parseUserStatistics,
 } from '../../api/stats-api';
-import {
-  loadAllStats,
-  saveAllStats
-} from '../../api/stats-repository';
+import { loadAllStats, saveAllStats } from '../../api/stats-repository';
 import { GameButton } from '../../components/Buttons';
 import { SelectInput, SelectOption } from '../../components/FormControls';
 import { IconLink } from '../../components/Icons';
 import { ProgressBar } from '../../components/ProgressBar';
-import { useHandler } from '../../hooks/data-hooks';
+import { useHandler, useHandler1 } from '../../hooks/data-hooks';
 import { AdminGlobalStatsSection } from './admin-components/AdminGlobalStatsSection';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 import { UserStatsTable } from './admin-components/UserStatsTable';
@@ -33,9 +35,12 @@ export function AdminStatsPage() {
     null,
   );
   const [selectedYear, setSelectedYear] = useState<YearFilter>('all_time');
-  const [availableYears, setAvailableYears] = useState<number[]>([]);
   const [isModified, setIsModified] = useState(false);
 
+  const availableYears: YearFilter[] = useMemo(
+    () => (gameData ? getAvailableYears(gameData) : stats.availableYears),
+    [gameData, stats.availableYears],
+  );
   const yearOptions: SelectOption<string>[] = [
     ['all_time', 'All Years'],
     ...availableYears.map(
@@ -43,24 +48,17 @@ export function AdminStatsPage() {
     ),
   ];
 
-  // Load stats from Firestore on mount
   const [loadStatsFromFirestore, loadingFromFirestore] =
     useHandler(async () => {
       const loadedStats = await loadAllStats('all_time');
       setStats(loadedStats);
       setIsModified(false);
     }, []);
+
+  // Load stats from Firestore on mount
   useEffect(() => {
     loadStatsFromFirestore();
   }, [loadStatsFromFirestore]);
-
-  // Extract available years from game data
-  useEffect(() => {
-    if (gameData) {
-      const years = getAvailableYears(gameData);
-      setAvailableYears(years);
-    }
-  }, [gameData]);
 
   const [handleFetchData, fetching] = useHandler(async () => {
     setFetchProgress(null);
@@ -69,29 +67,27 @@ export function AdminStatsPage() {
     });
     setGameData(lobbies);
     setFetchProgress(null);
+    await handleParseStats(lobbies);
   }, []);
 
-  const [handleParseStats, parsing] = useHandler(async () => {
-    if (!gameData) return;
-    const newContainer = await parseUserStatistics(
-      gameData,
-      stats.userMergeMap,
-    );
-    setStats(newContainer);
-    setIsModified(true);
-  }, [gameData, stats.userMergeMap]);
+  const [handleParseStats, parsing] = useHandler1(
+    async (lobbies: GameLobby[]) => {
+      const newContainer = await parseUserStatistics(
+        lobbies,
+        stats.userMergeMap,
+      );
+      setStats(newContainer);
+      setIsModified(true);
+    },
+    [gameData, stats.userMergeMap],
+  );
 
   const handleSelectYear = async (newYear: YearFilter) => {
     setSelectedYear(newYear);
 
     if (gameData) {
       const filteredLobbies = filterLobbiesByYear(gameData, newYear);
-      const newContainer = await parseUserStatistics(
-        filteredLobbies,
-        stats.userMergeMap,
-      );
-      setStats(newContainer);
-      setIsModified(true);
+      await handleParseStats(filteredLobbies);
     }
   };
 
@@ -106,11 +102,6 @@ export function AdminStatsPage() {
       setStats(newContainer);
       setIsModified(true);
     }
-  };
-
-  const handleStatsChange = (newContainer: StatsContainer) => {
-    setStats(newContainer);
-    setIsModified(true);
   };
 
   const handleExportGameData = () => {
@@ -153,7 +144,7 @@ export function AdminStatsPage() {
             </GameButton>
             <GameButton
               small
-              onClick={handleParseStats}
+              onClick={() => gameData && handleParseStats(gameData)}
               loading={parsing}
               disabled={!gameData || fetching}
             >
@@ -195,7 +186,7 @@ export function AdminStatsPage() {
       }
     >
       <div className="stats-summaries">
-        {availableYears.length > 0 && (
+        {stats.availableYears.length > 0 && (
           <SelectInput
             small
             value={selectedYear.toString()}

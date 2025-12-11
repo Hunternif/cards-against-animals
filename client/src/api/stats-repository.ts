@@ -186,18 +186,42 @@ export async function loadUserMergeMap(): Promise<UserMergeMap> {
 }
 
 /**
+ * Loads the available years that have stats data in Firestore.
+ * @returns Array of year numbers, sorted descending (most recent first)
+ */
+export async function loadAvailableYears(): Promise<number[]> {
+  const snapshot = await getDocs(statsRef);
+  const years: number[] = [];
+
+  for (const doc of snapshot.docs) {
+    const yearStr = doc.id;
+    // Skip non-year documents
+    if (yearStr === 'merged_users') continue;
+    if (yearStr === 'all_time') continue;
+
+    const year = parseInt(yearStr);
+    if (!isNaN(year)) {
+      years.push(year);
+    }
+  }
+
+  return years.sort((a, b) => b - a); // Most recent first
+}
+
+/**
  * Loads all stats (user stats, global stats, and merge map) from Firestore in parallel.
  * @param year The year to load from ('all_time' or a year number)
  * @returns A StatsContainer with all loaded data
  */
 export async function loadAllStats(year: YearFilter): Promise<StatsContainer> {
-  const [userStats, globalStats, mergeMap] = await Promise.all([
+  const [userStats, globalStats, mergeMap, availableYears] = await Promise.all([
     loadUserStats(year),
     loadGlobalStats(year),
     loadUserMergeMap(),
+    loadAvailableYears(),
   ]);
 
-  return new StatsContainer(userStats, globalStats, mergeMap);
+  return new StatsContainer(userStats, globalStats, mergeMap, availableYears);
 }
 
 export async function saveAllStats(
