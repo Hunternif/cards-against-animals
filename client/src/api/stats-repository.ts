@@ -19,7 +19,6 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { firestore } from '../firebase';
-import { sleep } from '@shared/utils';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -189,15 +188,15 @@ export async function loadUserMergeMap(): Promise<UserMergeMap> {
  * Loads the available years that have stats data in Firestore.
  * @returns Array of year numbers, sorted descending (most recent first)
  */
-export async function loadAvailableYears(): Promise<number[]> {
+export async function loadAvailableYears(): Promise<YearFilter[]> {
   const snapshot = await getDocs(statsRef);
-  const years: number[] = [];
+  const years: YearFilter[] = [];
 
   for (const doc of snapshot.docs) {
     const yearStr = doc.id;
     // Skip non-year documents
     if (yearStr === 'merged_users') continue;
-    if (yearStr === 'all_time') continue;
+    if (yearStr === 'all_time') years.push('all_time');
 
     const year = parseInt(yearStr);
     if (!isNaN(year)) {
@@ -205,7 +204,18 @@ export async function loadAvailableYears(): Promise<number[]> {
     }
   }
 
-  return years.sort((a, b) => b - a); // Most recent first
+  return years.sort((a, b) => b.toString().localeCompare(a.toString()));
+}
+
+export async function loadStatsFromAllYears(): Promise<
+  Map<YearFilter, StatsContainer>
+> {
+  const years = await loadAvailableYears();
+  const statsPromises = years.map((year) =>
+    loadStatsFromYear(year).then((stats) => [year, stats] as const),
+  );
+  const statsEntries = await Promise.all(statsPromises);
+  return new Map(statsEntries);
 }
 
 /**
@@ -213,15 +223,14 @@ export async function loadAvailableYears(): Promise<number[]> {
  * @param year The year to load from ('all_time' or a year number)
  * @returns A StatsContainer with all loaded data
  */
-export async function loadAllStats(year: YearFilter): Promise<StatsContainer> {
-  const [userStats, globalStats, mergeMap, availableYears] = await Promise.all([
+export async function loadStatsFromYear(year: YearFilter): Promise<StatsContainer> {
+  const [userStats, globalStats, mergeMap] = await Promise.all([
     loadUserStats(year),
     loadGlobalStats(year),
     loadUserMergeMap(),
-    loadAvailableYears(),
   ]);
 
-  return new StatsContainer(userStats, globalStats, mergeMap, availableYears);
+  return new StatsContainer(userStats, globalStats, mergeMap);
 }
 
 export async function saveAllStats(
