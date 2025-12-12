@@ -188,7 +188,7 @@ async function calculateDerivedStats(
       }
     }
 
-    // Sort and take top  cards
+    // Sort and take top cards
     userStat.top_cards_played = Array.from(cardUsage.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, TOP);
@@ -788,6 +788,69 @@ export function mergeUserStats(users: UserStats[]): UserStats {
     top_teammates: [],
     top_prompts_played: [],
   };
+
+  const cardUsage = new Map<
+    string, // keyed by card content
+    { card: ResponseCardStats; count: number }
+  >();
+  const likedResponses = users.flatMap((u) => u.top_liked_responses);
+  const teammateGames = new Map<string, { name: string; count: number }>();
+  const promptsChosen = new Map<
+    string,
+    { prompt: PromptCardStats; count: number }
+  >();
+  for (const user of users) {
+    for (const { card } of user.top_cards_played) {
+      const existing = cardUsage.get(card.content);
+      if (existing) {
+        existing.count++;
+      } else {
+        cardUsage.set(card.content, { card, count: 1 });
+      }
+    }
+    for (const { prompt } of user.top_prompts_played) {
+      const existing = promptsChosen.get(prompt.content);
+      if (existing) {
+        existing.count++;
+      } else {
+        promptsChosen.set(prompt.content, { prompt, count: 1 });
+      }
+    }
+    for (const { uid, name } of user.top_teammates) {
+      if (mergedUids.has(uid)) {
+        continue; // do not count playing with themselves.
+      }
+      const existing = teammateGames.get(uid);
+      if (existing) {
+        existing.count++;
+      } else {
+        teammateGames.set(uid, { name, count: 1 });
+      }
+    }
+  }
+
+  merged.top_cards_played = Array.from(cardUsage.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, TOP);
+
+  merged.top_liked_responses = likedResponses
+    .sort((a, b) => b.normalized_likes - a.normalized_likes)
+    .slice(0, TOP);
+
+  merged.top_teammates = Array.from(teammateGames.entries())
+    .map(([teammateUid, data]) => ({
+      uid: teammateUid,
+      name: data.name,
+      games: data.count,
+    }))
+    .sort((a, b) => b.games - a.games)
+    .slice(0, TOP);
+
+  merged.top_prompts_played = Array.from(promptsChosen.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, TOP);
+  
+  // TODO: other users referencing this user will have incorrect teammate count!
 
   return merged;
 }

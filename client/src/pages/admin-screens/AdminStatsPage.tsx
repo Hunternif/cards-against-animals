@@ -99,6 +99,7 @@ export function AdminStatsPage() {
         // Attempt to merge stats locally
         const newStats = mergeAllYearUserStats(stats, primaryUid, uids);
         setStats(newStats);
+        alert(`Statistics are incorrect! Don't forget to fetch game data!`);
       }
     },
     [gameData, stats],
