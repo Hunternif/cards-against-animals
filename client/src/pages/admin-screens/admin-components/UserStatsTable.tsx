@@ -1,5 +1,5 @@
 import { UserMergeMap, UserStats } from '@shared/types';
-import { Fragment, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 import { Accordion, AccordionItem } from '../../../components/Accordion';
 import { GameButton } from '../../../components/Buttons';
 import { Checkbox } from '../../../components/Checkbox';
@@ -48,7 +48,7 @@ export function UserStatsTable({
 }: UserStatsTableProps) {
   const [mergeMode, setMergeMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-  const [expandedUser, setExpandedUser] = useState<string | null>(null);
+  const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
 
   const toggleUserSelection = (uid: string) => {
     const newSelection = new Set(selectedUsers);
@@ -77,6 +77,19 @@ export function UserStatsTable({
     setMergeMode(false);
     setSelectedUsers(new Set());
   };
+
+  const toggleExpandUser = useCallback(
+    (uid: string) => {
+      const newSet = new Set(expandedUsers);
+      if (newSet.has(uid)) {
+        newSet.delete(uid);
+      } else {
+        newSet.add(uid);
+      }
+      setExpandedUsers(newSet);
+    },
+    [expandedUsers],
+  );
 
   if (stats.length === 0) {
     return null;
@@ -168,12 +181,10 @@ export function UserStatsTable({
                         inline
                         onClick={(e) => {
                           e.stopPropagation();
-                          setExpandedUser(
-                            expandedUser === stat.uid ? null : stat.uid,
-                          );
+                          toggleExpandUser(stat.uid);
                         }}
                       >
-                        {expandedUser === stat.uid ? (
+                        {expandedUsers.has(stat.uid) ? (
                           <IconChevronUpInline />
                         ) : (
                           <IconChevronDownInline />
@@ -214,7 +225,7 @@ export function UserStatsTable({
                     val={formatPlayTime(stat.median_time_per_game_ms)}
                   />
                 </tr>
-                {expandedUser === stat.uid && (
+                {expandedUsers.has(stat.uid) && (
                   <tr className="detail-row">
                     <td></td>
                     <td colSpan={9}>
