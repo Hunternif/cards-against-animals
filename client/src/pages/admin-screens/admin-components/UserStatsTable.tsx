@@ -77,8 +77,8 @@ export function UserStatsTable({
     );
 
     // Update the merge map with the new merge
-    const newMergeMap = new UserMergeMap(userMergeMap.entries());
-    newMergeMap.set(primaryUser.uid, mergedUids);
+    const newMergeMap = UserMergeMap.from(userMergeMap);
+    newMergeMap.mergeUser(primaryUser.uid, selectedUsers);
     onMergeMapChange(newMergeMap);
 
     setSelectedUsers(new Set());

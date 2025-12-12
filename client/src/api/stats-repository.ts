@@ -176,7 +176,7 @@ export async function loadUserMergeMap(): Promise<UserMergeMap> {
   const mergeMap = new UserMergeMap();
   for (const doc of snapshot.docs) {
     const data = doc.data();
-    mergeMap.set(data.canonical_uid, data.merged_uids);
+    mergeMap.loadMergedGroup(data.canonical_uid, data.merged_uids);
   }
 
   return mergeMap;

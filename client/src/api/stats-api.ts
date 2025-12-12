@@ -619,26 +619,6 @@ export async function calculateUserStats(
 }
 
 /**
- * Creates a user merge map from a list of stats.
- * This extracts which UIDs are merged together based on playerInLobbyRefs.
- */
-export function createUserMergeMap(stats: UserStats[]): UserMergeMap {
-  const mergeMap = new UserMergeMap();
-
-  for (const stat of stats) {
-    const allUids = Array.from(
-      new Set(stat.player_in_lobby_refs.map((p) => p.uid)),
-    );
-    // Only add to map if there are multiple UIDs (i.e., merged users)
-    if (allUids.length > 1 || allUids[0] !== stat.uid) {
-      mergeMap.set(stat.uid, allUids);
-    }
-  }
-
-  return mergeMap;
-}
-
-/**
  * Merges multiple user stats into a single combined user stat.
  * Returns the merged stats and the UIDs that were merged.
  * @param users Array of UserStats to merge
@@ -738,6 +718,8 @@ export function mergeUserStats(
         ? (sortedScores[mid - 1] + sortedScores[mid]) / 2
         : sortedScores[mid];
   }
+
+  // TODO: merge top 5 lists
 
   // For the merged user, we need to recalculate top cards, responses, and teammates
   // by treating all the merged UIDs as the same person

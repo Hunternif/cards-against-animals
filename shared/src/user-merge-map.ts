@@ -3,10 +3,47 @@
  * The canonical UID should also be included in the list.
  */
 export class UserMergeMap {
-  private map: Map<string, string[]>;
+  private primaryToMerged = new Map<string, string[]>();
+  private mergedToPrimary = new Map<string, string>();
 
-  constructor(entries?: Iterable<[string, string[]]>) {
-    this.map = new Map(entries);
+  constructor() {}
+
+  static from(otherMap: UserMergeMap): UserMergeMap {
+    const newMap = new UserMergeMap();
+    for (const [uid, mergedUids] of otherMap.entries()) {
+      newMap.loadMergedGroup(uid, mergedUids);
+    }
+    return newMap;
+  }
+
+  /** For fetching from Firestore */
+  loadMergedGroup(primaryUid: string, mergedUids: string[]) {
+    this.primaryToMerged.set(primaryUid, [...mergedUids]);
+    for (const uid of mergedUids) {
+      this.mergedToPrimary.set(uid, primaryUid);
+    }
+  }
+
+  mergeUser(primaryUid: string, mergedUids: Iterable<string>) {
+    const totalUids = new Set<string>(this.primaryToMerged.get(primaryUid));
+    totalUids.add(primaryUid);
+    for (const uid of mergedUids) {
+      const otherPrimary = this.mergedToPrimary.get(uid);
+      if (otherPrimary) {
+        totalUids.add(otherPrimary);
+      }
+      totalUids.add(uid);
+      const secondaryMergedUids = this.primaryToMerged.get(uid) ?? [];
+      for (const uid2 of secondaryMergedUids) {
+        totalUids.add(uid2);
+      }
+    }
+    // apply the merge:
+    for (const uid of totalUids) {
+      this.primaryToMerged.delete(uid);
+      this.mergedToPrimary.set(uid, primaryUid);
+    }
+    this.primaryToMerged.set(primaryUid, Array.from(totalUids));
   }
 
   /**
@@ -15,34 +52,17 @@ export class UserMergeMap {
    * Otherwise, returns the original UID.
    */
   getCanonicalUid(uid: string): string {
-    for (const [canonicalUid, mergedUids] of this.map.entries()) {
-      if (mergedUids.includes(uid)) {
-        return canonicalUid;
-      }
-    }
-    return uid;
+    return this.mergedToPrimary.get(uid) ?? uid;
   }
 
-  /**
-   * Merges multiple UIDs into a single canonical UID.
-   * @param canonicalUid The primary UID that will represent the merged group
-   * @param uidsToMerge All UIDs to merge (including the canonical UID)
-   */
-  set(canonicalUid: string, uidsToMerge: string[]): void {
-    this.map.set(canonicalUid, uidsToMerge);
+  getMergedUids(primaryUid: string): string[] {
+    return this.primaryToMerged.get(primaryUid) ?? [];
   }
 
   /**
    * Returns an iterator of [canonicalUid, mergedUids] entries.
    */
   entries(): IterableIterator<[string, string[]]> {
-    return this.map.entries();
-  }
-
-  /**
-   * Returns the number of merge groups.
-   */
-  get size(): number {
-    return this.map.size;
+    return this.primaryToMerged.entries();
   }
 }
