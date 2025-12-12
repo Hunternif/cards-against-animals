@@ -32,7 +32,7 @@ import { getAllPlayerResponses } from './turn/turn-response-api';
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Numer of top items to calculate, e.g. cards. */
-const TOP = 5;
+const TOP = 10;
 
 function copyResponseCardStats(card: ResponseCardInGame): ResponseCardStats {
   return copyFields(card, ['random_index', 'rating', 'type']);
