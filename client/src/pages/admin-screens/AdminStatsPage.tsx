@@ -9,6 +9,7 @@ import {
   exportGameDataToFile,
   fetchAllLobbyData,
   FetchProgressInfo,
+  mergeAllYearUserStats,
   parseAllYearStats,
 } from '../../api/stats-api';
 import { loadAllStats, saveAllStats } from '../../api/stats-repository';
@@ -16,7 +17,7 @@ import { GameButton } from '../../components/Buttons';
 import { SelectInput, SelectOption } from '../../components/FormControls';
 import { IconLink } from '../../components/Icons';
 import { ProgressBar } from '../../components/ProgressBar';
-import { useHandler } from '../../hooks/data-hooks';
+import { useHandler, useHandler2 } from '../../hooks/data-hooks';
 import { AdminGlobalStatsSection } from './admin-components/AdminGlobalStatsSection';
 import { AdminSubpage } from './admin-components/AdminSubpage';
 import { UserStatsTable } from './admin-components/UserStatsTable';
@@ -68,7 +69,7 @@ export function AdminStatsPage() {
     loadStatsFromFirestore();
   }, [loadStatsFromFirestore]);
 
-  const parseStats = useCallback(
+  const [parseStats] = useHandler2(
     async (lobbies: GameLobby[], userMergeMap: UserMergeMap) => {
       const newStats = await parseAllYearStats(lobbies, userMergeMap);
       setStats(newStats);
@@ -87,14 +88,21 @@ export function AdminStatsPage() {
     await parseStats(lobbies, stats.userMergeMap);
   }, [stats.userMergeMap, parseStats]);
 
-  const handleMergeMapChange = async (newMergeMap: UserMergeMap) => {
-    const newStats = new StatsContainer(stats.yearMap, newMergeMap);
-    setStats(newStats);
-    if (gameData) {
-      // Re-parse stats for all years with the updated merge map
-      await parseStats(gameData, newMergeMap);
-    }
-  };
+  const [handleMergeUsers] = useHandler2(
+    async (primaryUid: string, uids: string[]) => {
+      if (gameData) {
+        const newMergeMap = UserMergeMap.from(stats.userMergeMap);
+        newMergeMap.mergeUser(primaryUid, uids);
+        // Re-parse stats for all years with the updated merge map
+        await parseStats(gameData, newMergeMap);
+      } else {
+        // Attempt to merge stats locally
+        const newStats = mergeAllYearUserStats(stats, primaryUid, uids);
+        setStats(newStats);
+      }
+    },
+    [gameData, stats],
+  );
 
   const handleExportGameData = () => {
     if (!gameData) return;
@@ -195,7 +203,7 @@ export function AdminStatsPage() {
             <UserStatsTable
               stats={selectedStats.userStats}
               userMergeMap={stats.userMergeMap}
-              onMergeMapChange={handleMergeMapChange}
+              onMergeUsers={handleMergeUsers}
             />
           </>
         )}

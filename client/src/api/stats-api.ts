@@ -612,24 +612,59 @@ export async function calculateUserStats(
   }
 
   // Convert to final stats format and filter
-  const stats: UserStats[] = Array.from(userStatsMap.values()).sort(
+  const stats: UserStats[] = Array.from(userStatsMap.values());
+  sortUserStats(stats);
+  return stats;
+}
+
+function sortUserStats(stats: UserStats[]) {
+  stats.sort(
     (a, b) => b.last_time_played!.getTime() - a.last_time_played!.getTime(),
   ); // Sort by latest played day
-  return stats;
+}
+
+/** Merge 2 users and recalculate all stats. */
+export function mergeAllYearUserStats(
+  stats: StatsContainer,
+  primaryUid: string,
+  uids: string[],
+): StatsContainer {
+  const newMergeMap = UserMergeMap.from(stats.userMergeMap);
+  newMergeMap.mergeUser(primaryUid, uids);
+  const uidsToMerge = new Set([primaryUid, ...uids]);
+  const newStats = new StatsContainer(new Map(), newMergeMap);
+  for (const [year, yearStats] of stats.yearMap) {
+    const unchangedUserStats = yearStats.userStats.filter(
+      (s) => !uidsToMerge.has(s.uid),
+    );
+    const userMap = new Map(yearStats.userStats.map((s) => [s.uid, s]));
+    const statsToMerge = new Array<UserStats>();
+    for (const uid of uidsToMerge) {
+      const stat = userMap.get(uid);
+      if (stat) statsToMerge.push(stat);
+    }
+    const newUserStats = [...unchangedUserStats];
+    if (statsToMerge.length > 0) {
+      const mergedUserStats = mergeUserStats(statsToMerge);
+      newUserStats.push(mergedUserStats);
+    }
+    sortUserStats(newUserStats);
+    newStats.yearMap.set(year, {
+      year,
+      userStats: newUserStats,
+      // TODO: update global stats
+      globalStats: yearStats.globalStats,
+    });
+  }
+  return newStats;
 }
 
 /**
  * Merges multiple user stats into a single combined user stat.
  * Returns the merged stats and the UIDs that were merged.
- * @param users Array of UserStats to merge
- * @param primaryUid The UID to use for the merged user (typically the first one)
- * @param primaryName The name to use for the merged user
+ * The first user in the list is primary.
  */
-export function mergeUserStats(
-  users: UserStats[],
-  primaryUid: string,
-  primaryName: string,
-): { merged: UserStats; mergedUids: string[] } {
+export function mergeUserStats(users: UserStats[]): UserStats {
   if (users.length === 0) {
     throw new Error('Cannot merge empty user list');
   }
@@ -724,8 +759,8 @@ export function mergeUserStats(
   // For the merged user, we need to recalculate top cards, responses, and teammates
   // by treating all the merged UIDs as the same person
   const merged: UserStats = {
-    uid: primaryUid,
-    name: primaryName,
+    uid: users[0].uid,
+    name: users[0].name,
     player_in_lobby_refs: mergedPlayerRefs,
     is_bot: isBot,
     total_games: totalGames,
@@ -753,10 +788,7 @@ export function mergeUserStats(
     top_prompts_played: [],
   };
 
-  return {
-    merged,
-    mergedUids: Array.from(mergedUids),
-  };
+  return merged;
 }
 
 /**

@@ -1,15 +1,14 @@
+import { UserMergeMap, UserStats } from '@shared/types';
 import { Fragment, useState } from 'react';
+import { Accordion, AccordionItem } from '../../../components/Accordion';
 import { GameButton } from '../../../components/Buttons';
 import { Checkbox } from '../../../components/Checkbox';
 import {
   IconChevronDownInline,
   IconChevronUpInline,
 } from '../../../components/Icons';
-import { PlayerAvatar } from '../../../components/PlayerAvatar';
-import { UserMergeMap, UserStats } from '@shared/types';
-import { mergeUserStats } from '../../../api/stats-api';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
-import { Accordion, AccordionItem } from '../../../components/Accordion';
+import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { UserMergeMapTable } from './UserMergeMapTable';
 
 /**
@@ -39,13 +38,13 @@ function formatDate(date: Date | undefined) {
 interface UserStatsTableProps {
   stats: UserStats[];
   userMergeMap: UserMergeMap;
-  onMergeMapChange: (newMergeMap: UserMergeMap) => void;
+  onMergeUsers: (primaryUid: string, uids: string[]) => void;
 }
 
 export function UserStatsTable({
   stats,
   userMergeMap,
-  onMergeMapChange,
+  onMergeUsers,
 }: UserStatsTableProps) {
   const [mergeMode, setMergeMode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
@@ -67,19 +66,8 @@ export function UserStatsTable({
       return;
     }
 
-    const usersToMerge = stats.filter((s) => selectedUsers.has(s.uid));
-    const primaryUser = usersToMerge[0];
-
-    const { mergedUids } = mergeUserStats(
-      usersToMerge,
-      primaryUser.uid,
-      primaryUser.name,
-    );
-
-    // Update the merge map with the new merge
-    const newMergeMap = UserMergeMap.from(userMergeMap);
-    newMergeMap.mergeUser(primaryUser.uid, selectedUsers);
-    onMergeMapChange(newMergeMap);
+    const uids = Array.from(selectedUsers);
+    onMergeUsers(uids[0], uids.slice(1));
 
     setSelectedUsers(new Set());
     setMergeMode(false);
