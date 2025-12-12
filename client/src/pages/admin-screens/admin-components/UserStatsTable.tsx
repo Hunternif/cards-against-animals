@@ -9,6 +9,8 @@ import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { UserMergeMap, UserStats } from '@shared/types';
 import { mergeUserStats } from '../../../api/stats-api';
 import { ScrollContainer } from '../../../components/layout/ScrollContainer';
+import { Accordion, AccordionItem } from '../../../components/Accordion';
+import { UserMergeMapTable } from './UserMergeMapTable';
 
 /**
  * Formats milliseconds into a human-readable time string (e.g., "2h 30m")
@@ -94,28 +96,55 @@ export function UserStatsTable({
 
   return (
     <>
-      <div className="stats-controls">
-        {!mergeMode && (
-          <GameButton secondary small inline onClick={() => setMergeMode(true)}>
-            Merge Users
-          </GameButton>
-        )}
-        {mergeMode && (
-          <>
-            <GameButton
-              small
-              inline
-              onClick={handleMergeUsers}
-              disabled={selectedUsers.size < 2}
-            >
-              Merge Selected ({selectedUsers.size})
-            </GameButton>
-            <GameButton small inline onClick={cancelMerge}>
-              Cancel
-            </GameButton>
-          </>
-        )}
-      </div>
+      <Accordion>
+        <AccordionItem
+          header={
+            <div className="stats-table-controls">
+              User merge map
+              {!mergeMode && (
+                <GameButton
+                  secondary
+                  small
+                  inline
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMergeMode(true);
+                  }}
+                >
+                  Merge Users
+                </GameButton>
+              )}
+              {mergeMode && (
+                <>
+                  <GameButton
+                    small
+                    inline
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMergeUsers();
+                    }}
+                    disabled={selectedUsers.size < 2}
+                  >
+                    Merge Selected ({selectedUsers.size})
+                  </GameButton>
+                  <GameButton
+                    small
+                    inline
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      cancelMerge();
+                    }}
+                  >
+                    Cancel
+                  </GameButton>
+                </>
+              )}
+            </div>
+          }
+        >
+          <UserMergeMapTable map={userMergeMap} />
+        </AccordionItem>
+      </Accordion>
 
       <ScrollContainer scrollLight className="user-stats-scroll">
         <table className="stats-table">
@@ -230,7 +259,7 @@ function PlayerNameCell({ stat }: { stat: UserStats }) {
   if (!player) return <i>Unknown</i>;
   return (
     <td>
-      <div className='player-name'>
+      <div className="player-name">
         <PlayerAvatar player={player} />
         {names.join(', ')}
       </div>

@@ -88,8 +88,10 @@ export function AdminStatsPage() {
   }, [stats.userMergeMap, parseStats]);
 
   const handleMergeMapChange = async (newMergeMap: UserMergeMap) => {
-    // Re-parse stats for all years with the updated merge map
+    const newStats = new StatsContainer(stats.yearMap, newMergeMap);
+    setStats(newStats);
     if (gameData) {
+      // Re-parse stats for all years with the updated merge map
       await parseStats(gameData, newMergeMap);
     }
   };
