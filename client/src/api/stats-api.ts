@@ -31,6 +31,9 @@ import { getAllPlayerResponses } from './turn/turn-response-api';
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+/** Numer of top items to calculate, e.g. cards. */
+const TOP = 5;
+
 function copyResponseCardStats(card: ResponseCardInGame): ResponseCardStats {
   return copyFields(card, ['random_index', 'rating', 'type']);
 }
@@ -185,17 +188,17 @@ async function calculateDerivedStats(
       }
     }
 
-    // Sort and take top 5 cards
+    // Sort and take top  cards
     userStat.top_cards_played = Array.from(cardUsage.values())
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      .slice(0, TOP);
 
-    // Sort and take top 5 liked responses
+    // Sort and take top liked responses
     userStat.top_liked_responses = likedResponses
       .sort((a, b) => b.normalized_likes - a.normalized_likes)
-      .slice(0, 5);
+      .slice(0, TOP);
 
-    // Sort and take top 5 teammates
+    // Sort and take top teammates
     userStat.top_teammates = Array.from(teammateGames.entries())
       .map(([teammateUid, data]) => ({
         uid: teammateUid,
@@ -203,12 +206,12 @@ async function calculateDerivedStats(
         games: data.count,
       }))
       .sort((a, b) => b.games - a.games)
-      .slice(0, 5);
+      .slice(0, TOP);
 
-    // Sort and take top 5 prompts chosen
+    // Sort and take top prompts chosen
     userStat.top_prompts_played = Array.from(promptsChosen.values())
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      .slice(0, TOP);
   }
 }
 
@@ -435,18 +438,18 @@ export function calculateGlobalStats(
     median_turns_per_game: medianTurns,
     top_prompts: Array.from(promptUsage.values())
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5),
+      .slice(0, TOP),
     top_responses: Array.from(responseUsage.values())
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5),
+      .slice(0, TOP),
     top_decks: Array.from(deckUsage.entries())
       .map(([deck_id, games]) => ({ deck_id, games }))
       .sort((a, b) => b.games - a.games)
-      .slice(0, 5),
+      .slice(0, TOP),
     top_months: Array.from(gamesPerMonth.entries())
       .map(([month, games]) => ({ month, games }))
       .sort((a, b) => b.games - a.games)
-      .slice(0, 5),
+      .slice(0, TOP),
   };
 }
 
@@ -753,8 +756,6 @@ export function mergeUserStats(users: UserStats[]): UserStats {
         ? (sortedScores[mid - 1] + sortedScores[mid]) / 2
         : sortedScores[mid];
   }
-
-  // TODO: merge top 5 lists
 
   // For the merged user, we need to recalculate top cards, responses, and teammates
   // by treating all the merged UIDs as the same person
