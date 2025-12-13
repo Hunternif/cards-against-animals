@@ -7,6 +7,7 @@ import { AdminPage } from './pages/AdminPage.tsx'
 import { ErrorPage } from './pages/ErrorPage.tsx'
 import { LobbyPage, lobbyLoader } from './pages/LobbyPage.tsx'
 import { WelcomePage } from './pages/WelcomePage.tsx'
+import { RewindPage } from './pages/RewindPage.tsx'
 import { AdminDecksPage } from './pages/admin-screens/AdminDecksPage.tsx'
 import { AdminLobbiesPage } from './pages/admin-screens/AdminLobbiesPage.tsx'
 import { AdminUploadDeckPage } from './pages/admin-screens/AdminUploadDeckPage.tsx'
@@ -18,6 +19,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <WelcomePage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/rewind",
+    element: <RewindPage />,
     errorElement: <ErrorPage />,
   },
   {

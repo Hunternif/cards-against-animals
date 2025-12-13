@@ -158,6 +158,7 @@ export function UserStatsTable({
               <th>Games</th>
               <th>Turns</th>
               <th>Wins</th>
+              {/* <th>Score</th> */}
               <th>Win Rate</th>
               <th>Avg Score</th>
               <th>Med Score</th>
@@ -212,6 +213,7 @@ export function UserStatsTable({
                   <CounterRow val={stat.total_games} />
                   <CounterRow val={stat.total_turns_played} />
                   <CounterRow val={stat.total_wins} />
+                  {/* <CounterRow val={stat.total_score} /> */}
                   <CounterRow val={`${(stat.win_rate * 100).toFixed(1)}%`} />
                   <CounterRow val={stat.average_score_per_game.toFixed(1)} />
                   <CounterRow val={stat.median_score_per_game.toFixed(1)} />
