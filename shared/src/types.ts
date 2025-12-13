@@ -620,7 +620,7 @@ export type YearFilter = number | 'all_time';
 export interface UserStats {
   uid: string;
   name: string; // the last known name
-  player_in_lobby_refs: PlayerInLobby[];
+  player_in_lobby_refs: PlayerInLobby[]; // Should go in order of recency
   is_bot: boolean;
   total_games: number;
   total_turns_played: number;

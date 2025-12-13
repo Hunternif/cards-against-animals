@@ -251,7 +251,8 @@ function CounterRow({ val }: { val: number | string }) {
 }
 
 function PlayerNameCell({ stat }: { stat: UserStats }) {
-  const player = stat.player_in_lobby_refs.at(-1);
+  // Assuming players to in order of recency, pick the most recent:
+  const player = stat.player_in_lobby_refs.at(0);
   const names = Array.from(
     new Set(stat.player_in_lobby_refs.map((p) => p.name)),
   );

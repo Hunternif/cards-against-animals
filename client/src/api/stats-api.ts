@@ -464,9 +464,15 @@ export async function calculateUserStats(
 ): Promise<UserStats[]> {
   // Map to accumulate stats per user
   const userStatsMap = new Map<string, UserStats>();
+  // Sort lobbied to make sure most recent user names go first:
+  const lobbies = [...validLobbies].sort(
+    (a, b) =>
+      (b.time_created ?? new Date()).getTime() -
+      (a.time_created ?? new Date()).getTime(),
+  );
 
   // Process each lobby
-  for (const lobby of validLobbies) {
+  for (const lobby of lobbies) {
     // Create a map of player states for quick lookup
     const statesMap = new Map(lobby.player_states.map((s) => [s.uid, s]));
 
@@ -849,7 +855,7 @@ export function mergeUserStats(users: UserStats[]): UserStats {
   merged.top_prompts_played = Array.from(promptsChosen.values())
     .sort((a, b) => b.count - a.count)
     .slice(0, TOP);
-  
+
   // TODO: other users referencing this user will have incorrect teammate count!
 
   return merged;
