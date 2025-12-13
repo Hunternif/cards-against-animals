@@ -293,17 +293,14 @@ button.rewind-button {
 
     .year-badges {
       display: flex;
-      gap: 1rem;
-      margin: 2rem 0;
+      justify-content: center;
+      gap: 2rem;
+      margin: 1rem 0;
 
       .year-badge {
-        background: rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(10px);
-        border-radius: 30px;
-        padding: 1rem 2rem;
-        font-size: 1.5rem;
-        font-weight: bold;
-        border: 2px solid rgba(255, 255, 255, 0.3);
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #ffed4e;
       }
     }
 
