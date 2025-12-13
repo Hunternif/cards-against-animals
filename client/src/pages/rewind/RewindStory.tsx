@@ -13,6 +13,7 @@ import {
   Year2024Slide,
   Year2025Slide,
 } from './slides';
+import { EmojiWave } from './EmojiWave';
 
 interface RewindStoryProps {
   user: User;
@@ -31,6 +32,7 @@ export function RewindStory({
 }: RewindStoryProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [emojiWaveComplete, setEmojiWaveComplete] = useState(false);
 
   // Define all slides
   const slides = [
@@ -126,58 +128,65 @@ export function RewindStory({
         animate={{ opacity: 1 }}
         transition={{ duration: 2, delay: 0.5 }}
       />
-      <AnimatePresence initial={true} custom={direction} mode="wait">
-        <motion.div
-          key={currentSlide}
-          custom={direction}
-          variants={variants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{
-            y: { type: 'spring', stiffness: 300, damping: 30 },
-            opacity: { duration: 0.2 },
-          }}
-          className="rewind-slide"
-        >
-          <CurrentSlideComponent
-            user={user}
-            userStats={userStats}
-            statsContainer={statsContainer}
-            onNext={handleNext}
-            onPrev={handlePrev}
-            isFirst={currentSlide === 0}
-            isLast={currentSlide === slides.length - 1}
-          />
-        </motion.div>
-      </AnimatePresence>
+      {/* Emoji waves animation */}
+      <EmojiWave onLastWave={() => setEmojiWaveComplete(true)} />
 
-      {/* Progress indicator */}
-      <div className="rewind-progress">
-        {slides.map((_, index) => (
-          <div
-            key={index}
-            className={`progress-dot ${
-              index === currentSlide ? 'active' : ''
-            } ${index < currentSlide ? 'completed' : ''}`}
-            onClick={() => {
-              setDirection(index > currentSlide ? 1 : -1);
-              setCurrentSlide(index);
-            }}
-          />
-        ))}
-      </div>
+      {emojiWaveComplete && (
+        <>
+          <AnimatePresence initial={true} custom={direction} mode="wait">
+            <motion.div
+              key={currentSlide}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                y: { type: 'spring', stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              className="rewind-slide"
+            >
+              <CurrentSlideComponent
+                user={user}
+                userStats={userStats}
+                statsContainer={statsContainer}
+                onNext={handleNext}
+                onPrev={handlePrev}
+                isFirst={currentSlide === 0}
+                isLast={currentSlide === slides.length - 1}
+              />
+            </motion.div>
+          </AnimatePresence>
 
-      {/* Navigation hints */}
-      {currentSlide > 0 && (
-        <button className="rewind-nav rewind-nav-up" onClick={handlePrev}>
-          <IconChevronUp className="arrow" />
-        </button>
-      )}
-      {currentSlide < slides.length - 1 && (
-        <button className="rewind-nav rewind-nav-down" onClick={handleNext}>
-          <IconChevronDown className="arrow" />
-        </button>
+          {/* Progress indicator */}
+          <div className="rewind-progress">
+            {slides.map((_, index) => (
+              <div
+                key={index}
+                className={`progress-dot ${
+                  index === currentSlide ? 'active' : ''
+                } ${index < currentSlide ? 'completed' : ''}`}
+                onClick={() => {
+                  setDirection(index > currentSlide ? 1 : -1);
+                  setCurrentSlide(index);
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Navigation hints */}
+          {currentSlide > 0 && (
+            <button className="rewind-nav rewind-nav-up" onClick={handlePrev}>
+              <IconChevronUp className="arrow" />
+            </button>
+          )}
+          {currentSlide < slides.length - 1 && (
+            <button className="rewind-nav rewind-nav-down" onClick={handleNext}>
+              <IconChevronDown className="arrow" />
+            </button>
+          )}
+        </>
       )}
     </div>
   );

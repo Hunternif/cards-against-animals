@@ -167,6 +167,21 @@ export function IconCat(props: IconSvgProps) {
   </Svg >;
 }
 
+export function IconCatWithEyes(props: IconSvgProps) {
+  return <div>
+    <div style={{
+      position: "absolute",
+      zIndex: -1,
+      borderRadius: "50%",
+      backgroundColor: "#fff",
+      width: "60%",
+      height: "50%",
+      left: "20%",
+      top: "30%",
+    }}/>
+    <IconCat {...props}/></div>
+}
+
 export function IconQuestion(props: IconSvgProps) {
   // From Google Fonts, Material Icons: https://fonts.google.com/icons
   // return <Svg {...props} height={props.height ?? 24} width={props.width ?? 24} viewBox="0 -960 960 960">
