@@ -120,6 +120,12 @@ export function RewindStory({
       onTouchEnd={onTouchEnd}
       tabIndex={0}
     >
+      <motion.div
+        className="rewind-vignette"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, delay: 0.5 }}
+      />
       <AnimatePresence initial={true} custom={direction} mode="wait">
         <motion.div
           key={currentSlide}
