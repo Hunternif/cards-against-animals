@@ -242,6 +242,16 @@ export async function saveAllStats(statsContainer: StatsContainer) {
   for (const [year, stats] of statsContainer.yearMap) {
     await saveGlobalStats(stats.globalStats, year);
     await saveUserStats(stats.userStats, year);
+    // delete any obsolete user stat that was merged in:
+    const colRef = await getYearColRef(year);
+    const savedUsers = (await getDocs(colRef)).docs.map((d) => d.id);
+    const expectedUsers = stats.userStats.map((u) => u.uid);
+    for (const uid of savedUsers) {
+      if (uid !== 'global' && !expectedUsers.includes(uid)) {
+        await deleteDoc(doc(colRef, uid));
+        console.log(`Deleted stats for user ${uid}`);
+      }
+    }
   }
 }
 
