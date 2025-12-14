@@ -427,18 +427,6 @@ button.rewind-button {
 
 // Favorite cards slide
 .slide-top-cards {
-  .cards-section {
-    width: 100%;
-    max-width: 400px;
-    margin: 1rem 0 2rem 0;
-
-    h3 {
-      font-size: 1.3rem;
-      margin: 1.5rem 0 1rem 0;
-      opacity: 0.9;
-    }
-  }
-
   .rewind-card-stack-container {
     display: flex;
     flex-direction: row;
@@ -447,9 +435,13 @@ button.rewind-button {
     flex-wrap: wrap;
     margin: 1rem 0;
 
-    // .hoverable-card {
-    //   transform: none;
-    // }
+    .card-count {
+      position: absolute;
+      white-space: nowrap;
+      left: 100% + 5;
+      color: #fff;
+      font-weight: 400;
+    }
   }
 }
 

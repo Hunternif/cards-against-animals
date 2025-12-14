@@ -56,26 +56,28 @@ interface CardStackProps {
   animate?: boolean;
   /** Delay before start of animation in seconds. */
   animDelay?: number;
+  /** Optional Decorator added to every card. */
+  decorator?: (card: CardInGame, index: number) => ReactNode;
 }
 
 /**
  * Vertical card stack. Used for ResponseReading
  */
-export function CardStack({
-  cards,
-  canReveal,
-  canSelect,
-  selected,
-  onClick,
-  canLike,
-  onClickLike,
-  showLikes,
-  likeCount,
-  hasMyLike,
-  revealCount,
-  animate,
-  animDelay,
-}: Props) {
+export function CardStack(props: Props) {
+  const {
+    cards,
+    canReveal,
+    canSelect,
+    selected,
+    onClick,
+    canLike,
+    onClickLike,
+    showLikes,
+    likeCount,
+    hasMyLike,
+    revealCount,
+    decorator,
+  } = props;
   const likeIcon = showLikes ? <LikeIcon cards={cards} /> : null;
   const canRevealClass = canReveal ? 'can-reveal hoverable-card' : '';
   const canSelectClass = canSelect ? 'hoverable-card' : '';
@@ -96,19 +98,10 @@ export function CardStack({
     <>
       {hasManyCards ? (
         <ManyCardsStack
-          cards={cards}
-          canReveal={canReveal}
-          canSelect={canSelect}
-          selected={selected}
+          {...props}
           onClick={handleClick}
-          canLike={canLike}
           onClickLike={handleClickLike}
           likeCount={showLikes ? likeCount : 0}
-          likeIcon={likeIcon}
-          hasMyLike={hasMyLike}
-          revealCount={revealCount}
-          animate={animate}
-          animDelay={animDelay}
         />
       ) : (
         <div
@@ -117,6 +110,7 @@ export function CardStack({
         >
           <CardInStack
             card={cards[0]}
+            index={0}
             content={cards[0].content}
             revealed={revealCount == null || revealCount > 0}
             selectable={canSelect}
@@ -126,6 +120,7 @@ export function CardStack({
             likeCount={showLikes ? likeCount ?? 0 : 0}
             likeIcon={likeIcon}
             hasPlayerLike={hasMyLike}
+            decorator={decorator}
           />
         </div>
       )}
@@ -148,6 +143,7 @@ function ManyCardsStack({
   revealCount,
   animate,
   animDelay,
+  decorator,
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(cards.map(() => 0));
@@ -252,6 +248,7 @@ function ManyCardsStack({
                 heights[i] = height;
                 measureOffsets();
               }}
+              decorator={decorator}
             />
           </AnimationWrapper>
         );
@@ -300,9 +297,10 @@ interface CardProps {
   hasPlayerLike?: boolean;
   // Overlaid card data:
   isOverlaid?: boolean;
-  index?: number;
+  index: number;
   offset?: number;
   setContentHeight?: (height: number) => void;
+  decorator?: (card: CardInGame, index: number) => ReactNode;
 }
 
 /** Individual response card (not a stack of cards)  */
@@ -320,6 +318,7 @@ function CardInStack({
   isOverlaid,
   index,
   offset,
+  decorator,
   setContentHeight,
 }: CardProps) {
   const classes = ['response-reading'];
@@ -333,7 +332,7 @@ function CardInStack({
   const overlayStyle: CSSProperties | undefined = isOverlaid
     ? {
         position: 'absolute',
-        top: (offset ?? 0) + (selected ? 4 * (index ?? 0) : 0),
+        top: (offset ?? 0) + (selected ? 4 * index : 0),
       }
     : undefined;
 
@@ -404,6 +403,7 @@ function CardInStack({
             ))}
           </CardBottomLeft>
         )}
+        {decorator && decorator(card, index)}
       </LargeCard>
     );
   } else {

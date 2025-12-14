@@ -1,9 +1,9 @@
+import { ResponseCardInGame, ResponseCardStats } from '@shared/types';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { ResponseCardInGame, ResponseCardStats } from '@shared/types';
 import { CardStack } from '../../lobby-screens/game-components/CardStack';
-import { SlideProps } from './SlideProps';
 import { AnimatedCounter } from '../AnimatedCounter';
+import { SlideProps } from './SlideProps';
 
 function toCardInGame(cardStats: ResponseCardStats): ResponseCardInGame {
   return new ResponseCardInGame(
@@ -35,25 +35,32 @@ export function TopCardsSlide({ userStats }: SlideProps) {
       </motion.div>
 
       {topCards.length > 0 && (
-        <div className="cards-section">
-          <div className="rewind-card-stack-container">
-            <motion.div
-              className="rewind-card-wrapper"
-              initial={{ y: -10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <CardStack
-                animate
-                animDelay={0.6}
-                cards={topCards.map(({ card }) => toCardInGame(card))}
-                canReveal={revealCount < topCards.length}
-                revealCount={revealCount}
-                onClick={() => setRevealCount(revealCount + 1)}
-              />
-              {/* <div className="card-count">Played {item.count}x</div> */}
-            </motion.div>
-          </div>
+        <div className="rewind-card-stack-container">
+          <motion.div
+            className="rewind-card-wrapper"
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <CardStack
+              animate
+              animDelay={0.6}
+              cards={topCards.map(({ card }) => toCardInGame(card))}
+              canReveal={revealCount < topCards.length}
+              revealCount={revealCount}
+              onClick={() => setRevealCount(revealCount + 1)}
+              decorator={(card, i) => (
+                <motion.div
+                  initial={{ x: -2, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="card-count"
+                >
+                  × {topCards[i].count}
+                </motion.div>
+              )}
+            />
+          </motion.div>
         </div>
       )}
 
