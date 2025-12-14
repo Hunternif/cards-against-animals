@@ -19,7 +19,7 @@ export function AnimatedCounter({ value, className, ...props }: Props) {
   useEffect(() => {
     const controls = animate(count, value, props);
     return () => controls.stop();
-  }, []);
+  }, [value]);
 
   return (
     <motion.div className={`animated-counter ${className}`}>

@@ -28,7 +28,7 @@ export function AnimatedTimeCounter({ timeMs, className, ...props }: Props) {
   useEffect(() => {
     const controls = animate(currentTime, timeMs, props);
     return () => controls.stop();
-  }, []);
+  }, [timeMs, props]);
 
   return (
     <>
