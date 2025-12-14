@@ -1,9 +1,4 @@
-import {
-  MotionNodeAnimationOptions,
-  Transition,
-  ValueTransition,
-  motion,
-} from 'framer-motion';
+import { ValueTransition, motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
 interface Props extends ValueTransition {
@@ -15,7 +10,13 @@ interface Props extends ValueTransition {
   className?: string;
 }
 
-export function SlideIn({ left, right, className, children, ...props }: Props) {
+export function MotionSlideIn({
+  left,
+  right,
+  className,
+  children,
+  ...props
+}: Props) {
   return (
     <motion.div
       className={className}

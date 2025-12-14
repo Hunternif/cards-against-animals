@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { SlideProps } from './SlideProps';
 import { AnimatedCounter } from '../AnimatedCounter';
-import { SlideIn } from '../animations';
+import { MotionSlideIn } from '../animations';
 
 export function AllTimeGamesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
@@ -38,19 +38,19 @@ export function AllTimeGamesSlide({ userStats }: SlideProps) {
         <h2>Your Journey</h2>
       </motion.div>
 
-      <SlideIn left className="stat-row" delay={0.4}>
+      <MotionSlideIn left className="stat-row" delay={0.4}>
         <div className="stat-number">
           <AnimatedCounter value={stats.total_games} duration={1} delay={0.6} />
         </div>
         <div className="stat-label">Games Played</div>
-      </SlideIn>
+      </MotionSlideIn>
 
-      <SlideIn left className="stat-row" delay={1.6}>
+      <MotionSlideIn left className="stat-row" delay={1.6}>
         <div className="stat-number">
           <AnimatedCounter value={stats.total_turns_played} duration={1} delay={1.8} />
         </div>
         <div className="stat-label">Turns Played</div>
-      </SlideIn>
+      </MotionSlideIn>
 
       <motion.div
         className="stat-card highlight"

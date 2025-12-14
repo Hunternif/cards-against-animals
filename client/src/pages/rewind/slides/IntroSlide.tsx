@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Twemoji } from '../../../components/Twemoji';
 import { SlideProps } from './SlideProps';
-import { SlideIn } from '../animations';
+import { MotionSlideIn } from '../animations';
 
 export function IntroSlide({ user }: SlideProps) {
   return (
@@ -25,12 +25,12 @@ export function IntroSlide({ user }: SlideProps) {
         </motion.p>
 
         <div className="year-badges">
-          <SlideIn left className="year-badge" delay={2.5}>
+          <MotionSlideIn left className="year-badge" delay={2.5}>
             2024
-          </SlideIn>
-          <SlideIn right className="year-badge" delay={2.9}>
+          </MotionSlideIn>
+          <MotionSlideIn right className="year-badge" delay={2.9}>
             2025
-          </SlideIn>
+          </MotionSlideIn>
         </div>
 
         <motion.p
