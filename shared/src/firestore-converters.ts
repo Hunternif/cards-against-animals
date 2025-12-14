@@ -482,16 +482,8 @@ export const userStatsConverter: FConverter<UserStats> = {
       games_per_month: objectToMap(data.games_per_month ?? {}),
       top_liked_responses: data.top_liked_responses ?? [],
       top_teammates: data.top_teammates ?? [],
-      top_cards_played:
-        (data.top_cards_played as Array<any>)?.map((p: any) => ({
-          card: mapResponseCardInGame(p.card),
-          count: p.count,
-        })) ?? [],
-      top_prompts_played:
-        (data.top_prompts_played as Array<any>)?.map((p: any) => ({
-          prompt: mapPromptCardInGame(p.prompt),
-          count: p.count,
-        })) ?? [],
+      top_cards_played: data.top_cards_played ?? [],
+      top_prompts_played: data.top_prompts_played ?? [],
     };
   },
 };

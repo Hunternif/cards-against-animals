@@ -97,7 +97,9 @@ async function calculateDerivedStats(
     >();
     // Track responses with their likes
     const likedResponses: Array<{
+      prompt: PromptCardStats;
       cards: ResponseCardStats[];
+      likes: number;
       normalized_likes: number;
       lobby_size: number;
     }> = [];
@@ -179,7 +181,9 @@ async function calculateDerivedStats(
             const normalizedLikes =
               lobbySize > 1 ? response.like_count / (lobbySize - 1) : 0;
             likedResponses.push({
+              prompt: copyPromptCardStats(turn.prompts[0]),
               cards: response.cards.map((c) => cardUsage.get(c.content)!.card),
+              likes: response.like_count,
               normalized_likes: normalizedLikes,
               lobby_size: lobbySize,
             });

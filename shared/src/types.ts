@@ -654,7 +654,9 @@ export interface UserStats {
   top_cards_played: Array<{ card: ResponseCardStats; count: number }>;
   /** Top responses that received likes, normalized by lobby size */
   top_liked_responses: Array<{
+    prompt: PromptCardStats;
     cards: ResponseCardStats[];
+    likes: number;
     normalized_likes: number;
     lobby_size: number;
   }>;
