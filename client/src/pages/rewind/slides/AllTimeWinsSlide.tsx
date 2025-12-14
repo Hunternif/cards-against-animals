@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { SlideProps } from './SlideProps';
 import { Twemoji } from '../../../components/Twemoji';
 import { IconHeartInline } from '../../../components/Icons';
+import { AnimatedCounter } from '../AnimatedCounter';
 
 export function AllTimeWinsSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
@@ -35,12 +36,14 @@ export function AllTimeWinsSlide({ userStats }: SlideProps) {
       </motion.div>
 
       <motion.div
-        className="stat-card highlight"
+        className="stat-card highlight stat-row"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
       >
-        <div className="stat-number">{stats.total_wins}</div>
+        <div className="stat-number">
+          <AnimatedCounter value={stats.total_wins} duration={1} delay={0.8} />
+        </div>
         <div className="stat-label">Total Wins</div>
       </motion.div>
 

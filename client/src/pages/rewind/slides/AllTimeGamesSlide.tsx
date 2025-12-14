@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { SlideProps } from './SlideProps';
+import { AnimatedCounter } from '../AnimatedCounter';
+import { SlideIn } from '../animations';
 
 export function AllTimeGamesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
@@ -19,9 +21,9 @@ export function AllTimeGamesSlide({ userStats }: SlideProps) {
 
   const formatDate = (date: Date | undefined) => {
     if (!date) return 'Unknown';
-    return new Date(date).toLocaleDateString('en-US', { 
-      month: 'long', 
-      year: 'numeric' 
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
     });
   };
 
@@ -36,25 +38,19 @@ export function AllTimeGamesSlide({ userStats }: SlideProps) {
         <h2>Your Journey</h2>
       </motion.div>
 
-      <motion.div
-        className="stat-card"
-        initial={{ scale: 0, rotate: -5 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
-      >
-        <div className="stat-number">{stats.total_games}</div>
+      <SlideIn left className="stat-row" delay={0.4}>
+        <div className="stat-number">
+          <AnimatedCounter value={stats.total_games} duration={1} delay={0.6} />
+        </div>
         <div className="stat-label">Games Played</div>
-      </motion.div>
+      </SlideIn>
 
-      <motion.div
-        className="stat-card"
-        initial={{ scale: 0, rotate: 5 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
-      >
-        <div className="stat-number">{stats.total_turns_played}</div>
+      <SlideIn left className="stat-row" delay={1.6}>
+        <div className="stat-number">
+          <AnimatedCounter value={stats.total_turns_played} duration={1} delay={1.8} />
+        </div>
         <div className="stat-label">Turns Played</div>
-      </motion.div>
+      </SlideIn>
 
       <motion.div
         className="stat-card highlight"
@@ -62,7 +58,9 @@ export function AllTimeGamesSlide({ userStats }: SlideProps) {
         animate={{ scale: 1 }}
         transition={{ delay: 0.8, type: 'spring', stiffness: 200 }}
       >
-        <div className="stat-number">{formatDuration(stats.total_time_played_ms)}</div>
+        <div className="stat-number">
+          {formatDuration(stats.total_time_played_ms)}
+        </div>
         <div className="stat-label">Time Spent Playing</div>
       </motion.div>
 
