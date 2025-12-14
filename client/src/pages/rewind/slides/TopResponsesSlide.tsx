@@ -1,10 +1,32 @@
-import { ResponseCardInGame, ResponseCardStats } from '@shared/types';
+import {
+  PromptCardInGame,
+  PromptCardStats,
+  ResponseCardInGame,
+  ResponseCardStats,
+  UserStats,
+} from '@shared/types';
 import { motion } from 'framer-motion';
 import { CardStack } from '../../lobby-screens/game-components/CardStack';
 import Carousel from '../Carousel';
 import { SlideProps } from './SlideProps';
+import { useState } from 'react';
 
-function toCardInGame(cardStats: ResponseCardStats): ResponseCardInGame {
+function toPromptCardInGame(cardStats: PromptCardStats): PromptCardInGame {
+  return new PromptCardInGame(
+    cardStats.id,
+    cardStats.deck_id,
+    cardStats.card_id_in_deck,
+    0, // random_index - not needed for display
+    cardStats.content,
+    cardStats.pick,
+    0, // rating - not needed for display
+    cardStats.tags ?? [],
+  );
+}
+
+function toResponseCardInGame(
+  cardStats: ResponseCardStats,
+): ResponseCardInGame {
   return new ResponseCardInGame(
     cardStats.id,
     cardStats.deck_id,
@@ -19,6 +41,16 @@ function toCardInGame(cardStats: ResponseCardStats): ResponseCardInGame {
 
 export function TopResponsesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
+  // Track of reveals for every card
+  const [revealCounts, setRevealCounts] = useState(
+    stats.top_liked_responses.map(() => 1),
+  );
+
+  function revealResponse(i: number) {
+    const newCounts = [...revealCounts];
+    newCounts[i]++;
+    setRevealCounts(newCounts);
+  }
 
   return (
     <div className="slide-content slide-top-responses">
@@ -38,21 +70,21 @@ export function TopResponsesSlide({ userStats }: SlideProps) {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <Carousel>
-            {/* TODO count total likes! */}
-            {stats.top_liked_responses.map(
-              ({ cards, normalized_likes, lobby_size }, i) => (
-                <div key={i}>
-                  <CardStack
-                    showLikes
-                    // TODO: include prompt
-                    // cards={[answer.prompt, ...answer.response.cards]}
-                    cards={cards.map(toCardInGame)}
-                    likeCount={Math.round(normalized_likes * lobby_size)}
-                  />
-                </div>
-              ),
-            )}
+          <Carousel style={{ minHeight: 300 }}>
+            {stats.top_liked_responses.map(({ prompt, cards, likes }, i) => (
+              <CardStack
+                key={i}
+                showLikes
+                canReveal={revealCounts[i] < cards.length + 1}
+                revealCount={revealCounts[i]}
+                onClick={() => revealResponse(i)}
+                cards={[
+                  toPromptCardInGame(prompt),
+                  ...cards.map(toResponseCardInGame),
+                ]}
+                likeCount={likes}
+              />
+            ))}
           </Carousel>
         </motion.div>
       )}
