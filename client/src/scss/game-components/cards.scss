@@ -15,6 +15,7 @@
   flex-direction: column;
   position: relative;
   flex-shrink: 0;
+  text-align: start;
   &.editable-card textarea {
     font-size: 13px;
     font-weight: 600;
@@ -227,7 +228,7 @@
   width: 10rem;
   height: 14rem;
 }
-.many-cards > .game-card {
+.many-cards .game-card {
   box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

@@ -1,3 +1,5 @@
+import { CardInGame } from '@shared/types';
+import { motion } from 'framer-motion';
 import {
   CSSProperties,
   ReactNode,
@@ -20,7 +22,6 @@ import {
 import { Twemoji } from '../../../components/Twemoji';
 import { useScreenWiderThan } from '../../../components/layout/ScreenSizeSwitch';
 import { isSeason } from '../../../components/theme';
-import { CardInGame } from '@shared/types';
 import { CardOffsetContext } from './CardOffsetContext';
 import {
   CardBottomLeft,
@@ -51,6 +52,10 @@ interface CardStackProps {
   hasMyLike?: boolean;
   /** How many of the cards are revealed. */
   revealCount?: number;
+  /** If true, animate individual cards in stack. */
+  animate?: boolean;
+  /** Delay before start of animation in seconds. */
+  animDelay?: number;
 }
 
 /**
@@ -68,6 +73,8 @@ export function CardStack({
   likeCount,
   hasMyLike,
   revealCount,
+  animate,
+  animDelay,
 }: Props) {
   const likeIcon = showLikes ? <LikeIcon cards={cards} /> : null;
   const canRevealClass = canReveal ? 'can-reveal hoverable-card' : '';
@@ -100,6 +107,8 @@ export function CardStack({
           likeIcon={likeIcon}
           hasMyLike={hasMyLike}
           revealCount={revealCount}
+          animate={animate}
+          animDelay={animDelay}
         />
       ) : (
         <div
@@ -137,6 +146,8 @@ function ManyCardsStack({
   likeIcon,
   hasMyLike,
   revealCount,
+  animate,
+  animDelay,
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(cards.map(() => 0));
@@ -215,30 +226,64 @@ function ManyCardsStack({
       {cards.map((card, i) => {
         const isLastCard = i === cards.length - 1;
         return (
-          <CardInStack
+          <AnimationWrapper
             key={card.id}
-            card={card}
-            content={card.content}
-            isOverlaid={i > 0}
+            // full unrevealed stacks are also animated:
+            animate={animate ?? revealCount === 0}
             index={i}
-            offset={offsets[i]}
-            revealed={revealCount == null || revealCount > i}
-            selectable={canSelect}
-            selected={selected}
-            // Only enable likes on the last card of the stack:
-            likable={canLike && isLastCard}
-            onClickLike={onClickLike}
-            likeCount={isLastCard ? likeCount ?? 0 : 0}
-            likeIcon={likeIcon}
-            hasPlayerLike={hasMyLike}
-            setContentHeight={(height) => {
-              heights[i] = height;
-              measureOffsets();
-            }}
-          />
+            delay={animDelay}
+          >
+            <CardInStack
+              card={card}
+              content={card.content}
+              isOverlaid={i > 0}
+              index={i}
+              offset={offsets[i]}
+              revealed={revealCount == null || revealCount > i}
+              selectable={canSelect}
+              selected={selected}
+              // Only enable likes on the last card of the stack:
+              likable={canLike && isLastCard}
+              onClickLike={onClickLike}
+              likeCount={isLastCard ? likeCount ?? 0 : 0}
+              likeIcon={likeIcon}
+              hasPlayerLike={hasMyLike}
+              setContentHeight={(height) => {
+                heights[i] = height;
+                measureOffsets();
+              }}
+            />
+          </AnimationWrapper>
         );
       })}
     </div>
+  );
+}
+
+/** Animates dealing individual card. */
+function AnimationWrapper({
+  children,
+  animate,
+  index,
+  delay,
+}: {
+  children: ReactNode;
+  animate?: boolean;
+  index: number;
+  delay?: number;
+}) {
+  if (!animate) {
+    return children;
+  }
+  return (
+    <motion.div
+      style={{ position: index > 0 ? 'absolute' : 'relative' }}
+      initial={{ top: -10, opacity: 0 }}
+      animate={{ top: 0, opacity: 1 }}
+      transition={{ delay: (delay ?? 0) + (index ?? 0) * 0.2, duration: 0.15 }}
+    >
+      {children}
+    </motion.div>
   );
 }
 
