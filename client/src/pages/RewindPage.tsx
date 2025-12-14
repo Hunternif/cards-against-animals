@@ -13,7 +13,7 @@ export function RewindPage() {
   const [user, loadingUser] = useAuthState(firebaseAuth);
   const [stats, setStats] = useState<StatsContainer | null>(null);
   const [userStats, setUserStats] = useState<{
-    allTime: UserStats | null;
+    allTime: UserStats;
     year2025: UserStats | null;
     year2024: UserStats | null;
   } | null>(null);
@@ -29,12 +29,12 @@ export function RewindPage() {
 
     const findUserStats = (yearStats: YearStats | undefined) =>
       yearStats?.userStats.find((s) => s.uid === user.uid) || null;
-
-    setUserStats({
-      allTime: findUserStats(allTimeStats),
-      year2025: findUserStats(stats2025),
-      year2024: findUserStats(stats2024),
-    });
+    const allTime = findUserStats(allTimeStats);
+    const year2025 = findUserStats(stats2025);
+    const year2024 = findUserStats(stats2024);
+    if (allTime) {
+      setUserStats({ allTime, year2024, year2025 });
+    }
   }, []);
 
   useEffect(() => {

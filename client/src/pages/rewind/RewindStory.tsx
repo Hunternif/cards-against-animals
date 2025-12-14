@@ -3,6 +3,7 @@ import { User } from 'firebase/auth';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { IconChevronDown, IconChevronUp } from '../../components/Icons';
+import { EmojiWave } from './EmojiWave';
 import {
   AllTimeFavoriteCardsSlide,
   AllTimeGamesSlide,
@@ -13,12 +14,11 @@ import {
   Year2024Slide,
   Year2025Slide,
 } from './slides';
-import { EmojiWave } from './EmojiWave';
 
 interface RewindStoryProps {
   user: User;
   userStats: {
-    allTime: UserStats | null;
+    allTime: UserStats;
     year2025: UserStats | null;
     year2024: UserStats | null;
   };

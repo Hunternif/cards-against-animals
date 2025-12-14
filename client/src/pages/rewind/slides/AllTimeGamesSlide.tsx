@@ -7,19 +7,6 @@ import { AnimatedTimeCounter } from '../AnimatedTimeCounter';
 export function AllTimeGamesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
 
-  if (!stats) {
-    return <div className="slide-content">No data available</div>;
-  }
-
-  const formatDuration = (ms: number) => {
-    const hours = Math.floor(ms / (1000 * 60 * 60));
-    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
-
   const formatDate = (date: Date | undefined) => {
     if (!date) return 'Unknown';
     return new Date(date).toLocaleDateString('en-US', {
@@ -41,7 +28,11 @@ export function AllTimeGamesSlide({ userStats }: SlideProps) {
 
       <MotionSlideIn left className="stat-row" delay={0.4}>
         <div className="stat-number">
-          <AnimatedCounter value={stats.total_games} duration={0.5} delay={0.6} />
+          <AnimatedCounter
+            value={stats.total_games}
+            duration={0.5}
+            delay={0.6}
+          />
         </div>
         <div className="stat-label">Games Played</div>
       </MotionSlideIn>

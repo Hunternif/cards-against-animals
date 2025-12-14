@@ -6,11 +6,6 @@ import { AnimatedCounter } from '../AnimatedCounter';
 
 export function AllTimeWinsSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
-
-  if (!stats) {
-    return <div className="slide-content">No data available</div>;
-  }
-
   const winPercentage = Math.round((stats.win_rate || 0) * 100);
 
   return (

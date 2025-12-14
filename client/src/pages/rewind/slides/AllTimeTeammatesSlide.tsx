@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion';
-import { SlideProps } from './SlideProps';
-import { Avatar } from '../../../api/avatars';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
-import { terminate } from 'firebase/firestore';
+import { SlideProps } from './SlideProps';
 
 export function AllTimeTeammatesSlide({
   userStats,
@@ -10,11 +8,6 @@ export function AllTimeTeammatesSlide({
 }: SlideProps) {
   const stats = userStats.allTime;
   const allUsers = statsContainer.yearMap.get('all_time')?.userStats;
-
-  if (!stats) {
-    return <div className="slide-content">No data available</div>;
-  }
-
   const topTeammates = stats.top_teammates.slice(0, 5);
 
   return (

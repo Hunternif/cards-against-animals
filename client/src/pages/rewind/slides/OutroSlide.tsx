@@ -38,7 +38,7 @@ export function OutroSlide({ userStats }: SlideProps) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          {stats && stats.total_games > 0 ? (
+          {stats.total_games > 0 ? (
             <>
               You've played <strong>{stats.total_games}</strong> games and made{' '}
               <strong>{stats.total_wins}</strong> winning plays.

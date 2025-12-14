@@ -4,7 +4,7 @@ import { User } from 'firebase/auth';
 export interface SlideProps {
   user: User;
   userStats: {
-    allTime: UserStats | null;
+    allTime: UserStats;
     year2025: UserStats | null;
     year2024: UserStats | null;
   };
