@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Twemoji } from '../../../components/Twemoji';
 import { SlideProps } from './SlideProps';
+import { SlideIn } from '../animations';
 
 export function IntroSlide({ user }: SlideProps) {
   return (
@@ -24,34 +25,12 @@ export function IntroSlide({ user }: SlideProps) {
         </motion.p>
 
         <div className="year-badges">
-          <motion.span
-            className="year-badge"
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{
-              delay: 2.5,
-              duration: 0.3,
-              type: 'spring',
-              stiffness: 500,
-              damping: 10,
-            }}
-          >
+          <SlideIn left className="year-badge" delay={2.5}>
             2024
-          </motion.span>
-          <motion.span
-            className="year-badge"
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{
-              delay: 2.9,
-              duration: 0.3,
-              type: 'spring',
-              stiffness: 500,
-              damping: 10,
-            }}
-          >
+          </SlideIn>
+          <SlideIn right className="year-badge" delay={2.9}>
             2025
-          </motion.span>
+          </SlideIn>
         </div>
 
         <motion.p
