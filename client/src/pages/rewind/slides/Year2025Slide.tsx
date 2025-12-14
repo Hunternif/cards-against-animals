@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { SlideProps } from './SlideProps';
+import { AnimatedTimeCounter } from '../AnimatedTimeCounter';
 
 export function Year2025Slide({ userStats, statsContainer }: SlideProps) {
   const stats = userStats.year2025;
@@ -22,19 +23,10 @@ export function Year2025Slide({ userStats, statsContainer }: SlideProps) {
 
   const formatDate = (date: Date | undefined) => {
     if (!date) return 'Unknown';
-    return new Date(date).toLocaleDateString('en-US', { 
+    return new Date(date).toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
     });
-  };
-
-  const formatDuration = (ms: number) => {
-    const hours = Math.floor(ms / (1000 * 60 * 60));
-    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
   };
 
   return (
@@ -92,7 +84,13 @@ export function Year2025Slide({ userStats, statsContainer }: SlideProps) {
         animate={{ scale: 1 }}
         transition={{ delay: 0.9, type: 'spring' }}
       >
-        <div className="stat-number">{formatDuration(stats.total_time_played_ms)}</div>
+        <div className="stat-number">
+          <AnimatedTimeCounter
+            timeMs={stats.total_time_played_ms}
+            duration={1}
+            delay={0.9}
+          />
+        </div>
         <div className="stat-label">Time Played</div>
       </motion.div>
 
@@ -115,7 +113,8 @@ export function Year2025Slide({ userStats, statsContainer }: SlideProps) {
           transition={{ delay: 1.3 }}
         >
           <p>
-            You were one of <strong>{globalStats.unique_players}</strong> players in 2025!
+            You were one of <strong>{globalStats.unique_players}</strong>{' '}
+            players in 2025!
           </p>
         </motion.div>
       )}
