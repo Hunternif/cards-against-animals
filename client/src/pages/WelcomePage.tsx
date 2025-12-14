@@ -7,6 +7,7 @@ import { GoogleLogin } from './lobby-screens/login-components/GoogleLogin';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { firebaseAuth } from '../firebase';
+import { currentSeasonState, SeasonContext } from '../components/SeasonContext';
 
 export function WelcomePage() {
   // This could be common layout shared between all game screens
@@ -14,16 +15,18 @@ export function WelcomePage() {
   const [user, loading] = useAuthState(firebaseAuth);
   return (
     <>
-      <ErrorModal error={error} setError={setError} />
-      <ErrorContext.Provider value={{ error, setError }}>
-        {loading ? (
-          <LoadingSpinner />
-        ) : user?.isAnonymous === false ? (
-          <HomeScreen />
-        ) : (
-          <CreatorLoginScreen />
-        )}
-      </ErrorContext.Provider>
+      <SeasonContext.Provider value={currentSeasonState()}>
+        <ErrorModal error={error} setError={setError} />
+        <ErrorContext.Provider value={{ error, setError }}>
+          {loading ? (
+            <LoadingSpinner />
+          ) : user?.isAnonymous === false ? (
+            <HomeScreen />
+          ) : (
+            <CreatorLoginScreen />
+          )}
+        </ErrorContext.Provider>
+      </SeasonContext.Provider>
     </>
   );
 }

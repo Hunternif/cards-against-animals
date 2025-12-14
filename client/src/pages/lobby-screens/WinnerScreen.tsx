@@ -11,13 +11,11 @@ import {
 import { Delay } from '../../components/Delay';
 import {
   IconHeartInline,
-  IconRobot,
   IconRobotInline,
   IconStarInline,
 } from '../../components/Icons';
 import { PlayerAvatar } from '../../components/PlayerAvatar';
 import { GameLayout } from '../../components/layout/GameLayout';
-import { isSeason } from '../../components/theme';
 import { useSound } from '../../hooks/sound-hooks';
 import { useEffectOnce } from '../../hooks/ui-hooks';
 import { PlayerInLobby, PlayerResponse } from '@shared/types';
@@ -28,9 +26,11 @@ import { useLocalSettings } from './game-components/LocalSettingsContext';
 import { ResponseReading } from './game-components/ResponseReading';
 import { Soundboard } from './game-components/Soundboard';
 import { Twemoji } from '../../components/Twemoji';
+import { useSeasonContext } from '../../components/SeasonContext';
 
 /** Displays winner of the turn */
 export function WinnerScreen() {
+  const { isSeason } = useSeasonContext();
   const { lobby, turn, players, activePlayers, prompt, responses } =
     useGameContext();
   const winner = players.find((p) => p.uid === turn.winner_uid);

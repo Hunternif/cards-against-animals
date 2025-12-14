@@ -16,6 +16,7 @@ import { HomeScreen } from './lobby-screens/HomeScreen';
 import { NewLobbyScreen } from './lobby-screens/NewLobbyScreen';
 import { ScoreboardScreen } from './lobby-screens/ScoreboardScreen';
 import { LocalSettingsContextProvider } from './lobby-screens/game-components/LocalSettingsContext';
+import { currentSeasonState, SeasonContext } from '../components/SeasonContext';
 
 interface LoaderParams {
   params: any;
@@ -30,12 +31,14 @@ export function LobbyPage() {
   const [error, setError] = useState(null);
   return (
     <>
-      <ErrorModal error={error} setError={setError} />
-      <ErrorContext.Provider value={{ error, setError }}>
-        <LocalSettingsContextProvider>
-          <LobbyPageThrows />
-        </LocalSettingsContextProvider>
-      </ErrorContext.Provider>
+      <SeasonContext.Provider value={currentSeasonState()}>
+        <ErrorModal error={error} setError={setError} />
+        <ErrorContext.Provider value={{ error, setError }}>
+          <LocalSettingsContextProvider>
+            <LobbyPageThrows />
+          </LocalSettingsContextProvider>
+        </ErrorContext.Provider>
+      </SeasonContext.Provider>
     </>
   );
 }

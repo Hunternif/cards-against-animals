@@ -21,7 +21,6 @@ import {
 } from '../../../components/Icons';
 import { Twemoji } from '../../../components/Twemoji';
 import { useScreenWiderThan } from '../../../components/layout/ScreenSizeSwitch';
-import { isSeason } from '../../../components/theme';
 import { CardOffsetContext } from './CardOffsetContext';
 import {
   CardBottomLeft,
@@ -29,6 +28,7 @@ import {
   CardContent,
   LargeCard,
 } from './LargeCard';
+import { useSeasonContext } from '../../../components/SeasonContext';
 
 type Props = CardStackProps & {
   showLikes?: boolean;
@@ -321,6 +321,7 @@ function CardInStack({
   decorator,
   setContentHeight,
 }: CardProps) {
+  const { isSeason } = useSeasonContext();
   const classes = ['response-reading'];
   if (card.type === 'prompt') classes.push('card-prompt');
   if (card.type === 'response') classes.push('card-response');
@@ -421,6 +422,7 @@ interface LikeProps {
 
 /** Returns a custom icon for likes */
 function LikeIcon({ cards }: LikeProps) {
+  const { isSeason } = useSeasonContext();
   for (const card of cards) {
     if (card.tags.includes('jew')) {
       return <IconStarOfDavid />;

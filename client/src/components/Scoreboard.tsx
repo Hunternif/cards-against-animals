@@ -4,8 +4,8 @@ import { GameLobby, PlayerGameState, PlayerInLobby } from '@shared/types';
 import { IconCounter } from './IconCounter';
 import { IconHeartInline, IconRobotInline, IconStarInline } from './Icons';
 import { PlayerAvatar } from './PlayerAvatar';
-import { isSeason } from './theme';
 import { Twemoji } from './Twemoji';
+import { useSeasonContext } from './SeasonContext';
 
 interface Props {
   lobby: GameLobby;
@@ -22,6 +22,7 @@ const tableContainerStyle: CSSProperties = {
 
 /** Reusable scoreboard table component. */
 export function Scoreboard({ lobby, players }: Props) {
+  const { isSeason } = useSeasonContext();
   const [playerStates, setPlayerStates] = useState<PlayerGameState[]>([]);
 
   // Because Bootstrap renders the dropdown component even when it's invisible,
