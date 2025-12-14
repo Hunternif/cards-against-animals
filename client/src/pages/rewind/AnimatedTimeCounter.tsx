@@ -32,9 +32,9 @@ export function AnimatedTimeCounter({ timeMs, className, ...props }: Props) {
 
   return (
     <>
-      <motion.div className={`animated-counter ${className}`}>
+      <motion.span className={`animated-counter ${className}`}>
         {formatted}
-      </motion.div>
+      </motion.span>
     </>
   );
 }

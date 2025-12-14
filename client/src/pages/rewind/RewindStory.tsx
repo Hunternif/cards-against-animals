@@ -5,12 +5,13 @@ import { useState } from 'react';
 import { IconChevronDown, IconChevronUp } from '../../components/Icons';
 import { EmojiWave } from './EmojiWave';
 import {
-  AllTimeFavoriteCardsSlide,
   AllTimeGamesSlide,
   AllTimeTeammatesSlide,
   AllTimeWinsSlide,
   IntroSlide,
   OutroSlide,
+  TopCardsSlide,
+  TopResponsesSlide,
   Year2024Slide,
   Year2025Slide,
 } from './slides';
@@ -40,7 +41,8 @@ export function RewindStory({
     { id: 'all-time-games', component: AllTimeGamesSlide },
     { id: 'all-time-wins', component: AllTimeWinsSlide },
     { id: 'all-time-teammates', component: AllTimeTeammatesSlide },
-    { id: 'all-time-cards', component: AllTimeFavoriteCardsSlide },
+    { id: 'top-cards', component: TopCardsSlide },
+    { id: 'top-responses', component: TopResponsesSlide },
     { id: 'year-2025', component: Year2025Slide },
     { id: 'year-2024', component: Year2024Slide },
     { id: 'outro', component: OutroSlide },
@@ -122,17 +124,16 @@ export function RewindStory({
       onTouchEnd={onTouchEnd}
       tabIndex={0}
     >
-      <motion.div
-        className="rewind-vignette"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 0.5 }}
-      />
-      {/* Emoji waves animation */}
       <EmojiWave onLastWave={() => setEmojiWaveComplete(true)} />
 
       {emojiWaveComplete && (
         <>
+          <motion.div
+            className="rewind-vignette"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          />
           <AnimatePresence initial={true} custom={direction} mode="wait">
             <motion.div
               key={currentSlide}

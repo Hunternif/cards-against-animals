@@ -22,8 +22,8 @@ export function AnimatedCounter({ value, className, ...props }: Props) {
   }, [value]);
 
   return (
-    <motion.div className={`animated-counter ${className}`}>
+    <motion.span className={`animated-counter ${className}`}>
       {rounded}
-    </motion.div>
+    </motion.span>
   );
 }
