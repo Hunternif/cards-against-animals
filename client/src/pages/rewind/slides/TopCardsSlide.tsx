@@ -49,16 +49,7 @@ export function TopCardsSlide({ userStats }: SlideProps) {
               canReveal={revealCount < topCards.length}
               revealCount={revealCount}
               onClick={() => setRevealCount(revealCount + 1)}
-              decorator={(card, i) => (
-                <motion.div
-                  initial={{ x: -2, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="card-count"
-                >
-                  × {topCards[i].count}
-                </motion.div>
-              )}
+              decorator={(card, i) => <CardCount count={topCards[i].count} />}
             />
           </motion.div>
         </div>
@@ -82,5 +73,28 @@ export function TopCardsSlide({ userStats }: SlideProps) {
         </motion.p>
       )}
     </div>
+  );
+}
+
+function CardCount({ count }: { count: number }) {
+  let tier = 'low';
+  if (count > 1) {
+    tier = 'mid';
+  }
+  if (count > 2) {
+    tier = 'high';
+  }
+  if (count > 3) {
+    tier = 'ultra';
+  }
+  return (
+    <motion.div
+      initial={{ scale: 0, rotate: -90 }}
+      animate={{ scale: 1, rotate: 0 }}
+      transition={{ delay: 0.1, type: 'spring', stiffness: 900, damping: 20 }}
+      className={`card-count tier-${tier}`}
+    >
+      ×{count}
+    </motion.div>
   );
 }
