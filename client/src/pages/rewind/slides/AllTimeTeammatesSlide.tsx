@@ -1,8 +1,15 @@
 import { motion } from 'framer-motion';
 import { SlideProps } from './SlideProps';
+import { Avatar } from '../../../api/avatars';
+import { PlayerAvatar } from '../../../components/PlayerAvatar';
+import { terminate } from 'firebase/firestore';
 
-export function AllTimeTeammatesSlide({ userStats }: SlideProps) {
+export function AllTimeTeammatesSlide({
+  userStats,
+  statsContainer,
+}: SlideProps) {
   const stats = userStats.allTime;
+  const allUsers = statsContainer.yearMap.get('all_time')?.userStats;
 
   if (!stats) {
     return <div className="slide-content">No data available</div>;
@@ -24,33 +31,30 @@ export function AllTimeTeammatesSlide({ userStats }: SlideProps) {
 
       {topTeammates.length > 0 ? (
         <div className="teammates-list">
-          {topTeammates.map((teammate, index) => (
-            <motion.div
-              key={teammate.uid}
-              className={`teammate-card ${index === 0 ? 'top-teammate' : ''}`}
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.4 + index * 0.1 }}
-            >
-              <div className="teammate-rank">#{index + 1}</div>
-              <div className="teammate-info">
-                <div className="teammate-name">{teammate.name}</div>
-                <div className="teammate-games">
-                  {teammate.games} game{teammate.games !== 1 ? 's' : ''} together
+          {topTeammates.map((teammate, index) => {
+            const player = allUsers
+              ?.find((u) => u.uid === teammate.uid)
+              ?.player_in_lobby_refs?.at(0);
+            return (
+              <motion.div
+                key={teammate.uid}
+                className={`teammate-card ${index === 0 ? 'top-teammate' : ''}`}
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.4 + index * 0.3 }}
+              >
+                <div className="teammate-rank">#{index + 1}</div>
+                {player && <PlayerAvatar player={player} />}
+                <div className="teammate-info">
+                  <div className="teammate-name">{teammate.name}</div>
+                  <div className="teammate-games">
+                    {teammate.games} game{teammate.games !== 1 ? 's' : ''}{' '}
+                    together
+                  </div>
                 </div>
-              </div>
-              {index === 0 && (
-                <motion.div
-                  className="best-friend-badge"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 1.0, type: 'spring' }}
-                >
-                  👥
-                </motion.div>
-              )}
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       ) : (
         <motion.p
