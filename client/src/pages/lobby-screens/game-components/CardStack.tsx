@@ -99,6 +99,7 @@ export function CardStack(props: Props) {
       {hasManyCards ? (
         <ManyCardsStack
           {...props}
+          likeIcon={likeIcon}
           onClick={handleClick}
           onClickLike={handleClickLike}
           likeCount={showLikes ? likeCount : 0}
