@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Svg } from '../../../components/Icons';
+import { Pie } from './Pie';
 
 interface Props {
   startTime: Date;
@@ -36,24 +36,6 @@ function isLastCall(endTime: Date, seconds: number): boolean {
   const nowMs = new Date().getTime();
   const endMs = endTime.getTime();
   return nowMs > endMs - seconds * 1000;
-}
-
-/**
- * Returns a SVG path that covers the given angle.
- * Thanks to https://css-tricks.com/css-pie-timer/#comment-184984
- */
-function svgPiePath(degrees: number, radius: number, reverse?: boolean) {
-  // if (reverse) degrees = 360 - degrees;
-  if (degrees < 0) degrees = 0;
-  if (degrees >= 360) degrees = 359.999;
-  const r = (degrees * Math.PI) / 180;
-  const x = Math.sin(r) * radius;
-  const y = Math.cos(r) * -radius;
-  const mid = degrees > 180 ? 1 : 0;
-  if (reverse) {
-    return `M 0 0 v -${radius} A ${radius} ${radius} 1 ${1-mid} 0 ${x} ${y} z`;
-  }
-  return `M 0 0 v -${radius} A ${radius} ${radius} 1 ${mid} 1 ${x} ${y} z`;
 }
 
 /**
@@ -138,14 +120,6 @@ export function TimerPie({
   if (calledLastCall) classes.push('last-call');
 
   return (
-    <div className={classes.join(' ')}>
-      <Svg className="pie-svg" viewBox="0 0 200 200">
-        <path
-          fill="currentColor"
-          d={svgPiePath(percent * 3.6, 100, reverse)}
-          transform="translate(100, 100)"
-        />
-      </Svg>
-    </div>
+    <Pie className={classes.join(' ')} percent={percent} reverse={reverse} />
   );
 }
