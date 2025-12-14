@@ -1,5 +1,5 @@
 import { CardInGame } from '@shared/types';
-import { motion } from 'framer-motion';
+import { animate, AnimatePresence, motion } from 'framer-motion';
 import {
   CSSProperties,
   ReactNode,
@@ -58,6 +58,7 @@ interface CardStackProps {
   animDelay?: number;
   /** Optional Decorator added to every card. */
   decorator?: (card: CardInGame, index: number) => ReactNode;
+  animateLikes?: boolean;
 }
 
 /**
@@ -77,6 +78,7 @@ export function CardStack(props: Props) {
     hasMyLike,
     revealCount,
     decorator,
+    animateLikes,
   } = props;
   const likeIcon = showLikes ? <LikeIcon cards={cards} /> : null;
   const canRevealClass = canReveal ? 'can-reveal hoverable-card' : '';
@@ -99,10 +101,10 @@ export function CardStack(props: Props) {
       {hasManyCards ? (
         <ManyCardsStack
           {...props}
-          likeIcon={likeIcon}
           onClick={handleClick}
           onClickLike={handleClickLike}
           likeCount={showLikes ? likeCount : 0}
+          likeIcon={likeIcon}
         />
       ) : (
         <div
@@ -122,6 +124,7 @@ export function CardStack(props: Props) {
             likeIcon={likeIcon}
             hasPlayerLike={hasMyLike}
             decorator={decorator}
+            animateLikes={animateLikes}
           />
         </div>
       )}
@@ -145,6 +148,7 @@ function ManyCardsStack({
   animate,
   animDelay,
   decorator,
+  animateLikes,
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(cards.map(() => 0));
@@ -223,7 +227,7 @@ function ManyCardsStack({
       {cards.map((card, i) => {
         const isLastCard = i === cards.length - 1;
         return (
-          <AnimationWrapper
+          <CardAnimationWrapper
             key={card.id}
             // full unrevealed stacks are also animated:
             animate={animate ?? revealCount === 0}
@@ -250,38 +254,12 @@ function ManyCardsStack({
                 measureOffsets();
               }}
               decorator={decorator}
+              animateLikes={animateLikes}
             />
-          </AnimationWrapper>
+          </CardAnimationWrapper>
         );
       })}
     </div>
-  );
-}
-
-/** Animates dealing individual card. */
-function AnimationWrapper({
-  children,
-  animate,
-  index,
-  delay,
-}: {
-  children: ReactNode;
-  animate?: boolean;
-  index: number;
-  delay?: number;
-}) {
-  if (!animate) {
-    return children;
-  }
-  return (
-    <motion.div
-      style={{ position: index > 0 ? 'absolute' : 'relative' }}
-      initial={{ top: -10, opacity: 0 }}
-      animate={{ top: 0, opacity: 1 }}
-      transition={{ delay: (delay ?? 0) + (index ?? 0) * 0.2, duration: 0.15 }}
-    >
-      {children}
-    </motion.div>
   );
 }
 
@@ -302,6 +280,7 @@ interface CardProps {
   offset?: number;
   setContentHeight?: (height: number) => void;
   decorator?: (card: CardInGame, index: number) => ReactNode;
+  animateLikes?: boolean;
 }
 
 /** Individual response card (not a stack of cards)  */
@@ -321,6 +300,7 @@ function CardInStack({
   offset,
   decorator,
   setContentHeight,
+  animateLikes,
 }: CardProps) {
   const { isSeason } = useSeasonContext();
   const classes = ['response-reading'];
@@ -399,9 +379,9 @@ function CardInStack({
         {likeCount > 0 && (
           <CardBottomLeft className={hasPlayerLike ? 'has-player-like' : ''}>
             {[...Array(likeCount)].map((_, i) => (
-              <span key={i} className="like">
+              <LikeAnimationWrapper key={i} index={i} animate={animateLikes}>
                 {likeIcon}
-              </span>
+              </LikeAnimationWrapper>
             ))}
           </CardBottomLeft>
         )}
@@ -470,4 +450,60 @@ function getMaxItems(localItems: number[], globalItems: number[]): number[] {
     result[i] = maxItem;
   }
   return result;
+}
+
+interface AnimationWrapperProps {
+  children: ReactNode;
+  animate?: boolean;
+  index: number;
+  delay?: number;
+}
+
+/** Animates dealing individual card. */
+function CardAnimationWrapper({
+  children,
+  animate,
+  index,
+  delay,
+}: AnimationWrapperProps) {
+  if (!animate) {
+    return children;
+  }
+  return (
+    <motion.div
+      style={{ position: index > 0 ? 'absolute' : 'relative' }}
+      initial={{ top: -10, opacity: 0 }}
+      animate={{ top: 0, opacity: 1 }}
+      transition={{ delay: (delay ?? 0) + (index ?? 0) * 0.2, duration: 0.15 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/** Animates showing likes. */
+function LikeAnimationWrapper({
+  children,
+  animate,
+  index,
+  delay,
+}: AnimationWrapperProps) {
+  if (!animate) {
+    return <span className="like">{children}</span>;
+  }
+  return (
+    <motion.span
+      className="like"
+      initial={{ scale: 0, rotate: ((index % 5) - 2) * 30 }}
+      animate={{ scale: 1, rotate: 1 }}
+      transition={{
+        delay: (delay ?? 0.2) + index * 0.15,
+        type: 'spring',
+        stiffness: 900,
+        damping: 20,
+      }}
+    >
+      {children}
+    </motion.span>
+  );
 }

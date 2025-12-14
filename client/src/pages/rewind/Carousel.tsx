@@ -83,7 +83,7 @@ export default function Carousel({ loop, children, ...props }: Props) {
       >
         <ArrowLeft />
       </motion.button>
-      <AnimatePresence custom={direction} initial={false} mode="popLayout">
+      <AnimatePresence custom={direction} initial={true} mode="popLayout">
         <Slide key={index}>{childrenArray[index]}</Slide>
       </AnimatePresence>
       <motion.button

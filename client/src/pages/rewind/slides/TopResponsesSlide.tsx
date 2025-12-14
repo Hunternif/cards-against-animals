@@ -66,15 +66,21 @@ export function TopResponsesSlide({ userStats }: SlideProps) {
       {stats.top_liked_responses.length > 0 && (
         <motion.div
           className="most-liked-section"
-          initial={{ scale: 0.9, opacity: 0 }}
+          initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{
+            delay: 0.5,
+            type: 'spring',
+            stiffness: 700,
+            damping: 20,
+          }}
         >
           <Carousel style={{ minHeight: 300 }}>
             {stats.top_liked_responses.map(({ prompt, cards, likes }, i) => (
               <CardStack
                 key={i}
                 showLikes
+                animateLikes
                 canReveal={revealCounts[i] < cards.length + 1}
                 revealCount={revealCounts[i]}
                 onClick={() => revealResponse(i)}
