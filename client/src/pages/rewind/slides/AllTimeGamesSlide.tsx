@@ -46,12 +46,12 @@ export function AllTimeGamesSlide({ userStats }: SlideProps) {
         <div className="stat-label">Games Played</div>
       </MotionSlideIn>
 
-      <MotionSlideIn left className="stat-row" delay={1.6}>
+      <MotionSlideIn left className="stat-row" delay={1.2}>
         <div className="stat-number">
           <AnimatedCounter
             value={stats.total_turns_played}
             duration={0.5}
-            delay={1.8}
+            delay={1.4}
           />
         </div>
         <div className="stat-label">Turns Played</div>
@@ -61,13 +61,13 @@ export function AllTimeGamesSlide({ userStats }: SlideProps) {
         className="stat-card"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ delay: 3.0, type: 'spring', stiffness: 200 }}
+        transition={{ delay: 2.0, type: 'spring', stiffness: 200 }}
       >
         <div className="stat-number">
           <AnimatedTimeCounter
             timeMs={stats.total_time_played_ms}
-            duration={2}
-            delay={3.2}
+            duration={1.5}
+            delay={2.2}
           />
         </div>
         <div className="stat-label">Time Spent Playing</div>
@@ -77,7 +77,7 @@ export function AllTimeGamesSlide({ userStats }: SlideProps) {
         className="timeline-info"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 5.5, duration: 0.6 }}
+        transition={{ delay: 3.4, duration: 0.3 }}
       >
         From <strong>{formatDate(stats.first_time_played)}</strong>
         <br />
