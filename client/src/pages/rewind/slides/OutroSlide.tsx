@@ -1,7 +1,15 @@
-import { motion } from 'framer-motion';
-import { SlideProps } from './SlideProps';
+import confetti from 'canvas-confetti';
+import { delay, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Twemoji } from '../../../components/Twemoji';
+import { SlideProps } from './SlideProps';
+
+function launchConfetti() {
+  confetti({
+    ticks: 200,
+    particleCount: 100,
+  });
+}
 
 export function OutroSlide({ userStats }: SlideProps) {
   const navigate = useNavigate();
@@ -13,6 +21,7 @@ export function OutroSlide({ userStats }: SlideProps) {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.6 }}
+        onAnimationStart={() => delay(launchConfetti, 500)}
         className="outro-content"
       >
         <motion.div
@@ -56,10 +65,7 @@ export function OutroSlide({ userStats }: SlideProps) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 1.0 }}
         >
-          <button
-            className="go-back"
-            onClick={() => navigate('/')}
-          >
+          <button className="go-back" onClick={() => navigate('/')}>
             Back to Home
           </button>
         </motion.div>
