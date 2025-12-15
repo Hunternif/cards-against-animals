@@ -14,6 +14,10 @@ import {
   TopResponsesSlide,
   Year2024Slide,
   Year2025Slide,
+  GlobalTopResponseCardsSlide,
+  GlobalTopPromptsSlide,
+  GlobalTopLikedResponsesSlide,
+  GlobalLeaderboardSlide,
 } from './slides';
 
 interface RewindStoryProps {
@@ -45,6 +49,10 @@ export function RewindStory({
     { id: 'top-responses', component: TopResponsesSlide },
     { id: 'year-2025', component: Year2025Slide },
     { id: 'year-2024', component: Year2024Slide },
+    { id: 'global-top-prompts', component: GlobalTopPromptsSlide },
+    { id: 'global-top-response-cards', component: GlobalTopResponseCardsSlide },
+    { id: 'global-top-liked-responses', component: GlobalTopLikedResponsesSlide },
+    { id: 'global-leaderboard', component: GlobalLeaderboardSlide },
     { id: 'outro', component: OutroSlide },
   ];
 

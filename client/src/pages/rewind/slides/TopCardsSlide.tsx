@@ -1,27 +1,12 @@
-import { ResponseCardInGame, ResponseCardStats } from '@shared/types';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { CardStack } from '../../lobby-screens/game-components/CardStack';
 import { AnimatedCounter } from '../AnimatedCounter';
+import { PopularCardsDisplay } from '../components/PopularCardsDisplay';
 import { SlideProps } from './SlideProps';
-
-function toCardInGame(cardStats: ResponseCardStats): ResponseCardInGame {
-  return new ResponseCardInGame(
-    cardStats.id,
-    cardStats.deck_id,
-    cardStats.card_id_in_deck,
-    0, // random_index - not needed for display
-    cardStats.content,
-    0, // rating - not needed for display
-    cardStats.tags ?? [],
-    cardStats.action,
-  );
-}
 
 export function TopCardsSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
-  const topCards = stats.top_cards_played.slice(0, 7);
-  const [revealCount, setRevealCount] = useState(0);
+  const topCards = stats.top_cards_played;
 
   return (
     <div className="slide-content slide-top-cards">
@@ -35,24 +20,12 @@ export function TopCardsSlide({ userStats }: SlideProps) {
       </motion.div>
 
       {topCards.length > 0 && (
-        <div className="rewind-card-stack-container">
-          <motion.div
-            className="rewind-card-wrapper"
-            initial={{ y: -10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <CardStack
-              animate
-              animDelay={0.6}
-              cards={topCards.map(({ card }) => toCardInGame(card))}
-              canReveal={revealCount < topCards.length}
-              revealCount={revealCount}
-              onClick={() => setRevealCount(revealCount + 1)}
-              decorator={(card, i) => <CardCount count={topCards[i].count} />}
-            />
-          </motion.div>
-        </div>
+        <PopularCardsDisplay
+          cards={topCards}
+          isPrompt={false}
+          maxCards={10}
+          title="Popular Responses"
+        />
       )}
 
       {stats.total_discards > 0 && (
