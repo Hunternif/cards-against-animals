@@ -3,6 +3,7 @@ import { SlideProps } from './SlideProps';
 import { Twemoji } from '../../../components/Twemoji';
 import { IconHeartInline } from '../../../components/Icons';
 import { AnimatedCounter } from '../AnimatedCounter';
+import { PlayerAvatar } from '../../../components/PlayerAvatar';
 
 export function YourWinsSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
@@ -20,33 +21,40 @@ export function YourWinsSlide({ userStats }: SlideProps) {
       </motion.div>
 
       <motion.div
-        className="trophy-container"
-        initial={{ scale: 0, rotate: -180 }}
+        className="avatar-container"
+        initial={{ scale: 0, rotate: -360 }}
         animate={{ scale: 1, rotate: 0 }}
-        transition={{ delay: 0.4, type: 'spring', stiffness: 100 }}
+        transition={{ delay: 0.4, type: 'spring', stiffness: 200, damping: 15 }}
       >
-        <div className="trophy-icon">
-          <Twemoji>🏆</Twemoji>
-        </div>
+        <PlayerAvatar player={stats.player_in_lobby_refs[0]} />
+        <Laurel delay={0.7 + 0.15} />
+        <Laurel delay={0.7 + 0.0} />
+        <Laurel delay={0.7 + 0.1} />
+        <Laurel delay={0.7 + 0.05} />
       </motion.div>
 
       <motion.div
         className="stat-card highlight stat-row"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
+        transition={{ delay: 1, type: 'spring', stiffness: 200 }}
       >
         <div className="stat-number">
-          <AnimatedCounter value={stats.total_wins} duration={0.5} delay={0.8} />
+          <Twemoji className="icon-trophy">🏆</Twemoji>
+          <AnimatedCounter
+            value={stats.total_wins}
+            duration={stats.total_wins * 0.05}
+            delay={0.8}
+          />
         </div>
         <div className="stat-label">Total Wins</div>
       </motion.div>
 
       <motion.div
         className="stat-grid"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 1.9 }}
       >
         <div className="stat-card small">
           <div className="stat-number">{winPercentage}%</div>
@@ -62,13 +70,13 @@ export function YourWinsSlide({ userStats }: SlideProps) {
         className="stat-card small"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1.8 }}
+        transition={{ delay: 2.5 }}
       >
         <div className="stat-number">
           <IconHeartInline />
           <AnimatedCounter
             value={stats.total_likes_received}
-            duration={1}
+            duration={stats.total_likes_received * 0.05}
             delay={2.0}
           />
         </div>
@@ -88,5 +96,21 @@ export function YourWinsSlide({ userStats }: SlideProps) {
         </motion.p>
       )}
     </div>
+  );
+}
+
+interface LaurelProps {
+  delay?: number;
+}
+function Laurel({ delay }: LaurelProps) {
+  return (
+    <motion.div
+      className="laurel"
+      initial={{ scale: 0, x: '-50%', y: '50%' }}
+      animate={{ scale: 1, x: 0, y: 0 }}
+      transition={{ delay, type: 'spring', stiffness: 500, damping: 15 }}
+    >
+      <Twemoji>🌿</Twemoji>
+    </motion.div>
   );
 }
