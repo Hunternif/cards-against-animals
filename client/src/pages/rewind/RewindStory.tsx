@@ -5,19 +5,19 @@ import { useState } from 'react';
 import { IconChevronDown, IconChevronUp } from '../../components/Icons';
 import { EmojiWave } from './EmojiWave';
 import {
-  AllTimeGamesSlide,
-  AllTimeTeammatesSlide,
-  AllTimeWinsSlide,
+  GlobalLeaderboardSlide,
+  GlobalTopLikedResponsesSlide,
+  GlobalTopPromptsSlide,
+  GlobalTopResponseCardsSlide,
   IntroSlide,
   OutroSlide,
-  TopCardsSlide,
-  TopResponsesSlide,
   Year2024Slide,
   Year2025Slide,
-  GlobalTopResponseCardsSlide,
-  GlobalTopPromptsSlide,
-  GlobalTopLikedResponsesSlide,
-  GlobalLeaderboardSlide,
+  YourGamesSlide,
+  YourTeammatesSlide,
+  YourTopCardsSlide,
+  YourTopResponsesSlide,
+  YourWinsSlide,
 } from './slides';
 
 interface RewindStoryProps {
@@ -42,16 +42,19 @@ export function RewindStory({
   // Define all slides
   const slides = [
     { id: 'intro', component: IntroSlide },
-    { id: 'all-time-games', component: AllTimeGamesSlide },
-    { id: 'all-time-wins', component: AllTimeWinsSlide },
-    { id: 'all-time-teammates', component: AllTimeTeammatesSlide },
-    { id: 'top-cards', component: TopCardsSlide },
-    { id: 'top-responses', component: TopResponsesSlide },
+    { id: 'your-games', component: YourGamesSlide },
+    { id: 'your-wins', component: YourWinsSlide },
+    { id: 'your-teammates', component: YourTeammatesSlide },
+    { id: 'your-top-cards', component: YourTopCardsSlide },
+    { id: 'your-top-responses', component: YourTopResponsesSlide },
     { id: 'year-2025', component: Year2025Slide },
     { id: 'year-2024', component: Year2024Slide },
     { id: 'global-top-prompts', component: GlobalTopPromptsSlide },
     { id: 'global-top-response-cards', component: GlobalTopResponseCardsSlide },
-    { id: 'global-top-liked-responses', component: GlobalTopLikedResponsesSlide },
+    {
+      id: 'global-top-liked-responses',
+      component: GlobalTopLikedResponsesSlide,
+    },
     { id: 'global-leaderboard', component: GlobalLeaderboardSlide },
     { id: 'outro', component: OutroSlide },
   ];

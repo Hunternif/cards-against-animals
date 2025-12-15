@@ -1,9 +1,9 @@
 export { IntroSlide } from './IntroSlide';
-export { AllTimeGamesSlide } from './AllTimeGamesSlide';
-export { AllTimeWinsSlide } from './AllTimeWinsSlide';
-export { AllTimeTeammatesSlide } from './AllTimeTeammatesSlide';
-export { TopCardsSlide } from './TopCardsSlide';
-export { TopResponsesSlide } from './TopResponsesSlide';
+export { YourGamesSlide } from './YourGamesSlide';
+export { YourWinsSlide } from './YourWinsSlide';
+export { YourTeammatesSlide } from './YourTeammatesSlide';
+export { YourTopCardsSlide } from './YourTopCardsSlide';
+export { YourTopResponsesSlide } from './YourTopResponsesSlide';
 export { Year2025Slide } from './Year2025Slide';
 export { Year2024Slide } from './Year2024Slide';
 export { GlobalTopResponseCardsSlide } from './GlobalTopResponseCardsSlide';

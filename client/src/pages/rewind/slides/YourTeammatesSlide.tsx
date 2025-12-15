@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { SlideProps } from './SlideProps';
 
-export function AllTimeTeammatesSlide({
+export function YourTeammatesSlide({
   userStats,
   statsContainer,
 }: SlideProps) {

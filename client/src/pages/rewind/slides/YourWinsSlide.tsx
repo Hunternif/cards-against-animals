@@ -4,7 +4,7 @@ import { Twemoji } from '../../../components/Twemoji';
 import { IconHeartInline } from '../../../components/Icons';
 import { AnimatedCounter } from '../AnimatedCounter';
 
-export function AllTimeWinsSlide({ userStats }: SlideProps) {
+export function YourWinsSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
   const winPercentage = Math.round((stats.win_rate || 0) * 100);
 

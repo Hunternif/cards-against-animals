@@ -1,10 +1,9 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import { AnimatedCounter } from '../AnimatedCounter';
 import { PopularCardsDisplay } from '../components/PopularCardsDisplay';
 import { SlideProps } from './SlideProps';
 
-export function TopCardsSlide({ userStats }: SlideProps) {
+export function YourTopCardsSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
   const topCards = stats.top_cards_played;
 

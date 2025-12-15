@@ -4,7 +4,7 @@ import { AnimatedCounter } from '../AnimatedCounter';
 import { MotionSlideIn } from '../animations';
 import { AnimatedTimeCounter } from '../AnimatedTimeCounter';
 
-export function AllTimeGamesSlide({ userStats }: SlideProps) {
+export function YourGamesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
 
   const formatDate = (date: Date | undefined) => {

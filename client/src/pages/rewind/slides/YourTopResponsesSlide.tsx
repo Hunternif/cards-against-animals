@@ -38,7 +38,7 @@ function toResponseCardInGame(
   );
 }
 
-export function TopResponsesSlide({ userStats }: SlideProps) {
+export function YourTopResponsesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
   // Track of reveals for every card
   const [revealCounts, setRevealCounts] = useState(
