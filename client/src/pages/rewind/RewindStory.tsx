@@ -2,7 +2,11 @@ import { StatsContainer, UserStats } from '@shared/types';
 import { User } from 'firebase/auth';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
-import { IconChevronDown, IconChevronUp } from '../../components/Icons';
+import {
+  IconCatWithEyes,
+  IconChevronDown,
+  IconChevronUp,
+} from '../../components/Icons';
 import { EmojiWave } from './EmojiWave';
 import {
   GlobalIntroSlide,
@@ -137,7 +141,19 @@ export function RewindStory({
       onTouchEnd={onTouchEnd}
       tabIndex={0}
     >
-      <EmojiWave onLastWave={() => setEmojiWaveComplete(true)} />
+      <EmojiWave
+        rows={3}
+        emojis={[
+          ['😮', 6],
+          ['😱', 6],
+          ['🦌', 19],
+          [<IconCatWithEyes />, 7],
+          ['👑', 6],
+          // ...playerAvatars.map((a) => [<img className="avatar inline-avatar" src={a.url}/>, 1]),
+          // [<img className="avatar inline-avatar" src={botAvatars[0].url}/>, 1],
+        ]}
+        onLastWave={() => setEmojiWaveComplete(true)}
+      />
 
       {emojiWaveComplete && (
         <>

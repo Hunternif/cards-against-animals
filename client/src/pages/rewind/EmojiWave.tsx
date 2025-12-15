@@ -1,7 +1,5 @@
 import { AnimatePresence, motion, Variants } from 'framer-motion';
-import { ReactNode, useEffect } from 'react';
-import { useDelay } from '../../components/Delay';
-import { IconCatWithEyes } from '../../components/Icons';
+import { ReactNode, useEffect, useState } from 'react';
 import { Twemoji } from '../../components/Twemoji';
 
 function buildWaves(rowWidth: number, ...items: [ReactNode, number][]) {
@@ -25,6 +23,9 @@ function buildWaves(rowWidth: number, ...items: [ReactNode, number][]) {
 }
 
 interface Props {
+  emojis: [ReactNode, number][];
+  rows?: number;
+  delay?: number;
   /** Seconds between 2 emojis */
   staggerSec?: number;
   /** Duration of wave from top to bottom */
@@ -35,31 +36,25 @@ interface Props {
   onFinish?: () => void;
 }
 
-const ROW_WIDTH = 3;
-
 export function EmojiWave({
+  emojis,
+  rows,
+  delay,
   staggerSec,
   durationSec,
   onLastWave,
   onFinish,
 }: Props) {
+  const [finished, setFinished] = useState(false);
+  const rowCount = rows ?? 3;
   // Define emoji waves - each array is one wave
-  const { waves, total } = buildWaves(
-    ROW_WIDTH,
-    ['😮', 6],
-    ['😱', 6],
-    ['🦌', 19],
-    [<IconCatWithEyes className="cat-icon" />, 7],
-    ['👑', 6],
-    // ...playerAvatars.map((a) => [<img className="avatar inline-avatar" src={a.url}/>, 1]),
-    // [<img className="avatar inline-avatar" src={botAvatars[0].url}/>, 1],
-  );
+  const { waves, total } = buildWaves(rowCount, ...emojis);
 
   if (staggerSec === undefined) staggerSec = 0.05;
   if (durationSec === undefined) durationSec = 1;
-  
+
   // Estimating when the last wave completes:
-  const waveStaggerSec = staggerSec * ROW_WIDTH;
+  const waveStaggerSec = staggerSec * rowCount;
   const lastWaveStartSec = waves.length * waveStaggerSec;
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -69,7 +64,6 @@ export function EmojiWave({
       clearTimeout(timeout);
     };
   }, []);
-  const lastWaveStarted = useDelay(true, 2500);
 
   // Container variants using staggerChildren to manage sequential delays
   const waveContainerVariants: Variants = {
@@ -80,6 +74,7 @@ export function EmojiWave({
         staggerChildren: waveStaggerSec, // seconds between waves
         // When all waves complete, trigger content
         when: 'beforeChildren',
+        delayChildren: delay,
       },
     },
   };
@@ -109,6 +104,10 @@ export function EmojiWave({
     },
   };
 
+  if (finished) {
+    return <></>;
+  }
+
   return (
     <AnimatePresence>
       <motion.div
@@ -120,6 +119,7 @@ export function EmojiWave({
         onAnimationComplete={() => {
           // Delay slightly before calling
           // setTimeout(() => onFinish(), 300);
+          setFinished(true);
           onFinish && onFinish();
         }}
       >

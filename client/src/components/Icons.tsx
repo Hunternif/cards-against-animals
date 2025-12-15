@@ -168,7 +168,7 @@ export function IconCat(props: IconSvgProps) {
 }
 
 export function IconCatWithEyes(props: IconSvgProps) {
-  return <div>
+  return <div className="cat-icon">
     <div style={{
       position: "absolute",
       zIndex: -1,
