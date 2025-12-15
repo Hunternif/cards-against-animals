@@ -6,6 +6,7 @@ import {
 } from '@shared/types';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { CardStack } from '../../lobby-screens/game-components/CardStack';
 import StripCarousel from '../StripCarousel';
 import { SlideProps } from './SlideProps';
@@ -49,6 +50,7 @@ interface AggregatedLikedResponse {
 export function GlobalTopLikedResponsesSlide({ statsContainer }: SlideProps) {
   // Use global stats directly for most liked responses
   const globalStats = statsContainer.yearMap.get('all_time')?.globalStats;
+  const users = statsContainer.yearMap.get('all_time')?.userStats;
   const topLikedResponses = globalStats?.top_liked_responses ?? [];
 
   const [revealCounts, setRevealCounts] = useState(
@@ -86,21 +88,41 @@ export function GlobalTopLikedResponsesSlide({ statsContainer }: SlideProps) {
           }}
         >
           <StripCarousel style={{ minHeight: 300 }}>
-            {topLikedResponses.map(({ prompt, cards, likes }, i) => (
-              <CardStack
-                key={i}
-                showLikes
-                animateLikes
-                canReveal={revealCounts[i] < cards.length + 1}
-                revealCount={revealCounts[i]}
-                onClick={() => revealResponse(i)}
-                cards={[
-                  toPromptCardInGame(prompt),
-                  ...cards.map(toResponseCardInGame),
-                ]}
-                likeCount={likes}
-              />
-            ))}
+            {topLikedResponses.map(({ uid, prompt, cards, likes }, i) => {
+              const isRevealed = revealCounts[i] >= cards.length + 1;
+              const player = users
+                ?.find((u) => u.uid === uid)
+                ?.player_in_lobby_refs?.at(0);
+              return (
+                <div className="response-wrapper">
+                  <CardStack
+                    key={i}
+                    showLikes
+                    animateLikes
+                    canReveal={!isRevealed}
+                    revealCount={revealCounts[i]}
+                    onClick={() => revealResponse(i)}
+                    cards={[
+                      toPromptCardInGame(prompt),
+                      ...cards.map(toResponseCardInGame),
+                    ]}
+                    likeCount={likes}
+                  />
+                  <div className="player-name-container">
+                    {isRevealed && player && (
+                      <motion.div
+                        initial={{ y: -10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 1, duration: 0.1 }}
+                      >
+                        <PlayerAvatar player={player} />
+                        <span className="player-name">{player.name}</span>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </StripCarousel>
         </motion.div>
       )}
