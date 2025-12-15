@@ -44,6 +44,9 @@ import dokidoki1 from '../assets/sounds/music/dokidoki1.mp3';
 import dokidoki2 from '../assets/sounds/music/dokidoki2.mp3';
 import sans from '../assets/sounds/music/sans.mp3';
 
+// Rewind
+import drum_roll_long from '../assets/sounds/clock/drum_roll_long.mp3';
+
 import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { soundEventConverter } from '@shared/firestore-converters';
 import { GameLobby, PlayerInLobby, SoundEvent } from '@shared/types';
@@ -116,6 +119,9 @@ export const soundLaugh016Mid = 'laugh_016';
 export const soundLaugh017 = 'laugh_017';
 export const soundLaugh018 = 'laugh_018';
 
+// Rewind
+export const soundDrumRollLong = 'drum_roll_long';
+
 /** All known sounds */
 const sounds = new Map<string, string>([
   // Soundboard
@@ -163,6 +169,9 @@ const sounds = new Map<string, string>([
   [soundLaugh016Mid, laugh_016],
   [soundLaugh017, laugh_017],
   [soundLaugh018, laugh_018],
+
+  // Rewind
+  [soundDrumRollLong, drum_roll_long],
 ]);
 
 export async function playSoundEvent(
@@ -213,7 +222,7 @@ const bgm = [
   soundMusicDokidoki1,
   soundMusicDokidoki2,
   soundMusicSans,
-]
+];
 
 /** Returns random sound ID */
 export function randomLaugh(): string {

@@ -1,12 +1,17 @@
 import { StatsContainer, UserStats } from '@shared/types';
 import { User } from 'firebase/auth';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
+import { CSSProperties, useCallback, useState } from 'react';
+import { soundDrumRollLong, soundMusicNge } from '../../api/sound-api';
+import { InlineButton } from '../../components/Buttons';
+import { useDelay } from '../../components/Delay';
 import {
   IconCatWithEyes,
   IconChevronDown,
   IconChevronUp,
 } from '../../components/Icons';
+import { Twemoji } from '../../components/Twemoji';
+import { useSound } from '../../hooks/sound-hooks';
 import { EmojiWave } from './EmojiWave';
 import {
   GlobalIntroSlide,
@@ -43,6 +48,7 @@ export function RewindStory({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const [emojiWaveComplete, setEmojiWaveComplete] = useState(false);
+  const [enableMusic, setEnableMusic] = useState(true);
 
   // Define all slides
   const slides = [
@@ -132,6 +138,31 @@ export function RewindStory({
 
   const CurrentSlideComponent = slides[currentSlide].component;
 
+  useSound(soundDrumRollLong, {
+    volume: 0.5,
+    enabled: enableMusic,
+  });
+  const startMusic = useDelay(true, 2000);
+  const { soundError, retrySound } = useSound(soundMusicNge, {
+    volume: 0.2,
+    enabled: enableMusic && (startMusic ?? false),
+  });
+
+  const toggleMusic = useCallback(() => {
+    let enabled = enableMusic;
+    if (soundError) {
+      // If there was an error, sound is displayed as muted. So we try to enable it:
+      enabled = true;
+    } else {
+      enabled = !enabled;
+    }
+    // Allow people to restart music by clicking the button again:
+    if (enabled) {
+      retrySound();
+    }
+    setEnableMusic(enabled);
+  }, [soundError, retrySound]);
+
   return (
     <div
       className="rewind-container"
@@ -141,6 +172,10 @@ export function RewindStory({
       onTouchEnd={onTouchEnd}
       tabIndex={0}
     >
+      <InlineButton big onClick={toggleMusic} style={muteButton}>
+        <Twemoji>{enableMusic ? '🔊' : '🔇'}</Twemoji>
+      </InlineButton>
+
       <EmojiWave
         rows={3}
         emojis={[
@@ -221,3 +256,10 @@ export function RewindStory({
     </div>
   );
 }
+
+const muteButton: CSSProperties = {
+  position: 'absolute',
+  top: 8,
+  right: 8,
+  zIndex: 100,
+};
