@@ -107,7 +107,7 @@ button.rewind-button {
   z-index: 100;
 
   @media (max-width: 768px) {
-    right: 1rem;
+    right: 0.5rem;
     gap: 0.4rem;
   }
 }
@@ -822,6 +822,11 @@ button.rewind-button {
     width: 100%;
     max-width: 450px;
     margin-top: 1rem;
+
+    @media (max-width: 600px) {
+      width: 100vw;
+      max-width: 100vw;
+    }
   }
 
   .leaderboard-row {
@@ -835,9 +840,25 @@ button.rewind-button {
     gap: 1rem;
     position: relative;
 
+    @media (max-width: 600px) {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding-left: 0.5rem;
+      padding-right: 2.5rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-radius: 0;
+      gap: 0;
+    }
+
     &.top-player {
       background: rgba(255, 215, 0, 0.2);
       border: 2px solid rgba(255, 215, 0, 0.5);
+
+      @media (max-width: 600px) {
+        border-left: none;
+        border-right: none;
+      }
     }
 
     .rank-badge {
@@ -858,11 +879,16 @@ button.rewind-button {
     }
 
     .player-info {
+      min-width: 0;
       flex: 1;
       display: flex;
       align-items: center;
       gap: 0.75rem;
       text-align: left;
+
+      @media (max-width: 600px) {
+        gap: 0;
+      }
 
       img {
         width: 3rem;
