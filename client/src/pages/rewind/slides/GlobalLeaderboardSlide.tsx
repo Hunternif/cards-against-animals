@@ -6,9 +6,8 @@ import { SlideProps } from './SlideProps';
 export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
   const allUsers = statsContainer.yearMap.get('all_time')?.userStats ?? [];
 
-  // Sort by wins and take top 10
   const leaderboard = [...allUsers]
-    .filter((u) => !u.is_bot) // Filter out bots
+    // .filter((u) => !u.is_bot) // Filter out bots
     .sort((a, b) => b.total_wins - a.total_wins)
     .slice(0, 7);
 
@@ -21,7 +20,7 @@ export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
         className="slide-header"
       >
         <h2>Champions</h2>
-        <p className="subtitle">Top 10 players by wins</p>
+        {/* <p className="subtitle">Top players by wins</p> */}
       </motion.div>
 
       {leaderboard.length > 0 ? (
