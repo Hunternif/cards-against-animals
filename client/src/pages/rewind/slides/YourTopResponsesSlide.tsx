@@ -1,55 +1,9 @@
-import {
-  PromptCardInGame,
-  PromptCardStats,
-  ResponseCardInGame,
-  ResponseCardStats,
-} from '@shared/types';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { CardStack } from '../../lobby-screens/game-components/CardStack';
-import StripCarousel from '../components/StripCarousel';
+import { PopularResponsesDisplay } from '../components/PopularResponsesDisplay';
 import { SlideProps } from './SlideProps';
-
-function toPromptCardInGame(cardStats: PromptCardStats): PromptCardInGame {
-  return new PromptCardInGame(
-    cardStats.id,
-    cardStats.deck_id,
-    cardStats.card_id_in_deck,
-    0, // random_index - not needed for display
-    cardStats.content,
-    cardStats.pick,
-    0, // rating - not needed for display
-    cardStats.tags ?? [],
-  );
-}
-
-function toResponseCardInGame(
-  cardStats: ResponseCardStats,
-): ResponseCardInGame {
-  return new ResponseCardInGame(
-    cardStats.id,
-    cardStats.deck_id,
-    cardStats.card_id_in_deck,
-    0, // random_index - not needed for display
-    cardStats.content,
-    0, // rating - not needed for display
-    cardStats.tags ?? [],
-    cardStats.action,
-  );
-}
 
 export function YourTopResponsesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
-  // Track of reveals for every card
-  const [revealCounts, setRevealCounts] = useState(
-    stats.top_liked_responses.map(() => 1),
-  );
-
-  function revealResponse(i: number) {
-    const newCounts = [...revealCounts];
-    newCounts[i]++;
-    setRevealCounts(newCounts);
-  }
 
   return (
     <div className="slide-content slide-top-responses">
@@ -74,23 +28,7 @@ export function YourTopResponsesSlide({ userStats }: SlideProps) {
             damping: 20,
           }}
         >
-          <StripCarousel style={{ minHeight: 300 }}>
-            {stats.top_liked_responses.map(({ prompt, cards, likes }, i) => (
-              <CardStack
-                key={i}
-                showLikes
-                animateLikes
-                canReveal={revealCounts[i] < cards.length + 1}
-                revealCount={revealCounts[i]}
-                onClick={() => revealResponse(i)}
-                cards={[
-                  toPromptCardInGame(prompt),
-                  ...cards.map(toResponseCardInGame),
-                ]}
-                likeCount={likes}
-              />
-            ))}
-          </StripCarousel>
+          <PopularResponsesDisplay responses={stats.top_liked_responses} />
         </motion.div>
       )}
     </div>

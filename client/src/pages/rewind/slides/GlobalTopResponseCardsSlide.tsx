@@ -45,7 +45,6 @@ export function GlobalTopResponseCardsSlide({ statsContainer }: SlideProps) {
           cards={topCards}
           isPrompt={false}
           maxCards={10}
-          title="Popular Responses"
         />
       )}
 

@@ -1,67 +1,12 @@
-import {
-  PromptCardInGame,
-  PromptCardStats,
-  ResponseCardInGame,
-  ResponseCardStats,
-} from '@shared/types';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { PlayerAvatar } from '../../../components/PlayerAvatar';
-import { CardStack } from '../../lobby-screens/game-components/CardStack';
-import StripCarousel from '../components/StripCarousel';
+import { PopularResponsesDisplay } from '../components/PopularResponsesDisplay';
 import { SlideProps } from './SlideProps';
-
-function toPromptCardInGame(cardStats: PromptCardStats): PromptCardInGame {
-  return new PromptCardInGame(
-    cardStats.id,
-    cardStats.deck_id,
-    cardStats.card_id_in_deck,
-    0,
-    cardStats.content,
-    cardStats.pick,
-    0,
-    cardStats.tags ?? [],
-  );
-}
-
-function toResponseCardInGame(
-  cardStats: ResponseCardStats,
-): ResponseCardInGame {
-  return new ResponseCardInGame(
-    cardStats.id,
-    cardStats.deck_id,
-    cardStats.card_id_in_deck,
-    0,
-    cardStats.content,
-    0,
-    cardStats.tags ?? [],
-    cardStats.action,
-  );
-}
-
-interface AggregatedLikedResponse {
-  prompt: PromptCardStats;
-  cards: ResponseCardStats[];
-  likes: number;
-  normalized_likes: number;
-  lobby_size: number;
-}
 
 export function GlobalTopLikedResponsesSlide({ statsContainer }: SlideProps) {
   // Use global stats directly for most liked responses
   const globalStats = statsContainer.yearMap.get('all_time')?.globalStats;
   const users = statsContainer.yearMap.get('all_time')?.userStats;
   const topLikedResponses = globalStats?.top_liked_responses ?? [];
-
-  const [revealCounts, setRevealCounts] = useState(
-    topLikedResponses.map(() => 1),
-  );
-
-  function revealResponse(i: number) {
-    const newCounts = [...revealCounts];
-    newCounts[i]++;
-    setRevealCounts(newCounts);
-  }
 
   return (
     <div className="slide-content slide-global-top-liked-responses">
@@ -87,42 +32,11 @@ export function GlobalTopLikedResponsesSlide({ statsContainer }: SlideProps) {
             damping: 20,
           }}
         >
-          <StripCarousel style={{ minHeight: 300 }}>
-            {topLikedResponses.map(({ uid, prompt, cards, likes }, i) => {
-              const isRevealed = revealCounts[i] >= cards.length + 1;
-              const player = users
-                ?.find((u) => u.uid === uid)
-                ?.player_in_lobby_refs?.at(0);
-              return (
-                <div className="response-wrapper" key={i}>
-                  <CardStack
-                    showLikes
-                    animateLikes
-                    canReveal={!isRevealed}
-                    revealCount={revealCounts[i]}
-                    onClick={() => revealResponse(i)}
-                    cards={[
-                      toPromptCardInGame(prompt),
-                      ...cards.map(toResponseCardInGame),
-                    ]}
-                    likeCount={likes}
-                  />
-                  <div className="player-name-container">
-                    {isRevealed && player && (
-                      <motion.div
-                        initial={{ y: -10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 1, duration: 0.1 }}
-                      >
-                        <PlayerAvatar player={player} />
-                        <span className="player-name">{player.name}</span>
-                      </motion.div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </StripCarousel>
+          <PopularResponsesDisplay
+            responses={topLikedResponses}
+            showPlayer
+            users={users}
+          />
         </motion.div>
       )}
 

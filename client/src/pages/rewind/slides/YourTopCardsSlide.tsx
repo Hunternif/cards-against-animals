@@ -23,7 +23,6 @@ export function YourTopCardsSlide({ userStats }: SlideProps) {
           cards={topCards}
           isPrompt={false}
           maxCards={10}
-          title="Popular Responses"
         />
       )}
 

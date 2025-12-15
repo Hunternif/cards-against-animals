@@ -1,4 +1,9 @@
-import { ResponseCardStats, PromptCardStats, ResponseCardInGame, PromptCardInGame } from '@shared/types';
+import {
+  ResponseCardStats,
+  PromptCardStats,
+  ResponseCardInGame,
+  PromptCardInGame,
+} from '@shared/types';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { CardStack } from '../../lobby-screens/game-components/CardStack';
@@ -10,7 +15,6 @@ interface PopularCardsDisplayProps {
   cards: ResponseCardItem[] | PromptCardItem[];
   isPrompt?: boolean;
   maxCards?: number;
-  title: string;
 }
 
 function toCardInGame(cardStats: ResponseCardStats): ResponseCardInGame {
@@ -62,11 +66,11 @@ function CardCount({ count }: { count: number }) {
   );
 }
 
+/** Displays up to 10 cards arranged on the screen, revealed when clicked. */
 export function PopularCardsDisplay({
   cards,
   isPrompt = false,
   maxCards = 7,
-  title,
 }: PopularCardsDisplayProps) {
   const displayCards = cards.slice(0, maxCards);
   const [revealCount, setRevealCount] = useState(0);
@@ -109,12 +113,9 @@ export function PopularCardsDisplay({
           canReveal={revealCount < displayCards.length}
           revealCount={revealCount}
           onClick={() => setRevealCount(revealCount + 1)}
-          decorator={(_, i) => (
-            <CardCount count={displayCards[i].count} />
-          )}
+          decorator={(_, i) => <CardCount count={displayCards[i].count} />}
         />
       </motion.div>
     </div>
   );
 }
-
