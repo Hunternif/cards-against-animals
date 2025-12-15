@@ -1,14 +1,14 @@
 import {
-  ResponseCardStats,
+  PlayerInLobby,
+  PromptCardInGame,
   PromptCardStats,
   ResponseCardInGame,
-  PromptCardInGame,
-  PlayerInLobby,
+  ResponseCardStats,
 } from '@shared/types';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { CardStack } from '../../lobby-screens/game-components/CardStack';
+import { ReactNode, useState } from 'react';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
+import { CardStack } from '../../lobby-screens/game-components/CardStack';
 import StripCarousel from './StripCarousel';
 
 function toResponseCardInGame(
@@ -58,6 +58,7 @@ interface PopularResponsesDisplayProps {
   max?: number;
   showPlayer?: boolean;
   users?: PlayerItem[];
+  delay?: number;
 }
 
 /** Displays responses in a carousel, revealed when clicked. */
@@ -66,6 +67,7 @@ export function PopularResponsesDisplay({
   max,
   showPlayer,
   users,
+  delay,
 }: PopularResponsesDisplayProps) {
   const displayResponses = responses.slice(0, max);
   const [revealCounts, setRevealCounts] = useState(
@@ -99,7 +101,7 @@ export function PopularResponsesDisplay({
           ?.find((u) => u.uid === uid)
           ?.player_in_lobby_refs?.at(0);
         return (
-          <div className="response-wrapper" key={i}>
+          <AnimationWrapper key={i} index={i} animate={i < 5} delay={delay}>
             <CardStack
               showLikes
               animateLikes
@@ -129,9 +131,37 @@ export function PopularResponsesDisplay({
                 )}
               </div>
             )}
-          </div>
+          </AnimationWrapper>
         );
       })}
     </StripCarousel>
   );
+}
+
+interface WrapperProps {
+  index: number;
+  children: ReactNode;
+  animate?: boolean;
+  delay?: number;
+}
+function AnimationWrapper({ index, children, animate, delay }: WrapperProps) {
+  if (animate) {
+    return (
+      <motion.div
+        className="response-wrapper"
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          type: 'spring',
+          delay: (delay ?? 0) + index * 0.15,
+          stiffness: 700,
+          damping: 20,
+        }}
+      >
+        {children}
+      </motion.div>
+    );
+  } else {
+    return <div className="response-wrapper">{children}</div>;
+  }
 }

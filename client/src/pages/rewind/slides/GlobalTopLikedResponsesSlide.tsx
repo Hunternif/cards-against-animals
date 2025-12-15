@@ -16,26 +16,21 @@ export function GlobalTopLikedResponsesSlide({ statsContainer }: SlideProps) {
         transition={{ delay: 0.2 }}
         className="slide-header"
       >
-        <h2>Most Liked Answers</h2>
-        <p className="subtitle">Responses that got the most likes</p>
+        <h2>Most Liked Responses</h2>
       </motion.div>
 
       {topLikedResponses.length > 0 && (
         <motion.div
           className="most-liked-section"
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{
-            delay: 0.5,
-            type: 'spring',
-            stiffness: 700,
-            damping: 20,
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.2 }}
         >
           <PopularResponsesDisplay
             responses={topLikedResponses}
             showPlayer
             users={users}
+            delay={0.6}
           />
         </motion.div>
       )}
