@@ -3,13 +3,12 @@ import {
   PromptCardStats,
   ResponseCardInGame,
   ResponseCardStats,
-  UserStats,
 } from '@shared/types';
 import { motion } from 'framer-motion';
-import { CardStack } from '../../lobby-screens/game-components/CardStack';
-import Carousel from '../Carousel';
-import { SlideProps } from './SlideProps';
 import { useState } from 'react';
+import { CardStack } from '../../lobby-screens/game-components/CardStack';
+import StripCarousel from '../StripCarousel';
+import { SlideProps } from './SlideProps';
 
 function toPromptCardInGame(cardStats: PromptCardStats): PromptCardInGame {
   return new PromptCardInGame(
@@ -75,7 +74,7 @@ export function TopResponsesSlide({ userStats }: SlideProps) {
             damping: 20,
           }}
         >
-          <Carousel style={{ minHeight: 300 }}>
+          <StripCarousel style={{ minHeight: 300 }}>
             {stats.top_liked_responses.map(({ prompt, cards, likes }, i) => (
               <CardStack
                 key={i}
@@ -91,7 +90,7 @@ export function TopResponsesSlide({ userStats }: SlideProps) {
                 likeCount={likes}
               />
             ))}
-          </Carousel>
+          </StripCarousel>
         </motion.div>
       )}
     </div>

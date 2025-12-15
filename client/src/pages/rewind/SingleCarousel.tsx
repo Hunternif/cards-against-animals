@@ -11,7 +11,8 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   loop?: boolean;
 }
 
-export default function Carousel({ loop, children, ...props }: Props) {
+/** Carousel that renders only a single item. */
+export default function SingleCarousel({ loop, children, ...props }: Props) {
   const childrenArray = React.Children.toArray(children);
   const count = childrenArray.length;
   const [index, setIndex] = useState(0);

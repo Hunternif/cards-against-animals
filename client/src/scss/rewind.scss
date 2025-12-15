@@ -572,6 +572,13 @@ button.rewind-button {
 }
 
 .slide-top-responses {
+  .carousel {
+    max-width: 500px;
+    @media (max-width: 768px) {
+      max-width: calc(100vw);
+      // margin-right: 30px; // for the dots on the side
+    }
+  }
   .carousel-button {
     width: 40px;
     height: 40px;
@@ -582,7 +589,6 @@ button.rewind-button {
     justify-content: center;
     align-items: center;
     background-color: rgba(#000, 0.5);
-    z-index: 1;
     opacity: 0.7;
     &:hover {
       opacity: 0.9;
