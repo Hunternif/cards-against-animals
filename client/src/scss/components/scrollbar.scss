@@ -28,3 +28,30 @@
     background: rgba(255, 255, 255, 0.5);
   }
 }
+
+.bigscrollbar {
+  scrollbar-gutter: stable;
+  &.scrollbar-auto {
+    scrollbar-gutter: auto;
+  }
+  &::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+  }
+  &::-webkit-scrollbar-track {
+    background: 0 0;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: colors.$bg-dark;
+    border-radius: 8px;
+  }
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+}
+  &.scrollbar-dark::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.6);
+  }
+  &.scrollbar-light::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}

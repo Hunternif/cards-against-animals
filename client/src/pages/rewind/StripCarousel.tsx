@@ -8,7 +8,8 @@ import React, {
 } from 'react';
 
 const GAP = 16; // gap between items.
-const SCROLL_AMOUNT = 300; // pixels to scroll per button click
+const SCROLL_AMOUNT = 160 + 20; // pixels to scroll per button click
+// ^ hard-coded from card width.
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   loop?: boolean;
@@ -76,7 +77,7 @@ export default function StripCarousel({ loop, children, ...props }: Props) {
         <ArrowLeft />
       </motion.button>
       <div
-        className="strip-carousel-container"
+        className="strip-carousel-container bigscrollbar scrollbar-light"
         style={innerContainer}
         ref={scrollRef}
       >
@@ -163,6 +164,6 @@ const innerContainer: React.CSSProperties = {
   scrollBehavior: 'smooth',
   padding: 20,
   // Hide scrollbar
-  msOverflowStyle: 'none',
-  scrollbarWidth: 'none',
+  // msOverflowStyle: 'none',
+  // scrollbarWidth: 'none',
 };
