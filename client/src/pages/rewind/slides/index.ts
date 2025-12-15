@@ -6,6 +6,7 @@ export { YourTopCardsSlide } from './YourTopCardsSlide';
 export { YourTopResponsesSlide } from './YourTopResponsesSlide';
 export { Year2025Slide } from './Year2025Slide';
 export { Year2024Slide } from './Year2024Slide';
+export { GlobalIntroSlide } from './GlobalIntroSlide';
 export { GlobalTopResponseCardsSlide } from './GlobalTopResponseCardsSlide';
 export { GlobalTopPromptsSlide } from './GlobalTopPromptsSlide';
 export { GlobalTopLikedResponsesSlide } from './GlobalTopLikedResponsesSlide';

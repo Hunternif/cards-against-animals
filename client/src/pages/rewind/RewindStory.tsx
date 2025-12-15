@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { IconChevronDown, IconChevronUp } from '../../components/Icons';
 import { EmojiWave } from './EmojiWave';
 import {
+  GlobalIntroSlide,
   GlobalLeaderboardSlide,
   GlobalTopLikedResponsesSlide,
   GlobalTopPromptsSlide,
@@ -49,6 +50,7 @@ export function RewindStory({
     { id: 'your-top-responses', component: YourTopResponsesSlide },
     { id: 'year-2025', component: Year2025Slide },
     { id: 'year-2024', component: Year2024Slide },
+    { id: 'global-intro', component: GlobalIntroSlide },
     { id: 'global-top-prompts', component: GlobalTopPromptsSlide },
     { id: 'global-top-response-cards', component: GlobalTopResponseCardsSlide },
     {

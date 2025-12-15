@@ -344,6 +344,21 @@ button.rewind-button {
   }
 }
 
+.slide-global-intro {
+  .intro-content {
+    h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 1rem;
+      line-height: 1.2;
+
+      @media (max-width: 768px) {
+        font-size: 2.5rem;
+      }
+    }
+  }
+}
+
 // All time games slide
 .slide-all-time-games {
   .timeline-info {
