@@ -5,10 +5,10 @@ import { SlideProps } from './SlideProps';
 
 export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
   const allUsers = statsContainer.yearMap.get('all_time')?.userStats ?? [];
-  
+
   // Sort by wins and take top 10
   const leaderboard = [...allUsers]
-    .filter(u => !u.is_bot) // Filter out bots
+    .filter((u) => !u.is_bot) // Filter out bots
     .sort((a, b) => b.total_wins - a.total_wins)
     .slice(0, 7);
 
@@ -28,19 +28,22 @@ export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
         <div className="leaderboard-list">
           {leaderboard.map((player, index) => {
             const avatar = player.player_in_lobby_refs?.at(0);
+            const order = leaderboard.length - index - 1; //index;
             return (
               <motion.div
                 key={player.uid}
                 className={`leaderboard-row ${index === 0 ? 'top-player' : ''}`}
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.4 + index * 0.15 }}
+                transition={{ delay: 0.4 + order * 0.2 }}
               >
                 <div className="rank-badge">
                   {index === 0 && <span className="rank-icon">🏆</span>}
                   {index === 1 && <span className="rank-icon">🥈</span>}
                   {index === 2 && <span className="rank-icon">🥉</span>}
-                  {index >= 3 && <span className="rank-number">#{index + 1}</span>}
+                  {index >= 3 && (
+                    <span className="rank-number">#{index + 1}</span>
+                  )}
                 </div>
 
                 <div className="player-info">
@@ -48,11 +51,8 @@ export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
                   <div className="player-details">
                     <div className="player-name">{player.name}</div>
                     <div className="player-games">
-                      <AnimatedCounter
-                        value={player.total_games}
-                        delay={0.6 + index * 0.15}
-                      />{' '}
-                      game{player.total_games !== 1 ? 's' : ''}
+                      {player.total_games} game
+                      {player.total_games !== 1 ? 's' : ''}
                     </div>
                   </div>
                 </div>
@@ -61,7 +61,8 @@ export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
                   <div className="wins-number">
                     <AnimatedCounter
                       value={player.total_wins}
-                      delay={0.6 + index * 0.15}
+                      delay={0.6 + order * 0.2}
+                      duration={player.total_wins * 0.05}
                     />
                   </div>
                   <div className="wins-label">wins</div>
@@ -86,11 +87,11 @@ export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
           className="fun-fact"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
+          transition={{ delay: 1 + leaderboard.length * 0.2 }}
         >
           <strong>
             <AnimatedCounter
-              value={allUsers.filter(u => !u.is_bot).length}
+              value={allUsers.filter((u) => !u.is_bot).length}
               delay={1.2}
             />
           </strong>{' '}
