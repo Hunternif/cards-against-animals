@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { CardStack } from '../../lobby-screens/game-components/CardStack';
-import StripCarousel from '../StripCarousel';
+import StripCarousel from '../components/StripCarousel';
 import { SlideProps } from './SlideProps';
 
 function toPromptCardInGame(cardStats: PromptCardStats): PromptCardInGame {

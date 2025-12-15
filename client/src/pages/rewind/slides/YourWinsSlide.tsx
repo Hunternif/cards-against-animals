@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { SlideProps } from './SlideProps';
 import { Twemoji } from '../../../components/Twemoji';
 import { IconHeartInline } from '../../../components/Icons';
-import { AnimatedCounter } from '../AnimatedCounter';
+import { AnimatedCounter } from '../components/AnimatedCounter';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
 
 export function YourWinsSlide({ userStats }: SlideProps) {

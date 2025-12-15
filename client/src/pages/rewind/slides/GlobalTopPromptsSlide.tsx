@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { PopularCardsDisplay } from '../components/PopularCardsDisplay';
-import { AnimatedCounter } from '../AnimatedCounter';
+import { AnimatedCounter } from '../components/AnimatedCounter';
 import { SlideProps } from './SlideProps';
 
 export function GlobalTopPromptsSlide({ statsContainer }: SlideProps) {

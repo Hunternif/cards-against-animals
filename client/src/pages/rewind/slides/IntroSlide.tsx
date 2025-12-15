@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Twemoji } from '../../../components/Twemoji';
 import { SlideProps } from './SlideProps';
-import { MotionSlideIn } from '../animations';
+import { MotionSlideIn } from '../components/animations';
 
 export function IntroSlide({ user }: SlideProps) {
   return (

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { AnimatedCounter } from '../AnimatedCounter';
+import { AnimatedCounter } from '../components/AnimatedCounter';
 import { PopularCardsDisplay } from '../components/PopularCardsDisplay';
 import { SlideProps } from './SlideProps';
 

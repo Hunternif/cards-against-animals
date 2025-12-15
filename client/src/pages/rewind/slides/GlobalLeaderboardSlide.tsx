@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
-import { AnimatedCounter } from '../AnimatedCounter';
+import { AnimatedCounter } from '../components/AnimatedCounter';
 import { SlideProps } from './SlideProps';
 
 export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {

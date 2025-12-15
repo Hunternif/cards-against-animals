@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { SlideProps } from './SlideProps';
-import { AnimatedCounter } from '../AnimatedCounter';
-import { MotionSlideIn } from '../animations';
-import { AnimatedTimeCounter } from '../AnimatedTimeCounter';
+import { AnimatedCounter } from '../components/AnimatedCounter';
+import { MotionSlideIn } from '../components/animations';
+import { AnimatedTimeCounter } from '../components/AnimatedTimeCounter';
 
 export function YourGamesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;

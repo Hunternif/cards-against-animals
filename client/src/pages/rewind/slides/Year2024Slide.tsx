@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { SlideProps } from './SlideProps';
-import { AnimatedTimeCounter } from '../AnimatedTimeCounter';
+import { AnimatedTimeCounter } from '../components/AnimatedTimeCounter';
 
 export function Year2024Slide({ userStats, statsContainer }: SlideProps) {
   const stats = userStats.year2024;
