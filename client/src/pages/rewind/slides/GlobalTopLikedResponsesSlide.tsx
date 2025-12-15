@@ -94,9 +94,8 @@ export function GlobalTopLikedResponsesSlide({ statsContainer }: SlideProps) {
                 ?.find((u) => u.uid === uid)
                 ?.player_in_lobby_refs?.at(0);
               return (
-                <div className="response-wrapper">
+                <div className="response-wrapper" key={i}>
                   <CardStack
-                    key={i}
                     showLikes
                     animateLikes
                     canReveal={!isRevealed}
