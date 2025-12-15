@@ -134,7 +134,7 @@ export function RewindStory({
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
           />
-          <AnimatePresence initial={true} custom={direction} mode="wait">
+          <AnimatePresence initial={true} custom={direction} mode="popLayout">
             <motion.div
               key={currentSlide}
               custom={direction}
