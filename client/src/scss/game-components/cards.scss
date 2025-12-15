@@ -205,15 +205,22 @@
 /*--------------------- Screen for reading responses --------------------*/
 
 .game-card.response-reading.can-reveal.unrevealed:hover,
-.many-cards.can-reveal:hover .game-card.response-reading.unrevealed {
+.many-cards.can-reveal:hover .game-card.card-response.response-reading.unrevealed {
   background-color: colors.$card-response-bg-unrevealed-hover;
   cursor: pointer;
 }
 .game-card.card-response.response-reading.unrevealed {
   background-color: colors.$card-response-bg-unrevealed;
 }
-.reading-unrevealed-icon {
+.many-cards.can-reveal:hover .game-card.card-prompt.response-reading.unrevealed {
+  background-image: colors.$card-prompt-bg-hover;
+}
+.card-response .reading-unrevealed-icon {
   color: rgba(colors.$bg-dark, 0.6);
+  font-size: 5rem;
+}
+.card-prompt .reading-unrevealed-icon {
+  color: rgba(#fff, 0.2);
   font-size: 5rem;
 }
 .game-card.selectable {

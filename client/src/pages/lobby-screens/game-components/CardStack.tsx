@@ -230,7 +230,7 @@ function ManyCardsStack({
           <CardAnimationWrapper
             key={card.id}
             // full unrevealed stacks are also animated:
-            animate={animate ?? revealCount === 0}
+            animate={animate}
             index={i}
             delay={animDelay}
           >

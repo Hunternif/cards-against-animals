@@ -68,6 +68,7 @@ $card-prompt-bg-light: #2d3441;
 $card-prompt-bg: linear-gradient(to bottom, $card-prompt-bg-dark, $card-prompt-bg-light);
 $card-prompt-text: #fff;
 $card-prompt-bg-selected: linear-gradient(to bottom, #000, #1f2c42);
+$card-prompt-bg-hover: linear-gradient(to bottom, lighten($card-prompt-bg-dark, 5%), lighten($card-prompt-bg-light, 5%));
 $card-response-bg: #fff;
 $card-response-bg-unrevealed: #aaa;
 $card-response-bg-unrevealed-hover: #ccc;
