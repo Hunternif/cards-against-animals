@@ -500,16 +500,9 @@ export const globalStatsConverter: FConverter<GlobalStats> = {
       median_time_per_game_ms: data.median_time_per_game_ms ?? 0,
       median_players_per_game: data.median_players_per_game ?? 0,
       median_turns_per_game: data.median_turns_per_game ?? 0,
-      top_prompts:
-        (data.top_prompts as Array<any>)?.map((p: any) => ({
-          prompt: mapPromptCardInGame(p.prompt),
-          count: p.count,
-        })) ?? [],
-      top_responses:
-        (data.top_responses as Array<any>)?.map((p: any) => ({
-          card: mapResponseCardInGame(p.card),
-          count: p.count,
-        })) ?? [],
+      top_prompts: data.top_prompts ?? [],
+      top_response_cards: data.top_response_cards ?? [],
+      top_liked_responses: data.top_liked_responses ?? [],
       top_decks: data.top_decks ?? [],
       top_months: data.top_months ?? [],
     };

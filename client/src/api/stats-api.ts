@@ -312,6 +312,7 @@ export function filterLobbiesByYear(
  */
 export function calculateGlobalStats(
   lobbies: GameLobby[],
+  userStats: UserStats[],
   userMergeMap: UserMergeMap,
 ): GlobalStats {
   const promptUsage = new Map<
@@ -432,6 +433,10 @@ export function calculateGlobalStats(
       ? turnCounts.sort((a, b) => a - b)[Math.floor(turnCounts.length / 2)]
       : 0;
 
+  const topLikedResponses = userStats.flatMap((u) =>
+    u.top_liked_responses.map((r) => ({ ...r, uid: u.uid })),
+  );
+
   return {
     total_games: totalGames,
     total_turns: totalTurns,
@@ -443,9 +448,12 @@ export function calculateGlobalStats(
     top_prompts: Array.from(promptUsage.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, TOP),
-    top_responses: Array.from(responseUsage.values())
+    top_response_cards: Array.from(responseUsage.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, TOP),
+    top_liked_responses: topLikedResponses
+      .sort((a, b) => b.normalized_likes - a.normalized_likes)
+      .slice(0, TOP * 2),
     top_decks: Array.from(deckUsage.entries())
       .map(([deck_id, games]) => ({ deck_id, games }))
       .sort((a, b) => b.games - a.games)
@@ -895,7 +903,11 @@ export async function parseAllYearStats(
   for (const year of allYears) {
     const filteredLobbies = filterLobbiesByYear(gameData, year);
     const userStats = await calculateUserStats(filteredLobbies, userMergeMap);
-    const globalStats = calculateGlobalStats(filteredLobbies, userMergeMap);
+    const globalStats = calculateGlobalStats(
+      filteredLobbies,
+      userStats,
+      userMergeMap,
+    );
     yearMap.set(year, { year, userStats, globalStats });
   }
 

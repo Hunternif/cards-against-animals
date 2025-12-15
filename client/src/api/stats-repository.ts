@@ -222,7 +222,8 @@ const emptyGlobalStats: GlobalStats = {
   median_players_per_game: 0,
   median_turns_per_game: 0,
   top_prompts: [],
-  top_responses: [],
+  top_response_cards: [],
+  top_liked_responses: [],
   top_decks: [],
   top_months: [],
 };

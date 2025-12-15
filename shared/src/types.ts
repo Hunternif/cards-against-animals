@@ -677,7 +677,16 @@ export interface GlobalStats {
   /** Top prompts played across all games */
   top_prompts: Array<{ prompt: PromptCardStats; count: number }>;
   /** Top response cards played across all games */
-  top_responses: Array<{ card: ResponseCardStats; count: number }>;
+  top_response_cards: Array<{ card: ResponseCardStats; count: number }>;
+  /** Top responses that received likes, normalized by lobby size */
+  top_liked_responses: Array<{
+    uid: string,
+    prompt: PromptCardStats;
+    cards: ResponseCardStats[];
+    likes: number;
+    normalized_likes: number;
+    lobby_size: number;
+  }>;
   /** Top decks used across all games */
   top_decks: Array<{ deck_id: string; games: number }>;
   /** Top months by number of games played */

@@ -48,7 +48,7 @@ export function AdminGlobalStatsSection({
 
           {globalStats.top_prompts.length > 0 && (
             <div className="global-stat-card">
-              <h4>Top 5 Most Played Prompts</h4>
+              <h4>Top Most Played Prompts</h4>
               <ol>
                 {globalStats.top_prompts.map((item, idx) => (
                   <li key={idx}>
@@ -59,11 +59,11 @@ export function AdminGlobalStatsSection({
             </div>
           )}
 
-          {globalStats.top_responses.length > 0 && (
+          {globalStats.top_response_cards?.length > 0 && (
             <div className="global-stat-card">
-              <h4>Top 5 Most Played Responses</h4>
+              <h4>Top Most Played Responses</h4>
               <ol>
-                {globalStats.top_responses.map((item, idx) => (
+                {globalStats.top_response_cards?.map((item, idx) => (
                   <li key={idx}>
                     {item.card.content} ({item.count}x)
                   </li>
@@ -72,9 +72,25 @@ export function AdminGlobalStatsSection({
             </div>
           )}
 
+          {globalStats.top_liked_responses?.length > 0 && (
+            <div className="global-stat-card">
+              <h4>Top Most Liked Responses</h4>
+              <ol>
+                {globalStats.top_liked_responses?.slice(0, 5)?.map((item, idx) => (
+                  <li key={idx}>
+                    {item.prompt.content}:{' '}
+                    {item.cards.map((c) => c.content).join(' / ')} (
+                    {(item.normalized_likes * 100).toFixed(0)}% of{' '}
+                    {item.lobby_size - 1})
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
           {globalStats.top_months.length > 0 && (
             <div className="global-stat-card">
-              <h4>Top 5 Months by Games Played</h4>
+              <h4>Top Months by Games Played</h4>
               <ol>
                 {globalStats.top_months.map((item, idx) => (
                   <li key={idx}>
@@ -87,7 +103,7 @@ export function AdminGlobalStatsSection({
 
           {globalStats.top_decks.length > 0 && (
             <div className="global-stat-card">
-              <h4>Top 5 Most Used Decks</h4>
+              <h4>Top Most Used Decks</h4>
               <ol>
                 {globalStats.top_decks.map((item, idx) => (
                   <li key={idx}>
