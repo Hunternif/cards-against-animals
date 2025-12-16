@@ -362,9 +362,8 @@ button.rewind-button {
 // All time games slide
 .slide-all-time-games {
   .timeline-info {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 1rem 1.5rem;
+    // background: rgba(255, 255, 255, 0.1);
+    // border-radius: 15px;
     margin-top: 2rem;
   }
 }
@@ -522,6 +521,32 @@ button.rewind-button {
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+  }
+}
+.stat-card {
+  .animated-time-counter {
+    display: flex;
+    gap: 0.5rem;
+    .hours-container,
+    .mins-container {
+      display: flex;
+      align-items: baseline;
+      .time-value {
+        font-weight: 900;
+        font-size: 3rem;
+        display: block;
+        text-align: end;
+      }
+      .minutes-value {
+        min-width: 4rem;
+      }
+      .time-units {
+        font-weight: 300;
+        font-size: 1rem;
+        margin-left: 2px;
+        text-transform: uppercase;
+      }
+    }
   }
 }
 

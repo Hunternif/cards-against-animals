@@ -23,7 +23,7 @@ export function YourGamesSlide({ userStats }: SlideProps) {
         transition={{ delay: 0.2 }}
         className="slide-header"
       >
-        <h2>Your Journey</h2>
+        <h2>You have played</h2>
       </motion.div>
 
       <MotionSlideIn left className="stat-row" delay={0.4}>
@@ -34,7 +34,7 @@ export function YourGamesSlide({ userStats }: SlideProps) {
             delay={0.6}
           />
         </div>
-        <div className="stat-label">Games Played</div>
+        <div className="stat-label">Games</div>
       </MotionSlideIn>
 
       <MotionSlideIn left className="stat-row" delay={1.2}>
@@ -45,7 +45,7 @@ export function YourGamesSlide({ userStats }: SlideProps) {
             delay={1.4}
           />
         </div>
-        <div className="stat-label">Turns Played</div>
+        <div className="stat-label">Turns</div>
       </MotionSlideIn>
 
       <motion.div
