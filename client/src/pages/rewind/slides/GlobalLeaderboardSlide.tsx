@@ -2,14 +2,19 @@ import { motion } from 'framer-motion';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
 import { AnimatedCounter } from '../components/AnimatedCounter';
 import { SlideProps } from './SlideProps';
+import { useMemo } from 'react';
 
 export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
   const allUsers = statsContainer.yearMap.get('all_time')?.userStats ?? [];
 
-  const leaderboard = [...allUsers]
-    // .filter((u) => !u.is_bot) // Filter out bots
-    .sort((a, b) => b.total_wins - a.total_wins)
-    .slice(0, 7);
+  const leaderboard = useMemo(
+    () =>
+      [...allUsers]
+        // .filter((u) => !u.is_bot) // Filter out bots
+        .sort((a, b) => b.total_wins - a.total_wins)
+        .slice(0, 7),
+    [statsContainer],
+  );
 
   return (
     <div className="slide-content slide-global-leaderboard">

@@ -4,10 +4,20 @@ import { Twemoji } from '../../../components/Twemoji';
 import { IconHeartInline } from '../../../components/Icons';
 import { AnimatedCounter } from '../components/AnimatedCounter';
 import { PlayerAvatar } from '../../../components/PlayerAvatar';
+import { useMemo } from 'react';
 
-export function YourWinsSlide({ userStats }: SlideProps) {
+export function YourWinsSlide({ userStats, statsContainer }: SlideProps) {
   const stats = userStats.allTime;
   const winPercentage = Math.round((stats.win_rate || 0) * 100);
+  const allUsers = statsContainer.yearMap.get('all_time')?.userStats ?? [];
+  const { rank } = useMemo(() => {
+    const leaderboard = [...allUsers]
+      // .filter((u) => !u.is_bot) // Filter out bots
+      .sort((a, b) => b.total_wins - a.total_wins)
+      .slice(0, 7);
+    const rank = 1 + leaderboard.findIndex((u) => u.uid === stats.uid);
+    return { leaderboard, rank };
+  }, [statsContainer]);
 
   return (
     <div className="slide-content slide-all-time-wins">
@@ -17,7 +27,7 @@ export function YourWinsSlide({ userStats }: SlideProps) {
         transition={{ delay: 0.2 }}
         className="slide-header"
       >
-        <h2>Your Winning Streak</h2>
+        <h2>And you have won</h2>
       </motion.div>
 
       <motion.div
@@ -60,10 +70,17 @@ export function YourWinsSlide({ userStats }: SlideProps) {
           <div className="stat-number">{winPercentage}%</div>
           <div className="stat-label">Win Rate</div>
         </div>
-        <div className="stat-card small">
-          <div className="stat-number">{stats.total_score}</div>
-          <div className="stat-label">Total Score</div>
-        </div>
+        {rank > 0 ? (
+          <div className="stat-card small">
+            <div className="stat-number">#{rank}</div>
+            <div className="stat-label">Global rank</div>
+          </div>
+        ) : (
+          <div className="stat-card small">
+            <div className="stat-number">{stats.total_score}</div>
+            <div className="stat-label">Total score</div>
+          </div>
+        )}
       </motion.div>
 
       <motion.div
