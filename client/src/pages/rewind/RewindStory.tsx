@@ -15,6 +15,7 @@ import { useSound } from '../../hooks/sound-hooks';
 import { EmojiWave } from './EmojiWave';
 import {
   GlobalIntroSlide,
+  GlobalLeaderboardLikesSlide,
   GlobalLeaderboardSlide,
   GlobalTopLikedResponsesSlide,
   GlobalTopPromptsSlide,
@@ -68,6 +69,7 @@ export function RewindStory({
       component: GlobalTopLikedResponsesSlide,
     },
     { id: 'global-leaderboard', component: GlobalLeaderboardSlide },
+    { id: 'global-leaderboard-likes', component: GlobalLeaderboardLikesSlide },
     { id: 'outro', component: OutroSlide },
   ];
 

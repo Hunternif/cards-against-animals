@@ -988,7 +988,7 @@ button.rewind-button {
 
       .wins-number {
         font-size: 1.8rem;
-        font-weight: bold;
+        font-weight: 900;
         line-height: 1;
         margin-bottom: 0.25rem;
       }
@@ -999,6 +999,18 @@ button.rewind-button {
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
+    }
+  }
+}
+.slide-global-leaderboard-likes {
+  .leaderboard-row {
+    &.top-player {
+      background: rgba(255, 215, 0, 0.2);
+      border: 2px solid rgba(#fc8181, 0.7);
+    }
+    .player-likes {
+      font-size: 1.8rem;
+      font-weight: 900;
     }
   }
 }

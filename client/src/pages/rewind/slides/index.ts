@@ -11,5 +11,6 @@ export { GlobalTopResponseCardsSlide } from './GlobalTopResponseCardsSlide';
 export { GlobalTopPromptsSlide } from './GlobalTopPromptsSlide';
 export { GlobalTopLikedResponsesSlide } from './GlobalTopLikedResponsesSlide';
 export { GlobalLeaderboardSlide } from './GlobalLeaderboardSlide';
+export { GlobalLeaderboardLikesSlide } from './GlobalLeaderboardLikesSlide';
 export { OutroSlide } from './OutroSlide';
 export type { SlideProps } from './SlideProps';
