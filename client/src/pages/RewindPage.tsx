@@ -26,9 +26,10 @@ export function RewindPage() {
     const allTimeStats = container.yearMap.get('all_time');
     const stats2025 = container.yearMap.get(2025);
     const stats2024 = container.yearMap.get(2024);
+    const canonicalUid = container.userMergeMap.getCanonicalUid(user.uid);
 
     const findUserStats = (yearStats: YearStats | undefined) =>
-      yearStats?.userStats.find((s) => s.uid === user.uid) || null;
+      yearStats?.userStats.find((s) => s.uid === canonicalUid) || null;
     const allTime = findUserStats(allTimeStats);
     const year2025 = findUserStats(stats2025);
     const year2024 = findUserStats(stats2024);
