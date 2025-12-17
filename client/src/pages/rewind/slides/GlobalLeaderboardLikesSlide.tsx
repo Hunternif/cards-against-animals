@@ -38,7 +38,7 @@ export function GlobalLeaderboardLikesSlide({ statsContainer }: SlideProps) {
         <div className="leaderboard-list">
           {leaderboard.map((player, index) => {
             const avatar = player.player_in_lobby_refs?.at(0);
-            const order = index;
+            const order = leaderboard.length - index - 1;
             return (
               <motion.div
                 key={player.uid}
