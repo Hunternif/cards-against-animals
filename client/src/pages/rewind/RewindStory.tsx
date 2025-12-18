@@ -1,7 +1,7 @@
 import { StatsContainer, UserStats } from '@shared/types';
 import { User } from 'firebase/auth';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CSSProperties, useCallback, useState } from 'react';
+import { CSSProperties, useCallback, useMemo, useState } from 'react';
 import { soundDrumRollLong, soundMusicNge } from '../../api/sound-api';
 import { InlineButton } from '../../components/Buttons';
 import { useDelay } from '../../components/Delay';
@@ -52,26 +52,63 @@ export function RewindStory({
   const [enableMusic, setEnableMusic] = useState(true);
 
   // Define all slides
-  const slides = [
-    { id: 'intro', component: IntroSlide },
-    { id: 'your-games', component: YourGamesSlide },
-    { id: 'your-wins', component: YourWinsSlide },
-    { id: 'your-teammates', component: YourTeammatesSlide },
-    { id: 'your-top-cards', component: YourTopCardsSlide },
-    { id: 'your-top-responses', component: YourTopResponsesSlide },
-    { id: 'year-2025', component: Year2025Slide },
-    { id: 'year-2024', component: Year2024Slide },
-    { id: 'global-intro', component: GlobalIntroSlide },
-    { id: 'global-top-prompts', component: GlobalTopPromptsSlide },
-    { id: 'global-top-response-cards', component: GlobalTopResponseCardsSlide },
-    {
-      id: 'global-top-liked-responses',
-      component: GlobalTopLikedResponsesSlide,
-    },
-    { id: 'global-leaderboard', component: GlobalLeaderboardSlide },
-    { id: 'global-leaderboard-likes', component: GlobalLeaderboardLikesSlide },
-    { id: 'outro', component: OutroSlide },
-  ];
+  const slides = useMemo(() => {
+    const slides = [
+      { id: 'intro', component: IntroSlide },
+      { id: 'your-games', component: YourGamesSlide },
+      { id: 'your-wins', component: YourWinsSlide },
+      { id: 'your-teammates', component: YourTeammatesSlide },
+      { id: 'your-top-cards', component: YourTopCardsSlide },
+      { id: 'your-top-responses', component: YourTopResponsesSlide },
+    ];
+    if (userStats.year2025) {
+      slides.push({ id: 'year-2025', component: Year2025Slide });
+    }
+    if (userStats.year2024) {
+      slides.push({ id: 'year-2024', component: Year2024Slide });
+    }
+    // Check if global top has hidden decks, and if the user has played these decks:
+    const globalStats = statsContainer.yearMap.get('all_time')?.globalStats;
+    if (globalStats) {
+      const privateDecksIds = globalStats.top_decks
+        .filter((d) => d.visibility !== 'public')
+        .map((d) => d.deck_id);
+      const userDecksIds = new Set(
+        userStats.allTime.top_decks.map((d) => d.deck_id),
+      );
+      let userHasSeenAllDecks = true;
+      for (const deckId of privateDecksIds) {
+        if (!userDecksIds.has(deckId)) {
+          userHasSeenAllDecks = false;
+          break;
+        }
+      }
+      // Add global slides:
+      if (userHasSeenAllDecks) {
+        slides.push(
+          ...[
+            { id: 'global-intro', component: GlobalIntroSlide },
+            { id: 'global-top-prompts', component: GlobalTopPromptsSlide },
+            {
+              id: 'global-top-response-cards',
+              component: GlobalTopResponseCardsSlide,
+            },
+            {
+              id: 'global-top-liked-responses',
+              component: GlobalTopLikedResponsesSlide,
+            },
+            { id: 'global-leaderboard', component: GlobalLeaderboardSlide },
+            {
+              id: 'global-leaderboard-likes',
+              component: GlobalLeaderboardLikesSlide,
+            },
+          ],
+        );
+      }
+    }
+    slides.push({ id: 'outro', component: OutroSlide });
+    return slides;
+  }, [userStats, statsContainer]);
 
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
