@@ -354,6 +354,19 @@ function UserStatsDetails({ stat }: { stat: UserStats }) {
           </ul>
         </div>
       )}
+
+      {stat.top_decks?.length > 0 && (
+        <div className="detail-section">
+          <h4>Top Decks</h4>
+          <ul>
+            {stat.top_decks.map((item, idx) => (
+              <li key={idx}>
+                {item.deck_id} ({item.visibility}): {item.games} games
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

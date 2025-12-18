@@ -484,6 +484,7 @@ export const userStatsConverter: FConverter<UserStats> = {
       top_teammates: data.top_teammates ?? [],
       top_cards_played: data.top_cards_played ?? [],
       top_prompts_played: data.top_prompts_played ?? [],
+      top_decks: data.top_decks ?? [],
     };
   },
 };

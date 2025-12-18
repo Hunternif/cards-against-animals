@@ -664,6 +664,11 @@ export interface UserStats {
   top_teammates: Array<{ uid: string; name: string; games: number }>;
   /** Top prompts this user has chosen as judge, sorted by frequency */
   top_prompts_played: Array<{ prompt: PromptCardStats; count: number }>;
+  top_decks: Array<{
+    deck_id: string;
+    games: number;
+    visibility: DeckVisibility;
+  }>;
 }
 
 export interface GlobalStats {
@@ -680,7 +685,7 @@ export interface GlobalStats {
   top_response_cards: Array<{ card: ResponseCardStats; count: number }>;
   /** Top responses that received likes, normalized by lobby size */
   top_liked_responses: Array<{
-    uid: string,
+    uid: string;
     prompt: PromptCardStats;
     cards: ResponseCardStats[];
     likes: number;
@@ -688,7 +693,11 @@ export interface GlobalStats {
     lobby_size: number;
   }>;
   /** Top decks used across all games */
-  top_decks: Array<{ deck_id: string; games: number }>;
+  top_decks: Array<{
+    deck_id: string;
+    games: number;
+    visibility: DeckVisibility;
+  }>;
   /** Top months by number of games played */
   top_months: Array<{ month: string; games: number }>;
 }

@@ -1,5 +1,7 @@
 import { lobbyConverter } from '@shared/firestore-converters';
 import {
+  Deck,
+  DeckVisibility,
   GameLobby,
   GlobalStats,
   PlayerInLobby,
@@ -24,6 +26,7 @@ import {
 import { getTurnPrompt } from './turn/turn-prompt-api';
 import { getAllTurns } from './turn/turn-repository';
 import { getAllPlayerResponses } from './turn/turn-response-api';
+import { FirestoreDeckRepository } from './deck/deck-repository';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -307,14 +310,17 @@ export function filterLobbiesByYear(
   });
 }
 
+type DeckStat = UserStats['top_decks'][0];
+
 /**
  * Calculates global statistics across all lobbies and players.
  */
-export function calculateGlobalStats(
+export async function calculateGlobalStats(
   lobbies: GameLobby[],
   userStats: UserStats[],
   userMergeMap: UserMergeMap,
-): GlobalStats {
+  allDecks: Deck[],
+): Promise<GlobalStats> {
   const promptUsage = new Map<
     string,
     { prompt: PromptCardStats; count: number }
@@ -323,7 +329,7 @@ export function calculateGlobalStats(
     string,
     { card: ResponseCardStats; count: number }
   >();
-  const deckUsage = new Map<string, number>();
+  const deckUsage = new Map<string, DeckStat>();
   const gamesPerMonth = new Map<string, number>();
 
   // New aggregate statistics
@@ -345,8 +351,19 @@ export function calculateGlobalStats(
 
     // Track decks used in this lobby
     for (const deckId of lobby.deck_ids) {
-      const currentDeckCount = deckUsage.get(deckId) || 0;
-      deckUsage.set(deckId, currentDeckCount + 1);
+      const existingDeckStat = deckUsage.get(deckId);
+      if (existingDeckStat) {
+        existingDeckStat.games++;
+      } else {
+        const deckData = allDecks.find((d) => d.id === deckId);
+        if (deckData) {
+          deckUsage.set(deckId, {
+            deck_id: deckId,
+            games: 1,
+            visibility: deckData.visibility,
+          });
+        }
+      }
     }
 
     // Track total turns in this lobby
@@ -454,8 +471,7 @@ export function calculateGlobalStats(
     top_liked_responses: topLikedResponses
       .sort((a, b) => b.normalized_likes - a.normalized_likes)
       .slice(0, TOP * 2),
-    top_decks: Array.from(deckUsage.entries())
-      .map(([deck_id, games]) => ({ deck_id, games }))
+    top_decks: Array.from(deckUsage.values())
       .sort((a, b) => b.games - a.games)
       .slice(0, TOP),
     top_months: Array.from(gamesPerMonth.entries())
@@ -473,6 +489,7 @@ export function calculateGlobalStats(
 export async function calculateUserStats(
   validLobbies: GameLobby[],
   userMergeMap: UserMergeMap,
+  allDecks: Deck[],
 ): Promise<UserStats[]> {
   // Map to accumulate stats per user
   const userStatsMap = new Map<string, UserStats>();
@@ -532,6 +549,7 @@ export async function calculateUserStats(
           top_liked_responses: [],
           top_teammates: [],
           top_prompts_played: [],
+          top_decks: [],
         };
         userStatsMap.set(canonicalUid, userStat);
       }
@@ -571,6 +589,25 @@ export async function calculateUserStats(
             endTime.getTime() - firstTurn.time_created.getTime();
           userStat.total_time_played_ms += gameDurationMs;
           userStat.game_durations_ms.push(gameDurationMs);
+        }
+      }
+
+      // Track deck usage
+      for (const deckId of lobby.deck_ids) {
+        const existingDeckStat = userStat.top_decks.find(
+          (d) => d.deck_id == deckId,
+        );
+        if (existingDeckStat) {
+          existingDeckStat.games++;
+        } else {
+          const deckData = allDecks.find((d) => d.id === deckId);
+          if (deckData) {
+            userStat.top_decks.push({
+              deck_id: deckId,
+              games: 1,
+              visibility: deckData.visibility,
+            });
+          }
         }
       }
 
@@ -805,6 +842,7 @@ export function mergeUserStats(users: UserStats[]): UserStats {
     top_liked_responses: [],
     top_teammates: [],
     top_prompts_played: [],
+    top_decks: [],
   };
 
   const cardUsage = new Map<
@@ -817,6 +855,7 @@ export function mergeUserStats(users: UserStats[]): UserStats {
     string,
     { prompt: PromptCardStats; count: number }
   >();
+  const decks = new Map<string, DeckStat>();
   for (const user of users) {
     for (const { card } of user.top_cards_played) {
       const existing = cardUsage.get(card.content);
@@ -845,6 +884,14 @@ export function mergeUserStats(users: UserStats[]): UserStats {
         teammateGames.set(uid, { name, count: 1 });
       }
     }
+    for (const deck of user.top_decks) {
+      const existing = decks.get(deck.deck_id);
+      if (existing) {
+        existing.games += deck.games;
+      } else {
+        decks.set(deck.deck_id, { ...deck });
+      }
+    }
   }
 
   merged.top_cards_played = Array.from(cardUsage.values())
@@ -866,6 +913,10 @@ export function mergeUserStats(users: UserStats[]): UserStats {
 
   merged.top_prompts_played = Array.from(promptsChosen.values())
     .sort((a, b) => b.count - a.count)
+    .slice(0, TOP);
+
+  merged.top_decks = Array.from(decks.values())
+    .sort((a, b) => b.games - a.games)
     .slice(0, TOP);
 
   // TODO: other users referencing this user will have incorrect teammate count!
@@ -899,14 +950,21 @@ export async function parseAllYearStats(
   const years = getAvailableYears(gameData);
   const allYears: YearFilter[] = ['all_time', ...years];
   const yearMap = new Map<YearFilter, YearStats>();
+  const deckRepo = new FirestoreDeckRepository(firestore);
+  const allDecks = await deckRepo.getDecks([]);
 
   for (const year of allYears) {
     const filteredLobbies = filterLobbiesByYear(gameData, year);
-    const userStats = await calculateUserStats(filteredLobbies, userMergeMap);
-    const globalStats = calculateGlobalStats(
+    const userStats = await calculateUserStats(
+      filteredLobbies,
+      userMergeMap,
+      allDecks,
+    );
+    const globalStats = await calculateGlobalStats(
       filteredLobbies,
       userStats,
       userMergeMap,
+      allDecks,
     );
     yearMap.set(year, { year, userStats, globalStats });
   }

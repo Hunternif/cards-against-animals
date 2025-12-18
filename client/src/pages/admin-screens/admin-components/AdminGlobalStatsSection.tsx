@@ -107,7 +107,7 @@ export function AdminGlobalStatsSection({
               <ol>
                 {globalStats.top_decks.map((item, idx) => (
                   <li key={idx}>
-                    {item.deck_id}: {item.games} games
+                    {item.deck_id} ({item.visibility}): {item.games} games
                   </li>
                 ))}
               </ol>
