@@ -33,6 +33,7 @@ export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
           {leaderboard.map((player, index) => {
             const avatar = player.player_in_lobby_refs?.at(0);
             const order = index;
+            const reverseOrder = leaderboard.length - index - 1;
             return (
               <motion.div
                 key={player.uid}
@@ -66,7 +67,10 @@ export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
                     <AnimatedCounter
                       value={player.total_wins}
                       delay={0.6 + order * 0.2}
-                      duration={player.total_wins * 0.05}
+                      duration={Math.min(
+                        player.total_wins * 0.05,
+                        0.5 + reverseOrder * 0.1,
+                      )}
                     />
                   </div>
                   <div className="wins-label">wins</div>
@@ -91,12 +95,13 @@ export function GlobalLeaderboardSlide({ statsContainer }: SlideProps) {
           className="fun-fact"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1 + leaderboard.length * 0.2 }}
+          transition={{ delay: 0.7 + leaderboard.length * 0.2 }}
         >
           <strong>
             <AnimatedCounter
               value={allUsers.filter((u) => !u.is_bot).length}
-              delay={0.7 + leaderboard.length * 0.2}
+              duration={0.5}
+              delay={0.8 + leaderboard.length * 0.2}
             />
           </strong>{' '}
           players have competed for glory

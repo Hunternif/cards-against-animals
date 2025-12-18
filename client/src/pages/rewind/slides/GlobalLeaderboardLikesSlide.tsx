@@ -38,21 +38,21 @@ export function GlobalLeaderboardLikesSlide({ statsContainer }: SlideProps) {
         <div className="leaderboard-list">
           {leaderboard.map((player, index) => {
             const avatar = player.player_in_lobby_refs?.at(0);
-            const order = leaderboard.length - index - 1;
+            const reverseOrder = leaderboard.length - index - 1;
             return (
               <motion.div
                 key={player.uid}
                 className={`leaderboard-row ${index === 0 ? 'top-player' : ''}`}
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.4 + order * 0.2 }}
+                transition={{ delay: 0.4 + reverseOrder * 0.2 }}
               >
                 <div className="rank-badge">
                   {/* {index === 0 && <span className="rank-icon">🏆</span>}
                   {index === 1 && <span className="rank-icon">🥈</span>}
                   {index === 2 && <span className="rank-icon">🥉</span>} */}
                   {/* {index >= 3 && ( */}
-                    <span className="rank-number">#{index + 1}</span>
+                  <span className="rank-number">#{index + 1}</span>
                   {/* )} */}
                 </div>
 
@@ -72,8 +72,11 @@ export function GlobalLeaderboardLikesSlide({ statsContainer }: SlideProps) {
                     <IconHeartInline />
                     <AnimatedCounter
                       value={player.total_wins}
-                      delay={0.6 + order * 0.2}
-                      duration={player.total_wins * 0.05}
+                      delay={0.6 + reverseOrder * 0.2}
+                      duration={Math.min(
+                        player.total_wins * 0.05,
+                        0.5 + reverseOrder * 0.1,
+                      )}
                     />
                   </div>
                   {/* <div className="wins-label">wins</div> */}
@@ -103,7 +106,8 @@ export function GlobalLeaderboardLikesSlide({ statsContainer }: SlideProps) {
           <strong>
             <AnimatedCounter
               value={totalLikes}
-              delay={0.7 + leaderboard.length * 0.2}
+              duration={Math.min(3, totalLikes * 0.05)}
+              delay={1.1 + leaderboard.length * 0.2}
             />
           </strong>{' '}
           total likes were given

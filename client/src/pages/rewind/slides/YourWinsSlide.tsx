@@ -53,7 +53,7 @@ export function YourWinsSlide({ userStats, statsContainer }: SlideProps) {
           <Twemoji className="icon-trophy">🏆</Twemoji>
           <AnimatedCounter
             value={stats.total_wins}
-            duration={stats.total_wins * 0.05}
+            duration={1.5}
             delay={0.8}
           />
         </div>
@@ -64,7 +64,7 @@ export function YourWinsSlide({ userStats, statsContainer }: SlideProps) {
         className="stat-grid"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1.9 }}
+        transition={{ delay: 2.1 }}
       >
         <div className="stat-card small">
           <div className="stat-number">{winPercentage}%</div>
@@ -87,13 +87,13 @@ export function YourWinsSlide({ userStats, statsContainer }: SlideProps) {
         className="stat-card small"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 2.5 }}
+        transition={{ delay: 2.7 }}
       >
         <div className="stat-number">
           <IconHeartInline />
           <AnimatedCounter
             value={stats.total_likes_received}
-            duration={stats.total_likes_received * 0.05}
+            duration={Math.min(3, stats.total_likes_received * 0.05)}
             delay={2.0}
           />
         </div>
@@ -105,7 +105,7 @@ export function YourWinsSlide({ userStats, statsContainer }: SlideProps) {
           className="fun-fact"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 3.0 }}
+          transition={{ delay: 4.0 }}
         >
           You averaged{' '}
           <strong>{stats.average_score_per_game.toFixed(1)}</strong> points per
