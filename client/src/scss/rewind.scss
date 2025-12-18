@@ -417,26 +417,6 @@ button.rewind-button {
   .stat-row .animated-counter {
     min-width: 0rem;
   }
-  .heart-icon-inline {
-    animation: heartbeat 1s infinite;
-  }
-
-  @keyframes heartbeat {
-    0%,
-    50%,
-    100% {
-      transform: scale(1);
-    }
-    70% {
-      transform: scale(1.2);
-    }
-    80% {
-      transform: scale(1);
-    }
-    90% {
-      transform: scale(1.2);
-    }
-  }
 }
 
 // Teammates slide

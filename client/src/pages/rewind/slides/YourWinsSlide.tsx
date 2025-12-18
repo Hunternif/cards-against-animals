@@ -90,7 +90,7 @@ export function YourWinsSlide({ userStats, statsContainer }: SlideProps) {
         transition={{ delay: 2.7 }}
       >
         <div className="stat-number">
-          <IconHeartInline />
+          <IconHeartInline beating />
           <AnimatedCounter
             value={stats.total_likes_received}
             duration={Math.min(3, stats.total_likes_received * 0.05)}

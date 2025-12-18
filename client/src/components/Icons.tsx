@@ -154,8 +154,10 @@ export function IconHeart(props: IconSvgProps) {
   </Svg>;
 }
 
-export function IconHeartInline() {
-  return <IconHeart width="1.1em" height="1.1em" className="heart-icon-inline" />;
+export function IconHeartInline(props: { beating?: boolean }) {
+  const classes = ['heart-icon-inline'];
+  if (props.beating) classes.push('beating');
+  return <IconHeart width="1.1em" height="1.1em" className={classes.join(' ')} />;
 }
 
 export function IconCat(props: IconSvgProps) {

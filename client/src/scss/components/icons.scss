@@ -15,6 +15,26 @@
 .heart-icon-inline {
   color: colors.$like;
   margin-top: -0.05em;
+  &.beating {
+    animation: heartbeat 1s infinite;
+  }
+
+  @keyframes heartbeat {
+    0%,
+    50%,
+    100% {
+      transform: scale(1);
+    }
+    70% {
+      transform: scale(1.2);
+    }
+    80% {
+      transform: scale(1);
+    }
+    90% {
+      transform: scale(1.2);
+    }
+  }
 }
 .person-icon-inline {
   margin-left: 0.15em;
