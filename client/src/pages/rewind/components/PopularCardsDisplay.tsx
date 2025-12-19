@@ -3,6 +3,7 @@ import {
   PromptCardStats,
   ResponseCardInGame,
   PromptCardInGame,
+  CardInGame,
 } from '@shared/types';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -15,6 +16,31 @@ interface PopularCardsDisplayProps {
   cards: ResponseCardItem[] | PromptCardItem[];
   isPrompt?: boolean;
   maxCards?: number;
+}
+
+/** The layout is visually specific, card offets need to be adjusted. */
+function overrideCardHeight(
+  card: CardInGame,
+  height: number,
+  revealed: boolean,
+  index: number,
+): number {
+  if (!revealed) {
+    return height;
+  }
+  if (card instanceof PromptCardInGame && card.id.startsWith('haiku')) {
+    return 50;
+    // if (index == 1) {
+    // return Math.min(10 + 10 * card.pick + 50 * index, height);
+    // } else if (index == 2) {
+    //   return
+    // }
+  } else {
+    if (index == 0) {
+      return Math.max(50, height);
+    }
+  }
+  return height;
 }
 
 function toCardInGame(cardStats: ResponseCardStats): ResponseCardInGame {
@@ -114,6 +140,7 @@ export function PopularCardsDisplay({
           revealCount={revealCount}
           onClick={() => setRevealCount(revealCount + 1)}
           decorator={(_, i) => <CardCount count={displayCards[i].count} />}
+          overrideCardHeight={overrideCardHeight}
         />
       </motion.div>
     </div>

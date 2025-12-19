@@ -59,6 +59,13 @@ interface CardStackProps {
   /** Optional Decorator added to every card. */
   decorator?: (card: CardInGame, index: number) => ReactNode;
   animateLikes?: boolean;
+  /** Controls how much the cards move when revealed, given index. */
+  overrideCardHeight?: (
+    card: CardInGame,
+    height: number,
+    revealed: boolean,
+    index: number,
+  ) => number;
 }
 
 /**
@@ -149,6 +156,7 @@ function ManyCardsStack({
   animDelay,
   decorator,
   animateLikes,
+  overrideCardHeight: overrideCardOffset,
 }: CardStackProps) {
   // Store height and offset value for each card:
   const [heights] = useState(cards.map(() => 0));
@@ -226,6 +234,7 @@ function ManyCardsStack({
           without interfering with the flow of the rest of the page. */}
       {cards.map((card, i) => {
         const isLastCard = i === cards.length - 1;
+        const revealed = revealCount == null || revealCount > i;
         return (
           <CardAnimationWrapper
             key={card.id}
@@ -240,7 +249,7 @@ function ManyCardsStack({
               isOverlaid={i > 0}
               index={i}
               offset={offsets[i]}
-              revealed={revealCount == null || revealCount > i}
+              revealed={revealed}
               selectable={canSelect}
               selected={selected}
               // Only enable likes on the last card of the stack:
@@ -251,6 +260,9 @@ function ManyCardsStack({
               hasPlayerLike={hasMyLike}
               setContentHeight={(height) => {
                 heights[i] = height;
+                if (overrideCardOffset) {
+                  heights[i] = overrideCardOffset(card, height, revealed, i);
+                }
                 measureOffsets();
               }}
               decorator={decorator}
