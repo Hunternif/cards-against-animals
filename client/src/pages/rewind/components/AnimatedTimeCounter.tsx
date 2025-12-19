@@ -23,7 +23,8 @@ interface DurationProps {
   full?: boolean;
 }
 function FormattedDuration({ ms, full }: DurationProps) {
-  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(ms % (1000 * 60 * 60 * 24));
   const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
   return (
     <>
@@ -63,11 +64,22 @@ export function AnimatedTimeCounter({
   const duration = useTransform(() => currentTime.get());
   // const formatted = useTransform(() => formatDuration(currentTime.get(), full));
 
-  const hours = useTransform(() =>
-    Math.floor(currentTime.get() / (1000 * 60 * 60)),
+  const days = useTransform(() =>
+    Math.floor(currentTime.get() / (1000 * 60 * 60 * 24)),
   );
+  const hours = useTransform(() => {
+    const hourCount = Math.floor(
+      (currentTime.get() % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
+    if (days.get() > 0) {
+      return hourCount.toString().padStart(2, '0');
+    } else {
+      return hourCount;
+    }
+  });
+  const daysDisplay = useTransform(() => (days.get() > 0 ? 'inherit' : 'none'));
   const hoursDisplay = useTransform(() =>
-    hours.get() > 0 ? 'inherit' : 'none',
+    hours.get() || days.get() > 0 ? 'inherit' : 'none',
   );
   const minutes = useTransform(() =>
     Math.floor((currentTime.get() % (1000 * 60 * 60)) / (1000 * 60))
@@ -85,6 +97,14 @@ export function AnimatedTimeCounter({
       className={`animated-time-counter ${className}`}
       style={{ display: 'flex' }}
     >
+      <motion.span className="days-container" style={{ display: daysDisplay }}>
+        <motion.span className="days-value time-value">{days}</motion.span>
+        {full ? (
+          <span className="days-full time-units">days</span>
+        ) : (
+          <span className="days-short time-units">d</span>
+        )}
+      </motion.span>
       <motion.span
         className="hours-container"
         style={{ display: hoursDisplay }}

@@ -360,7 +360,8 @@ button.rewind-button {
 }
 
 // All time games slide
-.slide-all-time-games {
+.slide-your-games,
+.slide-global-games {
   .timeline-info {
     // background: rgba(255, 255, 255, 0.1);
     // border-radius: 15px;
@@ -488,13 +489,18 @@ button.rewind-button {
   display: flex;
   align-items: baseline;
 
-  .animated-counter {
-    display: block;
+  .stat-number {
+    display: flex;
+    justify-content: end;
+    align-items: baseline;
     font-weight: 900;
     font-size: 3rem;
-    margin-right: 0.5rem;
     min-width: 7rem;
-    text-align: right;
+    .animated-counter {
+      // display: block;
+      margin-right: 0.5rem;
+      text-align: right;
+    }
   }
   .stat-label {
     font-size: 1rem;
@@ -503,29 +509,28 @@ button.rewind-button {
     letter-spacing: 0.05em;
   }
 }
-.stat-card {
-  .animated-time-counter {
+.animated-time-counter {
+  display: flex;
+  gap: 0.5rem;
+  .days-container,
+  .hours-container,
+  .mins-container {
     display: flex;
-    gap: 0.5rem;
-    .hours-container,
-    .mins-container {
-      display: flex;
-      align-items: baseline;
-      .time-value {
-        font-weight: 900;
-        font-size: 3rem;
-        display: block;
-        text-align: end;
-      }
-      .minutes-value {
-        min-width: 4rem;
-      }
-      .time-units {
-        font-weight: 300;
-        font-size: 1rem;
-        margin-left: 2px;
-        text-transform: uppercase;
-      }
+    align-items: baseline;
+    .time-value {
+      font-weight: 900;
+      font-size: 3rem;
+      display: block;
+      text-align: end;
+    }
+    .minutes-value {
+      min-width: 4rem;
+    }
+    .time-units {
+      font-weight: 300;
+      font-size: 1rem;
+      margin-left: 2px;
+      text-transform: uppercase;
     }
   }
 }
