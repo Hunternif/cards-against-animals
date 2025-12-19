@@ -14,6 +14,7 @@ import { Twemoji } from '../../components/Twemoji';
 import { useSound } from '../../hooks/sound-hooks';
 import { EmojiWave } from './EmojiWave';
 import {
+  GlobalGamesSlide,
   GlobalIntroSlide,
   GlobalLeaderboardLikesSlide,
   GlobalLeaderboardSlide,
@@ -102,6 +103,7 @@ export function RewindStory({
               id: 'global-leaderboard-likes',
               component: GlobalLeaderboardLikesSlide,
             },
+            { id: 'global-games', component: GlobalGamesSlide },
           ],
         );
       }

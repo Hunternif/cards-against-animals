@@ -4,19 +4,19 @@ import { AnimatedCounter } from '../components/AnimatedCounter';
 import { MotionSlideIn } from '../components/animations';
 import { AnimatedTimeCounter } from '../components/AnimatedTimeCounter';
 
+const formatDate = (date: Date | undefined) => {
+  if (!date) return 'Unknown';
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  });
+};
+
 export function YourGamesSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
 
-  const formatDate = (date: Date | undefined) => {
-    if (!date) return 'Unknown';
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'long',
-      year: 'numeric',
-    });
-  };
-
   return (
-    <div className="slide-content slide-all-time-games">
+    <div className="slide-content slide-your-games">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

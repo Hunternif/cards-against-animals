@@ -496,6 +496,14 @@ button.rewind-button {
     font-weight: 900;
     font-size: 3rem;
     min-width: 7rem;
+    .twemoji {
+      max-width: 2.5rem;
+      margin-right: 0.3rem;
+      margin-bottom: 0.2rem;
+    }
+    .heart-icon-inline {
+      align-self: center;
+    }
     .animated-counter {
       // display: block;
       margin-right: 0.5rem;
