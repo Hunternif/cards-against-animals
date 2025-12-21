@@ -44,19 +44,13 @@ import { firestore } from '../firebase';
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const statsRef = collection(firestore, 'stats');
+export const statsRef = collection(firestore, 'stats');
+const usersMergeMapDocRef = doc(statsRef, 'merged_users');
+export const usersMergeMapColRef = collection(usersMergeMapDocRef, 'users');
 
 /** Returns Firestore collection reference for the specified year. */
-async function getYearColRef(year: YearFilter) {
+export async function getYearColRef(year: YearFilter) {
   const docRef = doc(statsRef, year.toString());
-  if (!(await getDoc(docRef)).exists()) {
-    await setDoc(docRef, {});
-  }
-  return collection(docRef, 'users');
-}
-
-async function getMergedUsersColRef() {
-  const docRef = doc(statsRef, 'merged_users');
   if (!(await getDoc(docRef)).exists()) {
     await setDoc(docRef, {});
   }
@@ -118,20 +112,19 @@ export async function loadUserStats(year: YearFilter): Promise<UserStats[]> {
 
 /**
  * Loads a specific user's statistics from Firestore for the specified year.
- * @param uid The user ID
- * @param year The year to load from ('all_time' or a year number)
- * @returns The user statistics or null if not found
+ * Resolves canonical user id.
  */
-export async function loadUserStatsByUid(
+export async function loadCanonicalUserStats(
   uid: string,
   year: YearFilter,
+  userMergeMap?: UserMergeMap,
 ): Promise<UserStats | null> {
-  const docRef = doc(await getYearColRef(year), uid).withConverter(
+  const mergeMap = userMergeMap ?? (await loadUserMergeMap());
+  const canonicalUid = mergeMap.getCanonicalUid(uid);
+  const docRef = doc(await getYearColRef(year), canonicalUid).withConverter(
     userStatsConverter,
   );
-  const snapshot = await getDoc(docRef);
-
-  return snapshot.exists() ? snapshot.data() : null;
+  return (await getDoc(docRef))?.data() ?? null;
 }
 
 /**
@@ -154,11 +147,14 @@ export async function loadGlobalStats(
  * @param mergeMap The map of canonical UID to merged UIDs
  */
 export async function saveUserMergeMap(mergeMap: UserMergeMap): Promise<void> {
+  const rootDoc = await getDoc(usersMergeMapDocRef);
+  if (!rootDoc.exists()) {
+    await setDoc(usersMergeMapDocRef, {});
+  }
   const batch = writeBatch(firestore);
-  const mergedUsersRef = await getMergedUsersColRef();
 
   for (const [canonicalUid, mergedUids] of mergeMap.entries()) {
-    const docRef = doc(mergedUsersRef, canonicalUid);
+    const docRef = doc(usersMergeMapColRef, canonicalUid);
     batch.set(docRef, {
       canonical_uid: canonicalUid,
       merged_uids: mergedUids,
@@ -170,8 +166,7 @@ export async function saveUserMergeMap(mergeMap: UserMergeMap): Promise<void> {
 
 /** Loads the user merge map from Firestore. */
 export async function loadUserMergeMap(): Promise<UserMergeMap> {
-  const mergedUsersRef = await getMergedUsersColRef();
-  const snapshot = await getDocs(mergedUsersRef);
+  const snapshot = await getDocs(usersMergeMapColRef);
 
   const mergeMap = new UserMergeMap();
   for (const doc of snapshot.docs) {
@@ -286,8 +281,7 @@ export async function deleteGlobalStatsForUser(
  * Deletes all user merge data.
  */
 export async function deleteUserMergeMap(): Promise<void> {
-  const mergedUsersRef = await getMergedUsersColRef();
-  const snapshot = await getDocs(mergedUsersRef);
+  const snapshot = await getDocs(usersMergeMapColRef);
 
   const batch = writeBatch(firestore);
   for (const doc of snapshot.docs) {

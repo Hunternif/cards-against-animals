@@ -72,7 +72,25 @@ function PlayersData({ players }: InLobbyProps) {
   return (
     <>
       <b>Players: </b>
-      {players && players.map((p) => p.name).join(', ')}
+      <ul>
+        {players &&
+          players.map((p) => (
+            <li
+              key={p.uid}
+              style={{
+                display: 'flex',
+                gap: '1rem',
+              }}
+            >
+              <span className="player-name" style={{}}>
+                {p.name}
+              </span>
+              <span className="player-uid" style={{ fontWeight: 200 }}>
+                {p.uid}
+              </span>
+            </li>
+          ))}
+      </ul>
     </>
   );
 }
