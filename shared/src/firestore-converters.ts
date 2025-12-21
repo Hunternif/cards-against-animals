@@ -12,6 +12,7 @@ import {
   DeckTag,
   GameLobby,
   GameTurn,
+  GlobalSettings,
   GlobalStats,
   LobbySettings,
   PlayerGameState,
@@ -26,6 +27,7 @@ import {
   TagInGame,
   UserStats,
   Vote,
+  defaultGlobalSettings,
   defaultLobbySettings,
 } from './types';
 import {
@@ -507,5 +509,13 @@ export const globalStatsConverter: FConverter<GlobalStats> = {
       top_decks: data.top_decks ?? [],
       top_months: data.top_months ?? [],
     };
+  },
+};
+
+export const globalSettingsConverter: FConverter<GlobalSettings> = {
+  toFirestore: (settings: GlobalSettings) => copyFields(settings),
+  fromFirestore: (snapshot: FDocSnapshot) => {
+    const data = snapshot.data();
+    return  copyFields2(defaultGlobalSettings(), removeUndefined(data));;
   },
 };

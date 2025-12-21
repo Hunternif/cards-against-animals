@@ -139,6 +139,15 @@ export function defaultLobbySettings(): LobbySettings {
   };
 }
 
+export interface GlobalSettings {
+  enable_rewind: boolean;
+}
+export function defaultGlobalSettings(): GlobalSettings {
+  return {
+    enable_rewind: false,
+  };
+}
+
 export type PlayUntil =
   | 'forever'
   | 'max_turns'

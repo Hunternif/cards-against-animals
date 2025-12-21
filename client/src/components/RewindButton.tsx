@@ -2,6 +2,7 @@ import { User } from 'firebase/auth';
 import { GameButton } from './Buttons';
 import { Twemoji } from './Twemoji';
 import { useNavigate } from 'react-router-dom';
+import { useGlobalSettings } from '../api/global-settings';
 
 interface Props {
   user: User;
@@ -9,8 +10,8 @@ interface Props {
 
 export function RewindButton({ user }: Props) {
   const navigate = useNavigate();
-  if (user) {
-    // TODO: check that user stats exist!
+  const [globalSettings] = useGlobalSettings();
+  if (user && globalSettings?.enable_rewind) {
     return (
       <GameButton
         className="rewind-button"

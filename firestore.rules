@@ -183,6 +183,10 @@ service cloud.firestore {
       // Only admins can write stats
       allow write: if userIsAdmin();
     }
+    match /settings/{document=**} {
+      allow read: if isLoggedIn();
+      allow write: if userIsAdmin();
+    }
     match /{document=**} {
       allow read, write: if false;
     }
