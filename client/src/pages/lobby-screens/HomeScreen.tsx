@@ -15,7 +15,7 @@ import { firebaseAuth } from "../../firebase";
 import { useEffectOnce } from "../../hooks/ui-hooks";
 import { CAAUser } from "@shared/types";
 import { AnonymousLogin } from "./login-components/AnonymousLogin";
-import { Twemoji } from "../../components/Twemoji";
+import { RewindButton } from "../../components/RewindButton";
 
 interface Props {
   existingLobbyID?: string,
@@ -102,13 +102,9 @@ export function HomeScreen({ existingLobbyID }: Props) {
         buttonText={buttonText} />
       
       {/* Rewind button for logged-in users */}
-      {/* TODO: check that user stats exist! */}
       {user && (
         <div style={{ marginTop: '1rem', justifyItems: 'center' }}>
-          <GameButton className="rewind-button" onClick={() => navigate('/rewind')}
-            iconLeft={<Twemoji>🎉</Twemoji>}>
-            View Your Rewind
-          </GameButton>
+          <RewindButton user={user}/>
         </div>
       )}
     </CenteredLayout>

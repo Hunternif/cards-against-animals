@@ -12,6 +12,7 @@ import { GameLobby } from '@shared/types';
 import { DeckSelector } from './DeckSelector';
 import { LobbySettingsPanel } from './LobbySettingsPanel';
 import { useHandler } from '../../../hooks/data-hooks';
+import { RewindButton } from '../../../components/RewindButton';
 
 interface Props {
   user: User;
@@ -19,7 +20,7 @@ interface Props {
 }
 
 export function LobbyCreatorControls(props: Props) {
-  const { lobby } = props;
+  const { lobby, user } = props;
   const [showLink, setShowLink] = useState(false);
   const { setError } = useContext(ErrorContext);
   const [handleStart, starting] = useHandler(() => startLobby(lobby), [lobby]);
@@ -51,6 +52,7 @@ export function LobbyCreatorControls(props: Props) {
         />
       </ScrollContainer>
       <footer>
+        <RewindButton user={user} />
         <GameButton
           light
           className="start-button"

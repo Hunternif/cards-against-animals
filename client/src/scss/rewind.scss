@@ -1,12 +1,5 @@
 // Rewind Page Styles - Spotify-style vertical scroll layout
 
-button.rewind-button {
-  background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  // hide edge on border:
-  background-position: 50% 0;
-  background-size: 110% 110%;
-}
-
 .rewind-container {
   position: fixed;
   top: 0;
