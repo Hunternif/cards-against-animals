@@ -464,10 +464,10 @@ export async function calculateGlobalStats(
     median_turns_per_game: medianTurns,
     top_prompts: Array.from(promptUsage.values())
       .sort((a, b) => b.count - a.count)
-      .slice(0, TOP),
+      .slice(0, TOP * 2),
     top_response_cards: Array.from(responseUsage.values())
       .sort((a, b) => b.count - a.count)
-      .slice(0, TOP),
+      .slice(0, TOP * 2),
     top_liked_responses: topLikedResponses
       .sort((a, b) => b.normalized_likes - a.normalized_likes)
       .slice(0, TOP * 2),
