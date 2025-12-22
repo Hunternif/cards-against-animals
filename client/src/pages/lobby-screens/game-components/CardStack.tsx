@@ -237,7 +237,7 @@ function ManyCardsStack({
         const revealed = revealCount == null || revealCount > i;
         return (
           <CardAnimationWrapper
-            key={card.id}
+            key={`${i}_${card.id}`}
             // full unrevealed stacks are also animated:
             animate={animate}
             index={i}
