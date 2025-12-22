@@ -3,9 +3,11 @@ import { PopularCardsDisplay } from '../components/PopularCardsDisplay';
 import { AnimatedCounter } from '../components/AnimatedCounter';
 import { SlideProps } from './SlideProps';
 
-export function GlobalTopPromptsSlide({ statsContainer }: SlideProps) {
+export function GlobalTopPromptsNoHaikuSlide({ statsContainer }: SlideProps) {
   const globalStats = statsContainer.yearMap.get('all_time')?.globalStats;
-  const topPrompts = globalStats?.top_prompts ?? [];
+  const topPrompts =
+    globalStats?.top_prompts.filter((c) => !c.prompt.id.startsWith('haiku')) ??
+    [];
 
   return (
     <div className="slide-content slide-global-top-prompts">
@@ -15,8 +17,10 @@ export function GlobalTopPromptsSlide({ statsContainer }: SlideProps) {
         transition={{ delay: 0.2 }}
         className="slide-header"
       >
-        <h2>Toughest Questions</h2>
-        <p className="subtitle">Most played prompts across all players</p>
+        <h2>Actual Toughest Questions</h2>
+        <p className="subtitle">
+          Most played prompts, <strong>except haiku!</strong>
+        </p>
       </motion.div>
 
       {topPrompts.length > 0 && (

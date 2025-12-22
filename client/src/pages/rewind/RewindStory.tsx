@@ -19,7 +19,8 @@ import {
   GlobalLeaderboardLikesSlide,
   GlobalLeaderboardSlide,
   GlobalTopLikedResponsesSlide,
-  GlobalTopPromptsSlide,
+  GlobalTopPromptsHaikuSlide,
+  GlobalTopPromptsNoHaikuSlide,
   GlobalTopResponseCardsSlide,
   IntroSlide,
   OutroSlide,
@@ -113,7 +114,8 @@ export function RewindStory({
         slides.push(
           ...[
             { id: 'global-intro', component: GlobalIntroSlide },
-            { id: 'global-top-prompts', component: GlobalTopPromptsSlide },
+            { id: 'global-top-haiku-prompts', component: GlobalTopPromptsHaikuSlide },
+            { id: 'global-top-non-haiku-prompts', component: GlobalTopPromptsNoHaikuSlide },
             {
               id: 'global-top-response-cards',
               component: GlobalTopResponseCardsSlide,

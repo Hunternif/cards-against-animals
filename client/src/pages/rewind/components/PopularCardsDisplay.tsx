@@ -12,12 +12,15 @@ import { CardStack } from '../../lobby-screens/game-components/CardStack';
 type ResponseCardItem = { card: ResponseCardStats; count: number };
 type PromptCardItem = { prompt: PromptCardStats; count: number };
 
-interface PopularCardsDisplayProps {
+interface PopularCardsDisplayProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   cards: ResponseCardItem[] | PromptCardItem[];
   isPrompt?: boolean;
   maxCards?: number;
   /** Exclude results with count == 1 */
   excludeOnes?: boolean;
+  /** Called when all cards have been revealed. */
+  onRevealAll?: () => void;
 }
 
 /** The layout is visually specific, card offets need to be adjusted. */
@@ -100,11 +103,22 @@ export function PopularCardsDisplay({
   isPrompt = false,
   maxCards = 7,
   excludeOnes,
+  onRevealAll,
+  ...props
 }: PopularCardsDisplayProps) {
   const displayCards = cards
     .slice(0, maxCards)
     .filter((c) => !excludeOnes || c.count > 1);
   const [revealCount, setRevealCount] = useState(0);
+
+  function handleClick() {
+    if (revealCount < displayCards.length) {
+      setRevealCount(revealCount + 1);
+      if (revealCount + 1 >= displayCards.length) {
+        onRevealAll?.();
+      }
+    }
+  }
 
   if (displayCards.length === 0) {
     return (
@@ -130,7 +144,10 @@ export function PopularCardsDisplay({
   });
 
   return (
-    <div className="rewind-card-stack-container">
+    <div
+      {...props}
+      className={`rewind-card-stack-container ${props.className}`}
+    >
       <motion.div
         className="rewind-card-wrapper"
         initial={{ y: -10, opacity: 0 }}
@@ -143,7 +160,7 @@ export function PopularCardsDisplay({
           cards={cardItems}
           canReveal={revealCount < displayCards.length}
           revealCount={revealCount}
-          onClick={() => setRevealCount(revealCount + 1)}
+          onClick={handleClick}
           decorator={(_, i) => <CardCount count={displayCards[i].count} />}
           overrideCardHeight={overrideCardHeight}
         />
