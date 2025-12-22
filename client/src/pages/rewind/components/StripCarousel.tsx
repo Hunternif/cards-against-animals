@@ -13,10 +13,16 @@ const SCROLL_AMOUNT = 160 + 20; // pixels to scroll per button click
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   loop?: boolean;
+  showArrows?: boolean;
 }
 
 /** Carousel that renders a strip of items and scrolls between them. */
-export default function StripCarousel({ loop, children, ...props }: Props) {
+export default function StripCarousel({
+  loop,
+  showArrows,
+  children,
+  ...props
+}: Props) {
   const childrenArray = React.Children.toArray(children);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -60,22 +66,24 @@ export default function StripCarousel({ loop, children, ...props }: Props) {
       style={{ ...outerContainer, ...props.style }}
       className={`carousel ${props.className ?? ''}`}
     >
-      <motion.button
-        initial={false}
-        aria-label="Previous"
-        className="carousel-button"
-        onClick={() => scroll(-1)}
-        whileTap={{ scale: 0.9 }}
-        style={{
-          position: 'absolute',
-          left: -50,
-          zIndex: 100,
-          visibility: canScrollLeft ? 'visible' : 'hidden',
-          pointerEvents: canScrollLeft ? 'auto' : 'none',
-        }}
-      >
-        <ArrowLeft />
-      </motion.button>
+      {showArrows && (
+        <motion.button
+          initial={false}
+          aria-label="Previous"
+          className="carousel-button"
+          onClick={() => scroll(-1)}
+          whileTap={{ scale: 0.9 }}
+          style={{
+            position: 'absolute',
+            left: -50,
+            zIndex: 100,
+            visibility: canScrollLeft ? 'visible' : 'hidden',
+            pointerEvents: canScrollLeft ? 'auto' : 'none',
+          }}
+        >
+          <ArrowLeft />
+        </motion.button>
+      )}
       <div
         className="strip-carousel-container bigscrollbar scrollbar-light"
         style={innerContainer}
@@ -87,22 +95,24 @@ export default function StripCarousel({ loop, children, ...props }: Props) {
           </div>
         ))}
       </div>
-      <motion.button
-        initial={false}
-        aria-label="Next"
-        className="carousel-button"
-        onClick={() => scroll(1)}
-        whileTap={{ scale: 0.9 }}
-        style={{
-          position: 'absolute',
-          right: -50,
-          zIndex: 100,
-          visibility: canScrollRight ? 'visible' : 'hidden',
-          pointerEvents: canScrollRight ? 'auto' : 'none',
-        }}
-      >
-        <ArrowRight />
-      </motion.button>
+      {showArrows && (
+        <motion.button
+          initial={false}
+          aria-label="Next"
+          className="carousel-button"
+          onClick={() => scroll(1)}
+          whileTap={{ scale: 0.9 }}
+          style={{
+            position: 'absolute',
+            right: -50,
+            zIndex: 100,
+            visibility: canScrollRight ? 'visible' : 'hidden',
+            pointerEvents: canScrollRight ? 'auto' : 'none',
+          }}
+        >
+          <ArrowRight />
+        </motion.button>
+      )}
     </div>
   );
 }

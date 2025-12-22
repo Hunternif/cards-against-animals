@@ -63,9 +63,11 @@
   }
 
   .carousel {
-    max-width: 500px;
+    max-width: calc(100vw - 40px);
+    margin-right: 40px;
     @media (max-width: 768px) {
-      max-width: calc(100vw);
+      max-width: calc(100vw - 25px);
+      margin-right: 25px;
     }
   }
   .carousel-button {
