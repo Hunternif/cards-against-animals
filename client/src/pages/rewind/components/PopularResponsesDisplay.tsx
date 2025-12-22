@@ -101,7 +101,7 @@ export function PopularResponsesDisplay({
           ?.find((u) => u.uid === uid)
           ?.player_in_lobby_refs?.at(0);
         return (
-          <AnimationWrapper key={i} index={i} animate={i < 5} delay={delay}>
+          <AnimationWrapper key={i} index={i} animate={true} delay={delay}>
             <CardStack
               showLikes
               animateLikes
