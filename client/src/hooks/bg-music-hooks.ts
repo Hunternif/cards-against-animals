@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { playSoundID, randomBgm } from '../api/sound-api';
 
 // Global state to prevent multiple instances from playing simultaneously
@@ -15,10 +15,14 @@ const globalBgmState = {
 export function useBackgroundMusic(
   enabled: boolean = true,
   volume: number = 0.1,
+  /** If set, will play this tracklist on loop.
+   * Otherwise will pick a random BGM based on current time. */
+  trackList?: string[],
 ) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isMountedRef = useRef<boolean>(true);
   const hasGlobalLockRef = useRef<boolean>(false);
+  const currentTrackIndex = useRef<number>(-1);
 
   const stopPlayback = () => {
     if (audioRef.current) {
@@ -31,7 +35,22 @@ export function useBackgroundMusic(
     }
   };
 
-  const startRandomBackgroundMusic = async () => {
+  const selectNextTrack = useCallback(() => {
+    if (trackList) {
+      let index = currentTrackIndex.current + 1;
+      if (index >= trackList.length) {
+        index = 0;
+      }
+      currentTrackIndex.current = index;
+      return trackList[index];
+    } else {
+      // Use current minute so that all players hear the same track
+      const seed = Math.floor(Date.now() / 60000);
+      return randomBgm(seed);
+    }
+  }, [trackList]);
+
+  const startNextTrack = async () => {
     // Prevent duplicate calls
     if (globalBgmState.isPlaying || globalBgmState.lockAcquired || !isMountedRef.current) {
       return;
@@ -42,9 +61,7 @@ export function useBackgroundMusic(
     globalBgmState.isPlaying = true;
     hasGlobalLockRef.current = true;
     
-    // Use current minute so that all players hear the same track
-    const seed = Math.floor(Date.now() / 60000);
-    const selectedTrack = randomBgm(seed);
+    const selectedTrack = selectNextTrack();
     
     try {
       const audio = await playSoundID(selectedTrack, volume);
@@ -64,7 +81,7 @@ export function useBackgroundMusic(
           audioRef.current = null;
           globalBgmState.isPlaying = false;
           hasGlobalLockRef.current = false;
-          startRandomBackgroundMusic();
+          startNextTrack();
         };
       } else {
         globalBgmState.isPlaying = false;
@@ -83,7 +100,7 @@ export function useBackgroundMusic(
     isMountedRef.current = true;
     
     if (enabled) {
-      startRandomBackgroundMusic();
+      startNextTrack();
     } else if (audioRef.current) {
       stopPlayback();
     }

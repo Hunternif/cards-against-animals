@@ -2,7 +2,11 @@ import { StatsContainer, UserStats } from '@shared/types';
 import { User } from 'firebase/auth';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CSSProperties, useCallback, useMemo, useState } from 'react';
-import { soundDrumRollLong, soundMusicNge } from '../../api/sound-api';
+import {
+  soundDrumRollLong,
+  soundMusicNge,
+  soundMusicWeide,
+} from '../../api/sound-api';
 import { InlineButton } from '../../components/Buttons';
 import { useDelay } from '../../components/Delay';
 import {
@@ -33,6 +37,7 @@ import {
   YourTopResponsesSlide,
   YourWinsSlide,
 } from './slides';
+import { useBackgroundMusic } from '../../hooks/bg-music-hooks';
 
 interface RewindStoryProps {
   user: User;
@@ -114,8 +119,14 @@ export function RewindStory({
         slides.push(
           ...[
             { id: 'global-intro', component: GlobalIntroSlide },
-            { id: 'global-top-haiku-prompts', component: GlobalTopPromptsHaikuSlide },
-            { id: 'global-top-non-haiku-prompts', component: GlobalTopPromptsNoHaikuSlide },
+            {
+              id: 'global-top-haiku-prompts',
+              component: GlobalTopPromptsHaikuSlide,
+            },
+            {
+              id: 'global-top-non-haiku-prompts',
+              component: GlobalTopPromptsNoHaikuSlide,
+            },
             {
               id: 'global-top-response-cards',
               component: GlobalTopResponseCardsSlide,
@@ -210,25 +221,14 @@ export function RewindStory({
     enabled: enableMusic,
   });
   const startMusic = useDelay(true, 2000);
-  const { soundError, retrySound } = useSound(soundMusicNge, {
-    volume: 0.2,
-    enabled: enableMusic && (startMusic ?? false),
-  });
+  useBackgroundMusic(enableMusic && (startMusic ?? false), 0.2, [
+    soundMusicNge,
+    soundMusicWeide,
+  ]);
 
   const toggleMusic = useCallback(() => {
-    let enabled = enableMusic;
-    if (soundError) {
-      // If there was an error, sound is displayed as muted. So we try to enable it:
-      enabled = true;
-    } else {
-      enabled = !enabled;
-    }
-    // Allow people to restart music by clicking the button again:
-    if (enabled) {
-      retrySound();
-    }
-    setEnableMusic(enabled);
-  }, [soundError, retrySound]);
+    setEnableMusic(!enableMusic);
+  }, [enableMusic]);
 
   return (
     <div
