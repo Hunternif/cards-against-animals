@@ -4,29 +4,8 @@ import { AnimatedCounter } from '../components/AnimatedCounter';
 import { SlideProps } from './SlideProps';
 
 export function GlobalTopResponseCardsSlide({ statsContainer }: SlideProps) {
-  const allUsers = statsContainer.yearMap.get('all_time')?.userStats ?? [];
-
-  // Aggregate all top cards played from all users
-  const cardMap = new Map<string, { card: any; count: number }>();
-
-  for (const user of allUsers) {
-    for (const item of user.top_cards_played.slice(0, 10)) {
-      const key = item.card.content;
-      if (cardMap.has(key)) {
-        const existing = cardMap.get(key)!;
-        existing.count += item.count;
-      } else {
-        cardMap.set(key, {
-          card: item.card,
-          count: item.count,
-        });
-      }
-    }
-  }
-
-  const topCards = Array.from(cardMap.values())
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+  const globalStats = statsContainer.yearMap.get('all_time')?.globalStats;
+  const topCards = globalStats?.top_response_cards ?? [];
 
   return (
     <div className="slide-content slide-global-top-response-cards">
