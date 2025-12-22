@@ -60,10 +60,31 @@ export function RewindStory({
       { id: 'your-games', component: YourGamesSlide },
       { id: 'your-wins', component: YourWinsSlide },
       { id: 'your-teammates', component: YourTeammatesSlide },
-      { id: 'your-top-response-cards', component: YourTopResponseCardsSlide },
-      { id: 'your-top-prompts', component: YourTopPromptsSlide }, // TODO: filter if == 0
-      { id: 'your-top-responses', component: YourTopResponsesSlide },
     ];
+    const usableResponseCards = userStats.allTime.top_cards_played.filter(
+      (c) => c.count > 1,
+    );
+    const usablePromptCards = userStats.allTime.top_prompts_played.filter(
+      (c) => c.count > 1,
+    );
+    const usableResponses = userStats.allTime.top_liked_responses.filter(
+      (c) => c.likes > 1,
+    );
+    if (usableResponseCards.length > 0) {
+      slides.push({
+        id: 'your-top-response-cards',
+        component: YourTopResponseCardsSlide,
+      });
+    }
+    if (usablePromptCards.length > 0) {
+      slides.push({ id: 'your-top-prompts', component: YourTopPromptsSlide });
+    }
+    if (usableResponses.length > 0) {
+      slides.push({
+        id: 'your-top-responses',
+        component: YourTopResponsesSlide,
+      });
+    }
     if (userStats.year2025) {
       slides.push({ id: 'year-2025', component: Year2025Slide });
     }
