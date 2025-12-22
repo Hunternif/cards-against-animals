@@ -60,9 +60,7 @@ export function AnimatedTimeCounter({
   full,
   ...props
 }: Props) {
-  const currentTime = useMotionValue(0);
-  const duration = useTransform(() => currentTime.get());
-  // const formatted = useTransform(() => formatDuration(currentTime.get(), full));
+  const currentTime = useMotionValue(0); // in milliseconds
 
   const days = useTransform(() =>
     Math.floor(currentTime.get() / (1000 * 60 * 60 * 24)),

@@ -84,7 +84,7 @@ export function GlobalGamesSlide({ statsContainer }: SlideProps) {
         <div className="stat-number">
           <Twemoji>💀</Twemoji>
           <AnimatedTimeCounter
-            timeMs={globalStats.total_time_played_ms * 10}
+            timeMs={globalStats.total_time_played_ms}
             duration={4}
             delay={11.1}
           />
