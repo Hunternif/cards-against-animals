@@ -3,7 +3,7 @@ import { AnimatedCounter } from '../components/AnimatedCounter';
 import { PopularCardsDisplay } from '../components/PopularCardsDisplay';
 import { SlideProps } from './SlideProps';
 
-export function YourTopCardsSlide({ userStats }: SlideProps) {
+export function YourTopResponseCardsSlide({ userStats }: SlideProps) {
   const stats = userStats.allTime;
   const topCards = stats.top_cards_played;
 
@@ -19,7 +19,12 @@ export function YourTopCardsSlide({ userStats }: SlideProps) {
       </motion.div>
 
       {topCards.length > 0 && (
-        <PopularCardsDisplay cards={topCards} isPrompt={false} maxCards={10} />
+        <PopularCardsDisplay
+          cards={topCards}
+          isPrompt={false}
+          maxCards={10}
+          excludeOnes
+        />
       )}
 
       {stats.total_discards > 0 && (

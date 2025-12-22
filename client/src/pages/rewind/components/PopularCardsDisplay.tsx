@@ -16,6 +16,8 @@ interface PopularCardsDisplayProps {
   cards: ResponseCardItem[] | PromptCardItem[];
   isPrompt?: boolean;
   maxCards?: number;
+  /** Exclude results with count == 1 */
+  excludeOnes?: boolean;
 }
 
 /** The layout is visually specific, card offets need to be adjusted. */
@@ -97,8 +99,11 @@ export function PopularCardsDisplay({
   cards,
   isPrompt = false,
   maxCards = 7,
+  excludeOnes,
 }: PopularCardsDisplayProps) {
-  const displayCards = cards.slice(0, maxCards);
+  const displayCards = cards
+    .slice(0, maxCards)
+    .filter((c) => !excludeOnes || c.count > 1);
   const [revealCount, setRevealCount] = useState(0);
 
   if (displayCards.length === 0) {

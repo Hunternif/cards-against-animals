@@ -2,7 +2,7 @@ export { IntroSlide } from './IntroSlide';
 export { YourGamesSlide } from './YourGamesSlide';
 export { YourWinsSlide } from './YourWinsSlide';
 export { YourTeammatesSlide } from './YourTeammatesSlide';
-export { YourTopCardsSlide } from './YourTopCardsSlide';
+export { YourTopResponseCardsSlide } from './YourTopResponseCardsSlide';
 export { YourTopPromptsSlide } from './YourTopPromptsSlide';
 export { YourTopResponsesSlide } from './YourTopResponsesSlide';
 export { Year2025Slide } from './Year2025Slide';

@@ -18,7 +18,12 @@ export function YourTopPromptsSlide({ userStats }: SlideProps) {
       </motion.div>
 
       {topCards.length > 0 && (
-        <PopularCardsDisplay cards={topCards} isPrompt={true} maxCards={10} />
+        <PopularCardsDisplay
+          cards={topCards}
+          isPrompt={true}
+          maxCards={10}
+          excludeOnes
+        />
       )}
 
       {/* {stats.total_discards > 0 && (

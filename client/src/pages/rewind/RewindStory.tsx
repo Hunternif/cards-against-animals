@@ -27,7 +27,7 @@ import {
   Year2025Slide,
   YourGamesSlide,
   YourTeammatesSlide,
-  YourTopCardsSlide,
+  YourTopResponseCardsSlide,
   YourTopPromptsSlide,
   YourTopResponsesSlide,
   YourWinsSlide,
@@ -60,7 +60,7 @@ export function RewindStory({
       { id: 'your-games', component: YourGamesSlide },
       { id: 'your-wins', component: YourWinsSlide },
       { id: 'your-teammates', component: YourTeammatesSlide },
-      { id: 'your-top-cards', component: YourTopCardsSlide },
+      { id: 'your-top-response-cards', component: YourTopResponseCardsSlide },
       { id: 'your-top-prompts', component: YourTopPromptsSlide }, // TODO: filter if == 0
       { id: 'your-top-responses', component: YourTopResponsesSlide },
     ];

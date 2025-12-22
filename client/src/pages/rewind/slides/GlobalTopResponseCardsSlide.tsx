@@ -37,7 +37,9 @@ export function GlobalTopResponseCardsSlide({ statsContainer }: SlideProps) {
         className="slide-header"
       >
         <h2>Everyone's Favorites</h2>
-        <p className="subtitle">Most played response cards across all players</p>
+        <p className="subtitle">
+          Most played response cards across all players
+        </p>
       </motion.div>
 
       {topCards.length > 0 && (
@@ -45,6 +47,7 @@ export function GlobalTopResponseCardsSlide({ statsContainer }: SlideProps) {
           cards={topCards}
           isPrompt={false}
           maxCards={10}
+          excludeOnes
         />
       )}
 
