@@ -71,11 +71,11 @@ export function GlobalLeaderboardLikesSlide({ statsContainer }: SlideProps) {
                   <div className="stats-number">
                     <IconHeartInline beating={index == 0} />
                     <AnimatedCounter
-                      value={player.total_wins}
+                      value={player.total_likes_received}
                       delay={0.6 + reverseOrder * 0.2}
                       duration={Math.min(
-                        player.total_wins * 0.05,
-                        0.5 + reverseOrder * 0.1,
+                        player.total_likes_received * 0.05,
+                        0.5 + reverseOrder * 0.2,
                       )}
                     />
                   </div>
@@ -104,7 +104,7 @@ export function GlobalLeaderboardLikesSlide({ statsContainer }: SlideProps) {
           transition={{ delay: 1 + leaderboard.length * 0.2 }}
         >
           <b>
-            <IconHeartInline beating/>
+            <IconHeartInline beating />
             <AnimatedCounter
               value={totalLikes}
               duration={Math.min(3, totalLikes * 0.05)}
