@@ -19,11 +19,7 @@ export function YourTopCardsSlide({ userStats }: SlideProps) {
       </motion.div>
 
       {topCards.length > 0 && (
-        <PopularCardsDisplay
-          cards={topCards}
-          isPrompt={false}
-          maxCards={10}
-        />
+        <PopularCardsDisplay cards={topCards} isPrompt={false} maxCards={10} />
       )}
 
       {stats.total_discards > 0 && (
@@ -44,28 +40,5 @@ export function YourTopCardsSlide({ userStats }: SlideProps) {
         </motion.p>
       )}
     </div>
-  );
-}
-
-function CardCount({ count }: { count: number }) {
-  let tier = 'low';
-  if (count > 1) {
-    tier = 'mid';
-  }
-  if (count > 2) {
-    tier = 'high';
-  }
-  if (count > 3) {
-    tier = 'ultra';
-  }
-  return (
-    <motion.div
-      initial={{ scale: 0, rotate: -90 }}
-      animate={{ scale: 1, rotate: 0 }}
-      transition={{ delay: 0.1, type: 'spring', stiffness: 900, damping: 20 }}
-      className={`card-count tier-${tier}`}
-    >
-      ×{count}
-    </motion.div>
   );
 }

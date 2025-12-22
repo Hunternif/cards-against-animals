@@ -71,13 +71,13 @@ function toPromptCardInGame(cardStats: PromptCardStats): PromptCardInGame {
 
 function CardCount({ count }: { count: number }) {
   let tier = 'low';
-  if (count > 1) {
+  if (count > 2) {
     tier = 'mid';
   }
-  if (count > 2) {
+  if (count > 4) {
     tier = 'high';
   }
-  if (count > 3) {
+  if (count > 6) {
     tier = 'ultra';
   }
   return (
