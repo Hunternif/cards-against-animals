@@ -45,6 +45,9 @@
         background-color: colors.$menu-lvl1;
         border-radius: 8px;
         padding: 1.5rem;
+        overflow-y: scroll;
+        max-height: 300px;
+        @extend .miniscrollbar, .miniscrollbar-light;
 
         h4 {
           margin-bottom: 1rem;
