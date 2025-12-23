@@ -113,7 +113,10 @@ export function Year2025Slide({ userStats, statsContainer }: SlideProps) {
           transition={{ delay: 1.3 }}
         >
           <p>
-            You were one of <strong>{globalStats.unique_players}</strong>{' '}
+            You were one of{' '}
+            <strong>
+              {statsContainer.yearMap?.get(2025)?.userStats?.length}
+            </strong>{' '}
             players in 2025!
           </p>
         </motion.div>

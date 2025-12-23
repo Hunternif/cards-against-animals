@@ -126,8 +126,11 @@ export function Year2024Slide({ userStats, statsContainer }: SlideProps) {
           transition={{ delay: 1.3 }}
         >
           <p>
-            Joined <strong>{globalStats.unique_players}</strong> players in
-            2024!
+            Joined{' '}
+            <strong>
+              {statsContainer.yearMap?.get(2024)?.userStats?.length}
+            </strong>{' '}
+            players in 2024!
           </p>
         </motion.div>
       )}
