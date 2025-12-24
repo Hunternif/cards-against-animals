@@ -100,20 +100,19 @@ export function RewindStory({
     // Check if global top has hidden decks, and if the user has played these decks:
     const globalStats = statsContainer.yearMap.get('all_time')?.globalStats;
     if (globalStats) {
-      // TODO: uncomment this
-      // const privateDecksIds = globalStats.top_decks
-      //   .filter((d) => d.visibility !== 'public')
-      //   .map((d) => d.deck_id);
-      // const userDecksIds = new Set(
-      //   userStats.allTime.top_decks.map((d) => d.deck_id),
-      // );
+      const privateDecksIds = globalStats.top_decks
+        .filter((d) => d.visibility !== 'public')
+        .map((d) => d.deck_id);
+      const userDecksIds = new Set(
+        userStats.allTime.top_decks.map((d) => d.deck_id),
+      );
       let userHasSeenAllDecks = true;
-      // for (const deckId of privateDecksIds) {
-      //   if (!userDecksIds.has(deckId)) {
-      //     userHasSeenAllDecks = false;
-      //     break;
-      //   }
-      // }
+      for (const deckId of privateDecksIds) {
+        if (!userDecksIds.has(deckId)) {
+          userHasSeenAllDecks = false;
+          break;
+        }
+      }
       // Add global slides:
       if (userHasSeenAllDecks) {
         slides.push(
